@@ -160,3 +160,7 @@ See [CONTRIBUTING](CONTRIBUTING.md) for more information on how to get started.
 ## License
 
 Apache 2.0 - See [LICENSE](LICENSE) for more information.
+
+## Disclaimer
+
+This is not an official Google product.
