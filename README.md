@@ -7,6 +7,8 @@ Census.
 
 ## Installation
 
+### PHP library
+
 1. Install with `composer` or add to your `composer.json`.
 
 ```
@@ -22,11 +24,25 @@ use OpenCensus\Trace\Reporter\EchoReporter;
 RequestTracer::start(new EchoReporter());
 ```
 
+### PHP Extension
+
+1. Install the `opencensus` extension from PECL.
+
+```
+$ pecl install opencensus
+```
+
+2. Enable the extension in your `php.ini`.
+
+```
+extension=opencensus.so
+```
+
 ## Customizing
 
 ### Reporting Traces
 
-The above sample uses the `EchoReporter` to report dump trace results to the
+The above sample uses the `EchoReporter` to dump trace results to the
 bottom of the webpage.
 
 If you would like to provide your own reporter, create a class that implements `ReporterInterface`.
@@ -98,3 +114,49 @@ try {
 ```
 
 ### OpenCensus extension
+
+The `opencensus` extension collects nested span data throughout the course of your application's
+execution. You can collect spans in 2 ways, by watching for function/method invocations or by manually
+starting and stopping spans. In both cases, the spans will be collected together and can be retrieved
+at the end of the request.
+
+See [extension README](ext/README.md) for more information.
+
+## Versioning
+
+You can retrieve the version of this extension at runtime.
+
+```php
+/**
+ * Return the current version of the opencensus_trace extension
+ *
+ * @return string
+ */
+function opencensus_trace_version();
+```
+
+This library follows [Semantic Versioning](http://semver.org/).
+
+Please note it is currently under active development. Any release versioned
+0.x.y is subject to backwards incompatible changes at any time.
+
+**GA**: Libraries defined at a GA quality level are stable, and will not
+introduce backwards-incompatible changes in any minor or patch releases. We will
+address issues and requests with the highest priority.
+
+**Beta**: Libraries defined at a Beta quality level are expected to be mostly
+stable and we're working towards their release candidate. We will address issues
+and requests with a higher priority.
+
+**Alpha**: Libraries defined at an Alpha quality level are still a
+work-in-progress and are more likely to get backwards-incompatible updates.
+
+## Contributing
+
+Contributions to this library are always welcome and highly encouraged.
+
+See [CONTRIBUTING](CONTRIBUTING.md) for more information on how to get started.
+
+## License
+
+Apache 2.0 - See [LICENSE](LICENSE) for more information.
