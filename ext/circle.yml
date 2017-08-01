@@ -1,0 +1,19 @@
+machine:
+  timezone: America/Los_Angeles
+  environment:
+    GCLOUD_DIR: ${HOME}/gcloud
+    PATH: ${GCLOUD_DIR}/google-cloud-sdk/bin:${PATH}
+    CLOUDSDK_CORE_DISABLE_PROMPTS: 1
+    CLOUDSDK_ACTIVE_CONFIG_NAME: opencensus-php-extension
+    TEST_BUILD_DIR: ${HOME}
+    PHP_DOCKER_GOOGLE_CREDENTIALS: ${HOME}/credentials.json
+    GOOGLE_PROJECT_ID: php-opencensus
+    TAG: circle-${CIRCLE_BUILD_NUM}
+
+dependencies:
+  override:
+    - scripts/install_test_dependencies.sh
+
+test:
+  override:
+    - scripts/run_test_suite.sh

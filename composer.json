@@ -1,0 +1,26 @@
+{
+    "name": "opencensus/trace",
+    "type": "library",
+    "description": "OpenCensus Trace Client for PHP",
+    "license": "Apache-2.0",
+    "minimum-stability": "stable",
+    "require": {
+        "ramsey/uuid": "~3",
+        "psr/log": "^1.0",
+        "psr/cache": "^1.0",
+        "cache/adapter-common": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.8.*"
+    },
+    "suggest": {
+        "cache/apcu-adapter": "Enable QpsSampler to use apcu cache.",
+        "cache/apc-adapter": "Enable QpsSampler to use apc cache.",
+        "cache/memcached-adapter": "Enable QpsSampler to use memcached cache."
+    },
+    "autoload": {
+        "psr-4": {
+            "OpenCensus\\Trace\\": "src/"
+        }
+    }
+}
