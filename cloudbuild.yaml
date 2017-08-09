@@ -1,0 +1,14 @@
+# This cloudbuild.yaml is used to test the php extension against multiple versions of php
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '--build-arg', 'BASE_IMAGE=gcr.io/google-appengine/php71', '.']
+    waitFor: ['-']
+    id: php71
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '--build-arg', 'BASE_IMAGE=gcr.io/google-appengine/php70', '.']
+    waitFor: ['-']
+    id: php70
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '--build-arg', 'BASE_IMAGE=gcr.io/php-mvm-a/php72:alpha3', '.']
+    waitFor: ['-']
+    id: php72
