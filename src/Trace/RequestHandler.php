@@ -82,16 +82,21 @@ class RequestHandler
      *      {@see OpenCensus\Trace\TraceSpan::__construct()} for the other available options.
      *
      *      @type array $headers Optional array of headers to use in place of $_SERVER
+     *      @type PropagationFormatterInterface $propagator TraceContext propagator. **Defaults to**
+     *            a new `HttpHeaderFormatter` instance
      * }
      */
-    public function __construct(ReporterInterface $reporter, SamplerInterface $sampler, array $options = [])
+    public function __construct(ReporterInterface $reporter, SamplerInterface $sampler,array $options = [])
     {
         $this->reporter = $reporter;
         $headers = array_key_exists('headers', $options)
             ? $options['headers']
             : $_SERVER;
+        $propagator = array_key_exists('propagator', $options)
+            ? $options['propagator']
+            : new HttpHeaderFormatter();
 
-        $context = HttpHeaderFormatter::parse($headers);
+        $context = $propagator->parse($headers);
 
         // If the context force disables tracing, don't consult the $sampler.
         if ($context->enabled() !== false) {
@@ -101,7 +106,9 @@ class RequestHandler
         // If the request was provided with a trace context header, we need to send it back with the response
         // including whether the request was sampled or not.
         if ($context->fromHeader()) {
-            $this->persistContextHeader($context);
+            if (!headers_sent()) {
+                header('X-Cloud-Trace-Context: ' . $propagator->serialize($context));
+            }
         }
 
         $this->tracer = $context->enabled()
@@ -255,12 +262,5 @@ class RequestHandler
             }
         }
         return null;
-    }
-
-    private function persistContextHeader($context)
-    {
-        if (!headers_sent()) {
-            header('X-Cloud-Trace-Context: ' . HttpHeaderFormatter::serialize($context));
-        }
     }
 }

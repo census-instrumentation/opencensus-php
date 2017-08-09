@@ -29,7 +29,7 @@ class GrpcMetadataFormatter implements PropagationFormatterInterface
      * @param array $metadata
      * @return TraceContext
      */
-    public static function parse($metadata)
+    public function parse($metadata)
     {
         if (array_key_exists(self::METADATA_KEY, $metadata)) {
             return self::deserialize($metadata[self::METADATA_KEY]);
@@ -43,7 +43,7 @@ class GrpcMetadataFormatter implements PropagationFormatterInterface
      * @param string $header
      * @return TraceContext
      */
-    public static function deserialize($bin)
+    public function deserialize($bin)
     {
         // TODO: implement when spec if finalized
         return new TraceContext();
@@ -55,7 +55,7 @@ class GrpcMetadataFormatter implements PropagationFormatterInterface
      * @param TraceContext $context
      * @return string
      */
-    public static function serialize(TraceContext $context)
+    public function serialize(TraceContext $context)
     {
         // TODO: implement when spec if finalized
         return '';

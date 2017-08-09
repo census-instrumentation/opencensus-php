@@ -33,7 +33,7 @@ class HttpHeaderFormatter implements PropagationFormatterInterface
      * @param array $headers
      * @return TraceContext
      */
-    public static function parse($headers)
+    public function parse($headers)
     {
         foreach(self::HTTP_HEADERS as $header) {
             if (array_key_exists($header, $headers)) {
@@ -49,7 +49,7 @@ class HttpHeaderFormatter implements PropagationFormatterInterface
      * @param string $header
      * @return TraceContext
      */
-    public static function deserialize($header)
+    public function deserialize($header)
     {
         if (preg_match(self::CONTEXT_HEADER_FORMAT, $headers[$header], $matches)) {
             return new TraceContext(
@@ -68,7 +68,7 @@ class HttpHeaderFormatter implements PropagationFormatterInterface
      * @param TraceContext $context
      * @return string
      */
-    public static function serialize(TraceContext $context)
+    public function serialize(TraceContext $context)
     {
         $ret = '' . $context->traceId();
         if ($context->spanId()) {

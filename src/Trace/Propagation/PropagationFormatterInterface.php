@@ -30,7 +30,7 @@ interface PropagationFormatterInterface
      * @param mixed $container
      * @return TraceContext
      */
-    public static function parse($container);
+    public function parse($container);
 
     /**
      * Generate a TraceContext object from the Trace Context header
@@ -38,7 +38,7 @@ interface PropagationFormatterInterface
      * @param string $header
      * @return TraceContext
      */
-    public static function deserialize($header);
+    public function deserialize($header);
 
     /**
      * Convert a TraceContext to header string
@@ -46,5 +46,5 @@ interface PropagationFormatterInterface
      * @param TraceContext $context
      * @return string
      */
-    public static function serialize(TraceContext $context);
+    public function serialize(TraceContext $context);
 }
