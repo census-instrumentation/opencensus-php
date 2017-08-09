@@ -51,7 +51,7 @@ class HttpHeaderFormatter implements PropagationFormatterInterface
      */
     public function deserialize($header)
     {
-        if (preg_match(self::CONTEXT_HEADER_FORMAT, $headers[$header], $matches)) {
+        if (preg_match(self::CONTEXT_HEADER_FORMAT, $header, $matches)) {
             return new TraceContext(
                 $matches[1],
                 array_key_exists(2, $matches) ? $matches[2] : null,
