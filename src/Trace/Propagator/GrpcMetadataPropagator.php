@@ -19,6 +19,14 @@ namespace OpenCensus\Trace\Propagator;
 
 use OpenCensus\Trace\TraceContext;
 
+/**
+ * This propagator will contain the canonical method for propagating
+ * TraceContext over grpc. The specification is not finalized yet. The
+ * current design uses a metadata key `grpc-trace-bin` with a binary
+ * encoding. Do not use this propagator until it's implemented.
+ *
+ * @experimental
+ */
 class GrpcMetadataPropagator implements PropagatorInterface
 {
     const METADATA_KEY = 'grpc-trace-bin';
@@ -45,7 +53,7 @@ class GrpcMetadataPropagator implements PropagatorInterface
      */
     public function deserialize($bin)
     {
-        // TODO: implement when spec if finalized
+        // TODO: implement when spec is finalized
         return new TraceContext();
     }
 
@@ -57,7 +65,7 @@ class GrpcMetadataPropagator implements PropagatorInterface
      */
     public function serialize(TraceContext $context)
     {
-        // TODO: implement when spec if finalized
+        // TODO: implement when spec is finalized
         return '';
     }
 }
