@@ -86,7 +86,7 @@ class RequestHandler
      *            a new `HttpHeaderFormatter` instance
      * }
      */
-    public function __construct(ReporterInterface $reporter, SamplerInterface $sampler,array $options = [])
+    public function __construct(ReporterInterface $reporter, SamplerInterface $sampler, array $options = [])
     {
         $this->reporter = $reporter;
         $headers = array_key_exists('headers', $options)

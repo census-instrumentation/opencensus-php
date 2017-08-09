@@ -35,7 +35,7 @@ class HttpHeaderFormatter implements PropagationFormatterInterface
      */
     public function parse($headers)
     {
-        foreach(self::HTTP_HEADERS as $header) {
+        foreach (self::HTTP_HEADERS as $header) {
             if (array_key_exists($header, $headers)) {
                 return self::deserialize($headers[$header]);
             }
