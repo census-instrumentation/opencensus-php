@@ -1,5 +1,5 @@
 {
-    "name": "opencensus/trace",
+    "name": "opencensus/opencensus",
     "type": "library",
     "description": "OpenCensus Trace Client for PHP",
     "license": "Apache-2.0",
@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "OpenCensus\\Trace\\": "src/"
+            "OpenCensus\\": "src/"
         }
     }
 }
