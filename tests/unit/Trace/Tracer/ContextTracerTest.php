@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace Google\Cloud\Tests\Unit\Trace\Tracer;
+namespace OpenCensus\Tests\Unit\Trace\Tracer;
 
 use OpenCensus\Trace\TraceContext;
 use OpenCensus\Trace\Tracer\ContextTracer;
