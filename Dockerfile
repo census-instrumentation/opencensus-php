@@ -27,7 +27,7 @@ RUN mkdir -p /build && \
 
 COPY . /build/
 
-WORKDIR /build
+WORKDIR /build/ext
 
 ENV TEST_PHP_ARGS="-q" \
     REPORT_EXIT_STATUS=1
@@ -38,6 +38,8 @@ RUN phpize && \
     make && \
     make test && \
     make install
+
+WORKDIR /build
 
 RUN composer install && \
     vendor/bin/phpcs --standard=./phpcs-ruleset.xml && \
