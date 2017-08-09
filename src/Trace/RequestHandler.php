@@ -24,6 +24,7 @@ use OpenCensus\Trace\Tracer\ContextTracer;
 use OpenCensus\Trace\Tracer\ExtensionTracer;
 use OpenCensus\Trace\Tracer\NullTracer;
 use OpenCensus\Trace\Tracer\TracerInterface;
+use OpenCensus\Trace\Propagation\HttpHeaderFormatter;
 
 /**
  * This class manages the logic for sampling and reporting a trace within a
@@ -89,7 +90,8 @@ class RequestHandler
         $headers = array_key_exists('headers', $options)
             ? $options['headers']
             : $_SERVER;
-        $context = TraceContext::fromHeaders($headers);
+
+        $context = HttpHeaderFormatter::parse($headers);
 
         // If the context force disables tracing, don't consult the $sampler.
         if ($context->enabled() !== false) {
@@ -258,7 +260,7 @@ class RequestHandler
     private function persistContextHeader($context)
     {
         if (!headers_sent()) {
-            header('X-Cloud-Trace-Context: ' . $context);
+            header('X-Cloud-Trace-Context: ' . HttpHeaderFormatter::serialize($context));
         }
     }
 }

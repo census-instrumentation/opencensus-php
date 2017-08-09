@@ -34,9 +34,6 @@ class TraceContext
 {
     use IdGeneratorTrait;
 
-    const HTTP_HEADER = 'HTTP_X_CLOUD_TRACE_CONTEXT';
-    const CONTEXT_HEADER_FORMAT = '/([0-9a-f]{32})(?:\/(\d+))?(?:;o=(\d+))?/';
-
     /**
      * @var string The current traceId.
      */
@@ -51,26 +48,6 @@ class TraceContext
      * @var bool|null Whether or not tracing is enabled for this request.
      */
     private $enabled;
-
-    /**
-     * Parses a headers array (normally the $_SERVER variable) and builds a TraceContext objects
-     *
-     * @param  array $headers The headers array (normally the $_SERVER variable)
-     * @return TraceContext
-     */
-    public static function fromHeaders($headers)
-    {
-        if (array_key_exists(self::HTTP_HEADER, $headers) &&
-            preg_match(self::CONTEXT_HEADER_FORMAT, $headers[self::HTTP_HEADER], $matches)) {
-            return new static(
-                $matches[1],
-                array_key_exists(2, $matches) ? $matches[2] : null,
-                array_key_exists(3, $matches) ? $matches[3] == '1' : null,
-                true
-            );
-        }
-        return new static();
-    }
 
     /**
      * Creates a new TraceContext instance
@@ -146,21 +123,5 @@ class TraceContext
     public function fromHeader()
     {
         return $this->fromHeader;
-    }
-
-    /**
-     * Returns a string form of the TraceContext. This is the format of the Trace Context Header
-     * and should be forwarded to downstream requests as the X-Cloud-Trace-Context header.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        $ret = '' . $this->traceId;
-        if ($this->spanId) {
-            $ret .= '/' . $this->spanId;
-        }
-        $ret .= ';o=' . ($this->enabled ? '1' : '0');
-        return $ret;
     }
 }
