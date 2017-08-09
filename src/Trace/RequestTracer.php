@@ -128,7 +128,11 @@ class RequestTracer
             ? $samplerOptions
             : SamplerFactory::build($samplerOptions);
 
-        return self::$instance = new RequestHandler($reporter, $sampler, $options);
+        $propagationFormatter = new HttpHeaderFormater();
+
+        self::$instance = new RequestHandler($reporter, $sampler, $propagationFormatter, $options);
+        self::$instance->start($options);
+        return self::$instance;
     }
 
     /**
