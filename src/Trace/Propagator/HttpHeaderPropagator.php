@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Trace\Propagation;
+namespace OpenCensus\Trace\Propagator;
 
 use OpenCensus\Trace\TraceContext;
 
-class HttpHeaderFormatter implements PropagationFormatterInterface
+class HttpHeaderPropagator implements PropagatorInterface
 {
     const HTTP_HEADERS = [
         'HTTP_X_CLOUD_TRACE_CONTEXT',

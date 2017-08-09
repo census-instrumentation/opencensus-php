@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Tests\Unit\Trace\Propagation;
+namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
 use OpenCensus\Trace\TraceContext;
-use OpenCensus\Trace\Propagation\HttpHeaderFormatter;
+use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 
 /**
  * @group trace
  */
-class HttpHeaderFormatterTest extends \PHPUnit_Framework_TestCase
+class HttpHeaderPropagatorTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider traceHeaders
      */
     public function testParseContext($traceId, $spanId, $enabled, $header)
     {
-        $formatter = new HttpHeaderFormatter();
+        $formatter = new HttpHeaderPropagator();
         $context = $formatter->parse(['HTTP_X_CLOUD_TRACE_CONTEXT' => $header]);
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
@@ -43,7 +43,7 @@ class HttpHeaderFormatterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseContextNewHeader($traceId, $spanId, $enabled, $header)
     {
-        $formatter = new HttpHeaderFormatter();
+        $formatter = new HttpHeaderPropagator();
         $context = $formatter->parse(['HTTP_TRACE_CONTEXT' => $header]);
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
@@ -56,7 +56,7 @@ class HttpHeaderFormatterTest extends \PHPUnit_Framework_TestCase
      */
     public function testToString($traceId, $spanId, $enabled, $expected)
     {
-        $formatter = new HttpHeaderFormatter();
+        $formatter = new HttpHeaderPropagator();
         $context = new TraceContext($traceId, $spanId, $enabled);
         $this->assertEquals($expected, $formatter->serialize($context));
     }

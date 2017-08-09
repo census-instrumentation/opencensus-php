@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Tests\Unit\Trace\Propagation;
+namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
 use OpenCensus\Trace\TraceContext;
-use OpenCensus\Trace\Propagation\HttpHeaderFormatter;
+use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 
 /**
  * @group trace
  */
-class GrpcMetadataFormatterTest extends \PHPUnit_Framework_TestCase
+class GrpcMetadataPropagatorTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
         parent::setUp();
-        $this->markTestSkipped('Grpc metadata propagation format not yet finalized');
+        $this->markTestSkipped('Grpc metadata Propagator format not yet finalized');
     }
 
     /**
@@ -36,7 +36,7 @@ class GrpcMetadataFormatterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseContext($traceId, $spanId, $enabled, $header)
     {
-        $formatter = new HttpHeaderFormatter();
+        $formatter = new HttpHeaderPropagator();
         $context = $formatter->parse(['grpc-trace-bin' => $header]);
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
@@ -49,7 +49,7 @@ class GrpcMetadataFormatterTest extends \PHPUnit_Framework_TestCase
      */
     public function testToString($traceId, $spanId, $enabled, $expected)
     {
-        $formatter = new HttpHeaderFormatter();
+        $formatter = new HttpHeaderPropagator();
         $context = new TraceContext($traceId, $spanId, $enabled);
         $this->assertEquals($expected, $formatter->serialize($context));
     }

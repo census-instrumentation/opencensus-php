@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Trace\Propagation;
+namespace OpenCensus\Trace\Propagator;
 
 use OpenCensus\Trace\TraceContext;
 
-/**
- * This interface lets us define separate TraceContext propagation formats.
- */
-interface PropagationFormatterInterface
+class GrpcMetadataPropagator implements PropagatorInterface
 {
+    const METADATA_KEY = 'grpc-trace-bin';
+
     /**
-     * Generate a TraceContext object from the provided container
+     * Generate a TraceContext object from the all the HTTP headers
      *
-     * @param mixed $container
+     * @param array $metadata
      * @return TraceContext
      */
-    public function parse($container);
+    public function parse($metadata)
+    {
+        if (array_key_exists(self::METADATA_KEY, $metadata)) {
+            return self::deserialize($metadata[self::METADATA_KEY]);
+        }
+        return new TraceContext();
+    }
 
     /**
      * Generate a TraceContext object from the Trace Context header
@@ -38,7 +43,11 @@ interface PropagationFormatterInterface
      * @param string $header
      * @return TraceContext
      */
-    public function deserialize($header);
+    public function deserialize($bin)
+    {
+        // TODO: implement when spec if finalized
+        return new TraceContext();
+    }
 
     /**
      * Convert a TraceContext to header string
@@ -46,5 +55,9 @@ interface PropagationFormatterInterface
      * @param TraceContext $context
      * @return string
      */
-    public function serialize(TraceContext $context);
+    public function serialize(TraceContext $context)
+    {
+        // TODO: implement when spec if finalized
+        return '';
+    }
 }
