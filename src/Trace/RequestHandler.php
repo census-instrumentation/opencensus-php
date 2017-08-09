@@ -83,7 +83,6 @@ class RequestHandler
      *      {@see OpenCensus\Trace\TraceSpan::__construct()} for the other available options.
      *
      *      @type array $headers Optional array of headers to use in place of $_SERVER
-     *      @type PropagationFormatterInterface $propagator
      * }
      */
     public function __construct(
