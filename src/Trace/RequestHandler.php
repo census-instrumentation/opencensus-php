@@ -24,7 +24,7 @@ use OpenCensus\Trace\Tracer\ContextTracer;
 use OpenCensus\Trace\Tracer\ExtensionTracer;
 use OpenCensus\Trace\Tracer\NullTracer;
 use OpenCensus\Trace\Tracer\TracerInterface;
-use OpenCensus\Trace\Propagation\HttpHeaderFormatter;
+use OpenCensus\Trace\Propagation\PropagationFormatterInterface;
 
 /**
  * This class manages the logic for sampling and reporting a trace within a
@@ -77,24 +77,22 @@ class RequestHandler
      *
      * @param ReporterInterface $reporter How to report the trace at the end of the request
      * @param SamplerInterface $sampler Which sampler to use for sampling requests
+     * @param PropagationFormatterInterface $propagator TraceContext propagator
      * @param array $options [optional] {
      *      Configuration options. See
      *      {@see OpenCensus\Trace\TraceSpan::__construct()} for the other available options.
      *
      *      @type array $headers Optional array of headers to use in place of $_SERVER
-     *      @type PropagationFormatterInterface $propagator TraceContext propagator. **Defaults to**
-     *            a new `HttpHeaderFormatter` instance
+     *      @type PropagationFormatterInterface $propagator
      * }
      */
-    public function __construct(ReporterInterface $reporter, SamplerInterface $sampler, array $options = [])
+    public function __construct(ReporterInterface $reporter, SamplerInterface $sampler,
+                                PropagationFormatterInterface $propagator, array $options = [])
     {
         $this->reporter = $reporter;
         $headers = array_key_exists('headers', $options)
             ? $options['headers']
             : $_SERVER;
-        $propagator = array_key_exists('propagator', $options)
-            ? $options['propagator']
-            : new HttpHeaderFormatter();
 
         $context = $propagator->parse($headers);
 
