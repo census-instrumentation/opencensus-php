@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace Google\Cloud\Tests\Unit\Trace\Reporter;
+namespace OpenCensus\Tests\Unit\Trace\Reporter;
 
 use Psr\Log\LoggerInterface;
 use OpenCensus\Trace\Reporter\LoggerReporter;

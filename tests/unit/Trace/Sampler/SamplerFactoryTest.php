@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace Google\Cloud\Tests\Unit\Trace\Sampler;
+namespace OpenCensus\Tests\Unit\Trace\Sampler;
 
 use OpenCensus\Trace\Sampler\SamplerFactory;
 use OpenCensus\Trace\Sampler\SamplerInterface;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace Google\Cloud\Tests\Unit\Trace;
+namespace OpenCensus\Tests\Unit\Trace;
 
 use OpenCensus\Trace\Trace;
 use OpenCensus\Trace\TraceSpan;
