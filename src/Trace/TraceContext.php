@@ -53,6 +53,26 @@ class TraceContext
     private $enabled;
 
     /**
+     * Parses a headers array (normally the $_SERVER variable) and builds a TraceContext objects
+     *
+     * @param  array $headers The headers array (normally the $_SERVER variable)
+     * @return TraceContext
+     */
+    public static function fromHeaders($headers)
+    {
+        if (array_key_exists(self::HTTP_HEADER, $headers) &&
+            preg_match(self::CONTEXT_HEADER_FORMAT, $headers[self::HTTP_HEADER], $matches)) {
+            return new static(
+                $matches[1],
+                array_key_exists(2, $matches) ? $matches[2] : null,
+                array_key_exists(3, $matches) ? $matches[3] == '1' : null,
+                true
+            );
+        }
+        return new static();
+    }
+
+    /**
      * Creates a new TraceContext instance
      *
      * @param string $traceId The current traceId. If not set, one will be generated for you.
