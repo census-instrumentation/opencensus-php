@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2017 Google Inc.
+ * Copyright 2015 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,30 +15,16 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Tests\Unit\Trace\Sampler;
-
-use OpenCensus\Trace\Sampler\RandomSampler;
-
 /**
- * @group trace
+ * Dumps the contents of the environment variable GOOGLE_CREDENTIALS_BASE64 to
+ * a file.
+ *
+ * To setup Travis to run on your fork, read TRAVIS.md.
  */
-class RandomSamplerTest extends \PHPUnit_Framework_TestCase
-{
-    /**
-     * @dataProvider invalidRates
-     * @expectedException \InvalidArgumentException
-     */
-    public function testInvalidRate($rate)
-    {
-        $sampler = new RandomSampler($rate);
-    }
-
-    public function invalidRates()
-    {
-        return [
-            [-1],
-            [10],
-            [1.1]
-        ];
-    }
+if (getenv('GOOGLE_CREDENTIALS_BASE64') === false) {
+    exit(0);
 }
+file_put_contents(
+    getenv('PHP_DOCKER_GOOGLE_CREDENTIALS'),
+    base64_decode(getenv('GOOGLE_CREDENTIALS_BASE64'))
+);
