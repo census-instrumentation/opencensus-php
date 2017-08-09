@@ -86,9 +86,12 @@ class RequestHandler
      *      @type PropagationFormatterInterface $propagator
      * }
      */
-    public function __construct(ReporterInterface $reporter, SamplerInterface $sampler,
-                                PropagationFormatterInterface $propagator, array $options = [])
-    {
+    public function __construct(
+        ReporterInterface $reporter,
+        SamplerInterface $sampler,
+        PropagationFormatterInterface $propagator,
+        array $options = []
+    ) {
         $this->reporter = $reporter;
         $headers = array_key_exists('headers', $options)
             ? $options['headers']
