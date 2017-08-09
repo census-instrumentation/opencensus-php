@@ -39,7 +39,6 @@ RUN phpize && \
     make test && \
     make install
 
-RUN vendor/bin/phpcs --standard=./phpcs-ruleset.xml
-
-RUN composer install &&
+RUN composer install && \
+    vendor/bin/phpcs --standard=./phpcs-ruleset.xml && \
     vendor/bin/phpunit
