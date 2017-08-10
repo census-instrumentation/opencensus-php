@@ -107,8 +107,8 @@ class ZipkinReporter implements ReporterInterface
 
         return json_encode(
             array_map(function ($span) use ($traceId, $endpoint) {
-                $startTime = (int) $span->startTime() * 1000 * 1000;
-                $endTime = (int) $span->endTime() * 1000 * 1000;
+                $startTime = (int)((float) $span->startTime()->format('U.u') * 1000 * 1000);
+                $endTime = (int)((float) $span->endTime()->format('U.u') * 1000 * 1000);
                 $spanId = str_pad(dechex($span->spanId()), 16, '0', STR_PAD_LEFT);
                 $parentSpanId = $span->parentSpanId()
                     ? str_pad(dechex($span->parentSpanId()), 16, '0', STR_PAD_LEFT)
