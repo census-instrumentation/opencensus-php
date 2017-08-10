@@ -165,9 +165,16 @@ class TraceSpan
         return $this->info['name'];
     }
 
+    /**
+     * Retrieve the list of labels for this span
+     *
+     * @return array
+     */
     public function labels()
     {
-        return $this->info['labels'] ?: [];
+        return array_key_exists('labels', $this->info)
+            ? $this->info['labels']
+            : [];
     }
 
     /**
