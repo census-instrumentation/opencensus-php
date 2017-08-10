@@ -22,6 +22,7 @@ use OpenCensus\Trace\RequestHandler;
 use OpenCensus\Trace\Reporter\ReporterInterface;
 use OpenCensus\Trace\Sampler\SamplerInterface;
 use OpenCensus\Trace\Tracer\NullTracer;
+use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 
 /**
  * @group trace
@@ -47,7 +48,8 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
 
         $rt = new RequestHandler(
             $this->reporter->reveal(),
-            $this->sampler->reveal()
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator()
         );
         $rt->inSpan(['name' => 'inner'], function () {});
         $rt->onExit();
@@ -69,6 +71,7 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
         $rt = new RequestHandler(
             $this->reporter->reveal(),
             $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
             [
                 'headers' => [
                     'REQUEST_URI' => '/some/uri',
@@ -108,6 +111,7 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
         $rt = new RequestHandler(
             $this->reporter->reveal(),
             $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
             [
                 'headers' => [
                     'HTTP_X_CLOUD_TRACE_CONTEXT' => '12345678901234567890123456789012/5555;o=1'
@@ -125,6 +129,7 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
         $rt = new RequestHandler(
             $this->reporter->reveal(),
             $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
             [
                 'headers' => [
                     'HTTP_X_CLOUD_TRACE_CONTEXT' => '12345678901234567890123456789012;o=1'
@@ -141,6 +146,7 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
         $rt = new RequestHandler(
             $this->reporter->reveal(),
             $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
             [
                 'headers' => [
                     'HTTP_X_CLOUD_TRACE_CONTEXT' => '12345678901234567890123456789012;o=0'
