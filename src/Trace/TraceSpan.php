@@ -99,16 +99,6 @@ class TraceSpan
         return $this->info['startTime'];
     }
 
-    public function startTime()
-    {
-        return $this->info['startTime'];
-    }
-
-    public function endTime()
-    {
-        return $this->info['endTime'];
-    }
-
     /**
      * Set the start time for this span.
      *

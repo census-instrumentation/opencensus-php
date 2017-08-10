@@ -26,7 +26,7 @@ use Prophecy\Argument;
 /**
  * @group trace
  */
-class LoggerReporterTest extends \PHPUnit_Framework_TestCase
+class ZipkinReporterTest extends \PHPUnit_Framework_TestCase
 {
     private $tracer;
 

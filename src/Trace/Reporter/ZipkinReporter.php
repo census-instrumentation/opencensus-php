@@ -143,6 +143,4 @@ class ZipkinReporter implements ReporterInterface
             }, $spans)
         );
     }
-
-    public function serializeSpan(TraceSpan $span)
 }
