@@ -58,7 +58,7 @@ class ZipkinReporter implements ReporterInterface
         $this->name = $name;
         $this->host = $host;
         $this->port = $port;
-        $this->url = "http://#{$host}:${port}${endpoint}";
+        $this->url = "http://${host}:${port}${endpoint}";
     }
 
     /**
@@ -137,7 +137,7 @@ class ZipkinReporter implements ReporterInterface
                             'key' => $key,
                             'value' => $value
                         ];
-                    }, $span->labels()),
+                    }, array_keys($span->labels()), $span->labels()),
                     'parentId' => $parentSpanId
                 ];
             }, $spans)
