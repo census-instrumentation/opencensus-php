@@ -94,35 +94,19 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
     public function testStartFormat()
     {
         $traceSpan = new TraceSpan();
-        $traceSpan->setStart();
+        $traceSpan->setStartTime();
         $info = $traceSpan->info();
         $this->assertArrayHasKey('startTime', $info);
-        $this->assertRegExp(self::EXPECTED_TIMESTAMP_FORMAT, $info['startTime']);
+        $this->assertInstanceOf(\DateTimeInterface::class, $info['startTime']);
     }
 
     public function testFinishFormat()
     {
         $traceSpan = new TraceSpan();
-        $traceSpan->setEnd();
+        $traceSpan->setEndTime();
         $info = $traceSpan->info();
         $this->assertArrayHasKey('endTime', $info);
-        $this->assertRegExp(self::EXPECTED_TIMESTAMP_FORMAT, $info['endTime']);
-    }
-
-    public function testGeneratesDefaultKind()
-    {
-        $traceSpan = new TraceSpan();
-        $info = $traceSpan->info();
-        $this->assertArrayHasKey('kind', $info);
-        $this->assertEquals(TraceSpan::SPAN_KIND_UNSPECIFIED, $info['kind']);
-    }
-
-    public function testReadsKind()
-    {
-        $traceSpan = new TraceSpan(['kind' => TraceSpan::SPAN_KIND_RPC_CLIENT]);
-        $info = $traceSpan->info();
-        $this->assertArrayHasKey('kind', $info);
-        $this->assertEquals(TraceSpan::SPAN_KIND_RPC_CLIENT, $info['kind']);
+        $this->assertInstanceOf(\DateTimeInterface::class, $info['endTime']);
     }
 
     public function testIgnoresUnknownFields()
@@ -138,7 +122,7 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
     public function testCanFormatTimestamps($field, $timestamp, $expected)
     {
         $traceSpan = new TraceSpan([$field => $timestamp]);
-        $this->assertEquals($expected, $traceSpan->info()[$field]);
+        $this->assertEquals($expected, $traceSpan->info()[$field]->format('Y-m-d\TH:i:s.u000\Z'));
     }
 
     public function timestampFields()
@@ -146,10 +130,8 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
         return [
             ['startTime', 1490737410, '2017-03-28T21:43:30.000000000Z'],
             ['startTime', 1490737450.4843, '2017-03-28T21:44:10.484299000Z'],
-            ['startTime', '2017-03-28T21:44:10.484299000Z', '2017-03-28T21:44:10.484299000Z'],
             ['endTime', 1490737410, '2017-03-28T21:43:30.000000000Z'],
             ['endTime', 1490737450.4843, '2017-03-28T21:44:10.484299000Z'],
-            ['endTime', '2017-03-28T21:44:10.484299000Z', '2017-03-28T21:44:10.484299000Z'],
         ];
     }
 }
