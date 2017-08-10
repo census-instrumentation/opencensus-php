@@ -25,7 +25,10 @@ use OpenCensus\Trace\TraceSpan;
  */
 class TraceTest extends \PHPUnit_Framework_TestCase
 {
-    public function testLoadFromArray()
+    /**
+     * @dataProvider dateFormats
+     */
+    public function testLoadFromArray($date)
     {
         $trace = new Trace(
             '1234abcd',
@@ -34,8 +37,8 @@ class TraceTest extends \PHPUnit_Framework_TestCase
                     'spanId' => '12345',
                     'kind' => 'SPAN_KIND_UNSPECIFIED',
                     'name' => 'spanname',
-                    'startTime' => 1490737450.4843,
-                    'endTime' => 1490737450.4843
+                    'startTime' => $date,
+                    'endTime' => $date
                 ]
             ]
         );
@@ -43,6 +46,8 @@ class TraceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($trace->spans()));
         foreach($trace->spans() as $span) {
             $this->assertInstanceOf(TraceSpan::class, $span);
+            $this->assertInstanceOf(\DateTimeInterface::class, $span->startTime());
+            $this->assertInstanceOf(\DateTimeInterface::class, $span->endTime());
         }
     }
 
@@ -64,5 +69,13 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $trace = new Trace('1', [['name' => 'main']]);
         $trace->info();
+    }
+
+    public function dateFormats()
+    {
+        return [
+            [1490737450.4843],
+            [new \DateTime()]
+        ];
     }
 }

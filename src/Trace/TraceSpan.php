@@ -90,6 +90,16 @@ class TraceSpan
     }
 
     /**
+     * Retrieve the start time for this span.
+     *
+     * @return \DateTimeInterface
+     */
+    public function startTime()
+    {
+        return $this->info['startTime'];
+    }
+
+    /**
      * Set the start time for this span.
      *
      * @param  \DateTimeInterface|int|float|string $when [optional] The start time of this span.
@@ -99,6 +109,16 @@ class TraceSpan
     public function setStartTime($when = null)
     {
         $this->info['startTime'] = $this->formatDate($when);
+    }
+
+    /**
+     * Retrieve the end time for this span.
+     *
+     * @return \DateTimeInterface
+     */
+    public function endTime()
+    {
+        return $this->info['endTime'];
     }
 
     /**
@@ -187,7 +207,7 @@ class TraceSpan
      * @param  \DateTimeInterface|int|float $when [optional] The end time of this span.
      *         **Defaults to** now. If provided as a string, it must be in "Zulu" format.
      *         If provided as an int or float, it is expected to be a Unix timestamp.
-     * @return \DateTime
+     * @return \DateTimeInterface
      */
     private function formatDate($when = null)
     {
