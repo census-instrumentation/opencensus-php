@@ -18,36 +18,27 @@
 namespace OpenCensus\Trace;
 
 /**
- * This plain PHP class represents a
- * [TraceSpan resource](https://cloud.google.com/trace/docs/reference/v1/rest/v1/projects.traces#TraceSpan)
- * A span represents a single timed event within a Trace. Spans can be nested
- * and form a trace tree. Often, a trace contains a root span that describes
- * the end-to-end latency of an operation and, optionally, one or more subspans
+ * This plain PHP class represents a single timed event within a Trace. Spans can
+ * be nested and form a trace tree. Often, a trace contains a root span that
+ * describes the end-to-end latency of an operation and, optionally, one or more subspans
  * for its suboperations. Spans do not need to be contiguous. There may be
  * gaps between spans in a trace.
  */
-class TraceSpan implements \JsonSerializable
+class TraceSpan
 {
-    const SPAN_KIND_UNSPECIFIED = 'SPAN_KIND_UNSPECIFIED';
-    const SPAN_KIND_RPC_SERVER = 'RPC_SERVER';
-    const SPAN_KIND_RPC_CLIENT = 'RPC_CLIENT';
-
     /**
-     * @var array Associative array containing all the fields representing this TraceSpan.
+     * @var array Associative array containing all the fields representing this Span.
      */
     private $info = [];
 
     /**
-     * Instantiate a new TraceSpan instance.
+     * Instantiate a new Span instance.
      *
      * @param array $options [optional] {
      *      Configuration options.
      *
      *      @type int $spanId The ID of the span. If not provided,
      *            one will be generated automatically for you.
-     *      @type string $kind Distinguishes between spans generated
-     *            in a particular context. **Defaults to**
-     *            SPAN_KIND_UNSPECIFIED.
      *      @type string $name The name of the span.
      *      @type \DateTimeInterface|int|float|string $startTime Start time of the span in nanoseconds.
      *            If provided as a string, it must be in "Zulu" format. If provided as an int or float, it is
@@ -55,7 +46,7 @@ class TraceSpan implements \JsonSerializable
      *      @type \DateTimeInterface|int|float|string $endTime End time of the span in nanoseconds.
      *            If provided as a string, it must be in "Zulu" format. If provided as an int or float, it is
      *            expected to be a Unix timestamp.
-     *      @type string $parentSpanId ID of the parent span if any.
+     *      @type int $parentSpanId ID of the parent span if any.
      *      @type array $labels Associative array of $label => $value
      *            to attach to this span.
      * }
@@ -63,37 +54,49 @@ class TraceSpan implements \JsonSerializable
     public function __construct($options = [])
     {
         if (array_key_exists('startTime', $options)) {
-            $this->setStart($options['startTime']);
+            $this->setStartTime($options['startTime']);
+            unset($options['startTime']);
         }
         if (array_key_exists('endTime', $options)) {
-            $this->setEnd($options['endTime']);
+            $this->setEndTime($options['endTime']);
+            unset($options['endTime']);
         }
 
         if (array_key_exists('labels', $options)) {
             $this->addLabels($options['labels']);
+            unset($options['labels']);
         }
 
         if (array_key_exists('spanId', $options)) {
             $this->info['spanId'] = $options['spanId'];
+            unset($options['spanId']);
         } else {
             $this->info['spanId'] = $this->generateSpanId();
         }
 
-        if (array_key_exists('kind', $options)) {
-            $this->info['kind'] = $options['kind'];
-        } else {
-            $this->info['kind'] = self::SPAN_KIND_UNSPECIFIED;
-        }
-
         if (array_key_exists('name', $options)) {
             $this->info['name'] = $options['name'];
+            unset($options['name']);
         } else {
             $this->info['name'] = $this->generateSpanName();
         }
 
         if (array_key_exists('parentSpanId', $options)) {
             $this->info['parentSpanId'] = $options['parentSpanId'];
+            unset($options['parentSpanId']);
         }
+
+        $this->info['metadata'] = $options;
+    }
+
+    /**
+     * Retrieve the start time for this span.
+     *
+     * @return \DateTimeInterface
+     */
+    public function startTime()
+    {
+        return $this->info['startTime'];
     }
 
     public function startTime()
@@ -113,9 +116,19 @@ class TraceSpan implements \JsonSerializable
      *         **Defaults to** now. If provided as a string, it must be in "Zulu" format.
      *         If provided as an int or float, it is expected to be a Unix timestamp.
      */
-    public function setStart($when = null)
+    public function setStartTime($when = null)
     {
         $this->info['startTime'] = $this->formatDate($when);
+    }
+
+    /**
+     * Retrieve the end time for this span.
+     *
+     * @return \DateTimeInterface
+     */
+    public function endTime()
+    {
+        return $this->info['endTime'];
     }
 
     /**
@@ -125,7 +138,7 @@ class TraceSpan implements \JsonSerializable
      *         **Defaults to** now. If provided as a string, it must be in "Zulu" format.
      *         If provided as an int or float, it is expected to be a Unix timestamp.
      */
-    public function setEnd($when = null)
+    public function setEndTime($when = null)
     {
         $this->info['endTime'] = $this->formatDate($when);
     }
@@ -133,7 +146,7 @@ class TraceSpan implements \JsonSerializable
     /**
      * Retrieve the ID of this span.
      *
-     * @return string
+     * @return int
      */
     public function spanId()
     {
@@ -143,7 +156,7 @@ class TraceSpan implements \JsonSerializable
     /**
      * Retrieve the ID of this span's parent if it exists.
      *
-     * @return string
+     * @return int
      */
     public function parentSpanId()
     {
@@ -178,16 +191,6 @@ class TraceSpan implements \JsonSerializable
     }
 
     /**
-     * Returns the info array for serialization.
-     *
-     * @return array
-     */
-    public function jsonSerialize()
-    {
-        return $this->info;
-    }
-
-    /**
      * Attach labels to this span.
      *
      * @param array $labels Labels in the form of $label => $value
@@ -216,16 +219,15 @@ class TraceSpan implements \JsonSerializable
     /**
      * Returns a "Zulu" formatted string representing the provided \DateTime.
      *
-     * @param  \DateTimeInterface|int|float|string $when [optional] The end time of this span.
+     * @param  \DateTimeInterface|int|float $when [optional] The end time of this span.
      *         **Defaults to** now. If provided as a string, it must be in "Zulu" format.
      *         If provided as an int or float, it is expected to be a Unix timestamp.
-     * @return string
+     * @return \DateTimeInterface
      */
     private function formatDate($when = null)
     {
-        if (is_string($when)) {
-            return $when;
-        } elseif (!$when) {
+        if (!$when) {
+            // now
             list($usec, $sec) = explode(' ', microtime());
             $micro = sprintf("%06d", $usec * 1000000);
             $when = new \DateTime(date('Y-m-d H:i:s.' . $micro));
@@ -233,9 +235,11 @@ class TraceSpan implements \JsonSerializable
             // Expect that this is a timestamp
             $micro = sprintf("%06d", ($when - floor($when)) * 1000000);
             $when = new \DateTime(date('Y-m-d H:i:s.'. $micro, (int) $when));
+        } elseif (!$when instanceof \DateTimeInterface) {
+            throw new \InvalidArgumentException('Invalid date format. Must be a \DateTimeInterface or numeric.');
         }
         $when->setTimezone(new \DateTimeZone('UTC'));
-        return $when->format('Y-m-d\TH:i:s.u000\Z');
+        return $when;
     }
 
     /**
