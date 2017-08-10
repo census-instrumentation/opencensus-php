@@ -20,7 +20,8 @@ namespace OpenCensus\Trace\Reporter;
 use Google\Cloud\Core\Batch\BatchRunner;
 use Google\Cloud\Core\Batch\BatchTrait;
 use Google\Cloud\Trace\TraceClient;
-use Google\Cloud\Trace\Tracer\TracerInterface;
+use Google\Cloud\Trace\TraceSpan;
+use OpenCensus\Trace\Tracer\TracerInterface;
 
 /**
  * This implementation of the ReporterInterface use the BatchRunner to provide
@@ -34,7 +35,6 @@ use Google\Cloud\Trace\Tracer\TracerInterface;
 class GoogleCloudReporter implements ReporterInterface
 {
     const VERSION = '0.1.0';
-    const DEFAULT_ROOT_SPAN_NAME = 'main';
 
     // These are Stackdriver Trace's common labels
     const AGENT = '/agent';
@@ -122,14 +122,19 @@ class GoogleCloudReporter implements ReporterInterface
      */
     public function report(TracerInterface $tracer)
     {
+        // detect common labels
         $this->addCommonLabels($tracer);
 
-        $spans = $tracer->spans();
+        // transform OpenCensus TraceSpans to Google\Cloud\TraceSpans
+        $spans = array_map(function ($span) {
+            return new TraceSpan($span->info());
+        }, $tracer->spans());
 
         if (empty($spans)) {
             return false;
         }
 
+        // build a Trace object and assign TraceSpans
         $trace = self::$client->trace(
             $tracer->context()->traceId()
         );
@@ -145,7 +150,6 @@ class GoogleCloudReporter implements ReporterInterface
             return false;
         }
     }
-
     /**
      * Returns an array representation of a callback which will be used to write
      * batch items.
@@ -161,8 +165,10 @@ class GoogleCloudReporter implements ReporterInterface
         return [self::$client, $this->batchMethod];
     }
 
-    private function addCommonLabels(&$tracer)
+    private function addCommonLabels(&$tracer, $headers = null)
     {
+        $headers = $headers ?: $_SERVER;
+
         // If a redirect, add the HTTP_REDIRECTED_URL label to the main span
         $responseCode = http_response_code();
         if ($responseCode == 301 || $responseCode == 302) {

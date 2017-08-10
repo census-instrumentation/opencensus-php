@@ -35,6 +35,8 @@ use OpenCensus\Trace\Propagator\PropagatorInterface;
  */
 class RequestHandler
 {
+    const DEFAULT_ROOT_SPAN_NAME = 'main';
+
     /**
      * @var ReporterInterface The reported to use at the end of the request
      */
@@ -93,7 +95,6 @@ class RequestHandler
             'name' => $this->nameFromHeaders($headers),
             'labels' => []
         ];
-        $spanOptions['labels'] += $this->labelsFromHeaders($headers);
         $this->tracer->startSpan($spanOptions);
 
         register_shutdown_function([$this, 'onExit']);
