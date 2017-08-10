@@ -166,6 +166,18 @@ class TraceSpan
     }
 
     /**
+     * Retrieve the list of labels for this span
+     *
+     * @return array
+     */
+    public function labels()
+    {
+        return array_key_exists('labels', $this->info)
+            ? $this->info['labels']
+            : [];
+    }
+
+    /**
      * Returns a serializable array representing this span.
      *
      * @return array
