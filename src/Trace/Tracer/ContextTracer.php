@@ -101,7 +101,7 @@ class ContextTracer implements TracerInterface
         $span = array_shift($this->stack);
         $this->context->setSpanId(empty($this->stack) ? null : $this->stack[0]->spanId());
         if ($span) {
-            $span->setEnd();
+            $span->setEndTime();
             return true;
         }
         return false;

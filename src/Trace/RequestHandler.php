@@ -24,6 +24,7 @@ use OpenCensus\Trace\Tracer\ContextTracer;
 use OpenCensus\Trace\Tracer\ExtensionTracer;
 use OpenCensus\Trace\Tracer\NullTracer;
 use OpenCensus\Trace\Tracer\TracerInterface;
+use OpenCensus\Trace\Propagator\PropagatorInterface;
 
 /**
  * This class manages the logic for sampling and reporting a trace within a
@@ -49,6 +50,7 @@ class RequestHandler
      *
      * @param ReporterInterface $reporter How to report the trace at the end of the request
      * @param SamplerInterface $sampler Which sampler to use for sampling requests
+     * @param PropagatorInterface $propagator TraceContext propagator
      * @param array $options [optional] {
      *      Configuration options. See
      *      {@see OpenCensus\Trace\TraceSpan::__construct()} for the other available options.
@@ -56,13 +58,18 @@ class RequestHandler
      *      @type array $headers Optional array of headers to use in place of $_SERVER
      * }
      */
-    public function __construct(ReporterInterface $reporter, SamplerInterface $sampler, array $options = [])
-    {
+    public function __construct(
+        ReporterInterface $reporter,
+        SamplerInterface $sampler,
+        PropagatorInterface $propagator,
+        array $options = []
+    ) {
         $this->reporter = $reporter;
         $headers = array_key_exists('headers', $options)
             ? $options['headers']
             : $_SERVER;
-        $context = TraceContext::fromHeaders($headers);
+
+        $context = $propagator->parse($headers);
 
         // If the context force disables tracing, don't consult the $sampler.
         if ($context->enabled() !== false) {
@@ -72,7 +79,9 @@ class RequestHandler
         // If the request was provided with a trace context header, we need to send it back with the response
         // including whether the request was sampled or not.
         if ($context->fromHeader()) {
-            $this->persistContextHeader($context);
+            if (!headers_sent()) {
+                header('X-Cloud-Trace-Context: ' . $propagator->serialize($context));
+            }
         }
 
         $this->tracer = $context->enabled()
@@ -180,12 +189,5 @@ class RequestHandler
             return $headers['REQUEST_URI'];
         }
         return self::DEFAULT_ROOT_SPAN_NAME;
-    }
-
-    private function persistContextHeader($context)
-    {
-        if (!headers_sent()) {
-            header('X-Cloud-Trace-Context: ' . $context);
-        }
     }
 }

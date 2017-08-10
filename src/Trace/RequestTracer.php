@@ -20,6 +20,8 @@ namespace OpenCensus\Trace;
 use OpenCensus\Trace\Sampler\SamplerFactory;
 use OpenCensus\Trace\Sampler\SamplerInterface;
 use OpenCensus\Trace\Reporter\ReporterInterface;
+use OpenCensus\Trace\Propagator\PropagatorInterface;
+use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 
 /**
  * This class provides static functions to give you access to the current
@@ -115,6 +117,8 @@ class RequestTracer
      *
      *      @type SamplerInterface|array $sampler Sampler or sampler factory build arguments. See
      *          {@see OpenCensus\Trace\Sampler\SamplerFactory::build()} for the available options.
+     *      @type PropagatorInterface $propagator TraceContext propagator. **Defaults to**
+     *            a new `HttpHeaderPropagator` instance
      *      @type array $headers Optional array of headers to use in place of $_SERVER
      * }
      * @return RequestHandler
@@ -128,7 +132,12 @@ class RequestTracer
             ? $samplerOptions
             : SamplerFactory::build($samplerOptions);
 
-        return self::$instance = new RequestHandler($reporter, $sampler, $options);
+        $propagator = array_key_exists('propagator', $options)
+            ? $options['propagator']
+            : new HttpHeaderPropagator();
+        unset($options['propagator']);
+
+        return self::$instance = new RequestHandler($reporter, $sampler, $propagator, $options);
     }
 
     /**

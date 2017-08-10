@@ -24,34 +24,9 @@ use OpenCensus\Trace\TraceContext;
  */
 class TraceContextTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @dataProvider traceHeaders
-     */
-    public function testParseContext($traceId, $spanId, $enabled, $header)
+    public function testGeneratesDefaultTraceId()
     {
-        $context = TraceContext::fromHeaders(['HTTP_X_CLOUD_TRACE_CONTEXT' => $header]);
-        $this->assertEquals($traceId, $context->traceId());
-        $this->assertEquals($spanId, $context->spanId());
-        $this->assertEquals($enabled, $context->enabled());
-        $this->assertTrue($context->fromHeader());
-    }
-
-    /**
-     * @dataProvider traceHeaders
-     */
-    public function testToString($traceId, $spanId, $enabled, $expected)
-    {
-        $context = new TraceContext($traceId, $spanId, $enabled);
-        $this->assertEquals($expected, (string) $context);
-    }
-
-    public function traceHeaders()
-    {
-        return [
-            ['123456789012345678901234567890ab', '1234', false, '123456789012345678901234567890ab/1234;o=0'],
-            ['123456789012345678901234567890ab', '1234', true,  '123456789012345678901234567890ab/1234;o=1'],
-            ['123456789012345678901234567890ab', null, false,   '123456789012345678901234567890ab;o=0'],
-            ['123456789012345678901234567890ab', null, true,    '123456789012345678901234567890ab;o=1'],
-        ];
+        $context = new TraceContext();
+        $this->assertRegexp('/[0-9a-z]{32}/', $context->traceId());
     }
 }
