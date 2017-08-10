@@ -31,7 +31,6 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
         $traceSpan = new TraceSpan();
         $info = $traceSpan->info();
         $this->assertArrayHasKey('spanId', $info);
-        $this->assertRegExp('/^\d+$/', $info['spanId']);
         $this->assertEquals($info['spanId'], $traceSpan->spanId());
     }
 

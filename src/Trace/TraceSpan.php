@@ -37,7 +37,7 @@ class TraceSpan
      * @param array $options [optional] {
      *      Configuration options.
      *
-     *      @type string $spanId The ID of the span. If not provided,
+     *      @type int $spanId The ID of the span. If not provided,
      *            one will be generated automatically for you.
      *      @type string $name The name of the span.
      *      @type \DateTimeInterface|int|float|string $startTime Start time of the span in nanoseconds.
@@ -46,7 +46,7 @@ class TraceSpan
      *      @type \DateTimeInterface|int|float|string $endTime End time of the span in nanoseconds.
      *            If provided as a string, it must be in "Zulu" format. If provided as an int or float, it is
      *            expected to be a Unix timestamp.
-     *      @type string $parentSpanId ID of the parent span if any.
+     *      @type int $parentSpanId ID of the parent span if any.
      *      @type array $labels Associative array of $label => $value
      *            to attach to this span.
      * }
@@ -116,7 +116,7 @@ class TraceSpan
     /**
      * Retrieve the ID of this span.
      *
-     * @return string
+     * @return int
      */
     public function spanId()
     {
@@ -126,7 +126,7 @@ class TraceSpan
     /**
      * Retrieve the ID of this span's parent if it exists.
      *
-     * @return string
+     * @return int
      */
     public function parentSpanId()
     {
@@ -211,11 +211,11 @@ class TraceSpan
      * Generate a random ID for this span. Must be unique per trace,
      * but does not need to be globally unique.
      *
-     * @return string
+     * @return int
      */
     private function generateSpanId()
     {
-        return '' . mt_rand();
+        return mt_rand();
     }
 
     /**
