@@ -43,7 +43,7 @@ class TraceSpan implements \JsonSerializable
      * @param array $options [optional] {
      *      Configuration options.
      *
-     *      @type string $spanId The ID of the span. If not provided,
+     *      @type int $spanId The ID of the span. If not provided,
      *            one will be generated automatically for you.
      *      @type string $kind Distinguishes between spans generated
      *            in a particular context. **Defaults to**
@@ -94,6 +94,16 @@ class TraceSpan implements \JsonSerializable
         if (array_key_exists('parentSpanId', $options)) {
             $this->info['parentSpanId'] = $options['parentSpanId'];
         }
+    }
+
+    public function startTime()
+    {
+        return $this->info['startTime'];
+    }
+
+    public function endTime()
+    {
+        return $this->info['endTime'];
     }
 
     /**
@@ -150,6 +160,11 @@ class TraceSpan implements \JsonSerializable
     public function name()
     {
         return $this->info['name'];
+    }
+
+    public function labels()
+    {
+        return $this->info['labels'] ?: [];
     }
 
     /**
@@ -227,11 +242,11 @@ class TraceSpan implements \JsonSerializable
      * Generate a random ID for this span. Must be unique per trace,
      * but does not need to be globally unique.
      *
-     * @return string
+     * @return int
      */
     private function generateSpanId()
     {
-        return '' . mt_rand();
+        return mt_rand();
     }
 
     /**

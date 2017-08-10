@@ -109,8 +109,13 @@ class ZipkinReporter implements ReporterInterface
             array_map(function ($span) use ($traceId, $endpoint) {
                 $startTime = (int) $span->startTime() * 1000 * 1000;
                 $endTime = (int) $span->endTime() * 1000 * 1000;
+                $spanId = str_pad(dechex($span->spanId()), 16, '0', STR_PAD_LEFT);
+                $parentSpanId = $span->parentSpanId()
+                    ? str_pad(dechex($span->parentSpanId()), 16, '0', STR_PAD_LEFT)
+                    : null;
                 return [
-                    'id' => $span->spanId(),
+                    // 8-byte identifier encoded as 16 lowercase hex characters
+                    'id' => $spanId,
                     'traceId' => $traceId,
                     'name' => $span->name(),
                     'timestamp' => $startTime,
@@ -133,9 +138,11 @@ class ZipkinReporter implements ReporterInterface
                             'value' => $value
                         ];
                     }, $span->labels()),
-                    'parentId' => $span->parentId()
+                    'parentId' => $parentSpanId
                 ];
-            }, $spans);
+            }, $spans)
         );
     }
+
+    public function serializeSpan(TraceSpan $span)
 }
