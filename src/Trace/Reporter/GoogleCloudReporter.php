@@ -27,6 +27,40 @@ use OpenCensus\Trace\Tracer\TracerInterface;
  * This implementation of the ReporterInterface use the BatchRunner to provide
  * reporting of Traces and their TraceSpans to Google Cloud Stackdriver Trace.
  *
+ * Example:
+ * ```
+ * use OpenCensus\Trace\RequestTracer;
+ * use OpenCensus\Trace\Reporter\GoogleCloudReporter;
+ *
+ * $reporter = new GoogleCloudReporter([
+ *   'clientConfig' => [
+ *      'projectId' => 'my-project'
+ *   ]
+ * ]);
+ * RequestTracer::start($reporter);
+ * ```
+ *
+ * The above configuration will synchronously report the traces to Google Cloud
+ * Stackdriver Trace. You can enable an experimental asynchronous reporting
+ * mechanism using (BatchDaemon)[https://github.com/GoogleCloudPlatform/google-cloud-php/tree/master/src/Core/Batch].
+ *
+ * Example:
+ * ```
+ * use OpenCensus\Trace\RequestTracer;
+ * use OpenCensus\Trace\Reporter\GoogleCloudReporter;
+ *
+ * $reporter = new GoogleCloudReporter([
+ *   'async' => true,
+ *   'clientConfig' => [
+ *      'projectId' => 'my-project'
+ *   ]
+ * ]);
+ * RequestTracer::start($reporter);
+ * ```
+ *
+ * Note that to use the `async` option, you will also need to set the
+ * `IS_BATCH_DAEMON_RUNNING` environment variable to `true`.
+ *
  * @experimental The experimental flag means that while we believe this method
  *      or class is ready for use, it may change before release in backwards-
  *      incompatible ways. Please use with caution, and test thoroughly when
