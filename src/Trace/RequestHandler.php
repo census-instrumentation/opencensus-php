@@ -35,32 +35,7 @@ use OpenCensus\Trace\Propagator\PropagatorInterface;
  */
 class RequestHandler
 {
-    const VERSION = '0.1.0';
-
     const DEFAULT_ROOT_SPAN_NAME = 'main';
-
-    const AGENT = '/agent';
-    const COMPONENT = '/component';
-    const ERROR_MESSAGE = '/error/message';
-    const ERROR_NAME = '/error/name';
-    const HTTP_CLIENT_CITY = '/http/client_city';
-    const HTTP_CLIENT_COUNTRY = '/http/client_country';
-    const HTTP_CLIENT_PROTOCOL = '/http/client_protocol';
-    const HTTP_CLIENT_REGION = '/http/client_region';
-    const HTTP_HOST = '/http/host';
-    const HTTP_METHOD = '/http/method';
-    const HTTP_REDIRECTED_URL = '/http/redirected_url';
-    const HTTP_STATUS_CODE = '/http/status_code';
-    const HTTP_URL = '/http/url';
-    const HTTP_USER_AGENT = '/http/user_agent';
-    const PID = '/pid';
-    const STACKTRACE = '/stacktrace';
-    const TID = '/tid';
-
-    const GAE_APPLICATION_ERROR = 'g.co/gae/application_error';
-    const GAE_APP_MODULE = 'g.co/gae/app/module';
-    const GAE_APP_MODULE_VERSION = 'g.co/gae/app/module_version';
-    const GAE_APP_VERSION = 'g.co/gae/app/version';
 
     /**
      * @var ReporterInterface The reported to use at the end of the request
@@ -120,7 +95,6 @@ class RequestHandler
             'name' => $this->nameFromHeaders($headers),
             'labels' => []
         ];
-        $spanOptions['labels'] += $this->labelsFromHeaders($headers);
         $this->tracer->startSpan($spanOptions);
 
         register_shutdown_function([$this, 'onExit']);
@@ -133,20 +107,6 @@ class RequestHandler
      */
     public function onExit()
     {
-        $responseCode = http_response_code();
-
-        // If a redirect, add the HTTP_REDIRECTED_URL label to the main span
-        if ($responseCode == 301 || $responseCode == 302) {
-            foreach (headers_list() as $header) {
-                if (substr($header, 0, 9) == 'Location:') {
-                    $this->tracer->addRootLabel(self::HTTP_REDIRECTED_URL, substr($header, 10));
-                    break;
-                }
-            }
-        }
-
-        $this->tracer->addRootLabel(self::HTTP_STATUS_CODE, $responseCode);
-
         // close all open spans
         do {
             $span = $this->tracer->endSpan();
@@ -215,7 +175,13 @@ class RequestHandler
 
     private function startTimeFromHeaders(array $headers)
     {
-        return $this->detectKey(['REQUEST_TIME_FLOAT', 'REQUEST_TIME'], $headers);
+        if (array_key_exists('REQUEST_TIME_FLOAT', $headers)) {
+            return $headers['REQUEST_TIME_FLOAT'];
+        }
+        if (array_key_exists('REQUEST_TIME', $headers)) {
+            return $headers['REQUEST_TIME'];
+        }
+        return null;
     }
 
     private function nameFromHeaders(array $headers)
@@ -224,43 +190,5 @@ class RequestHandler
             return $headers['REQUEST_URI'];
         }
         return self::DEFAULT_ROOT_SPAN_NAME;
-    }
-
-    private function labelsFromHeaders(array $headers)
-    {
-        $labels = [];
-
-        $labelMap = [
-            self::HTTP_URL => ['REQUEST_URI'],
-            self::HTTP_METHOD => ['REQUEST_METHOD'],
-            self::HTTP_CLIENT_PROTOCOL => ['SERVER_PROTOCOL'],
-            self::HTTP_USER_AGENT => ['HTTP_USER_AGENT'],
-            self::HTTP_HOST => ['HTTP_HOST', 'SERVER_NAME'],
-            self::GAE_APP_MODULE => ['GAE_SERVICE'],
-            self::GAE_APP_MODULE_VERSION => ['GAE_VERSION'],
-            self::HTTP_CLIENT_CITY => ['HTTP_X_APPENGINE_CITY'],
-            self::HTTP_CLIENT_REGION => ['HTTP_X_APPENGINE_REGION'],
-            self::HTTP_CLIENT_COUNTRY => ['HTTP_X_APPENGINE_COUNTRY']
-        ];
-        foreach ($labelMap as $labelKey => $headerKeys) {
-            if ($val = $this->detectKey($headerKeys, $headers)) {
-                $labels[$labelKey] = $val;
-            }
-        }
-
-        $labels[self::PID] = '' . getmypid();
-        $labels[self::AGENT] = 'opencensus ' . self::VERSION;
-
-        return $labels;
-    }
-
-    private function detectKey(array $keys, array $array)
-    {
-        foreach ($keys as $key) {
-            if (array_key_exists($key, $array)) {
-                return $array[$key];
-            }
-        }
-        return null;
     }
 }

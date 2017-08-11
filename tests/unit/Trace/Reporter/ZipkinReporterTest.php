@@ -52,8 +52,7 @@ class ZipkinReporterTest extends \PHPUnit_Framework_TestCase
 
         $reporter = new ZipkinReporter('myapp', 'localhost', 9411);
 
-        $json = $reporter->serialize($this->tracer->reveal());
-        $data = json_decode($json, true);
+        $data = $reporter->convertSpans($this->tracer->reveal());
 
         $this->assertInternalType('array', $data);
         foreach ($data as $span) {
