@@ -1,6 +1,6 @@
 # OpenCensus - A stats collection and distributed tracing framework
 
-This is the open-source release of Census for Python. Census provides a
+This is the open-source release of Census for PHP. Census provides a
 framework to measure a server's resource usage and collect performance stats.
 This repository contains PHP related utilities and supporting software needed by
 Census.
@@ -46,6 +46,17 @@ The above sample uses the `EchoReporter` to dump trace results to the
 bottom of the webpage.
 
 If you would like to provide your own reporter, create a class that implements `ReporterInterface`.
+
+Currently implemented reporters:
+
+| Class | Description |
+| ----- | ----------- |
+| [EchoReporter](src/Trace/Reporter/EchoReporter.php) | Output the collected spans to stdout |
+| [FileReporter](src/Trace/Reporter/FileReporter.php) | Output JSON encoded spans to a file |
+| [GoogleCloudReporter](src/Trace/Reporter/GoogleCloudReporter.php) | Report traces to Google Cloud Stackdriver Trace |
+| [LoggerReporter](src/Trace/Reporter/LoggerReporter.php) | Reporter JSON encoded spans to a PSR-3 logger |
+| [NullReporter](scr/Trace/Reporter/NullReporter.php) | No-op |
+| [ZipkinReporter](src/Trace/Reporter/ZipkinReporter.php) | Report collected spans to a Zipkin server |
 
 ### Sampling Rate
 
