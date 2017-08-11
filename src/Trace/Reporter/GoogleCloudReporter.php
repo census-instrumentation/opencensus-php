@@ -122,13 +122,8 @@ class GoogleCloudReporter implements ReporterInterface
      */
     public function report(TracerInterface $tracer)
     {
-        // detect common labels
-        $this->addCommonLabels($tracer);
-
-        // transform OpenCensus TraceSpans to Google\Cloud\TraceSpans
-        $spans = array_map(function ($span) {
-            return new TraceSpan($span->info());
-        }, $tracer->spans());
+        $this->processSpans($tracer);
+        $spans = $this->convertSpans($tracer);
 
         if (empty($spans)) {
             return false;
@@ -150,6 +145,33 @@ class GoogleCloudReporter implements ReporterInterface
             return false;
         }
     }
+
+    /**
+     * Perform any pre-conversion modification to the spans
+     *
+     * @param TracerInterface $tracer
+     * @param array $headers [optional] Array of headers to read from instead of $_SERVER
+     */
+    public function processSpans(TracerInterface $tracer, $headers = null)
+    {
+        // detect common labels
+        $this->addCommonLabels($tracer, $headers);
+    }
+
+    /**
+     * Convert spans into Zipkin's expected JSON output format.
+     *
+     * @param  TracerInterface $tracer
+     * @return array Representation of the collected trace spans ready for serialization
+     */
+    public function convertSpans(TracerInterface $tracer)
+    {
+        // transform OpenCensus TraceSpans to Google\Cloud\TraceSpans
+        return array_map(function ($span) {
+            return new TraceSpan($span->info());
+        }, $tracer->spans());
+    }
+
     /**
      * Returns an array representation of a callback which will be used to write
      * batch items.
