@@ -31,6 +31,14 @@ use Google\Cloud\Trace\TraceClient;
  */
 class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
 {
+    private $client;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->client = $this->prophesize(TraceClient::class);
+    }
+
     public function testFormatsTrace()
     {
         $tracer = new ContextTracer(new TraceContext('testtraceid'));
@@ -39,7 +47,7 @@ class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
             $tracer->inSpan(['name' => 'span2'], 'usleep', [20]);
         });
 
-        $reporter = new GoogleCloudReporter();
+        $reporter = new GoogleCloudReporter(['client' => $this->client->reveal()]);
         $spans = $reporter->convertSpans($tracer);
 
         $this->assertCount(3, $spans);
@@ -60,7 +68,7 @@ class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
         $tracer = new ContextTracer(new TraceContext('testtraceid'));
         $tracer->inSpan(['name' => 'main'], function () {});
 
-        $reporter = new GoogleCloudReporter();
+        $reporter = new GoogleCloudReporter(['client' => $this->client->reveal()]);
         $reporter->processSpans($tracer, [$headerKey => $headerValue]);
         $spans = $tracer->spans();
         $labels = $spans[0]->labels();
