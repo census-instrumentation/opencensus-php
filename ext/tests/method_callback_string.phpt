@@ -1,5 +1,5 @@
 --TEST--
-OpenCensus Trace: Customize the trace span options for a function with a callback closure
+OpenCensus Trace: Customize the trace span options for a method with a callback string
 --FILE--
 <?php
 
