@@ -577,7 +577,7 @@ void opencensus_trace_execute_internal(INTERNAL_FUNCTION_PARAMETERS)
  * Register the provided function for tracing.
  *
  * @param string $functionName
- * @param array|Closure $handler
+ * @param array|callable $handler
  * @return bool
  */
 PHP_FUNCTION(opencensus_trace_function)
@@ -608,7 +608,7 @@ PHP_FUNCTION(opencensus_trace_function)
  *
  * @param string $className
  * @param string $methodName
- * @param array|Closure $handler
+ * @param array|callable $handler
  * @return bool
  */
 PHP_FUNCTION(opencensus_trace_method)
