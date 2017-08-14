@@ -28,7 +28,7 @@ class ExtensionTracerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         if (!extension_loaded('opencensus')) {
-            $this->markTestSkipped('Must have the stackdriver_trace extension installed to run this test.');
+            $this->markTestSkipped('Must have the opencensus extension installed to run this test.');
         }
         opencensus_trace_clear();
     }

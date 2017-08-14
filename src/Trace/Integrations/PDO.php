@@ -38,44 +38,63 @@ class PDO implements IntegrationInterface
         }
 
         // public int PDO::exec(string $query)
-        opencensus_trace_method('PDO', 'exec', function ($scope, $query) {
-            return [
-                'labels' => ['query' => $query]
-            ];
-        });
+        opencensus_trace_method('PDO', 'exec', [static::class, 'handleQuery']);
 
         // public PDOStatement PDO::query(string $query)
         // public PDOStatement PDO::query(string $query, int PDO::FETCH_COLUMN, int $colno)
         // public PDOStatement PDO::query(string $query, int PDO::FETCH_CLASS, string $classname, array $ctorargs)
         // public PDOStatement PDO::query(string $query, int PDO::FETCH_INFO, object $object)
-        opencensus_trace_method('PDO', 'query', function ($scope, $query) {
-            return [
-                'labels' => ['query' => $query]
-            ];
-        });
+        opencensus_trace_method('PDO', 'query', [static::class, 'handleQuery']);
 
         // public bool PDO::commit ( void )
         opencensus_trace_method('PDO', 'commit');
 
         // public PDO::__construct(string $dsn [, string $username [, string $password [, array $options]]])
-        opencensus_trace_method('PDO', '__construct', function ($scope, $dsn) {
-            return [
-                'labels' => ['dsn' => $dsn]
-            ];
-        });
+        opencensus_trace_method('PDO', '__construct', [static::class, 'handleConnect']);
 
         // public bool PDOStatement::execute([array $params])
-        opencensus_trace_method('PDOStatement', 'execute', function ($scope) {
-            return [
-                'labels' => ['query' => $scope->queryString]
-            ];
-        });
+        opencensus_trace_method('PDOStatement', 'execute', [static::class, 'handleStatementExecute']);
+
     }
 
-    public static function handleQuery($scope, $query)
+    /**
+     * Handle extracting the SQL query from the first argument
+     *
+     * @param PDO $pdo The connectoin
+     * @param string $query The SQL query to extract
+     * @return array
+     */
+    public static function handleQuery($pdo, $query)
     {
         return [
             'labels' => ['query' => $query]
+        ];
+    }
+
+    /**
+     * Handle extracting the Data Source Name (DSN) from the constructor aruments to PDO
+     *
+     * @param PDO $pdo
+     * @param string $dsn The connection DSN
+     * @return array
+     */
+    public static function handleConnect($pdo, $dsn)
+    {
+        return [
+            'labels' => ['dsn' => $dsn]
+        ];
+    }
+
+    /**
+     * Handle extracting the SQL query from a PDOStatement instance
+     *
+     * @param PDOStatement $statement The prepared statement
+     * @return array
+     */
+    public static function handleStatementExecute($statement)
+    {
+        return [
+            'labels' => ['query' => $statement->queryString]
         ];
     }
 }

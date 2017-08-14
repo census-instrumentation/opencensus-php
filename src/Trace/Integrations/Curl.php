@@ -38,11 +38,17 @@ class Curl implements IntegrationInterface
             return;
         }
 
-        opencensus_trace_function('curl_exec', [self, 'handleCurlResource']);
+        opencensus_trace_function('curl_exec', [static::class, 'handleCurlResource']);
         opencensus_trace_function('curl_multi_add_handle');
         opencensus_trace_function('curl_multi_remove_handle');
     }
 
+    /**
+     * Handle extracting the uri from a given curl resource handler
+     *
+     * @param resource $resource The curl handler
+     * @return array
+     */
     public static function handleCurlResource($resource) {
         return [
             'labels' => [

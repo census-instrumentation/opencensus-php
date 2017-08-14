@@ -38,4 +38,22 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $spanOptions);
     }
+
+    public function testHandleConnect()
+    {
+        $dsn = 'mysql:host=localhost;dbname=testdb';
+        $spanOptions = PDO::handleConnect(null, $dsn);
+        $expected = [
+            'labels' => [
+                'dsn' => 'mysql:host=localhost;dbname=testdb'
+            ]
+        ];
+
+        $this->assertEquals($expected, $spanOptions);
+    }
+
+    public function testStatmentExecute()
+    {
+        $this->markTestSkipped('Cannot test without a database instance');
+    }
 }
