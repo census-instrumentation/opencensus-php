@@ -1,20 +1,20 @@
 --TEST--
-OpenCensus Trace: Customize the trace span options for a function with a callback array
+OpenCensus Trace: Customize the trace span options for a function with a callback string with static method
 --FILE--
 <?php
 
 require_once(__DIR__ . '/common.php');
 
-class CallbackTest
+class MyCallback
 {
-    public static function handle()
+    public static function callbackHandle()
     {
         return ['name' => 'foo', 'startTime' => 0.1, 'labels' => ['asdf' => 'qwer', 'zxcv' => 'jkl;']];
     }
 }
 
 // 1: Sanity test a simple profile run
-opencensus_trace_function("bar", ['CallbackTest', 'handle']);
+opencensus_trace_function("bar", 'MyCallback::callbackHandle');
 bar();
 $traces = opencensus_trace_list();
 echo "Number of traces: " . count($traces) . "\n";
