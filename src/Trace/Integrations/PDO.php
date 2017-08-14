@@ -71,4 +71,11 @@ class PDO implements IntegrationInterface
             ];
         });
     }
+
+    public static function handleQuery($scope, $query)
+    {
+        return [
+            'labels' => ['query' => $query]
+        ];
+    }
 }

@@ -38,14 +38,16 @@ class Curl implements IntegrationInterface
             return;
         }
 
-        opencensus_trace_function('curl_exec', function ($resource) {
-            return [
-                'labels' => [
-                    'uri' => curl_getinfo($resource, CURLINFO_EFFECTIVE_URL)
-                ]
-            ];
-        });
+        opencensus_trace_function('curl_exec', [self, 'handleCurlResource']);
         opencensus_trace_function('curl_multi_add_handle');
         opencensus_trace_function('curl_multi_remove_handle');
+    }
+
+    public static function handleCurlResource($resource) {
+        return [
+            'labels' => [
+                'uri' => curl_getinfo($resource, CURLINFO_EFFECTIVE_URL)
+            ]
+        ];
     }
 }
