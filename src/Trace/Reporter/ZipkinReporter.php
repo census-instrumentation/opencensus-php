@@ -69,8 +69,14 @@ class ZipkinReporter implements ReporterInterface
      */
     public function report(TracerInterface $tracer)
     {
+        $spans = $this->convertSpans($tracer);
+
+        if (empty($spans)) {
+            return false;
+        }
+
         try {
-            $json = $this->serialize($tracer);
+            $json = json_encode($spans);
             $contextOptions = [
                 'http' => [
                     'method' => 'POST',
@@ -88,12 +94,12 @@ class ZipkinReporter implements ReporterInterface
     }
 
     /**
-     * Serialize into Zipkin's expected JSON output format.
+     * Convert spans into Zipkin's expected JSON output format.
      *
      * @param  TracerInterface $tracer
-     * @return string JSON representation of the collected trace spans
+     * @return array Representation of the collected trace spans ready for serialization
      */
-    public function serialize(TracerInterface $tracer)
+    public function convertSpans(TracerInterface $tracer)
     {
         $spans = $tracer->spans();
         $context = $tracer->context();
@@ -105,42 +111,40 @@ class ZipkinReporter implements ReporterInterface
             'serviceName' => $this->name
         ];
 
-        return json_encode(
-            array_map(function ($span) use ($traceId, $endpoint) {
-                $startTime = (int)((float) $span->startTime()->format('U.u') * 1000 * 1000);
-                $endTime = (int)((float) $span->endTime()->format('U.u') * 1000 * 1000);
-                $spanId = str_pad(dechex($span->spanId()), 16, '0', STR_PAD_LEFT);
-                $parentSpanId = $span->parentSpanId()
-                    ? str_pad(dechex($span->parentSpanId()), 16, '0', STR_PAD_LEFT)
-                    : null;
-                return [
-                    // 8-byte identifier encoded as 16 lowercase hex characters
-                    'id' => $spanId,
-                    'traceId' => $traceId,
-                    'name' => $span->name(),
-                    'timestamp' => $startTime,
-                    'duration' => $endTime - $startTime,
-                    'annotations' => [
-                        [
-                            'endpoint' => $endpoint,
-                            'timestamp' => $startTime,
-                            'value' => 'cs'
-                        ],
-                        [
-                            'endpoint' => $endpoint,
-                            'timestamp' => $endTime,
-                            'value' => 'cr'
-                        ]
+        return array_map(function ($span) use ($traceId, $endpoint) {
+            $startTime = (int)((float) $span->startTime()->format('U.u') * 1000 * 1000);
+            $endTime = (int)((float) $span->endTime()->format('U.u') * 1000 * 1000);
+            $spanId = str_pad(dechex($span->spanId()), 16, '0', STR_PAD_LEFT);
+            $parentSpanId = $span->parentSpanId()
+                ? str_pad(dechex($span->parentSpanId()), 16, '0', STR_PAD_LEFT)
+                : null;
+            return [
+                // 8-byte identifier encoded as 16 lowercase hex characters
+                'id' => $spanId,
+                'traceId' => $traceId,
+                'name' => $span->name(),
+                'timestamp' => $startTime,
+                'duration' => $endTime - $startTime,
+                'annotations' => [
+                    [
+                        'endpoint' => $endpoint,
+                        'timestamp' => $startTime,
+                        'value' => 'cs'
                     ],
-                    'binaryAnnotations' => array_map(function ($key, $value) {
-                        return [
-                            'key' => $key,
-                            'value' => $value
-                        ];
-                    }, array_keys($span->labels()), $span->labels()),
-                    'parentId' => $parentSpanId
-                ];
-            }, $spans)
-        );
+                    [
+                        'endpoint' => $endpoint,
+                        'timestamp' => $endTime,
+                        'value' => 'cr'
+                    ]
+                ],
+                'binaryAnnotations' => array_map(function ($key, $value) {
+                    return [
+                        'key' => $key,
+                        'value' => $value
+                    ];
+                }, array_keys($span->labels()), $span->labels()),
+                'parentId' => $parentSpanId
+            ];
+        }, $spans);
     }
 }

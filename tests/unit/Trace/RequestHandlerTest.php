@@ -64,48 +64,6 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($spans[0]->spanId(), $spans[1]->info()['parentSpanId']);
     }
 
-    public function testCanParseLabels()
-    {
-        $this->sampler->shouldSample()->willReturn(true);
-
-        $rt = new RequestHandler(
-            $this->reporter->reveal(),
-            $this->sampler->reveal(),
-            new HttpHeaderPropagator(),
-            [
-                'headers' => [
-                    'REQUEST_URI' => '/some/uri',
-                    'REQUEST_METHOD' => 'POST',
-                    'SERVER_PROTOCOL' => 'HTTP/1.1',
-                    'HTTP_USER_AGENT' => 'test agent 0.1',
-                    'HTTP_HOST' => 'example.com:8080',
-                    'GAE_SERVICE' => 'test_app',
-                    'GAE_VERSION' => 'some_version'
-                ]
-            ]
-        );
-        $span = $rt->tracer()->spans()[0];
-        $labels = $span->info()['labels'];
-        $expectedLabels = [
-            '/http/url' => '/some/uri',
-            '/http/method' => 'POST',
-            '/http/client_protocol' => 'HTTP/1.1',
-            '/http/user_agent' => 'test agent 0.1',
-            '/http/host' => 'example.com:8080',
-            'g.co/gae/app/module' => 'test_app',
-            'g.co/gae/app/module_version' => 'some_version'
-        ];
-
-        foreach ($expectedLabels as $key => $value) {
-            $this->assertArrayHasKey($key, $labels);
-            $this->assertEquals($value, $labels[$key]);
-        }
-        $this->assertArrayHasKey('/pid', $labels);
-        $this->assertArrayHasKey('/agent', $labels);
-        $version = trim(file_get_contents(__DIR__ .'/../../../src/VERSION'));
-        $this->assertEquals('opencensus '. $version, $labels['/agent']);
-    }
-
     public function testCanParseParentContext()
     {
         $rt = new RequestHandler(
