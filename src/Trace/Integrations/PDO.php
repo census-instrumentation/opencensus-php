@@ -54,7 +54,6 @@ class PDO implements IntegrationInterface
 
         // public bool PDOStatement::execute([array $params])
         opencensus_trace_method('PDOStatement', 'execute', [static::class, 'handleStatementExecute']);
-
     }
 
     /**

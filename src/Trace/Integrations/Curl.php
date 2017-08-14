@@ -49,7 +49,8 @@ class Curl implements IntegrationInterface
      * @param resource $resource The curl handler
      * @return array
      */
-    public static function handleCurlResource($resource) {
+    public static function handleCurlResource($resource)
+    {
         return [
             'labels' => [
                 'uri' => curl_getinfo($resource, CURLINFO_EFFECTIVE_URL)
