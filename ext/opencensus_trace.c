@@ -257,15 +257,15 @@ static int opencensus_trace_call_user_function_callback(zend_execute_data *execu
 
     if (call_user_function_ex(EG(function_table), NULL, callback, callback_result, num_args + has_scope, args, 0, NULL) != SUCCESS) {
         efree(args);
+
+        if (Z_TYPE_P(callback_result) != IS_ARRAY) {
+            /* only raise the warning if the closure succeeded */
+            php_error_docref(NULL, E_WARNING, "Trace callback should return array");
+        }
         return FAILURE;
     }
     efree(args);
 
-    if (Z_TYPE_P(callback_result) != IS_ARRAY) {
-        /* only raise the warning if the closure succeeded */
-        php_error_docref(NULL, E_WARNING, "Trace callback should return array");
-        return FAILURE;
-    }
 
     return SUCCESS;
 }
@@ -280,23 +280,21 @@ static int opencensus_trace_call_user_function_callback(zend_execute_data *execu
  */
 static void opencensus_trace_execute_callback(opencensus_trace_span_t *span, zend_execute_data *execute_data, zval *span_options TSRMLS_DC)
 {
-    if (Z_TYPE_P(span_options) == IS_ARRAY) {
-        zend_string *callback_name;
-        if (zend_is_callable(span_options, 0, &callback_name)) {
-            zval callback_result;
-            if (opencensus_trace_call_user_function_callback(execute_data, span, span_options, &callback_result TSRMLS_CC) == SUCCESS) {
-                opencensus_trace_span_apply_span_options(span, &callback_result);
-            }
-        } else {
-            opencensus_trace_span_apply_span_options(span, span_options);
+    zend_string *callback_name;
+    if ( (Z_TYPE_P(span_options) == IS_OBJECT) &&
+               (Z_OBJCE_P(span_options) == zend_ce_closure)) {
+       zval closure_result;
+       if (opencensus_trace_zend_fcall_closure(execute_data, span, span_options, &closure_result TSRMLS_CC) == SUCCESS) {
+           opencensus_trace_span_apply_span_options(span, &closure_result);
+       }
+    } else if (zend_is_callable(span_options, 0, &callback_name)) {
+        zval callback_result;
+        if (opencensus_trace_call_user_function_callback(execute_data, span, span_options, &callback_result TSRMLS_CC) == SUCCESS) {
+            opencensus_trace_span_apply_span_options(span, &callback_result);
         }
         zend_string_release(callback_name);
-    } else if ( (Z_TYPE_P(span_options) == IS_OBJECT) &&
-                (Z_OBJCE_P(span_options) == zend_ce_closure)) {
-        zval closure_result;
-        if (opencensus_trace_zend_fcall_closure(execute_data, span, span_options, &closure_result TSRMLS_CC) == SUCCESS) {
-            opencensus_trace_span_apply_span_options(span, &closure_result);
-        }
+    } else if (Z_TYPE_P(span_options) == IS_ARRAY) {
+        opencensus_trace_span_apply_span_options(span, span_options);
     }
 }
 
