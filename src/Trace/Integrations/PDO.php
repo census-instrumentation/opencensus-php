@@ -38,7 +38,7 @@ class PDO implements IntegrationInterface
         }
 
         // public int PDO::exec(string $query)
-        opencensus_method('PDO', 'exec', function ($scope, $query) {
+        opencensus_trace_method('PDO', 'exec', function ($scope, $query) {
             return [
                 'labels' => ['query' => $query]
             ];
@@ -48,24 +48,24 @@ class PDO implements IntegrationInterface
         // public PDOStatement PDO::query(string $query, int PDO::FETCH_COLUMN, int $colno)
         // public PDOStatement PDO::query(string $query, int PDO::FETCH_CLASS, string $classname, array $ctorargs)
         // public PDOStatement PDO::query(string $query, int PDO::FETCH_INFO, object $object)
-        opencensus_method('PDO', 'query', function ($scope, $query) {
+        opencensus_trace_method('PDO', 'query', function ($scope, $query) {
             return [
                 'labels' => ['query' => $query]
             ];
         });
 
         // public bool PDO::commit ( void )
-        opencensus_method('PDO', 'commit');
+        opencensus_trace_method('PDO', 'commit');
 
         // public PDO::__construct(string $dsn [, string $username [, string $password [, array $options]]])
-        opencensus_method('PDO', '__construct', function ($scope, $dsn) {
+        opencensus_trace_method('PDO', '__construct', function ($scope, $dsn) {
             return [
                 'labels' => ['dsn' => $dsn]
             ];
         });
 
         // public bool PDOStatement::execute([array $params])
-        opencensus_method('PDOStatement', 'execute', function ($scope) {
+        opencensus_trace_method('PDOStatement', 'execute', function ($scope) {
             return [
                 'labels' => ['query' => $scope->queryString]
             ];

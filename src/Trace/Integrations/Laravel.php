@@ -43,7 +43,7 @@ class Laravel implements IntegrationInterface
 
         // Create a trace span for every template rendered
         // public function get($path, array $data = array())
-        opencensus_method(CompilerEngine::class, 'get', function ($scope, $path, $data) {
+        opencensus_trace_method(CompilerEngine::class, 'get', function ($scope, $path, $data) {
             return [
                 'name' => 'laravel/view',
                 'labels' => [

@@ -41,7 +41,7 @@ class Eloquent implements IntegrationInterface
         }
 
         // public function getModels($columns = ['*'])
-        opencensus_method(Builder::class, 'getModels', function ($scope, $columns) {
+        opencensus_trace_method(Builder::class, 'getModels', function ($scope, $columns) {
             // Builder class has $model property but it's protected - use reflection to read the property
             $reflection = new \ReflectionClass(Builder::class);
             $modelProperty = $reflection->getProperty('model');
@@ -57,7 +57,7 @@ class Eloquent implements IntegrationInterface
         });
 
         // protected function performInsert(Builder $query)
-        opencensus_method(Model::class, 'performInsert', function ($scope, $query) {
+        opencensus_trace_method(Model::class, 'performInsert', function ($scope, $query) {
             return [
                 'name' => 'eloquent/insert',
                 'labels' => [
@@ -67,7 +67,7 @@ class Eloquent implements IntegrationInterface
         });
 
         // protected function performUpdate(Builder $query)
-        opencensus_method(Model::class, 'performUpdate', function ($scope, $query) {
+        opencensus_trace_method(Model::class, 'performUpdate', function ($scope, $query) {
             return [
                 'name' => 'eloquent/update',
                 'labels' => [
@@ -77,7 +77,7 @@ class Eloquent implements IntegrationInterface
         });
 
         // public function delete()
-        opencensus_method(Model::class, 'delete', function ($scope, $query) {
+        opencensus_trace_method(Model::class, 'delete', function ($scope, $query) {
             return [
                 'name' => 'eloquent/delete',
                 'labels' => [

@@ -45,31 +45,31 @@ class Memcache implements IntegrationInterface
         };
 
         // bool Memcache::add ( string $key , mixed $var [, int $flag [, int $expire ]] )
-        opencensus_method('Memcache', 'add', $labelKeys);
+        opencensus_trace_method('Memcache', 'add', $labelKeys);
 
         // string Memcache::get ( string $key [, int &$flags ] )
         // array Memcache::get ( array $keys [, array &$flags ] )
-        opencensus_method('Memcache', 'get', $labelKeys);
+        opencensus_trace_method('Memcache', 'get', $labelKeys);
 
         // bool Memcache::set ( string $key , mixed $var [, int $flag [, int $expire ]] )
-        opencensus_method('Memcache', 'set', $labelKeys);
+        opencensus_trace_method('Memcache', 'set', $labelKeys);
 
         // bool Memcache::delete ( string $key [, int $timeout = 0 ] )
-        opencensus_method('Memcache', 'delete', $labelKeys);
+        opencensus_trace_method('Memcache', 'delete', $labelKeys);
 
-        opencensus_method('Memcache', 'flush');
+        opencensus_trace_method('Memcache', 'flush');
 
         // bool Memcache::replace ( string $key , mixed $var [, int $flag [, int $expire ]] )
-        opencensus_method('Memcache', 'replace', $labelKeys);
+        opencensus_trace_method('Memcache', 'replace', $labelKeys);
 
         // int Memcache::increment ( string $key [, int $value = 1 ] )
-        opencensus_method('Memcache', 'increment', $labelKeys);
+        opencensus_trace_method('Memcache', 'increment', $labelKeys);
 
         // int Memcache::decrement ( string $key [, int $value = 1 ] )
-        opencensus_method('Memcache', 'decrement', $labelKeys);
+        opencensus_trace_method('Memcache', 'decrement', $labelKeys);
 
         // bool Memcache::connect ( string $host [, int $port [, int $timeout ]] )
-        opencensus_method('Memcache', 'connect', function ($host) {
+        opencensus_trace_method('Memcache', 'connect', function ($host) {
             return [
                 'labels' => [
                     'host' => $host

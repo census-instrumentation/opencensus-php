@@ -61,7 +61,7 @@ class Guzzle implements IntegrationInterface
     protected static function loadGuzzle5()
     {
         // public function send(RequestInterface $request)
-        opencensus_method(Client::class, 'send', function ($scope, $request) {
+        opencensus_trace_method(Client::class, 'send', function ($scope, $request) {
             return [
                 'labels' => [
                     'method' => $request->getMethod(),
@@ -77,7 +77,7 @@ class Guzzle implements IntegrationInterface
     protected static function loadGuzzle6()
     {
         // public function send(RequestInterface $request, array $options = [])
-        opencensus_method(Client::class, 'send', function ($scope, $request) {
+        opencensus_trace_method(Client::class, 'send', function ($scope, $request) {
             return [
                 'labels' => [
                     'method' => $request->getMethod(),
@@ -87,7 +87,7 @@ class Guzzle implements IntegrationInterface
         });
 
         // public function request($method, $uri = '', array $options = [])
-        opencensus_method(Client::class, 'request', function ($scope, $method, $uri) {
+        opencensus_trace_method(Client::class, 'request', function ($scope, $method, $uri) {
             return [
                 'labels' => [
                     'method' => $method,

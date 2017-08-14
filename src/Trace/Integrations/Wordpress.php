@@ -43,23 +43,23 @@ class Wordpress implements IntegrationInterface
         };
 
         // void function get_sidebar( $name = null )
-        opencensus_function('get_sidebar', $nameClosure);
+        opencensus_trace_function('get_sidebar', $nameClosure);
 
         // void function get_header( $name = null )
-        opencensus_function('get_header', $nameClosure);
+        opencensus_trace_function('get_header', $nameClosure);
 
         // function get_footer( $name = null )
-        opencensus_function('get_footer', $nameClosure);
+        opencensus_trace_function('get_footer', $nameClosure);
 
         // bool function load_textdomain( $domain, $mofile )
-        opencensus_function('load_textdomain', function ($name, $mofile) {
+        opencensus_trace_function('load_textdomain', function ($name, $mofile) {
             return [
                 'labels' => ['name' => $name]
             ];
         });
 
         // void load_template(string $template, bool $require_once = true)
-        opencensus_function('load_template', function ($template) {
+        opencensus_trace_function('load_template', function ($template) {
             return [
                 'labels' => ['template' => $template]
             ];

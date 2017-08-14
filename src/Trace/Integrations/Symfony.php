@@ -43,14 +43,14 @@ class Symfony implements IntegrationInterface
         Doctrine::load();
 
         // public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
-        opencensus_method(HttpKernel::class, 'handle', function ($kernel, $request) {
+        opencensus_trace_method(HttpKernel::class, 'handle', function ($kernel, $request) {
             return [
                 'name' => 'kernel/handle'
             ];
         });
 
         // public function dispatch($eventName, Event $event = null)
-        opencensus_method(EventDispatcher::class, 'dispatch', function ($dispatcher, $eventName) {
+        opencensus_trace_method(EventDispatcher::class, 'dispatch', function ($dispatcher, $eventName) {
             return [
                 'name' => $eventName,
                 'labels' => ['eventName' => $eventName]

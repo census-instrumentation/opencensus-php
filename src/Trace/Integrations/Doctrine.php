@@ -47,7 +47,7 @@ class Doctrine implements IntegrationInterface
 
         // public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(),
         //      $lockMode = null, $limit = null, array $orderBy = null)
-        opencensus_method($persisterClass, 'load', function ($bep) {
+        opencensus_trace_method($persisterClass, 'load', function ($bep) {
             return [
                 'name' => 'doctrine/load',
                 'labels' => ['entity' => $bep->getClassMetadata()->name]
@@ -55,7 +55,7 @@ class Doctrine implements IntegrationInterface
         });
 
         // public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
-        opencensus_method($persisterClass, 'loadAll', function ($bep) {
+        opencensus_trace_method($persisterClass, 'loadAll', function ($bep) {
             return [
                 'name' => 'doctrine/loadAll',
                 'labels' => ['entity' => $bep->getClassMetadata()->name]
@@ -63,7 +63,7 @@ class Doctrine implements IntegrationInterface
         });
 
         // public int PDOConnection::exec(string $query)
-        opencensus_method(PDOConnection::class, 'exec', function ($scope, $query) {
+        opencensus_trace_method(PDOConnection::class, 'exec', function ($scope, $query) {
             return [
                 'name' => 'doctrine/exec',
                 'labels' => ['query' => $query]

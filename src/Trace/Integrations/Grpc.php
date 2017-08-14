@@ -42,7 +42,7 @@ class Grpc implements IntegrationInterface
 
         // protected function _simpleRequest($method, $argument, $deserialize, array $metadata = [],
         //                                   array $options = [])
-        opencensus_method(BaseStub::class, '_simpleRequest', function ($stub, $method) {
+        opencensus_trace_method(BaseStub::class, '_simpleRequest', function ($stub, $method) {
             return [
                 'name' => 'grpc/simpleRequest',
                 'labels' => [
@@ -54,7 +54,7 @@ class Grpc implements IntegrationInterface
 
         // protected function _clientStreamRequest($method, $argument, $deserialize, array $metadata = [],
         //                                         array $options = [])
-        opencensus_method(BaseStub::class, '_clientStreamRequest', function ($stub, $method) {
+        opencensus_trace_method(BaseStub::class, '_clientStreamRequest', function ($stub, $method) {
             return [
                 'name' => 'grpc/clientStreamRequest',
                 'labels' => [
@@ -66,7 +66,7 @@ class Grpc implements IntegrationInterface
 
         // protected function _serverStreamRequest($method, $argument, $deserialize, array $metadata = [],
         //                                         array $options = [])
-        opencensus_method(BaseStub::class, '_serverStreamRequest', function ($stub, $method) {
+        opencensus_trace_method(BaseStub::class, '_serverStreamRequest', function ($stub, $method) {
             return [
                 'name' => 'grpc/serverStreamRequest',
                 'labels' => [
@@ -77,7 +77,7 @@ class Grpc implements IntegrationInterface
         });
 
         // protected function _bidiRequest($method, $deserialize, array $metadata = [], array $options = [])
-        opencensus_method(BaseStub::class, '_bidiRequest', function ($stub, $method) {
+        opencensus_trace_method(BaseStub::class, '_bidiRequest', function ($stub, $method) {
             return [
                 'name' => 'grpc/bidiRequest',
                 'labels' => [
