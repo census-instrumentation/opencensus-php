@@ -519,7 +519,7 @@ void opencensus_trace_execute_internal(INTERNAL_FUNCTION_PARAMETERS)
 PHP_FUNCTION(opencensus_trace_function)
 {
     zend_string *function_name;
-    zval *handler, *copy;
+    zval *handler = NULL, *copy;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S|z", &function_name, &handler) == FAILURE) {
         RETURN_FALSE;
@@ -550,7 +550,7 @@ PHP_FUNCTION(opencensus_trace_function)
 PHP_FUNCTION(opencensus_trace_method)
 {
     zend_string *class_name, *function_name, *key;
-    zval *handler, *copy;
+    zval *handler = NULL, *copy;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS|z", &class_name, &function_name, &handler) == FAILURE) {
         RETURN_FALSE;
