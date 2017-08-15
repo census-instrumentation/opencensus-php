@@ -3,7 +3,7 @@
 
 ARG_ENABLE("opencensus", "opencensus support", "no");
 
-if (PHP_OPENCENSUS_TRACE != "no") {
+if (PHP_OPENCENSUS != "no") {
     EXTENSION('opencensus', 'opencensus_trace.c opencensus_trace_context.c opencensus_trace_span.c');
-    AC_DEFINE('HAVE_OPENCENSUS_TRACE', 1);
+    AC_DEFINE('HAVE_OPENCENSUS', 1);
 }
