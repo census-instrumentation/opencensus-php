@@ -250,7 +250,7 @@ static opencensus_trace_span_t *opencensus_trace_begin(zend_string *function_nam
         php_mt_srand(GENERATE_SEED());
     }
 #endif
-    span->span_id = (php_mt_rand() >> 1);
+    span->span_id = ((uint32_t) php_mt_rand()) >> 1;
 
     if (OPENCENSUS_TRACE_G(current_span)) {
         span->parent = OPENCENSUS_TRACE_G(current_span);
