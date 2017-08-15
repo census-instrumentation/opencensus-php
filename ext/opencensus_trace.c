@@ -16,6 +16,8 @@
 
 #include "php_opencensus.h"
 #include "opencensus_trace.h"
+#include "opencensus_trace_span.h"
+#include "opencensus_trace_context.h"
 #include "Zend/zend_compile.h"
 #include "Zend/zend_closures.h"
 #include "zend_extensions.h"
@@ -250,7 +252,13 @@ static opencensus_trace_span_t *opencensus_trace_begin(zend_string *function_nam
         php_mt_srand(GENERATE_SEED());
     }
 #endif
-    span->span_id = (php_mt_rand() >> 1);
+    /**
+     * Force the random span id to be positive. php_mt_rand() generates 32 bits
+     * of randomness. On 32-bit systems, we must cast to an unsigned int before
+     * bitshifting to force a positive number. We're ok to lose on bit of
+     * randomness because previous versions of mt_rand only generated 31 bits.
+     */
+    span->span_id = ((uint32_t) php_mt_rand()) >> 1;
 
     if (OPENCENSUS_TRACE_G(current_span)) {
         span->parent = OPENCENSUS_TRACE_G(current_span);
@@ -519,14 +527,14 @@ void opencensus_trace_execute_internal(INTERNAL_FUNCTION_PARAMETERS)
 PHP_FUNCTION(opencensus_trace_function)
 {
     zend_string *function_name;
-    zval *handler, *copy;
+    zval *handler = NULL, *copy;
+    zval h;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S|z", &function_name, &handler) == FAILURE) {
         RETURN_FALSE;
     }
 
     if (handler == NULL) {
-        zval h;
         ZVAL_LONG(&h, 1);
         handler = &h;
     }
@@ -550,14 +558,14 @@ PHP_FUNCTION(opencensus_trace_function)
 PHP_FUNCTION(opencensus_trace_method)
 {
     zend_string *class_name, *function_name, *key;
-    zval *handler, *copy;
+    zval *handler = NULL, *copy;
+    zval h;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS|z", &class_name, &function_name, &handler) == FAILURE) {
         RETURN_FALSE;
     }
 
     if (handler == NULL) {
-        zval h;
         ZVAL_LONG(&h, 1);
         handler = &h;
     }
