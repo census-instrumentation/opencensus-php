@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.9.5" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+ <name>opencensus</name>
+ <channel>pecl.php.net</channel>
+ <summary>A stats collection and distributed tracing framework</summary>
+ <description>OpenCensus is a open source, distributed tracing system that allows you to collect latency data and report it to any trace aggregation system such as Zipkin or Stackdriver Trace.
+
+This extension allows you to easily gather latency and other metadata by watching for targeted function and method invocations without needing to inject code into the libraries.</description>
+ <lead>
+  <name>Jeff Ching</name>
+  <user>chingor</user>
+  <email>chingor@google.com</email>
+  <active>yes</active>
+ </lead>
+ <date>2017-08-14</date>
+ <time>16:47:07</time>
+ <version>
+  <release>0.0.1</release>
+  <api>0.0.1</api>
+ </version>
+ <stability>
+  <release>devel</release>
+  <api>devel</api>
+ </stability>
+ <license>Apache 2.0</license>
+ <notes>
+- Initial release
+ </notes>
+ <contents>
+  <dir baseinstalldir="/" name="/">
+    <file baseinstalldir="/" name="config.m4" role="src" />
+    <file baseinstalldir="/" name="config.w32" role="src" />
+    <file baseinstalldir="/" name="opencensus_trace_context.c" role="src" />
+    <file baseinstalldir="/" name="opencensus_trace_context.h" role="src" />
+    <file baseinstalldir="/" name="opencensus_trace_span.c" role="src" />
+    <file baseinstalldir="/" name="opencensus_trace_span.h" role="src" />
+    <file baseinstalldir="/" name="opencensus_trace.c" role="src" />
+    <file baseinstalldir="/" name="opencensus_trace.h" role="src" />
+    <file baseinstalldir="/" name="php_opencensus.h" role="src" />
+
+    <file name="README.md" role="doc" />
+    <file name="LICENSE" role="doc" />
+
+    <dir name="tests">
+      <file name="basic_class_function.phpt" role="test" />
+      <file name="basic_context.phpt" role="test" />
+      <file name="basic_function.phpt" role="test" />
+      <file name="basic_method.phpt" role="test" />
+      <file name="clear_traces.phpt" role="test" />
+      <file name="closure_exeception.phpt" role="test" />
+      <file name="closure_exeception2.phpt" role="test" />
+      <file name="context_class.phpt" role="test" />
+      <file name="function_callback.phpt" role="test" />
+      <file name="function_callback_arguments.phpt" role="test" />
+      <file name="function_callback_extra_arguments.phpt" role="test" />
+      <file name="function_callback_wrong_return.phpt" role="test" />
+      <file name="function_custom.phpt" role="test" />
+      <file name="inherit_context.phpt" role="test" />
+      <file name="labels.phpt" role="test" />
+      <file name="manual_spans.phpt" role="test" />
+      <file name="manual_spans_default_options.phpt" role="test" />
+      <file name="many_spans_test.phpt" role="test" />
+      <file name="method_callback.phpt" role="test" />
+      <file name="method_callback_arguments.phpt" role="test" />
+      <file name="method_callback_scope.phpt" role="test" />
+      <file name="method_custom.phpt" role="test" />
+      <file name="nested_spans.phpt" role="test" />
+      <file name="non-string-labels-function-callback.phpt" role="test" />
+      <file name="non-string-labels-function.phpt" role="test" />
+      <file name="non-string-labels-method-callback.phpt" role="test" />
+      <file name="non-string-labels-method.phpt" role="test" />
+      <file name="non-string-labels.phpt" role="test" />
+      <file name="span_class.phpt" role="test" />
+      <file name="static_method_callback_scope.phpt" role="test" />
+      <file name="static_method_test.phpt" role="test" />
+      <file name="trace_context.phpt" role="test" />
+    </dir>
+  </dir>
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>7.0.0</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.0</min>
+   </pearinstaller>
+  </required>
+ </dependencies>
+ <providesextension>opencensus</providesextension>
+ <extsrcrelease />
+ <changelog>
+  <release>
+   <version>
+    <release>0.0.1</release>
+    <api>0.0.1</api>
+   </version>
+   <stability>
+    <release>devel</release>
+    <api>devel</api>
+   </stability>
+   <date>2017-08-14</date>
+   <license>Apache 2.0</license>
+   <notes>
+First dev release
+   </notes>
+  </release>
+ </changelog>
+</package>
