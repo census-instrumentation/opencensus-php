@@ -21,4 +21,6 @@
 
 extern zend_class_entry* opencensus_trace_context_ce;
 
+int opencensus_trace_context_minit(INIT_FUNC_ARGS);
+
 #endif /* PHP_OPENCENSUS_TRACE_CONTEXT_H */

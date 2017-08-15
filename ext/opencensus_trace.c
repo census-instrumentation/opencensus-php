@@ -16,6 +16,8 @@
 
 #include "php_opencensus.h"
 #include "opencensus_trace.h"
+#include "opencensus_trace_span.h"
+#include "opencensus_trace_context.h"
 #include "Zend/zend_compile.h"
 #include "Zend/zend_closures.h"
 #include "zend_extensions.h"
