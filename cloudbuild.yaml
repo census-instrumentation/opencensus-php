@@ -12,3 +12,11 @@ steps:
     args: ['build', '--build-arg', 'BASE_IMAGE=gcr.io/php-mvm-a/php72:alpha3', '.']
     waitFor: ['-']
     id: php72
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '--build-arg', 'BASE_IMAGE=gcr.io/php-stackdriver/php71-32bit', '.']
+    waitFor: ['-']
+    id: php71-32bit
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '--build-arg', 'BASE_IMAGE=gcr.io/php-stackdriver/php70-32bit', '.']
+    waitFor: ['-']
+    id: php70-32bit
