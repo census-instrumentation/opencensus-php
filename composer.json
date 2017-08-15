@@ -3,8 +3,15 @@
     "type": "library",
     "description": "OpenCensus Trace Client for PHP",
     "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Jeff Ching",
+            "email": "chingor@google.com"
+        }
+    ],
     "minimum-stability": "stable",
     "require": {
+        "php": ">=5.5",
         "ramsey/uuid": "~3",
         "psr/log": "^1.0",
         "psr/cache": "^1.0",
@@ -24,5 +31,11 @@
         "psr-4": {
             "OpenCensus\\": "src/"
         }
+    },
+    "archive": {
+        "exclude": [
+            "ext/",
+            "scripts/"
+        ]
     }
 }
