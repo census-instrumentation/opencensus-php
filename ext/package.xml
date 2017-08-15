@@ -42,6 +42,7 @@ This extension allows you to easily gather latency and other metadata by watchin
     <file name="LICENSE" role="doc" />
 
     <dir name="tests">
+      <file name="common.php" role="test" />
       <file name="basic_class_function.phpt" role="test" />
       <file name="basic_context.phpt" role="test" />
       <file name="basic_function.phpt" role="test" />
