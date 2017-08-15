@@ -252,6 +252,12 @@ static opencensus_trace_span_t *opencensus_trace_begin(zend_string *function_nam
         php_mt_srand(GENERATE_SEED());
     }
 #endif
+    /**
+     * Force the random span id to be positive. php_mt_rand() generates 32 bits
+     * of randomness. On 32-bit systems, we must cast to an unsigned int before
+     * bitshifting to force a positive number. We're ok to lose on bit of
+     * randomness because previous versions of mt_rand only generated 31 bits.
+     */
     span->span_id = ((uint32_t) php_mt_rand()) >> 1;
 
     if (OPENCENSUS_TRACE_G(current_span)) {
