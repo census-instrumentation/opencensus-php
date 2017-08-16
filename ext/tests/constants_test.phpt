@@ -3,11 +3,11 @@ OpenCensus Trace: Test Constants Defined
 --FILE--
 <?php
 
-var_dump(OPENCENSUS_TRACE_SPAN_KIND_UNKNOWN);
-var_dump(OPENCENSUS_TRACE_SPAN_KIND_CLIENT);
-var_dump(OPENCENSUS_TRACE_SPAN_KIND_SERVER);
-var_dump(OPENCENSUS_TRACE_SPAN_KIND_PRODUCER);
-var_dump(OPENCENSUS_TRACE_SPAN_KIND_CONSUMER);
+var_dump(OpenCensus\Trace\Span::SPAN_KIND_UNKNOWN);
+var_dump(OpenCensus\Trace\Span::SPAN_KIND_CLIENT);
+var_dump(OpenCensus\Trace\Span::SPAN_KIND_SERVER);
+var_dump(OpenCensus\Trace\Span::SPAN_KIND_PRODUCER);
+var_dump(OpenCensus\Trace\Span::SPAN_KIND_CONSUMER);
 
 ?>
 --EXPECT--
