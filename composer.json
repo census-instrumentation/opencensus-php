@@ -3,8 +3,15 @@
     "type": "library",
     "description": "OpenCensus Trace Client for PHP",
     "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Jeff Ching",
+            "email": "chingor@google.com"
+        }
+    ],
     "minimum-stability": "stable",
     "require": {
+        "php": ">=5.5",
         "ramsey/uuid": "~3",
         "psr/log": "^1.0",
         "psr/cache": "^1.0",
@@ -16,6 +23,7 @@
         "google/cloud-trace": "^0.3"
     },
     "suggest": {
+        "ext-opencensus": "Enable tracing arbitrary functions.",
         "cache/apcu-adapter": "Enable QpsSampler to use apcu cache.",
         "cache/apc-adapter": "Enable QpsSampler to use apc cache.",
         "cache/memcached-adapter": "Enable QpsSampler to use memcached cache."
@@ -24,5 +32,11 @@
         "psr-4": {
             "OpenCensus\\": "src/"
         }
+    },
+    "archive": {
+        "exclude": [
+            "ext/",
+            "scripts/"
+        ]
     }
 }
