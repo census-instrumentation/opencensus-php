@@ -16,6 +16,8 @@
 
 #include "php_opencensus.h"
 #include "opencensus_trace.h"
+#include "opencensus_trace_span.h"
+#include "opencensus_trace_context.h"
 #include "Zend/zend_compile.h"
 #include "Zend/zend_closures.h"
 #include "zend_extensions.h"
@@ -174,14 +176,12 @@ static double opencensus_now()
 }
 
 /**
- * Call the provided Closure with the provided parameters to the traced
- * function. The Closure must return an array or an E_WARNING is raised.
+ * Call the provided callback with the provided parameters to the traced
+ * function. The callback must return an array or an E_WARNING is raised.
  */
-static int opencensus_trace_zend_fcall_closure(zend_execute_data *execute_data, opencensus_trace_span_t *span, zval *closure, zval *closure_result TSRMLS_DC)
+static int opencensus_trace_call_user_function_callback(zend_execute_data *execute_data, opencensus_trace_span_t *span, zval *callback, zval *callback_result TSRMLS_DC)
 {
     int i, num_args = EX_NUM_ARGS(), has_scope = 0;
-    zend_fcall_info fci;
-    zend_fcall_info_cache fcc;
     zval *args = emalloc((num_args + 1) * sizeof(zval));
 
     if (getThis() == NULL) {
@@ -195,28 +195,7 @@ static int opencensus_trace_zend_fcall_closure(zend_execute_data *execute_data, 
         ZVAL_ZVAL(&args[i + has_scope], EX_VAR_NUM(i), 0, 1);
     }
 
-    if (zend_fcall_info_init(
-            closure,
-            0,
-            &fci,
-            &fcc,
-            NULL,
-            NULL
-            TSRMLS_CC
-        ) != SUCCESS) {
-        efree(args);
-        return FAILURE;
-    };
-
-    ZVAL_NULL(closure_result);
-
-    fci.retval = closure_result;
-    fci.params = &args[0];
-    fci.param_count = num_args + has_scope;
-
-    fcc.initialized = 1;
-
-    if (zend_call_function(&fci, &fcc TSRMLS_CC) != SUCCESS) {
+    if (call_user_function_ex(EG(function_table), NULL, callback, callback_result, num_args + has_scope, args, 0, NULL) != SUCCESS) {
         efree(args);
         return FAILURE;
     }
@@ -226,7 +205,7 @@ static int opencensus_trace_zend_fcall_closure(zend_execute_data *execute_data, 
         return FAILURE;
     }
 
-    if (Z_TYPE_P(closure_result) != IS_ARRAY) {
+    if (Z_TYPE_P(callback_result) != IS_ARRAY) {
         /* only raise the warning if the closure succeeded */
         php_error_docref(NULL, E_WARNING, "Trace callback should return array");
         return FAILURE;
@@ -237,21 +216,23 @@ static int opencensus_trace_zend_fcall_closure(zend_execute_data *execute_data, 
 
 /**
  * Handle the callback for the traced method depending on the type
- * - if the zval is an array, then assume it's the trace span initialization
+ * - if the zval is an associative array, then assume it's the trace span initialization
  *   options
+ * - if the zval is an array that looks like a callable, then assume it's a callable
  * - if the zval is a Closure, then execute the closure and take the results as
  *   the trace span initialization options
  */
 static void opencensus_trace_execute_callback(opencensus_trace_span_t *span, zend_execute_data *execute_data, zval *span_options TSRMLS_DC)
 {
-    if (Z_TYPE_P(span_options) == IS_ARRAY) {
-        opencensus_trace_span_apply_span_options(span, span_options);
-    } else if ( (Z_TYPE_P(span_options) == IS_OBJECT) &&
-                (Z_OBJCE_P(span_options) == zend_ce_closure)) {
-        zval closure_result;
-        if (opencensus_trace_zend_fcall_closure(execute_data, span, span_options, &closure_result TSRMLS_CC) == SUCCESS) {
-            opencensus_trace_span_apply_span_options(span, &closure_result);
+    zend_string *callback_name;
+    if (zend_is_callable(span_options, 0, &callback_name)) {
+        zval callback_result;
+        if (opencensus_trace_call_user_function_callback(execute_data, span, span_options, &callback_result TSRMLS_CC) == SUCCESS) {
+            opencensus_trace_span_apply_span_options(span, &callback_result);
         }
+        zend_string_release(callback_name);
+    } else if (Z_TYPE_P(span_options) == IS_ARRAY) {
+        opencensus_trace_span_apply_span_options(span, span_options);
     }
 }
 
@@ -271,7 +252,13 @@ static opencensus_trace_span_t *opencensus_trace_begin(zend_string *function_nam
         php_mt_srand(GENERATE_SEED());
     }
 #endif
-    span->span_id = (php_mt_rand() >> 1);
+    /**
+     * Force the random span id to be positive. php_mt_rand() generates 32 bits
+     * of randomness. On 32-bit systems, we must cast to an unsigned int before
+     * bitshifting to force a positive number. We're ok to lose on bit of
+     * randomness because previous versions of mt_rand only generated 31 bits.
+     */
+    span->span_id = ((uint32_t) php_mt_rand()) >> 1;
 
     if (OPENCENSUS_TRACE_G(current_span)) {
         span->parent = OPENCENSUS_TRACE_G(current_span);
@@ -534,20 +521,20 @@ void opencensus_trace_execute_internal(INTERNAL_FUNCTION_PARAMETERS)
  * Register the provided function for tracing.
  *
  * @param string $functionName
- * @param array|Closure $handler
+ * @param array|callable $handler
  * @return bool
  */
 PHP_FUNCTION(opencensus_trace_function)
 {
     zend_string *function_name;
-    zval *handler, *copy;
+    zval *handler = NULL, *copy;
+    zval h;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S|z", &function_name, &handler) == FAILURE) {
         RETURN_FALSE;
     }
 
     if (handler == NULL) {
-        zval h;
         ZVAL_LONG(&h, 1);
         handler = &h;
     }
@@ -565,20 +552,20 @@ PHP_FUNCTION(opencensus_trace_function)
  *
  * @param string $className
  * @param string $methodName
- * @param array|Closure $handler
+ * @param array|callable $handler
  * @return bool
  */
 PHP_FUNCTION(opencensus_trace_method)
 {
     zend_string *class_name, *function_name, *key;
-    zval *handler, *copy;
+    zval *handler = NULL, *copy;
+    zval h;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS|z", &class_name, &function_name, &handler) == FAILURE) {
         RETURN_FALSE;
     }
 
     if (handler == NULL) {
-        zval h;
         ZVAL_LONG(&h, 1);
         handler = &h;
     }

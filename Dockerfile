@@ -33,7 +33,7 @@ ENV TEST_PHP_ARGS="-q" \
     REPORT_EXIT_STATUS=1
 
 RUN phpize && \
-    ./configure --enable-stackdriver-trace && \
+    ./configure --enable-opencensus && \
     make clean && \
     make && \
     make test && \

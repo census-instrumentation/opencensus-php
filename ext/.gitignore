@@ -22,3 +22,4 @@ missing
 mkinstalldirs
 modules/
 run-tests.php
+opencensus*.tgz
