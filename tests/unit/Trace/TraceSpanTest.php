@@ -108,6 +108,21 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(\DateTimeInterface::class, $info['endTime']);
     }
 
+    public function testGeneratesDefaultKind()
+   {
+       $traceSpan = new TraceSpan();
+       $info = $traceSpan->info();
+       $this->assertArrayHasKey('kind', $info);
+       $this->assertEquals(TraceSpan::SPAN_KIND_UNKNOWN, $info['kind']);
+   }
+   public function testReadsKind()
+   {
+       $traceSpan = new TraceSpan(['kind' => TraceSpan::SPAN_KIND_CLIENT]);
+       $info = $traceSpan->info();
+       $this->assertArrayHasKey('kind', $info);
+       $this->assertEquals(TraceSpan::SPAN_KIND_CLIENT, $info['kind']);
+   }
+
     public function testIgnoresUnknownFields()
     {
         $traceSpan = new TraceSpan(['extravalue' => 'something']);
