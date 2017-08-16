@@ -242,10 +242,14 @@ static void opencensus_trace_execute_callback(opencensus_trace_span_t *span, zen
  */
 static opencensus_trace_span_t *opencensus_trace_begin(zend_string *function_name, zend_execute_data *execute_data TSRMLS_DC)
 {
+    zval backtrace;
     opencensus_trace_span_t *span = opencensus_trace_span_alloc();
+
+    zend_fetch_debug_backtrace(&backtrace, 1, DEBUG_BACKTRACE_IGNORE_ARGS);
 
     span->start = opencensus_now();
     span->name = zend_string_copy(function_name);
+    ZVAL_ZVAL(&span->backtrace, &backtrace, 1, 0);
 
 #if PHP_VERSION_ID < 70100
     if (!BG(mt_rand_is_seeded)) {
@@ -607,6 +611,8 @@ PHP_FUNCTION(opencensus_trace_list)
 
         ZVAL_ARR(&label, trace_span->labels);
         zend_update_property(opencensus_trace_span_ce, &span, "labels", sizeof("labels") - 1, &label);
+
+        zend_update_property(opencensus_trace_span_ce, &span, "backtrace", sizeof("backtrace") - 1, &trace_span->backtrace);
 
         add_next_index_zval(return_value, &span);
     } ZEND_HASH_FOREACH_END();

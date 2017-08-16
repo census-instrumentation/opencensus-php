@@ -197,6 +197,23 @@ static PHP_METHOD(OpenCensusTraceSpan, endTime) {
     RETURN_ZVAL(val, 1, 0);
 }
 
+/**
+ * Fetch the backtrace from the moment the span was started
+ *
+ * @return array
+ */
+static PHP_METHOD(OpenCensusTraceSpan, backtrace) {
+    zval *val, rv;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    val = zend_read_property(opencensus_trace_span_ce, getThis(), "backtrace", sizeof("backtrace") - 1, 1, &rv);
+
+    RETURN_ZVAL(val, 1, 0);
+}
+
 /* Declare method entries for the OpenCensus\Trace\Span class */
 static zend_function_entry opencensus_trace_span_methods[] = {
     PHP_ME(OpenCensusTraceSpan, __construct, arginfo_OpenCensusTraceSpan_construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -206,6 +223,7 @@ static zend_function_entry opencensus_trace_span_methods[] = {
     PHP_ME(OpenCensusTraceSpan, labels, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(OpenCensusTraceSpan, startTime, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(OpenCensusTraceSpan, endTime, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, backtrace, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 
@@ -224,6 +242,7 @@ int opencensus_trace_span_minit(INIT_FUNC_ARGS) {
     zend_declare_property_null(opencensus_trace_span_ce, "startTime", sizeof("startTime") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
     zend_declare_property_null(opencensus_trace_span_ce, "endTime", sizeof("endTime") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
     zend_declare_property_null(opencensus_trace_span_ce, "labels", sizeof("labels") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(opencensus_trace_span_ce, "backtrace", sizeof("backtrace") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
 
     return SUCCESS;
 }

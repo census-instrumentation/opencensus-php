@@ -32,6 +32,10 @@ Array
                 (
                 )
 
+            [backtrace:protected] => Array
+                (
+                )
+
         )
 
     [1] => OpenCensus\Trace\Span Object
@@ -42,6 +46,10 @@ Array
             [startTime:protected] => %d.%d
             [endTime:protected] => %d.%d
             [labels:protected] => Array
+                (
+                )
+
+            [backtrace:protected] => Array
                 (
                 )
 
