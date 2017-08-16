@@ -21,12 +21,19 @@
  * namespace OpenCensus\Trace;
  *
  * class Span {
+ *   const SPAN_KIND_UNKNOWN = 0;
+ *   const SPAN_KIND_CLIENT = 1;
+ *   const SPAN_KIND_SERVER = 2;
+ *   const SPAN_KIND_PRODUCER = 3;
+ *   const SPAN_KIND_CONSUMER = 4;
+ *
  *   protected $name = "unknown";
  *   protected $spanId;
  *   protected $parentSpanId;
  *   protected $startTime;
  *   protected $endTime;
  *   protected $labels;
+ *   protected $kind;
  *
  *   public function __construct(array $spanOptions)
  *   {
@@ -45,7 +52,7 @@
  *     return $this->spanId;
  *   }
  *
- *   public function spanId()
+ *   public function parentSpanId()
  *   {
  *     return $this->parentSpanId;
  *   }
@@ -64,6 +71,11 @@
  *   {
  *     return $this->labels;
  *   }
+ *
+ *   public function kind()
+ *   {
+ *     return $this->kind;
+ *    }
  * }
  */
 
