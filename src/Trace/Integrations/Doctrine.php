@@ -31,7 +31,7 @@ use Doctrine\ORM\Version;
 class Doctrine implements IntegrationInterface
 {
     /**
-     * Static method to add instrumentation to the Symfony framework
+     * Static method to add instrumentation to Doctrine ORM calls
      */
     public static function load()
     {
