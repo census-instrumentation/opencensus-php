@@ -34,6 +34,7 @@ class Memcached implements IntegrationInterface
     public static function load()
     {
         if (!extension_loaded('opencensus')) {
+            trigger_error('opencensus extension required to load Memcached integrations.', E_USER_WARNING);
             return;
         }
 

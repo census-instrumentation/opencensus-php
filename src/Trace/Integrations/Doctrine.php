@@ -36,6 +36,7 @@ class Doctrine implements IntegrationInterface
     public static function load()
     {
         if (!extension_loaded('opencensus')) {
+            trigger_error('opencensus extension required to load Doctrine integrations.', E_USER_WARNING);
             return;
         }
 

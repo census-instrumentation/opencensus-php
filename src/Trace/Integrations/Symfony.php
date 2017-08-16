@@ -37,6 +37,7 @@ class Symfony implements IntegrationInterface
     public static function load()
     {
         if (!extension_loaded('opencensus')) {
+            trigger_error('opencensus extension required to load Symfony integrations.', E_USER_WARNING);
             return;
         }
 
