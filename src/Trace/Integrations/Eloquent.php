@@ -41,47 +41,41 @@ class Eloquent implements IntegrationInterface
         }
 
         // public function getModels($columns = ['*'])
-        opencensus_trace_method(Builder::class, 'getModels', function ($scope, $columns) {
-            // Builder class has $model property but it's protected - use reflection to read the property
-            $reflection = new \ReflectionClass(Builder::class);
-            $modelProperty = $reflection->getProperty('model');
-            $modelProperty->setAccessible(true);
-            $model = $modelProperty->getValue($scope);
-
+        opencensus_trace_method(Builder::class, 'getModels', function ($builder) {
             return [
                 'name' => 'eloquent/get',
                 'labels' => [
-                    'model' => get_class($model)
+                    'query' => $builder->toBase()->toSql()
                 ]
             ];
         });
 
         // protected function performInsert(Builder $query)
-        opencensus_trace_method(Model::class, 'performInsert', function ($scope, $query) {
+        opencensus_trace_method(Model::class, 'performInsert', function ($model, $query) {
             return [
                 'name' => 'eloquent/insert',
                 'labels' => [
-                    'model' => get_class($scope)
+                    'query' => $query->toBase()->toSql()
                 ]
             ];
         });
 
         // protected function performUpdate(Builder $query)
-        opencensus_trace_method(Model::class, 'performUpdate', function ($scope, $query) {
+        opencensus_trace_method(Model::class, 'performUpdate', function ($model, $query) {
             return [
                 'name' => 'eloquent/update',
                 'labels' => [
-                    'model' => get_class($scope)
+                    'query' => $query->toBase()->toSql()
                 ]
             ];
         });
 
         // public function delete()
-        opencensus_trace_method(Model::class, 'delete', function ($scope, $query) {
+        opencensus_trace_method(Model::class, 'delete', function ($model, $query) {
             return [
                 'name' => 'eloquent/delete',
                 'labels' => [
-                    'model' => get_class($scope)
+                    'query' => $query->toBase()->toSql()
                 ]
             ];
         });
