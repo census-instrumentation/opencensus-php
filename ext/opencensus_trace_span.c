@@ -75,6 +75,12 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_OpenCensusTraceSpan_construct, 0, 0, 1)
 	ZEND_ARG_ARRAY_INFO(0, spanOptions, 0)
 ZEND_END_ARG_INFO();
 
+#define OPENCENSUS_TRACE_SPAN_KIND_UNKNOWN 0
+#define OPENCENSUS_TRACE_SPAN_KIND_CLIENT 1
+#define OPENCENSUS_TRACE_SPAN_KIND_SERVER 2
+#define OPENCENSUS_TRACE_SPAN_KIND_PRODUCER 3
+#define OPENCENSUS_TRACE_SPAN_KIND_CONSUMER 4
+
 /**
  * Initializer for OpenCensus\Trace\Span
  *
@@ -209,6 +215,8 @@ static zend_function_entry opencensus_trace_span_methods[] = {
     PHP_FE_END
 };
 
+#define REGISTER_TRACE_SPAN_CONSTANT(id) zend_declare_class_constant_long(opencensus_trace_span_ce, "SPAN_" #id, sizeof("SPAN_" #id) - 1, OPENCENSUS_TRACE_SPAN_##id);
+
 /* Module init handler for registering the OpenCensus\Trace\Span class */
 int opencensus_trace_span_minit(INIT_FUNC_ARGS) {
     zend_class_entry ce;
@@ -224,6 +232,12 @@ int opencensus_trace_span_minit(INIT_FUNC_ARGS) {
     zend_declare_property_null(opencensus_trace_span_ce, "startTime", sizeof("startTime") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
     zend_declare_property_null(opencensus_trace_span_ce, "endTime", sizeof("endTime") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
     zend_declare_property_null(opencensus_trace_span_ce, "labels", sizeof("labels") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+
+    REGISTER_TRACE_SPAN_CONSTANT(KIND_UNKNOWN);
+    REGISTER_TRACE_SPAN_CONSTANT(KIND_CLIENT);
+    REGISTER_TRACE_SPAN_CONSTANT(KIND_SERVER);
+    REGISTER_TRACE_SPAN_CONSTANT(KIND_PRODUCER);
+    REGISTER_TRACE_SPAN_CONSTANT(KIND_CONSUMER);
 
     return SUCCESS;
 }
