@@ -74,6 +74,13 @@ class TraceSpan
             $this->info['spanId'] = $this->generateSpanId();
         }
 
+        if (array_key_exists('backtrace', $options)) {
+            $this->info['backtrace'] = $options['backtrace'];
+            unset($options['backtrace']);
+        } else {
+            $this->info['backtrace'] = $this->generateBacktrace();
+        }
+
         if (array_key_exists('name', $options)) {
             $this->info['name'] = $options['name'];
             unset($options['name']);
@@ -85,6 +92,7 @@ class TraceSpan
             $this->info['parentSpanId'] = $options['parentSpanId'];
             unset($options['parentSpanId']);
         }
+
 
         $this->info['metadata'] = $options;
     }
@@ -178,6 +186,16 @@ class TraceSpan
     }
 
     /**
+     * Retrieve the backtrace at the moment this span was created
+     *
+     * @return array
+     */
+    public function backtrace()
+    {
+        return $this->info['backtrace'];
+    }
+
+    /**
      * Returns a serializable array representing this span.
      *
      * @return array
@@ -251,6 +269,18 @@ class TraceSpan
     }
 
     /**
+     * Return a filtered backtrace where we strip out all functions from the OpenCensus\Trace namespace
+     *
+     * @return array
+     */
+    private function generateBacktrace()
+    {
+        return array_filter(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), function ($bt) {
+            return !array_key_exists('class', $bt) || substr($bt['class'], 0, 16) != 'OpenCensus\Trace';
+        });
+    }
+
+    /**
      * Generate a name for this span. Attempts to generate a name
      * based on the caller's code.
      *
@@ -259,7 +289,7 @@ class TraceSpan
     private function generateSpanName()
     {
         // Try to find the first stacktrace class entry that doesn't start with OpenCensus\Trace
-        foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $bt) {
+        foreach ($this->backtrace() as $bt) {
             $bt += ['line' => null];
             if (!array_key_exists('class', $bt)) {
                 return implode('/', array_filter(['app', basename($bt['file']), $bt['function'], $bt['line']]));
