@@ -76,7 +76,8 @@ class Memcached implements IntegrationInterface
             ];
         });
 
-        // bool Memcached::casByKey ( float $cas_token , string $server_key , string $key , mixed $value [, int $expiration ] )
+        // bool Memcached::casByKey ( float $cas_token , string $server_key , string $key , mixed $value
+        //                            [, int $expiration ] )
         opencensus_trace_method('Memcached', 'casByKey', function ($memcached, $casToken, $serverKey, $key) {
             return [
                 'labels' => [
@@ -90,7 +91,8 @@ class Memcached implements IntegrationInterface
         // int Memcached::decrement ( string $key [, int $offset = 1 [, int $initial_value = 0 [, int $expiry = 0 ]]] )
         opencensus_trace_method('Memcached', 'decrement', $handleLabels);
 
-        // int Memcached::decrementByKey ( string $server_key , string $key [, int $offset = 1 [, int $initial_value = 0 [, int $expiry = 0 ]]] )
+        // int Memcached::decrementByKey ( string $server_key , string $key [, int $offset = 1 [, int $initial_value = 0
+        //                                 [, int $expiry = 0 ]]] )
         opencensus_trace_method('Memcached', 'decrementByKey', $handleLabelsByKey);
 
         // bool Memcached::delete ( string $key [, int $time = 0 ] )
@@ -117,7 +119,8 @@ class Memcached implements IntegrationInterface
         // int Memcached::increment ( string $key [, int $offset = 1 [, int $initial_value = 0 [, int $expiry = 0 ]]] )
         opencensus_trace_method('Memcached', 'increment', $handleLabels);
 
-        // int Memcached::incrementByKey ( string $server_key , string $key [, int $offset = 1 [, int $initial_value = 0 [, int $expiry = 0 ]]] )
+        // int Memcached::incrementByKey ( string $server_key , string $key [, int $offset = 1 [, int $initial_value = 0
+        //                                 [, int $expiry = 0 ]]] )
         opencensus_trace_method('Memcached', 'incrementByKey', $handleLabelsByKey);
 
         // bool Memcached::prepend ( string $key , string $value )
@@ -154,8 +157,5 @@ class Memcached implements IntegrationInterface
                 ]
             ]
         });
-
-
-
     }
 }
