@@ -23,6 +23,7 @@
         "google/cloud-trace": "^0.3"
     },
     "suggest": {
+        "ext-opencensus": "Enable tracing arbitrary functions.",
         "cache/apcu-adapter": "Enable QpsSampler to use apcu cache.",
         "cache/apc-adapter": "Enable QpsSampler to use apc cache.",
         "cache/memcached-adapter": "Enable QpsSampler to use memcached cache."
