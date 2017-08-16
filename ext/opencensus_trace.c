@@ -246,6 +246,7 @@ static opencensus_trace_span_t *opencensus_trace_begin(zend_string *function_nam
 
     span->start = opencensus_now();
     span->name = zend_string_copy(function_name);
+    span->kind = OPENCENSUS_TRACE_SPAN_KIND_UNKNOWN;
 
 #if PHP_VERSION_ID < 70100
     if (!BG(mt_rand_is_seeded)) {
@@ -604,6 +605,7 @@ PHP_FUNCTION(opencensus_trace_list)
         zend_update_property_str(opencensus_trace_span_ce, &span, "name", sizeof("name") - 1, trace_span->name);
         zend_update_property_double(opencensus_trace_span_ce, &span, "startTime", sizeof("startTime") - 1, trace_span->start);
         zend_update_property_double(opencensus_trace_span_ce, &span, "endTime", sizeof("endTime") - 1, trace_span->stop);
+        zend_update_property_long(opencensus_trace_span_ce, &span, "kind", sizeof("kind") - 1, trace_span->kind);
 
         ZVAL_ARR(&label, trace_span->labels);
         zend_update_property(opencensus_trace_span_ce, &span, "labels", sizeof("labels") - 1, &label);
