@@ -22,6 +22,7 @@ use Google\Cloud\Core\Batch\BatchTrait;
 use Google\Cloud\Trace\TraceClient;
 use Google\Cloud\Trace\TraceSpan;
 use OpenCensus\Trace\Tracer\TracerInterface;
+use OpenCensus\Trace\TraceSpan as OpenCensusTraceSpan;
 
 /**
  * This implementation of the ReporterInterface use the BatchRunner to provide
@@ -200,9 +201,26 @@ class GoogleCloudReporter implements ReporterInterface
      */
     public function convertSpans(TracerInterface $tracer)
     {
+        $spanKindMap = [
+            OpenCensusTraceSpan::SPAN_KIND_CLIENT => TraceSpan::SPAN_KIND_RPC_CLIENT,
+            OpenCensusTraceSpan::SPAN_KIND_SERVER => TraceSpan::SPAN_KIND_RPC_SERVER
+        ];
+
         // transform OpenCensus TraceSpans to Google\Cloud\TraceSpans
-        return array_map(function ($span) {
-            return new TraceSpan($span->info());
+        return array_map(function ($span) use ($spanKindMap) {
+            $kind = array_key_exists($span->kind(), $spanKindMap)
+                ? $spanKindMap[$span->kind()]
+                :  TraceSpan::SPAN_KIND_UNSPECIFIED;
+            return new TraceSpan([
+                'name' => $span->name(),
+                'startTime' => $span->startTime(),
+                'endTime' => $span->endTime(),
+                'spanId' => $span->spanId(),
+                'parentSpanId' => $span->parentSpanId(),
+                'labels' => $span->labels(),
+                'kind' => $kind
+            ]);
+            $span->info();
         }, $tracer->spans());
     }
 

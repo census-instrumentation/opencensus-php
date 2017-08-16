@@ -100,7 +100,7 @@ class ZipkinReporterTest extends \PHPUnit_Framework_TestCase
         // default unknown spans to client send/receive
         $this->assertEquals(['cs', 'cr'], array_map($annotationValue, $spans[0]['annotations']));
         $this->assertEquals(['cs', 'cr'], array_map($annotationValue, $spans[1]['annotations']));
-        $this->assertEquals(['ss', 'sr'], array_map($annotationValue, $spans[2]['annotations']));
+        $this->assertEquals(['sr', 'ss'], array_map($annotationValue, $spans[2]['annotations']));
         $this->assertEquals(['ms'], array_map($annotationValue, $spans[3]['annotations']));
         $this->assertEquals(['mr'], array_map($annotationValue, $spans[4]['annotations']));
     }
