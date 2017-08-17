@@ -28,30 +28,32 @@ class ExtensionTracerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         if (!extension_loaded('opencensus')) {
-            $this->markTestSkipped('Must have the stackdriver_trace extension installed to run this test.');
+            $this->markTestSkipped('Must have the opencensus extension installed to run this test.');
         }
+        opencensus_trace_clear();
     }
 
     public function testMaintainsContext()
     {
-        $initialContext = new TraceContext('traceid', 'spanid');
+        $parentSpanId = 12345;
+        $initialContext = new TraceContext('traceid', $parentSpanId);
 
         $tracer = new ExtensionTracer($initialContext);
         $context = $tracer->context();
 
         $this->assertEquals('traceid', $context->traceId());
-        $this->assertEquals('spanid', $context->spanId());
+        $this->assertEquals($parentSpanId, $context->spanId());
 
-        $tracer->inSpan(['name' => 'test'], function() use ($tracer) {
+        $tracer->inSpan(['name' => 'test'], function () use ($tracer, $parentSpanId) {
             $context = $tracer->context();
-            $this->assertNotEquals('spanid', $context->spanId());
+            $this->assertNotEquals($parentSpanId, $context->spanId());
         });
 
         $spans = $tracer->spans();
         $this->assertCount(1, $spans);
         $span = $spans[0];
         $this->assertEquals('test', $span->name());
-        $this->assertEquals('spanid', $span->parentSpanId());
+        $this->assertEquals($parentSpanId, $span->parentSpanId());
     }
 
     public function testAddsLabelsToCurrentSpan()
@@ -86,5 +88,15 @@ class ExtensionTracerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('root', $span->name());
         $info = $span->info();
         $this->assertEquals('bar', $info['labels']['foo']);
+    }
+
+    public function testPersistsBacktrace()
+    {
+        $tracer = new ExtensionTracer();
+        $tracer->inSpan(['name' => 'test'], function () {});
+        $span = $tracer->spans()[0];
+        $stackframe = $span->backtrace()[0];
+        $this->assertEquals('testPersistsBacktrace', $stackframe['function']);
+        $this->assertEquals(self::class, $stackframe['class']);
     }
 }
