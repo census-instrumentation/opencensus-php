@@ -21,6 +21,7 @@ use OpenCensus\Trace\Reporter\GoogleCloudReporter;
 use OpenCensus\Trace\TraceContext;
 use OpenCensus\Trace\Tracer\TracerInterface;
 use OpenCensus\Trace\Tracer\ContextTracer;
+use OpenCensus\Trace\TraceSpan as OpenCensusTraceSpan;
 use Prophecy\Argument;
 use Google\Cloud\Trace\Trace;
 use Google\Cloud\Trace\TraceSpan;
@@ -60,6 +61,27 @@ class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testHandlesKind()
+    {
+        $tracer = new ContextTracer(new TraceContext('testtraceid'));
+        $tracer->inSpan(['name' => 'main'], function () use ($tracer) {
+            $tracer->inSpan(['name' => 'span1', 'kind' => OpenCensusTraceSpan::SPAN_KIND_CLIENT], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span2', 'kind' => OpenCensusTraceSpan::SPAN_KIND_SERVER], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span3', 'kind' => OpenCensusTraceSpan::SPAN_KIND_PRODUCER], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span4', 'kind' => OpenCensusTraceSpan::SPAN_KIND_CONSUMER], 'usleep', [1]);
+        });
+
+        $reporter = new GoogleCloudReporter(['client' => $this->client->reveal()]);
+        $spans = $reporter->convertSpans($tracer);
+
+        $this->assertCount(5, $spans);
+        $this->assertEquals(TraceSpan::SPAN_KIND_UNSPECIFIED, $spans[0]->info()['kind']);
+        $this->assertEquals(TraceSpan::SPAN_KIND_RPC_CLIENT, $spans[1]->info()['kind']);
+        $this->assertEquals(TraceSpan::SPAN_KIND_RPC_SERVER, $spans[2]->info()['kind']);
+        $this->assertEquals(TraceSpan::SPAN_KIND_UNSPECIFIED, $spans[3]->info()['kind']);
+        $this->assertEquals(TraceSpan::SPAN_KIND_UNSPECIFIED, $spans[4]->info()['kind']);
+    }
+
     /**
      * @dataProvider labelHeaders
      */
@@ -90,5 +112,39 @@ class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
             ['HTTP_X_APPENGINE_REGION', 'wa', '/http/client_region', 'wa'],
             ['HTTP_X_APPENGINE_COUNTRY', 'US', '/http/client_country', 'US']
         ];
+    }
+
+    public function testStacktraceLabel()
+    {
+        $backtrace = [
+            [
+                'file' => '/path/to/file.php',
+                'class' => 'Foo',
+                'line' => 1234,
+                'function' => 'asdf',
+                'type' => '::'
+            ]
+        ];
+        $tracer = new ContextTracer(new TraceContext('testtraceid'));
+        $tracer->inSpan(['backtrace' => $backtrace], function () {});
+
+        $reporter = new GoogleCloudReporter(['client' => $this->client->reveal()]);
+        $spans = $reporter->convertSpans($tracer);
+
+        $labels = $spans[0]->info()['labels'];
+        $this->assertArrayHasKey('/stacktrace', $labels);
+
+        $expected = [
+            'stack_frame' => [
+                [
+                    'file_name' => '/path/to/file.php',
+                    'line_number' => 1234,
+                    'method_name' => 'asdf',
+                    'class_name' => 'Foo'
+                ]
+            ]
+        ];
+        $data = json_decode($labels['/stacktrace'], true);
+        $this->assertEquals($expected, $data);
     }
 }

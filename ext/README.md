@@ -96,7 +96,7 @@ opencensus_trace_method('Foobar', '__construct');
 $foobar = new Foobar();
 ```
 
-The `$handler` parameter can be either an array or a closure callback.
+The `$handler` parameter can be either an array or a callable.
 
 If an array is provided, it should be an associative array with the following optional keys:
 
@@ -105,8 +105,8 @@ If an array is provided, it should be an associative array with the following op
 * `endTime` - float - the end time of the span. **Defaults to** the time that the method invocation completed.
 * `labels` - array - an associative array of string => string tags for this span.
 
-If a closure is provided, it will be passed the instance of the class (scope) and a copy of each parameter
-provided to the watched method. The closure should return an array with the above options. If the closure does
+If a callback is provided, it will be passed the instance of the class (scope) and a copy of each parameter
+provided to the watched method. The callback should return an array with the above options. If the callback does
 not return an array, an `E_USER_WARNING` error is thrown.
 
 ```php
@@ -126,6 +126,17 @@ opencensus_trace_method('Foobar', '__construct', function ($scope, $constructArg
         ]
     ];
 });
+
+// Example: supply a callback
+function my_callback($scope, $constructArg1, $constructArg2)
+{
+    return [
+        'labels' => [
+            'arg1' => $constructArg1
+        ]
+    ];
+}
+opencensus_trace_method('Foobar', '__construct', 'my_callback');
 ```
 
 To trace a function, use the `opencensus_trace_function`:
@@ -135,7 +146,7 @@ To trace a function, use the `opencensus_trace_function`:
  * Trace each invocation of the specified function
  *
  * @param  string $functionName
- * @param  array|Closure $handler
+ * @param  array|callback $handler
  * @return bool
  */
 function opencensus_trace_function($functionName, $handler = []);
@@ -145,8 +156,8 @@ opencensus_trace_function('var_dump');
 var_dump(123);
 ```
 
-Just like tracing a method, you can provide a `$handler` option which can be an array or a closure. The behavior
-is the same as the method tracing, except that the closure will not be passed the scope parameter as there is
+Just like tracing a method, you can provide a `$handler` option which can be an array or a callback. The behavior
+is the same as the method tracing, except that the callback will not be passed the scope parameter as there is
 not object scope available.
 
 ```php

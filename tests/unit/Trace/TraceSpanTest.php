@@ -108,11 +108,56 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(\DateTimeInterface::class, $info['endTime']);
     }
 
+    public function testGeneratesDefaultKind()
+   {
+       $traceSpan = new TraceSpan();
+       $info = $traceSpan->info();
+       $this->assertArrayHasKey('kind', $info);
+       $this->assertEquals(TraceSpan::SPAN_KIND_UNKNOWN, $info['kind']);
+   }
+   public function testReadsKind()
+   {
+       $traceSpan = new TraceSpan(['kind' => TraceSpan::SPAN_KIND_CLIENT]);
+       $info = $traceSpan->info();
+       $this->assertArrayHasKey('kind', $info);
+       $this->assertEquals(TraceSpan::SPAN_KIND_CLIENT, $info['kind']);
+   }
+
     public function testIgnoresUnknownFields()
     {
         $traceSpan = new TraceSpan(['extravalue' => 'something']);
         $info = $traceSpan->info();
         $this->assertArrayNotHasKey('extravalue', $info);
+    }
+
+    public function testGeneratesBacktrace()
+    {
+        $traceSpan = new TraceSpan();
+        $this->assertInternalType('array', $traceSpan->backtrace());
+        $this->assertTrue(count($traceSpan->backtrace()) > 0);
+        $stackframe = $traceSpan->backtrace()[0];
+        $this->assertEquals('testGeneratesBacktrace', $stackframe['function']);
+        $this->assertEquals(self::class, $stackframe['class']);
+    }
+
+    public function testOverrideBacktrace()
+    {
+        $backtrace = [
+            [
+                'class' => 'Foo',
+                'line' => 1234,
+                'function' => 'asdf',
+                'type' => '::'
+            ]
+        ];
+        $traceSpan = new TraceSpan([
+            'backtrace' => $backtrace
+        ]);
+
+        $this->assertCount(1, $traceSpan->backtrace());
+        $stackframe = $traceSpan->backtrace()[0];
+        $this->assertEquals('asdf', $stackframe['function']);
+        $this->assertEquals('Foo', $stackframe['class']);
     }
 
     /**

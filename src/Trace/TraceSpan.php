@@ -31,6 +31,12 @@ class TraceSpan
      */
     private $info = [];
 
+    const SPAN_KIND_UNKNOWN = 0;
+    const SPAN_KIND_CLIENT = 1;
+    const SPAN_KIND_SERVER = 2;
+    const SPAN_KIND_PRODUCER = 3;
+    const SPAN_KIND_CONSUMER = 4;
+
     /**
      * Instantiate a new Span instance.
      *
@@ -49,6 +55,8 @@ class TraceSpan
      *      @type int $parentSpanId ID of the parent span if any.
      *      @type array $labels Associative array of $label => $value
      *            to attach to this span.
+     *      @type int $kind The kind of span. One of SPAN_KIND_UNKNOWN|SPAN_KIND_CLIENT|SPAN_KIND_SERVER|
+     *            SPAN_KIND_CONSUMER|SPAN_KIND_PRODUCER. **Defaults to** SPAN_KIND_UNKNOWN,
      * }
      */
     public function __construct($options = [])
@@ -74,6 +82,20 @@ class TraceSpan
             $this->info['spanId'] = $this->generateSpanId();
         }
 
+        if (array_key_exists('backtrace', $options)) {
+            $this->info['backtrace'] = $options['backtrace'];
+            unset($options['backtrace']);
+        } else {
+            $this->info['backtrace'] = $this->generateBacktrace();
+        }
+
+        if (array_key_exists('kind', $options)) {
+            $this->info['kind'] = $options['kind'];
+            unset($options['kind']);
+        } else {
+            $this->info['kind'] = self::SPAN_KIND_UNKNOWN;
+        }
+
         if (array_key_exists('name', $options)) {
             $this->info['name'] = $options['name'];
             unset($options['name']);
@@ -85,6 +107,7 @@ class TraceSpan
             $this->info['parentSpanId'] = $options['parentSpanId'];
             unset($options['parentSpanId']);
         }
+
 
         $this->info['metadata'] = $options;
     }
@@ -178,6 +201,26 @@ class TraceSpan
     }
 
     /**
+     * Retrieve the backtrace at the moment this span was created
+     *
+     * @return array
+     */
+    public function backtrace()
+    {
+        return $this->info['backtrace'];
+    }
+
+    /**
+     * Retrieve the kind of span
+     *
+     * @return int One of SPAN_KIND_UNKNOWN|SPAN_KIND_CLIENT|SPAN_KIND_SERVER|SPAN_KIND_CONSUMER|SPAN_KIND_PRODUCER
+     */
+    public function kind()
+    {
+        return $this->info['kind'];
+    }
+
+    /**
      * Returns a serializable array representing this span.
      *
      * @return array
@@ -251,6 +294,20 @@ class TraceSpan
     }
 
     /**
+     * Return a filtered backtrace where we strip out all functions from the OpenCensus\Trace namespace
+     *
+     * @return array
+     */
+    private function generateBacktrace()
+    {
+        return array_values(
+            array_filter(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), function ($bt) {
+                return !array_key_exists('class', $bt) || substr($bt['class'], 0, 16) != 'OpenCensus\Trace';
+            })
+        );
+    }
+
+    /**
      * Generate a name for this span. Attempts to generate a name
      * based on the caller's code.
      *
@@ -259,7 +316,7 @@ class TraceSpan
     private function generateSpanName()
     {
         // Try to find the first stacktrace class entry that doesn't start with OpenCensus\Trace
-        foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $bt) {
+        foreach ($this->backtrace() as $bt) {
             $bt += ['line' => null];
             if (!array_key_exists('class', $bt)) {
                 return implode('/', array_filter(['app', basename($bt['file']), $bt['function'], $bt['line']]));

@@ -28,7 +28,12 @@ Array
             [parentSpanId:protected] =>%s
             [startTime:protected] => %d.%d
             [endTime:protected] => %d.%d
+            [kind:protected] => %d
             [labels:protected] => Array
+                (
+                )
+
+            [backtrace:protected] => Array
                 (
                 )
 
@@ -41,7 +46,12 @@ Array
             [parentSpanId:protected] => %d
             [startTime:protected] => %d.%d
             [endTime:protected] => %d.%d
+            [kind:protected] => %d
             [labels:protected] => Array
+                (
+                )
+
+            [backtrace:protected] => Array
                 (
                 )
 

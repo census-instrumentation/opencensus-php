@@ -21,6 +21,7 @@ use OpenCensus\Trace\Reporter\ZipkinReporter;
 use OpenCensus\Trace\TraceContext;
 use OpenCensus\Trace\TraceSpan;
 use OpenCensus\Trace\Tracer\TracerInterface;
+use OpenCensus\Trace\Tracer\ContextTracer;
 use Prophecy\Argument;
 
 /**
@@ -76,5 +77,31 @@ class ZipkinReporterTest extends \PHPUnit_Framework_TestCase
                 $this->assertInternalType('string', $annotation['value']);
             }
         }
+    }
+
+    public function testSpanKind()
+    {
+        $tracer = new ContextTracer(new TraceContext('testtraceid'));
+        $tracer->inSpan(['name' => 'main'], function () use ($tracer) {
+            $tracer->inSpan(['name' => 'span1', 'kind' => TraceSpan::SPAN_KIND_CLIENT], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span2', 'kind' => TraceSpan::SPAN_KIND_SERVER], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span3', 'kind' => TraceSpan::SPAN_KIND_PRODUCER], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span4', 'kind' => TraceSpan::SPAN_KIND_CONSUMER], 'usleep', [1]);
+        });
+
+        $reporter = new ZipkinReporter('myapp', 'localhost', 9411);
+        $spans = $reporter->convertSpans($tracer);
+
+        $annotationValue = function ($annotation) {
+            return $annotation['value'];
+        };
+
+        $this->assertCount(5, $spans);
+        // default unknown spans to client send/receive
+        $this->assertEquals(['cs', 'cr'], array_map($annotationValue, $spans[0]['annotations']));
+        $this->assertEquals(['cs', 'cr'], array_map($annotationValue, $spans[1]['annotations']));
+        $this->assertEquals(['sr', 'ss'], array_map($annotationValue, $spans[2]['annotations']));
+        $this->assertEquals(['ms'], array_map($annotationValue, $spans[3]['annotations']));
+        $this->assertEquals(['mr'], array_map($annotationValue, $spans[4]['annotations']));
     }
 }
