@@ -91,4 +91,38 @@ class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
             ['HTTP_X_APPENGINE_COUNTRY', 'US', '/http/client_country', 'US']
         ];
     }
+
+    public function testStacktraceLabel()
+    {
+        $backtrace = [
+            [
+                'file' => '/path/to/file.php',
+                'class' => 'Foo',
+                'line' => 1234,
+                'function' => 'asdf',
+                'type' => '::'
+            ]
+        ];
+        $tracer = new ContextTracer(new TraceContext('testtraceid'));
+        $tracer->inSpan(['backtrace' => $backtrace], function () {});
+
+        $reporter = new GoogleCloudReporter(['client' => $this->client->reveal()]);
+        $spans = $reporter->convertSpans($tracer);
+
+        $labels = $spans[0]->info()['labels'];
+        $this->assertArrayHasKey('/stacktrace', $labels);
+
+        $expected = [
+            'stack_frame' => [
+                [
+                    'file_name' => '/path/to/file.php',
+                    'line_number' => 1234,
+                    'method_name' => 'asdf',
+                    'class_name' => 'Foo'
+                ]
+            ]
+        ];
+        $data = json_decode($labels['/stacktrace'], true);
+        $this->assertEquals($expected, $data);
+    }
 }
