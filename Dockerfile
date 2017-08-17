@@ -43,4 +43,5 @@ WORKDIR /build
 
 RUN composer install && \
     vendor/bin/phpcs --standard=./phpcs-ruleset.xml && \
-    vendor/bin/phpunit
+    vendor/bin/phpunit && \
+    php -d extension=opencensus.so vendor/bin/phpunit
