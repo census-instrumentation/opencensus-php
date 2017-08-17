@@ -83,10 +83,10 @@ class TraceSpan
         }
 
         if (array_key_exists('backtrace', $options)) {
-            $this->info['backtrace'] = $options['backtrace'];
+            $this->info['backtrace'] = $this->filterBacktrace($options['backtrace']);
             unset($options['backtrace']);
         } else {
-            $this->info['backtrace'] = $this->generateBacktrace();
+            $this->info['backtrace'] = $this->filterBacktrace(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS));
         }
 
         if (array_key_exists('kind', $options)) {
@@ -298,10 +298,10 @@ class TraceSpan
      *
      * @return array
      */
-    private function generateBacktrace()
+    private function filterBacktrace($backtrace)
     {
         return array_values(
-            array_filter(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), function ($bt) {
+            array_filter($backtrace, function ($bt) {
                 return !array_key_exists('class', $bt) || substr($bt['class'], 0, 16) != 'OpenCensus\Trace';
             })
         );

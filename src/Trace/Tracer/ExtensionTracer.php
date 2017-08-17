@@ -114,7 +114,8 @@ class ExtensionTracer implements TracerInterface
                 'parentSpanId' => $span->parentSpanId(),
                 'startTime' => $span->startTime(),
                 'endTime' => $span->endTime(),
-                'labels' => $span->labels()
+                'labels' => $span->labels(),
+                'backtrace' => $span->backtrace()
             ]);
         }, opencensus_trace_list());
     }
