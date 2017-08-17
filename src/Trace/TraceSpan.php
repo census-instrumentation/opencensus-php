@@ -300,9 +300,11 @@ class TraceSpan
      */
     private function generateBacktrace()
     {
-        return array_filter(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), function ($bt) {
-            return !array_key_exists('class', $bt) || substr($bt['class'], 0, 16) != 'OpenCensus\Trace';
-        });
+        return array_values(
+            array_filter(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), function ($bt) {
+                return !array_key_exists('class', $bt) || substr($bt['class'], 0, 16) != 'OpenCensus\Trace';
+            })
+        );
     }
 
     /**

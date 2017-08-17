@@ -135,7 +135,7 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
         $traceSpan = new TraceSpan();
         $this->assertInternalType('array', $traceSpan->backtrace());
         $this->assertTrue(count($traceSpan->backtrace()) > 0);
-        $stackframe = reset($traceSpan->backtrace()); // get the first item
+        $stackframe = $traceSpan->backtrace()[0];
         $this->assertEquals('testGeneratesBacktrace', $stackframe['function']);
         $this->assertEquals(self::class, $stackframe['class']);
     }
@@ -155,7 +155,7 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $this->assertCount(1, $traceSpan->backtrace());
-        $stackframe = reset($traceSpan->backtrace()); // get the first item
+        $stackframe = $traceSpan->backtrace()[0];
         $this->assertEquals('asdf', $stackframe['function']);
         $this->assertEquals('Foo', $stackframe['class']);
     }
