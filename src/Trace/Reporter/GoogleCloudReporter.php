@@ -236,10 +236,13 @@ class GoogleCloudReporter implements ReporterInterface
     private function mapStackframe($sf)
     {
         // file and line should always be set
-        $data = [
-            'file_name' => $sf['file'],
-            'line_number' => $sf['line']
-        ];
+        $data = [];
+        if (isset($sf['line'])) {
+            $data['line_number'] = $sf['line'];
+        }
+        if (isset($sf['file'])) {
+            $data['file_name'] = $sf['file'];
+        }
         if (isset($sf['function'])) {
             $data['method_name'] = $sf['function'];
         }
