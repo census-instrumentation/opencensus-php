@@ -31,6 +31,12 @@ class TraceSpan
      */
     private $info = [];
 
+    const SPAN_KIND_UNKNOWN = 0;
+    const SPAN_KIND_CLIENT = 1;
+    const SPAN_KIND_SERVER = 2;
+    const SPAN_KIND_PRODUCER = 3;
+    const SPAN_KIND_CONSUMER = 4;
+
     /**
      * Instantiate a new Span instance.
      *
@@ -49,6 +55,8 @@ class TraceSpan
      *      @type int $parentSpanId ID of the parent span if any.
      *      @type array $labels Associative array of $label => $value
      *            to attach to this span.
+     *      @type int $kind The kind of span. One of SPAN_KIND_UNKNOWN|SPAN_KIND_CLIENT|SPAN_KIND_SERVER|
+     *            SPAN_KIND_CONSUMER|SPAN_KIND_PRODUCER. **Defaults to** SPAN_KIND_UNKNOWN,
      * }
      */
     public function __construct($options = [])
@@ -72,6 +80,13 @@ class TraceSpan
             unset($options['spanId']);
         } else {
             $this->info['spanId'] = $this->generateSpanId();
+        }
+
+        if (array_key_exists('kind', $options)) {
+            $this->info['kind'] = $options['kind'];
+            unset($options['kind']);
+        } else {
+            $this->info['kind'] = self::SPAN_KIND_UNKNOWN;
         }
 
         if (array_key_exists('name', $options)) {
@@ -175,6 +190,16 @@ class TraceSpan
         return array_key_exists('labels', $this->info)
             ? $this->info['labels']
             : [];
+    }
+
+    /**
+     * Retrieve the kind of span
+     *
+     * @return int One of SPAN_KIND_UNKNOWN|SPAN_KIND_CLIENT|SPAN_KIND_SERVER|SPAN_KIND_CONSUMER|SPAN_KIND_PRODUCER
+     */
+    public function kind()
+    {
+        return $this->info['kind'];
     }
 
     /**
