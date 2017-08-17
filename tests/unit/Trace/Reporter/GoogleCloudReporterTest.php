@@ -21,6 +21,7 @@ use OpenCensus\Trace\Reporter\GoogleCloudReporter;
 use OpenCensus\Trace\TraceContext;
 use OpenCensus\Trace\Tracer\TracerInterface;
 use OpenCensus\Trace\Tracer\ContextTracer;
+use OpenCensus\Trace\TraceSpan as OpenCensusTraceSpan;
 use Prophecy\Argument;
 use Google\Cloud\Trace\Trace;
 use Google\Cloud\Trace\TraceSpan;
@@ -58,6 +59,27 @@ class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
             $this->assertRegExp('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z/', $span->info()['startTime']);
             $this->assertRegExp('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z/', $span->info()['endTime']);
         }
+    }
+
+    public function testHandlesKind()
+    {
+        $tracer = new ContextTracer(new TraceContext('testtraceid'));
+        $tracer->inSpan(['name' => 'main'], function () use ($tracer) {
+            $tracer->inSpan(['name' => 'span1', 'kind' => OpenCensusTraceSpan::SPAN_KIND_CLIENT], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span2', 'kind' => OpenCensusTraceSpan::SPAN_KIND_SERVER], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span3', 'kind' => OpenCensusTraceSpan::SPAN_KIND_PRODUCER], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span4', 'kind' => OpenCensusTraceSpan::SPAN_KIND_CONSUMER], 'usleep', [1]);
+        });
+
+        $reporter = new GoogleCloudReporter(['client' => $this->client->reveal()]);
+        $spans = $reporter->convertSpans($tracer);
+
+        $this->assertCount(5, $spans);
+        $this->assertEquals(TraceSpan::SPAN_KIND_UNSPECIFIED, $spans[0]->info()['kind']);
+        $this->assertEquals(TraceSpan::SPAN_KIND_RPC_CLIENT, $spans[1]->info()['kind']);
+        $this->assertEquals(TraceSpan::SPAN_KIND_RPC_SERVER, $spans[2]->info()['kind']);
+        $this->assertEquals(TraceSpan::SPAN_KIND_UNSPECIFIED, $spans[3]->info()['kind']);
+        $this->assertEquals(TraceSpan::SPAN_KIND_UNSPECIFIED, $spans[4]->info()['kind']);
     }
 
     /**

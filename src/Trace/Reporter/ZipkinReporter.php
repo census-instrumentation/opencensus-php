@@ -18,6 +18,7 @@
 namespace OpenCensus\Trace\Reporter;
 
 use OpenCensus\Trace\Tracer\TracerInterface;
+use OpenCensus\Trace\TraceSpan;
 
 /**
  * This implementation of the ReporterInterface appends a json
@@ -118,6 +119,58 @@ class ZipkinReporter implements ReporterInterface
             $parentSpanId = $span->parentSpanId()
                 ? str_pad(dechex($span->parentSpanId()), 16, '0', STR_PAD_LEFT)
                 : null;
+
+            $annotations = [];
+            switch ($span->kind()) {
+                case TraceSpan::SPAN_KIND_UNKNOWN:
+                case TraceSpan::SPAN_KIND_CLIENT:
+                    $annotations = [
+                        [
+                            'endpoint' => $endpoint,
+                            'timestamp' => $startTime,
+                            'value' => 'cs' // client send
+                        ],
+                        [
+                            'endpoint' => $endpoint,
+                            'timestamp' => $endTime,
+                            'value' => 'cr' // client receive
+                        ]
+                    ];
+                    break;
+                case TraceSpan::SPAN_KIND_SERVER:
+                    $annotations = [
+                        [
+                            'endpoint' => $endpoint,
+                            'timestamp' => $startTime,
+                            'value' => 'sr' // server receive
+                        ],
+                        [
+                            'endpoint' => $endpoint,
+                            'timestamp' => $endTime,
+                            'value' => 'ss' // server send
+                        ]
+                    ];
+                    break;
+                case TraceSpan::SPAN_KIND_PRODUCER:
+                    $annotations = [
+                        [
+                            'endpoint' => $endpoint,
+                            'timestamp' => $startTime,
+                            'value' => 'ms' // message send
+                        ]
+                    ];
+                    break;
+                case TraceSpan::SPAN_KIND_CONSUMER:
+                    $annotations = [
+                        [
+                            'endpoint' => $endpoint,
+                            'timestamp' => $startTime,
+                            'value' => 'mr' // message receive
+                        ]
+                    ];
+                    break;
+            }
+
             return [
                 // 8-byte identifier encoded as 16 lowercase hex characters
                 'id' => $spanId,
@@ -125,18 +178,7 @@ class ZipkinReporter implements ReporterInterface
                 'name' => $span->name(),
                 'timestamp' => $startTime,
                 'duration' => $endTime - $startTime,
-                'annotations' => [
-                    [
-                        'endpoint' => $endpoint,
-                        'timestamp' => $startTime,
-                        'value' => 'cs'
-                    ],
-                    [
-                        'endpoint' => $endpoint,
-                        'timestamp' => $endTime,
-                        'value' => 'cr'
-                    ]
-                ],
+                'annotations' => $annotations,
                 'binaryAnnotations' => array_map(function ($key, $value) {
                     return [
                         'key' => $key,

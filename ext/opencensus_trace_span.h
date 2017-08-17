@@ -21,6 +21,11 @@
 
 extern zend_class_entry* opencensus_trace_span_ce;
 
+#define OPENCENSUS_TRACE_SPAN_KIND_UNKNOWN 0
+#define OPENCENSUS_TRACE_SPAN_KIND_CLIENT 1
+#define OPENCENSUS_TRACE_SPAN_KIND_SERVER 2
+#define OPENCENSUS_TRACE_SPAN_KIND_PRODUCER 3
+#define OPENCENSUS_TRACE_SPAN_KIND_CONSUMER 4
 
 // TraceSpan struct
 typedef struct opencensus_trace_span_t {
@@ -30,6 +35,7 @@ typedef struct opencensus_trace_span_t {
     double stop;
     struct opencensus_trace_span_t *parent;
     zval backtrace;
+    zend_long kind;
 
     // zend_string* => zval*
     HashTable *labels;
