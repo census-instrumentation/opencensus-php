@@ -130,6 +130,36 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('extravalue', $info);
     }
 
+    public function testGeneratesBacktrace()
+    {
+        $traceSpan = new TraceSpan();
+        $this->assertInternalType('array', $traceSpan->backtrace());
+        $this->assertTrue(count($traceSpan->backtrace()) > 0);
+        $stackframe = $traceSpan->backtrace()[0];
+        $this->assertEquals('testGeneratesBacktrace', $stackframe['function']);
+        $this->assertEquals(self::class, $stackframe['class']);
+    }
+
+    public function testOverrideBacktrace()
+    {
+        $backtrace = [
+            [
+                'class' => 'Foo',
+                'line' => 1234,
+                'function' => 'asdf',
+                'type' => '::'
+            ]
+        ];
+        $traceSpan = new TraceSpan([
+            'backtrace' => $backtrace
+        ]);
+
+        $this->assertCount(1, $traceSpan->backtrace());
+        $stackframe = $traceSpan->backtrace()[0];
+        $this->assertEquals('asdf', $stackframe['function']);
+        $this->assertEquals('Foo', $stackframe['class']);
+    }
+
     /**
      * @dataProvider timestampFields
      */

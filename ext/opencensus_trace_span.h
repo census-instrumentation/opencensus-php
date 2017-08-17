@@ -34,6 +34,7 @@ typedef struct opencensus_trace_span_t {
     double start;
     double stop;
     struct opencensus_trace_span_t *parent;
+    zval backtrace;
     zend_long kind;
 
     // zend_string* => zval*

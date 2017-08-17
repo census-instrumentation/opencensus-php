@@ -211,17 +211,45 @@ class GoogleCloudReporter implements ReporterInterface
             $kind = array_key_exists($span->kind(), $spanKindMap)
                 ? $spanKindMap[$span->kind()]
                 :  TraceSpan::SPAN_KIND_UNSPECIFIED;
+            $labels = $span->labels();
+            $labels[self::STACKTRACE] = $this->formatBacktrace($span->backtrace());
             return new TraceSpan([
                 'name' => $span->name(),
                 'startTime' => $span->startTime(),
                 'endTime' => $span->endTime(),
                 'spanId' => $span->spanId(),
                 'parentSpanId' => $span->parentSpanId(),
-                'labels' => $span->labels(),
-                'kind' => $kind
+                'labels' => $labels,
+                'kind' => $kind,
             ]);
             $span->info();
         }, $tracer->spans());
+    }
+
+    private function formatBacktrace($bt)
+    {
+        return json_encode([
+            'stack_frame' => array_map([$this, 'mapStackframe'], $bt)
+        ]);
+    }
+
+    private function mapStackframe($sf)
+    {
+        // file and line should always be set
+        $data = [];
+        if (isset($sf['line'])) {
+            $data['line_number'] = $sf['line'];
+        }
+        if (isset($sf['file'])) {
+            $data['file_name'] = $sf['file'];
+        }
+        if (isset($sf['function'])) {
+            $data['method_name'] = $sf['function'];
+        }
+        if (isset($sf['class'])) {
+            $data['class_name'] = $sf['class'];
+        }
+        return $data;
     }
 
     /**
