@@ -44,7 +44,7 @@ class ExtensionTracerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('traceid', $context->traceId());
         $this->assertEquals($parentSpanId, $context->spanId());
 
-        $tracer->inSpan(['name' => 'test'], function() use ($tracer, $parentSpanId) {
+        $tracer->inSpan(['name' => 'test'], function () use ($tracer, $parentSpanId) {
             $context = $tracer->context();
             $this->assertNotEquals($parentSpanId, $context->spanId());
         });
@@ -88,5 +88,15 @@ class ExtensionTracerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('root', $span->name());
         $info = $span->info();
         $this->assertEquals('bar', $info['labels']['foo']);
+    }
+
+    public function testPersistsBacktrace()
+    {
+        $tracer = new ExtensionTracer();
+        $tracer->inSpan(['name' => 'test'], function () {});
+        $span = $tracer->spans()[0];
+        $stackframe = $span->backtrace()[0];
+        $this->assertEquals('testPersistsBacktrace', $stackframe['function']);
+        $this->assertEquals(self::class, $stackframe['class']);
     }
 }
