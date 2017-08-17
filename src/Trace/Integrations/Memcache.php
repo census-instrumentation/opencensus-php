@@ -38,44 +38,62 @@ class Memcache implements IntegrationInterface
             return;
         }
 
-        $labelKeys = function ($memcache, $keyOrKeys) {
-            $key = is_array($keyOrKeys) ? implode(",", $keyOrKeys) : $keyOrKeys;
-            return [
-                'labels' => ['key' => $key]
-            ];
-        };
-
         // bool Memcache::add ( string $key , mixed $var [, int $flag [, int $expire ]] )
-        opencensus_trace_method('Memcache', 'add', $labelKeys);
+        opencensus_trace_method('Memcache', 'add', [self::class, 'handleLabels']);
 
         // string Memcache::get ( string $key [, int &$flags ] )
         // array Memcache::get ( array $keys [, array &$flags ] )
-        opencensus_trace_method('Memcache', 'get', $labelKeys);
+        opencensus_trace_method('Memcache', 'get', [self::class, 'handleLabels']);
 
         // bool Memcache::set ( string $key , mixed $var [, int $flag [, int $expire ]] )
-        opencensus_trace_method('Memcache', 'set', $labelKeys);
+        opencensus_trace_method('Memcache', 'set', [self::class, 'handleLabels']);
 
         // bool Memcache::delete ( string $key [, int $timeout = 0 ] )
-        opencensus_trace_method('Memcache', 'delete', $labelKeys);
+        opencensus_trace_method('Memcache', 'delete', [self::class, 'handleLabels']);
 
         opencensus_trace_method('Memcache', 'flush');
 
         // bool Memcache::replace ( string $key , mixed $var [, int $flag [, int $expire ]] )
-        opencensus_trace_method('Memcache', 'replace', $labelKeys);
+        opencensus_trace_method('Memcache', 'replace', [self::class, 'handleLabels']);
 
         // int Memcache::increment ( string $key [, int $value = 1 ] )
-        opencensus_trace_method('Memcache', 'increment', $labelKeys);
+        opencensus_trace_method('Memcache', 'increment', [self::class, 'handleLabels']);
 
         // int Memcache::decrement ( string $key [, int $value = 1 ] )
-        opencensus_trace_method('Memcache', 'decrement', $labelKeys);
+        opencensus_trace_method('Memcache', 'decrement', [self::class, 'handleLabels']);
 
         // bool Memcache::connect ( string $host [, int $port [, int $timeout ]] )
-        opencensus_trace_method('Memcache', 'connect', function ($host) {
-            return [
-                'labels' => [
-                    'host' => $host
-                ]
-            ];
-        });
+        opencensus_trace_method('Memcache', 'connect', [self::class, 'handleConnect']);
+    }
+
+    /**
+     * Handle converting the key or keys provided to a Memcache function into a comma-separated label
+     *
+     * @param \Memcache $memcache
+     * @param array|string $keyOrKeys The key or keys to operate on
+     * @return array
+     */
+    public static function handleLabels($memcache, $keyOrKeys)
+    {
+        $key = is_array($keyOrKeys) ? implode(",", $keyOrKeys) : $keyOrKeys;
+        return [
+            'labels' => ['key' => $key]
+        ];
+    }
+
+    /**
+     * Extract the host as a label
+     *
+     * @param \Memcache $memcache
+     * @param string $host
+     * @return array
+     */
+    public static function handleConnect($memcache, $host)
+    {
+        return [
+            'labels' => [
+                'host' => $host
+            ]
+        ];
     }
 }

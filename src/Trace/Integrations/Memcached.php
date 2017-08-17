@@ -38,125 +38,188 @@ class Memcached implements IntegrationInterface
             return;
         }
 
-        $handleLabels = function ($memcached, $keyOrKeys) {
-            $key = is_array($keyOrKeys) ? implode(",", $keyOrKeys) : $keyOrKeys;
-            return [
-                'labels' => ['key' => $key]
-            ];
-        };
-
-        $handleLabelsByKey = function ($memcached, $serverKey, $keyOrKeys) {
-            $key = is_array($keyOrKeys) ? implode(",", $keyOrKeys) : $keyOrKeys;
-            return [
-                'labels' => [
-                    'serverKey' => $serverKey,
-                    'key' => $key
-                ]
-            ];
-        }
-
         // bool Memcached::add ( string $key , mixed $value [, int $expiration ] )
-        opencensus_trace_method('Memcached', 'add', $handleLabels);
+        opencensus_trace_method('Memcached', 'add', [self::class, 'handleLabels']);
 
         // bool Memcached::addByKey ( string $server_key , string $key , mixed $value [, int $expiration ] )
-        opencensus_trace_method('Memcached', 'add', $handleLabelsByKey);
+        opencensus_trace_method('Memcached', 'add', [self::class, 'handleLabelsByKey']);
 
         // bool Memcached::append ( string $key , string $value )
-        opencensus_trace_method('Memcached', 'append', $handleLabels);
+        opencensus_trace_method('Memcached', 'append', [self::class, 'handleLabels']);
 
         // bool Memcached::appendByKey ( string $server_key , string $key , string $value )
-        opencensus_trace_method('Memcached', 'appendByKey', $handleLabelsByKey);
+        opencensus_trace_method('Memcached', 'appendByKey', [self::class, 'handleLabelsByKey']);
 
         // bool Memcached::cas ( float $cas_token , string $key , mixed $value [, int $expiration ] )
-        opencensus_trace_method('Memcached', 'cas', function ($memcached, $casToken, $key) {
-            return [
-                'labels' => [
-                    'casToken' => $casToken,
-                    'key' => $key
-                ]
-            ];
-        });
+        opencensus_trace_method('Memcached', 'cas', [self::class, 'handleCas']);
 
         // bool Memcached::casByKey ( float $cas_token , string $server_key , string $key , mixed $value
         //                            [, int $expiration ] )
-        opencensus_trace_method('Memcached', 'casByKey', function ($memcached, $casToken, $serverKey, $key) {
-            return [
-                'labels' => [
-                    'casToken' => $casToken,
-                    'serverKey' => $serverKey,
-                    'key' => $key
-                ]
-            ];
-        });
+        opencensus_trace_method('Memcached', 'casByKey', [self::class, 'handleCasByKey']);
 
         // int Memcached::decrement ( string $key [, int $offset = 1 [, int $initial_value = 0 [, int $expiry = 0 ]]] )
-        opencensus_trace_method('Memcached', 'decrement', $handleLabels);
+        opencensus_trace_method('Memcached', 'decrement', [self::class, 'handleLabels']);
 
         // int Memcached::decrementByKey ( string $server_key , string $key [, int $offset = 1 [, int $initial_value = 0
         //                                 [, int $expiry = 0 ]]] )
-        opencensus_trace_method('Memcached', 'decrementByKey', $handleLabelsByKey);
+        opencensus_trace_method('Memcached', 'decrementByKey', [self::class, 'handleLabelsByKey']);
 
         // bool Memcached::delete ( string $key [, int $time = 0 ] )
-        opencensus_trace_method('Memcached', 'delete', $handleLabels);
+        opencensus_trace_method('Memcached', 'delete', [self::class, 'handleLabels']);
 
         // bool Memcached::deleteByKey ( string $server_key , string $key [, int $time = 0 ] )
-        opencensus_trace_method('Memcached', 'deleteByKey', $handleLabelsByKey);
+        opencensus_trace_method('Memcached', 'deleteByKey', [self::class, 'handleLabelsByKey']);
 
         // bool Memcached::flush ([ int $delay = 0 ] )
         opencensus_trace_method('Memcached', 'flush');
 
         // mixed Memcached::get ( string $key [, callable $cache_cb [, int &$flags ]] )
-        opencensus_trace_method('Memcached', 'get', $handleLabels);
+        opencensus_trace_method('Memcached', 'get', [self::class, 'handleLabels']);
 
         // mixed Memcached::getByKey ( string $server_key , string $key [, callable $cache_cb [, int $flags ]] )
-        opencensus_trace_method('Memcached', 'getByKey', $handleLabelsByKey);
+        opencensus_trace_method('Memcached', 'getByKey', [self::class, 'handleLabelsByKey']);
 
         // mixed Memcached::getMulti ( array $keys [, int $flags ] )
-        opencensus_trace_method('Memcached', 'getMulti', $handleLabels);
+        opencensus_trace_method('Memcached', 'getMulti', [self::class, 'handleLabels']);
 
         // array Memcached::getMultiByKey ( string $server_key , array $keys [, int $flags ] )
-        opencensus_trace_method('Memcached', 'getMultiByKey', $handleLabelsByKey);
+        opencensus_trace_method('Memcached', 'getMultiByKey', [self::class, 'handleLabelsByKey']);
 
         // int Memcached::increment ( string $key [, int $offset = 1 [, int $initial_value = 0 [, int $expiry = 0 ]]] )
-        opencensus_trace_method('Memcached', 'increment', $handleLabels);
+        opencensus_trace_method('Memcached', 'increment', [self::class, 'handleLabels']);
 
         // int Memcached::incrementByKey ( string $server_key , string $key [, int $offset = 1 [, int $initial_value = 0
         //                                 [, int $expiry = 0 ]]] )
-        opencensus_trace_method('Memcached', 'incrementByKey', $handleLabelsByKey);
+        opencensus_trace_method('Memcached', 'incrementByKey', [self::class, 'handleLabelsByKey']);
 
         // bool Memcached::prepend ( string $key , string $value )
-        opencensus_trace_method('Memcached', 'prepend', $handleLabels);
+        opencensus_trace_method('Memcached', 'prepend', [self::class, 'handleLabels']);
 
         // bool Memcached::prependByKey ( string $server_key , string $key , string $value )
-        opencensus_trace_method('Memcached', 'prependByKey', $handleLabelsByKey);
+        opencensus_trace_method('Memcached', 'prependByKey', [self::class, 'handleLabelsByKey']);
 
         // bool Memcached::replace ( string $key , mixed $value [, int $expiration ] )
-        opencensus_trace_method('Memcached', 'replace', $handleLabels);
+        opencensus_trace_method('Memcached', 'replace', [self::class, 'handleLabels']);
 
         // bool Memcached::replaceByKey ( string $server_key , string $key , mixed $value [, int $expiration ] )
-        opencensus_trace_method('Memcached', 'replaceByKey', $handleLabelsByKey);
+        opencensus_trace_method('Memcached', 'replaceByKey', [self::class, 'handleLabelsByKey']);
 
         // bool Memcached::set ( string $key , mixed $value [, int $expiration ] )
-        opencensus_trace_method('Memcached', 'set', $handleLabels);
+        opencensus_trace_method('Memcached', 'set', [self::class, 'handleLabels']);
 
         // bool Memcached::setByKey ( string $server_key , string $key , mixed $value [, int $expiration ] )
-        opencensus_trace_method('Memcached', 'setByKey', $handleLabelsByKey);
+        opencensus_trace_method('Memcached', 'setByKey', [self::class, 'handleLabelsByKey']);
 
         // bool Memcached::setMulti ( array $items [, int $expiration ] )
-        opencensus_trace_method('Memcached', 'setMulti', function ($memcached, $items) {
-            return [
-                'labels' => ['key' => implode(',', array_keys($items))]
-            ]
-        });
+        opencensus_trace_method('Memcached', 'setMulti', [self::class, 'handleSetMulti']);
 
         // bool Memcached::setMultiByKey ( string $server_key , array $items [, int $expiration ] )
-        opencensus_trace_method('Memcached', 'setMultiByKey', function ($memcached, $serverKey, $items) {
-            return [
-                'labels' => [
-                    'serverKey' => $serverKey,
-                    'key' => implode(',', array_keys($items))
-                ]
+        opencensus_trace_method('Memcached', 'setMultiByKey', [self::class, 'handleSetMultiByKey']);
+    }
+
+    /**
+     * Handle converting the key or keys provided to a Memcache function into a comma-separated label
+     *
+     * @param \Memcached $memcached
+     * @param array|string $keyOrKeys The key or keys to operate on
+     * @return array
+     */
+    public static function handleLabels($memcached, $keyOrKeys)
+    {
+        $key = is_array($keyOrKeys) ? implode(",", $keyOrKeys) : $keyOrKeys;
+        return [
+            'labels' => ['key' => $key]
+        ];
+    }
+
+    /**
+     * Handle converting the key or keys provided to a Memcache function into a comma-separated label
+     *
+     * @param \Memcached $memcached
+     * @param string $serverKey The key identifying the server to store the value on or retrieve it from.
+     * @param array|string $keyOrKeys The key or keys to operate on
+     * @return array
+     */
+    public static function handleLabelsByKey($memcached, $serverKey, $keyOrKeys)
+    {
+        $key = is_array($keyOrKeys) ? implode(",", $keyOrKeys) : $keyOrKeys;
+        return [
+            'labels' => [
+                'serverKey' => $serverKey,
+                'key' => $key
             ]
-        });
+        ];
+    }
+
+    /**
+     * Handle converting the key and check and set token to labels
+     *
+     * @param \Memcached $memcached
+     * @param string $casToken The check and set token. Unique value associated with the existing item. Generated by
+     *        memcache.
+     * @param string $key The key or keys to operate on
+     * @return array
+     */
+    public static function handleCas($memcached, $casToken, $key)
+    {
+        return [
+            'labels' => [
+                'casToken' => $casToken,
+                'key' => $key
+            ]
+        ];
+    }
+
+    /**
+     * Handle converting the key and check and set token to labels
+     *
+     * @param \Memcached $memcached
+     * @param string $casToken The check and set token. Unique value associated with the existing item. Generated by
+     *        memcache.
+     * @param string $serverKey The key identifying the server to store the value on or retrieve it from.
+     * @param string $key The key or keys to operate on
+     * @return array
+     */
+    public static function handleCasByKey($memcached, $casToken, $serverKey, $key)
+    {
+        return [
+            'labels' => [
+                'casToken' => $casToken,
+                'serverKey' => $serverKey,
+                'key' => $key
+            ]
+        ];
+    }
+
+    /**
+     * Extract key label from a setMulti command
+     *
+     * @param \Memcached $memcached
+     * @param array $items The items being set in memcached.
+     * @return array
+     */
+    public static function handleSetMulti($memcached, $items)
+    {
+        return [
+            'labels' => ['key' => implode(',', array_keys($items))]
+        ];
+    }
+
+    /**
+     * Extract key label from a setMulti command
+     *
+     * @param \Memcached $memcached
+     * @param string $serverKey The key identifying the server to store the value on or retrieve it from.
+     * @param array $items The items being set in memcached.
+     * @return array
+     */
+    public static function handleSetMultiByKey($memcached, $serverKey, $items)
+    {
+        return [
+            'labels' => [
+                'serverKey' => $serverKey,
+                'key' => implode(',', array_keys($items))
+            ]
+        ];
     }
 }
