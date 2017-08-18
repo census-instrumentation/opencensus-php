@@ -62,20 +62,14 @@ class ZipkinReporterTest extends \PHPUnit_Framework_TestCase
             $this->assertInternalType('string', $span['name']);
             $this->assertInternalType('int', $span['timestamp']);
             $this->assertInternalType('int', $span['duration']);
-            $this->assertInternalType('array', $span['annotations']);
-            foreach ($span['annotations'] as $annotation) {
-                $this->assertInternalType('array', $annotation['endpoint']);
-                $this->assertInternalType('string', $annotation['endpoint']['ipv4']);
-                $this->assertInternalType('int', $annotation['endpoint']['port']);
-                $this->assertInternalType('string', $annotation['endpoint']['serviceName']);
-                $this->assertInternalType('int', $annotation['timestamp']);
-                $this->assertInternalType('string', $annotation['value']);
+
+            $this->assertInternalType('array', $span['tags']);
+            foreach ($span['tags'] as $key => $value) {
+                $this->assertInternalType('string', $key);
+                $this->assertInternalType('string', $value);
             }
-            $this->assertInternalType('array', $span['binaryAnnotations']);
-            foreach ($span['binaryAnnotations'] as $annotation) {
-                $this->assertInternalType('string', $annotation['key']);
-                $this->assertInternalType('string', $annotation['value']);
-            }
+            $this->assertFalse($span['shared']);
+            $this->assertFalse($span['debug']);
         }
     }
 
@@ -97,11 +91,36 @@ class ZipkinReporterTest extends \PHPUnit_Framework_TestCase
         };
 
         $this->assertCount(5, $spans);
-        // default unknown spans to client send/receive
-        $this->assertEquals(['cs', 'cr'], array_map($annotationValue, $spans[0]['annotations']));
-        $this->assertEquals(['cs', 'cr'], array_map($annotationValue, $spans[1]['annotations']));
-        $this->assertEquals(['sr', 'ss'], array_map($annotationValue, $spans[2]['annotations']));
-        $this->assertEquals(['ms'], array_map($annotationValue, $spans[3]['annotations']));
-        $this->assertEquals(['mr'], array_map($annotationValue, $spans[4]['annotations']));
+        $this->assertFalse(array_key_exists('kind', $spans[0]));
+        $this->assertEquals('CLIENT', $spans[1]['kind']);
+        $this->assertEquals('SERVER', $spans[2]['kind']);
+        $this->assertEquals('PRODUCER', $spans[3]['kind']);
+        $this->assertEquals('CONSUMER', $spans[4]['kind']);
+    }
+
+    public function testSpanDebug()
+    {
+        $tracer = new ContextTracer(new TraceContext('testtraceid'));
+        $tracer->inSpan(['name' => 'main'], function () {});
+
+        $reporter = new ZipkinReporter('myapp', 'localhost', 9411);
+        $spans = $reporter->convertSpans($tracer, [
+            'HTTP_X_B3_FLAGS' => '1'
+        ]);
+
+        $this->assertCount(1, $spans);
+        $this->assertTrue($spans[0]['debug']);
+    }
+
+    public function testSpanShared()
+    {
+        $tracer = new ContextTracer(new TraceContext('testtraceid', 12345));
+        $tracer->inSpan(['name' => 'main'], function () {});
+
+        $reporter = new ZipkinReporter('myapp', 'localhost', 9411);
+        $spans = $reporter->convertSpans($tracer);
+
+        $this->assertCount(1, $spans);
+        $this->assertTrue($spans[0]['shared']);
     }
 }
