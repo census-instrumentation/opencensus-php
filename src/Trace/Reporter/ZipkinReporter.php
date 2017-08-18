@@ -54,7 +54,7 @@ class ZipkinReporter implements ReporterInterface
      * @param int $port The port of the Zipkin server
      * @param string $endpoint (optional) The path for the span reporting endpoint. **Defaults to** `/api/v1/spans`
      */
-    public function __construct($name, $host, $port, $endpoint = '/api/v1/spans')
+    public function __construct($name, $host, $port, $endpoint = '/api/v2/spans')
     {
         $this->name = $name;
         $this->host = $host;
@@ -95,24 +95,42 @@ class ZipkinReporter implements ReporterInterface
     }
 
     /**
-     * Convert spans into Zipkin's expected JSON output format.
+     * Convert spans into Zipkin's expected JSON output format. See http://zipkin.io/zipkin-api/#/default/post_spans
+     * for output format.
      *
-     * @param  TracerInterface $tracer
+     * @param TracerInterface $tracer
+     * @param array $headers [optional] HTTP headers to parse. **Defaults to** $_SERVER
      * @return array Representation of the collected trace spans ready for serialization
      */
-    public function convertSpans(TracerInterface $tracer)
+    public function convertSpans(TracerInterface $tracer, $headers = null)
     {
+        $headers = $headers ?: $_SERVER;
         $spans = $tracer->spans();
-        $context = $tracer->context();
-        $traceId = $context->traceId();
+        $rootSpan = $spans[0];
+        $traceId = $tracer->context()->traceId();
 
-        $endpoint = [
-            'ipv4' => $this->host,
-            'port' => $this->port,
-            'serviceName' => $this->name
+        $kindMap = [
+            TraceSpan::SPAN_KIND_CLIENT => 'CLIENT',
+            TraceSpan::SPAN_KIND_SERVER => 'SERVER',
+            TraceSpan::SPAN_KIND_PRODUCER => 'PRODUCER',
+            TraceSpan::SPAN_KIND_CONSUMER => 'CONSUMER'
         ];
 
-        return array_map(function ($span) use ($traceId, $endpoint) {
+        // True is a request to store this span even if it overrides sampling policy.
+        // This is true when the X-B3-Flags header has a value of 1.
+        $isDebug = array_key_exists('HTTP_X_B3_FLAGS', $headers) && $headers['HTTP_X_B3_FLAGS'] == '1';
+
+        // True if we are contributing to a span started by another tracer (ex on a different host).
+        $isShared = $rootSpan && $rootSpan->parentSpanId() != null;
+
+        $localEndpoint = [
+            'serviceName' => $this->name,
+            'ipv4' => $this->host,
+            'port' => $this->port
+        ];
+
+        $zipkinSpans = [];
+        foreach ($spans as $span) {
             $startTime = (int)((float) $span->startTime()->format('U.u') * 1000 * 1000);
             $endTime = (int)((float) $span->endTime()->format('U.u') * 1000 * 1000);
             $spanId = str_pad(dechex($span->spanId()), 16, '0', STR_PAD_LEFT);
@@ -120,73 +138,25 @@ class ZipkinReporter implements ReporterInterface
                 ? str_pad(dechex($span->parentSpanId()), 16, '0', STR_PAD_LEFT)
                 : null;
 
-            $annotations = [];
-            switch ($span->kind()) {
-                case TraceSpan::SPAN_KIND_UNKNOWN:
-                case TraceSpan::SPAN_KIND_CLIENT:
-                    $annotations = [
-                        [
-                            'endpoint' => $endpoint,
-                            'timestamp' => $startTime,
-                            'value' => 'cs' // client send
-                        ],
-                        [
-                            'endpoint' => $endpoint,
-                            'timestamp' => $endTime,
-                            'value' => 'cr' // client receive
-                        ]
-                    ];
-                    break;
-                case TraceSpan::SPAN_KIND_SERVER:
-                    $annotations = [
-                        [
-                            'endpoint' => $endpoint,
-                            'timestamp' => $startTime,
-                            'value' => 'sr' // server receive
-                        ],
-                        [
-                            'endpoint' => $endpoint,
-                            'timestamp' => $endTime,
-                            'value' => 'ss' // server send
-                        ]
-                    ];
-                    break;
-                case TraceSpan::SPAN_KIND_PRODUCER:
-                    $annotations = [
-                        [
-                            'endpoint' => $endpoint,
-                            'timestamp' => $startTime,
-                            'value' => 'ms' // message send
-                        ]
-                    ];
-                    break;
-                case TraceSpan::SPAN_KIND_CONSUMER:
-                    $annotations = [
-                        [
-                            'endpoint' => $endpoint,
-                            'timestamp' => $startTime,
-                            'value' => 'mr' // message receive
-                        ]
-                    ];
-                    break;
-            }
-
-            return [
-                // 8-byte identifier encoded as 16 lowercase hex characters
-                'id' => $spanId,
+            $zipkinSpan = [
                 'traceId' => $traceId,
                 'name' => $span->name(),
+                'parentId' => $parentSpanId,
+                'id' => $spanId,
                 'timestamp' => $startTime,
                 'duration' => $endTime - $startTime,
-                'annotations' => $annotations,
-                'binaryAnnotations' => array_map(function ($key, $value) {
-                    return [
-                        'key' => $key,
-                        'value' => $value
-                    ];
-                }, array_keys($span->labels()), $span->labels()),
-                'parentId' => $parentSpanId
+                'debug' => $isDebug,
+                'shared' => $isShared,
+                'localEndpoint' => $localEndpoint,
+                'tags' => $span->labels()
             ];
-        }, $spans);
+            if (array_key_exists($span->kind(), $kindMap)) {
+                $zipkinSpan['kind'] = $kindMap[$span->kind()];
+            }
+
+            $zipkinSpans[] = $zipkinSpan;
+        }
+
+        return $zipkinSpans;
     }
 }
