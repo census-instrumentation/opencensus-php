@@ -98,7 +98,8 @@ class ZipkinReporter implements ReporterInterface
      * Convert spans into Zipkin's expected JSON output format. See http://zipkin.io/zipkin-api/#/default/post_spans
      * for output format.
      *
-     * @param  TracerInterface $tracer
+     * @param TracerInterface $tracer
+     * @param array $headers [optional] HTTP headers to parse. **Defaults to** $_SERVER
      * @return array Representation of the collected trace spans ready for serialization
      */
     public function convertSpans(TracerInterface $tracer, $headers = null)
