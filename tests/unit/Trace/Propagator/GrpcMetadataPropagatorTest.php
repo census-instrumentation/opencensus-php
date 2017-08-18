@@ -36,7 +36,7 @@ class GrpcMetadataPropagatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseContext($traceId, $spanId, $enabled, $header)
     {
-        $formatter = new HttpHeaderPropagator();
+        $formatter = new GrpcMetadataPropagator();
         $context = $formatter->parse(['grpc-trace-bin' => $header]);
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
@@ -49,7 +49,7 @@ class GrpcMetadataPropagatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testToString($traceId, $spanId, $enabled, $expected)
     {
-        $formatter = new HttpHeaderPropagator();
+        $formatter = new GrpcMetadataPropagator();
         $context = new TraceContext($traceId, $spanId, $enabled);
         $this->assertEquals($expected, $formatter->serialize($context));
     }
