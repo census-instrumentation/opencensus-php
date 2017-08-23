@@ -44,7 +44,7 @@ class ExtensionTracer implements TracerInterface
      *
      * @param array $spanOptions Options for the span.
      *      {@see OpenCensus\Trace\TraceSpan::__construct()}
-     * @param callable $callable The callable to inSpan.
+     * @param callable $callable The callable to instrument.
      * @param array $arguments [optional] Arguments for the callable.
      * @return mixed The result of the callable
      */
