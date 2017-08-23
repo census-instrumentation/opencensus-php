@@ -40,7 +40,7 @@ class TraceContext
     private $traceId;
 
     /**
-     * @var string|null The current spanId. This is the deepest nested span currently open.
+     * @var int|null The current spanId. This is the deepest nested span currently open.
      */
     private $spanId;
 
@@ -53,7 +53,7 @@ class TraceContext
      * Creates a new TraceContext instance
      *
      * @param string $traceId The current traceId. If not set, one will be generated for you.
-     * @param string|null $spanId The current spanId. **Defaults to** `null`.
+     * @param int|null $spanId The current spanId. **Defaults to** `null`.
      * @param bool|null $enabled Whether or not tracing is enabled on this request. **Defaults to** `null`.
      * @param bool $fromHeader Whether or not the context was detected from an incoming header. **Defaults to** `false`.
      */
@@ -78,7 +78,7 @@ class TraceContext
     /**
      * Fetch the current spanId.
      *
-     * @return string
+     * @return int
      */
     public function spanId()
     {
@@ -88,7 +88,7 @@ class TraceContext
     /**
      * Set the current spanId.
      *
-     * @param string|null $spanId The spanId to set.
+     * @param int|null $spanId The spanId to set.
      */
     public function setSpanId($spanId)
     {

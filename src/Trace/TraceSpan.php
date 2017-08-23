@@ -46,12 +46,10 @@ class TraceSpan
      *      @type int $spanId The ID of the span. If not provided,
      *            one will be generated automatically for you.
      *      @type string $name The name of the span.
-     *      @type \DateTimeInterface|int|float|string $startTime Start time of the span in nanoseconds.
-     *            If provided as a string, it must be in "Zulu" format. If provided as an int or float, it is
-     *            expected to be a Unix timestamp.
-     *      @type \DateTimeInterface|int|float|string $endTime End time of the span in nanoseconds.
-     *            If provided as a string, it must be in "Zulu" format. If provided as an int or float, it is
-     *            expected to be a Unix timestamp.
+     *      @type \DateTimeInterface|int|float $startTime Start time of the span in nanoseconds.
+     *            If provided as an int or float, it is treated as a Unix timestamp.
+     *      @type \DateTimeInterface|int|float $endTime End time of the span in nanoseconds.
+     *            If provided as an int or float, it is treated as a Unix timestamp.
      *      @type int $parentSpanId ID of the parent span if any.
      *      @type array $labels Associative array of $label => $value
      *            to attach to this span.
@@ -125,9 +123,8 @@ class TraceSpan
     /**
      * Set the start time for this span.
      *
-     * @param  \DateTimeInterface|int|float|string $when [optional] The start time of this span.
-     *         **Defaults to** now. If provided as a string, it must be in "Zulu" format.
-     *         If provided as an int or float, it is expected to be a Unix timestamp.
+     * @param  \DateTimeInterface|int|float $when [optional] The start time of this span.
+     *         **Defaults to** now. If provided as an int or float, it is expected to be a Unix timestamp.
      */
     public function setStartTime($when = null)
     {
@@ -147,9 +144,8 @@ class TraceSpan
     /**
      * Set the end time for this span.
      *
-     * @param  \DateTimeInterface|int|float|string $when [optional] The end time of this span.
-     *         **Defaults to** now. If provided as a string, it must be in "Zulu" format.
-     *         If provided as an int or float, it is expected to be a Unix timestamp.
+     * @param  \DateTimeInterface|int|float $when [optional] The end time of this span.
+     *         **Defaults to** now. If provided as an int or float, it is expected to be a Unix timestamp.
      */
     public function setEndTime($when = null)
     {
@@ -257,11 +253,10 @@ class TraceSpan
     }
 
     /**
-     * Returns a "Zulu" formatted string representing the provided \DateTime.
+     * Handles parsing a \DateTimeInterface object from a provided timestamp.
      *
      * @param  \DateTimeInterface|int|float $when [optional] The end time of this span.
-     *         **Defaults to** now. If provided as a string, it must be in "Zulu" format.
-     *         If provided as an int or float, it is expected to be a Unix timestamp.
+     *         **Defaults to** now. If provided as an int or float, it is expected to be a Unix timestamp.
      * @return \DateTimeInterface
      */
     private function formatDate($when = null)

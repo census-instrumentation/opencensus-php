@@ -163,7 +163,7 @@ class RequestTracer
      *
      * @param array $spanOptions Options for the span.
      *      {@see OpenCensus\Trace\TraceSpan::__construct()}
-     * @param  callable $callable The callable to inSpan.
+     * @param  callable $callable The callable to instrument.
      * @return mixed Returns whatever the callable returns
      */
     public static function inSpan(array $spanOptions, callable $callable, array $arguments = [])
