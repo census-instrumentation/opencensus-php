@@ -60,8 +60,8 @@ Currently implemented reporters:
 
 ### Sampling Rate
 
-By default we attempt to trace all requests. This is not ideal as a little bit of
-latency and require more memory for requests that are traced. To trace a sampling
+By default we attempt to trace all requests. This is not ideal as it adds a little bit of
+latency and require more memory for requests that are traced. To trace only a sampling
 of requests, configure a sampler.
 
 The preferred sampler is the `QpsSampler` (Queries Per Second). This sampler implementation
@@ -167,6 +167,10 @@ work-in-progress and are more likely to get backwards-incompatible updates.
 Contributions to this library are always welcome and highly encouraged.
 
 See [CONTRIBUTING](CONTRIBUTING.md) for more information on how to get started.
+
+## Releasing
+
+See [RELEASING](RELEASING.md) for more information on releasing new versions.
 
 ## License
 

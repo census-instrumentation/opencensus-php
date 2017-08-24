@@ -1,0 +1,14 @@
+releases:
+  - date: '2017-08-14'
+    time: 16:47:07
+    version: 0.0.1
+    stability: devel
+    notes: First dev release
+
+  - date: '2017-08-15'
+    time: 16:27:07
+    version: 0.0.2
+    stability: devel
+    notes: |-
+      - Fix builds for 32-bit architecture (#15)
+      - Fix windows builds (#17)
