@@ -20,16 +20,16 @@ namespace OpenCensus\Trace\Propagator;
 use OpenCensus\Trace\TraceContext;
 
 /**
- * This propagator will contain the canonical method for propagating
- * TraceContext over grpc. The specification is not finalized yet. The
- * current design uses a metadata key `grpc-trace-bin` with a binary
- * encoding. Do not use this propagator until it's implemented.
+ * This propagator will contains the method for serializaing and deserializing
+ * TraceContext over a binary format.
  *
- * @experimental
+ * See https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md
+ * for the encoding specification.
  */
-class GrpcMetadataPropagator implements PropagatorInterface
+class BinaryPropagator implements PropagatorInterface
 {
     const METADATA_KEY = 'grpc-trace-bin';
+    const OPTION_ENABLED = 1;
 
     /**
      * Generate a TraceContext object from the all the HTTP headers
@@ -53,8 +53,9 @@ class GrpcMetadataPropagator implements PropagatorInterface
      */
     public function deserialize($bin)
     {
-        // TODO: implement when spec is finalized
-        return new TraceContext();
+        $data = unpack('Cversion/Cfield0/H32traceId/Cfield1/H16spanId/Cfield2/Coptions', $bin);
+        $enabled = !!($data['options'] & self::OPTION_ENABLED);
+        return new TraceContext($data['traceId'], hexdec($data['spanId']), $enabled, true);
     }
 
     /**
@@ -65,7 +66,8 @@ class GrpcMetadataPropagator implements PropagatorInterface
      */
     public function serialize(TraceContext $context)
     {
-        // TODO: implement when spec is finalized
-        return '';
+        $spanHex = str_pad(dechex($context->spanId()), 16, "0", STR_PAD_LEFT);
+        $traceOptions = $context->enabled() ? 1 : 0;
+        return pack("CCH*CH*CC", 0, 0, $context->traceId(), 1, $spanHex, 2, $traceOptions);
     }
 }
