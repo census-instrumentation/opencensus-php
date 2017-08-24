@@ -19,6 +19,8 @@ namespace OpenCensus\Trace\Integrations\Guzzle;
 
 use OpenCensus\Trace\RequestTracer;
 use Psr\Http\Message\RequestInterface;
+use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
+use OpenCensus\Trace\Propagator\PropagatorInterface;
 
 /**
  * This class handles integration with GuzzleHttp 6. Adding this middleware to
@@ -39,7 +41,29 @@ use Psr\Http\Message\RequestInterface;
  */
 class Middleware
 {
-    const TRACE_CONTEXT_HEADER = 'X-Cloud-Trace-Context';
+    const DEFAULT_HEADER_NAME = 'X-Cloud-Trace-Context';
+
+    /**
+     * @var PropagatorInterface
+     */
+    private $propagator;
+
+    /**
+     * @var string
+     */
+    private $headerName;
+
+    /**
+     * Create a new Guzzle middleware that creates trace spans and propagates the current
+     * trace context to the downstream request.
+     *
+     * @param PropagatorInterface $propagator Interface responsible for serializing trace context
+     */
+    public function __construct(PropagatorInterface $propagator = null, $headerName = null)
+    {
+        $this->propagator = $propagator ?: new HttpHeaderPropagator();
+        $this->headerName = $headerName ?: self::DEFAULT_HEADER_NAME;
+    }
 
     /**
      * Magic method which makes this object callable. Guzzle middleware are expected to be
@@ -52,7 +76,7 @@ class Middleware
     {
         return function (RequestInterface $request, $options) use ($handler) {
             if ($context = RequestTracer::context()) {
-                $request = $request->withHeader(self::TRACE_CONTEXT_HEADER, $context);
+                $request = $request->withHeader($this->headerName, $this->propagator->serialize($context));
             }
             return RequestTracer::inSpan([
                 'name' => 'GuzzleHttp::request',
