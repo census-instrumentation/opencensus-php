@@ -18,6 +18,8 @@
 namespace OpenCensus\Trace\Integrations\Guzzle;
 
 use OpenCensus\Trace\RequestTracer;
+use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
+use OpenCensus\Trace\Propagator\PropagatorInterface;
 use GuzzleHttp\Event\BeforeEvent;
 use GuzzleHttp\Event\EndEvent;
 use GuzzleHttp\Event\SubscriberInterface;
