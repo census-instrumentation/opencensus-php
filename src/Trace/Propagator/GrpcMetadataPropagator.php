@@ -96,5 +96,4 @@ class GrpcMetadataPropagator implements PropagatorInterface
     {
         return $this->key;
     }
-
 }
