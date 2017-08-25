@@ -47,11 +47,6 @@ class EventSubscriber implements SubscriberInterface
     private $propagator;
 
     /**
-     * @var string
-     */
-    private $headerName;
-
-    /**
      * Create a new Guzzle event listener that creates trace spans and propagates the current
      * trace context to the downstream request.
      *

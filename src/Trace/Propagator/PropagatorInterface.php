@@ -20,7 +20,8 @@ namespace OpenCensus\Trace\Propagator;
 use OpenCensus\Trace\TraceContext;
 
 /**
- * This interface lets us define separate TraceContext Propagator formats.
+ * This interface lets us define separate TraceContext Propagator formats. This interface is responsible for
+ * parsing and propagating the TraceContext to upstream and downstream requests.
  */
 interface PropagatorInterface
 {

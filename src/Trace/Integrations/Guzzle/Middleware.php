@@ -21,8 +21,6 @@ use OpenCensus\Trace\RequestTracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 use OpenCensus\Trace\Propagator\PropagatorInterface;
 use Psr\Http\Message\RequestInterface;
-use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
-use OpenCensus\Trace\Propagator\PropagatorInterface;
 
 /**
  * This class handles integration with GuzzleHttp 6. Adding this middleware to

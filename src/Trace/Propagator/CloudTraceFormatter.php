@@ -20,10 +20,7 @@ namespace OpenCensus\Trace\Propagator;
 use OpenCensus\Trace\TraceContext;
 
 /**
- * This propagator uses HTTP headers to propagate TraceContext over HTTP.
- * There are two possible headers `X-Cloud-Trace-Context` and `Trace-Context`.
- * This class handles both formats.
- *
+ * This format using a human readable string encoding to propagate TraceContext.
  * The current format of the header is <trace-id>[/<span-id>][;o=<options>].
  * The options are a bitmask of options. Currently the only option is the
  * least significant bit which signals whether the request was traced or not

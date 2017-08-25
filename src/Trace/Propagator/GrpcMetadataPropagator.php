@@ -20,11 +20,9 @@ namespace OpenCensus\Trace\Propagator;
 use OpenCensus\Trace\TraceContext;
 
 /**
- * This propagator will contains the method for serializaing and deserializing
- * TraceContext over a binary format.
- *
- * See https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md
- * for the encoding specification.
+ * This propagator will contains the logic for propagating TraceContext over
+ * grpc using its request metadata. It will default to using the BinaryFormatter
+ * to serialize/deserialize TraceContext.
  */
 class GrpcMetadataPropagator implements PropagatorInterface
 {
@@ -40,6 +38,14 @@ class GrpcMetadataPropagator implements PropagatorInterface
      */
     private $key;
 
+    /**
+     * Create a new GrpcMetadataPropagator
+     *
+     * @param FormatterInterface $formatter [optional] The formatter used to serialize/deserialize TraceContext
+     *        **Defaults to** a new BinaryFormatter.
+     * @param string $key [optional] The grpc metadata key to store/retrieve the encoded TraceContext.
+     *        **Defaults to** `grpc-trace-bin`
+     */
     public function __construct(FormatterInterface $formatter = null, $key = null)
     {
         $this->formatter = $formatter ?: new BinaryFormatter();
