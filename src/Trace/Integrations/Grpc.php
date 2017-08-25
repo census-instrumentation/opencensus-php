@@ -91,7 +91,20 @@ class Grpc implements IntegrationInterface
     }
 
     /**
-     * Update metadata handler for grpc clients
+     * Update metadata handler for grpc clients.
+     *
+     * Example:
+     *
+     * ```
+     * use OpenCensus\Trace\Integrations\Grpc;
+     *
+     * # MathClient is the generated client from the proto definition
+     * $client = new Math\MathClient($host, ['update_metadata' => [Grpc::class, 'updateMetadata']]);
+     *
+     * # The call will pass the current trace context using the GrpcMetadataPropagator and BinaryFormatter
+     * $call = $client->Div($divArgs);
+     * $response = $call->wait();
+     * ```
      *
      * @param array $metadata
      * @param string $jwtAuthUri
