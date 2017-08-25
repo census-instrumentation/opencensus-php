@@ -39,8 +39,6 @@ use GuzzleHttp\Event\SubscriberInterface;
  */
 class EventSubscriber implements SubscriberInterface
 {
-    const DEFAULT_HEADER_NAME = 'X-Cloud-Trace-Context';
-
     /**
      * @var PropagatorInterface
      */
@@ -57,10 +55,9 @@ class EventSubscriber implements SubscriberInterface
      *
      * @param PropagatorInterface $propagator Interface responsible for serializing trace context
      */
-    public function __construct(PropagatorInterface $propagator = null, $headerName = null)
+    public function __construct(PropagatorInterface $propagator = null)
     {
         $this->propagator = $propagator ?: new HttpHeaderPropagator();
-        $this->headerName = $headerName ?: self::DEFAULT_HEADER_NAME;
     }
 
     /**
@@ -86,7 +83,7 @@ class EventSubscriber implements SubscriberInterface
     {
         $request = $event->getRequest();
         if ($context = RequestTracer::context()) {
-            $request->setHeader($this->headerName, $this->propagator->serialize($context));
+            $request->setHeader($this->propagator->key(), $this->propagator->formatter->serialize($context));
         }
         RequestTracer::startSpan([
             'name' => 'GuzzleHttp::request',

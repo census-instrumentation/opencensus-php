@@ -49,20 +49,14 @@ class Middleware
     private $propagator;
 
     /**
-     * @var string
-     */
-    private $headerName;
-
-    /**
      * Create a new Guzzle middleware that creates trace spans and propagates the current
      * trace context to the downstream request.
      *
      * @param PropagatorInterface $propagator Interface responsible for serializing trace context
      */
-    public function __construct(PropagatorInterface $propagator = null, $headerName = null)
+    public function __construct(PropagatorInterface $propagator = null)
     {
         $this->propagator = $propagator ?: new HttpHeaderPropagator();
-        $this->headerName = $headerName ?: self::DEFAULT_HEADER_NAME;
     }
 
     /**
@@ -76,7 +70,10 @@ class Middleware
     {
         return function (RequestInterface $request, $options) use ($handler) {
             if ($context = RequestTracer::context()) {
-                $request = $request->withHeader($this->headerName, $this->propagator->serialize($context));
+                $request = $request->withHeader(
+                    $this->propagator->key(),
+                    $this->propagator->formatter()->serialize($context)
+                );
             }
             return RequestTracer::inSpan([
                 'name' => 'GuzzleHttp::request',

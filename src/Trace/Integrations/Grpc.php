@@ -18,6 +18,7 @@
 namespace OpenCensus\Trace\Integrations;
 
 use Grpc\BaseStub;
+use OpenCensus\Trace\Propagator\GrpcMetadataPropagator;
 
 /**
  * This class handles instrumenting grpc requests using the opencensus extension.
@@ -31,8 +32,6 @@ use Grpc\BaseStub;
  */
 class Grpc implements IntegrationInterface
 {
-    const METADATA_KEY = 'grpc-trace-bin';
-
     /**
      * Static method to add instrumentation to grpc requests
      */
@@ -101,9 +100,9 @@ class Grpc implements IntegrationInterface
     public static function updateMetadata($metadata, $jwtAuthUri)
     {
         if ($context = RequestTracer::context()) {
-            $propagator = new BinaryPropagator();
+            $propagator = new GrpcMetadataPropagator();
             $metadata += [
-                self::METADATA_KEY => $propagator->serialize($context)
+                $propagator->key() => $propagator->formatter()->serialize($context)
             ];
         }
         return $metadata;
