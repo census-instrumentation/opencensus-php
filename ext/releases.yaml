@@ -12,3 +12,11 @@ releases:
     notes: |-
       - Fix builds for 32-bit architecture (#15)
       - Fix windows builds (#17)
+
+  - date: '2017-08-25'
+    time: 10:34:00
+    version: 0.0.3
+    stability: devel
+    notes: |-
+      - Capture span kind (#19)
+      - Capture stacktrace (#21)
