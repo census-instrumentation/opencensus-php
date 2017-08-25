@@ -18,21 +18,21 @@
 namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
 use OpenCensus\Trace\TraceContext;
-use OpenCensus\Trace\Propagator\CloudTraceFormatter;
-use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
+use OpenCensus\Trace\Propagator\BinaryFormatter;
+use OpenCensus\Trace\Propagator\GrpcMetadataPropagator;
 
 /**
  * @group trace
  */
-class HttpHeaderPropagatorTest extends \PHPUnit_Framework_TestCase
+class GrpcMetadataPropagatorTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider traceMetadata
      */
-    public function testExtract($traceId, $spanId, $enabled, $header)
+    public function testExtract($traceId, $spanId, $enabled, $hex)
     {
-        $propagator = new HttpHeaderPropagator();
-        $context = $propagator->extract(['HTTP_X_CLOUD_TRACE_CONTEXT' => $header]);
+        $propagator = new GrpcMetadataPropagator();
+        $context = $propagator->extract(['grpc-trace-bin' => hex2bin($hex)]);
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
         $this->assertEquals($enabled, $context->enabled());
@@ -42,10 +42,10 @@ class HttpHeaderPropagatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider traceMetadata
      */
-    public function testExtractCustomKey($traceId, $spanId, $enabled, $header)
+    public function testExtractCustomKey($traceId, $spanId, $enabled, $hex)
     {
-        $propagator = new HttpHeaderPropagator(new CloudTraceFormatter(), 'HTTP_X_CLOUD_TRACE_CONTEXT');
-        $context = $propagator->extract(['HTTP_X_CLOUD_TRACE_CONTEXT' => $header]);
+        $propagator = new GrpcMetadataPropagator(new BinaryFormatter(), 'foobar');
+        $context = $propagator->extract(['foobar' => hex2bin($hex)]);
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
         $this->assertEquals($enabled, $context->enabled());
@@ -61,10 +61,10 @@ class HttpHeaderPropagatorTest extends \PHPUnit_Framework_TestCase
     public function traceMetadata()
     {
         return [
-            ['123456789012345678901234567890ab', '1234', false, '123456789012345678901234567890ab/1234;o=0'],
-            ['123456789012345678901234567890ab', '1234', true,  '123456789012345678901234567890ab/1234;o=1'],
-            ['123456789012345678901234567890ab', null, false,   '123456789012345678901234567890ab;o=0'],
-            ['123456789012345678901234567890ab', null, true,    '123456789012345678901234567890ab;o=1'],
+            ['123456789012345678901234567890ab', 1234, false, '00' . '00123456789012345678901234567890ab' . '0100000000000004d2' . '0200'],
+            ['123456789012345678901234567890ab', 1234, true,  '00' . '00123456789012345678901234567890ab' . '0100000000000004d2' . '0201'],
+            ['123456789012345678901234567890ab', null, false, '00' . '00123456789012345678901234567890ab' . '010000000000000000' . '0200'],
+            ['123456789012345678901234567890ab', null, true,  '00' . '00123456789012345678901234567890ab' . '010000000000000000' . '0201']
         ];
     }
 }

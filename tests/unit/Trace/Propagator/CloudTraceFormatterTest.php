@@ -19,20 +19,19 @@ namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
 use OpenCensus\Trace\TraceContext;
 use OpenCensus\Trace\Propagator\CloudTraceFormatter;
-use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 
 /**
  * @group trace
  */
-class HttpHeaderPropagatorTest extends \PHPUnit_Framework_TestCase
+class CloudTraceFormatterTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @dataProvider traceMetadata
+     * @dataProvider traceHeaders
      */
-    public function testExtract($traceId, $spanId, $enabled, $header)
+    public function testParseContext($traceId, $spanId, $enabled, $header)
     {
-        $propagator = new HttpHeaderPropagator();
-        $context = $propagator->extract(['HTTP_X_CLOUD_TRACE_CONTEXT' => $header]);
+        $formatter = new CloudTraceFormatter();
+        $context = $formatter->deserialize($header);
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
         $this->assertEquals($enabled, $context->enabled());
@@ -40,25 +39,16 @@ class HttpHeaderPropagatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider traceMetadata
+     * @dataProvider traceHeaders
      */
-    public function testExtractCustomKey($traceId, $spanId, $enabled, $header)
+    public function testToString($traceId, $spanId, $enabled, $expected)
     {
-        $propagator = new HttpHeaderPropagator(new CloudTraceFormatter(), 'HTTP_X_CLOUD_TRACE_CONTEXT');
-        $context = $propagator->extract(['HTTP_X_CLOUD_TRACE_CONTEXT' => $header]);
-        $this->assertEquals($traceId, $context->traceId());
-        $this->assertEquals($spanId, $context->spanId());
-        $this->assertEquals($enabled, $context->enabled());
-        $this->assertTrue($context->fromHeader());
+        $formatter = new CloudTraceFormatter();
+        $context = new TraceContext($traceId, $spanId, $enabled);
+        $this->assertEquals($expected, $formatter->serialize($context));
     }
 
-    /**
-     * Data provider for testing serialization and serialization. We use hex strings here to make
-     * the test human readable to see that our test data adheres to the spec.
-     * See https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md
-     * for the encoding specification.
-     */
-    public function traceMetadata()
+    public function traceHeaders()
     {
         return [
             ['123456789012345678901234567890ab', '1234', false, '123456789012345678901234567890ab/1234;o=0'],

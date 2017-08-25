@@ -31,6 +31,8 @@ use Grpc\BaseStub;
  */
 class Grpc implements IntegrationInterface
 {
+    const METADATA_KEY = 'grpc-trace-bin';
+
     /**
      * Static method to add instrumentation to grpc requests
      */
@@ -87,5 +89,23 @@ class Grpc implements IntegrationInterface
                 ]
             ];
         });
+    }
+
+    /**
+     * Update metadata handler for grpc clients
+     *
+     * @param array $metadata
+     * @param string $jwtAuthUri
+     * @return array
+     */
+    public static function updateMetadata($metadata, $jwtAuthUri)
+    {
+        if ($context = RequestTracer::context()) {
+            $propagator = new BinaryPropagator();
+            $metadata += [
+                self::METADATA_KEY => $propagator->serialize($context)
+            ];
+        }
+        return $metadata;
     }
 }

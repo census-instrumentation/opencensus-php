@@ -71,7 +71,7 @@ class RequestHandler
             ? $options['headers']
             : $_SERVER;
 
-        $context = $propagator->parse($headers);
+        $context = $propagator->extract($headers);
 
         // If the context force disables tracing, don't consult the $sampler.
         if ($context->enabled() !== false) {
@@ -81,9 +81,7 @@ class RequestHandler
         // If the request was provided with a trace context header, we need to send it back with the response
         // including whether the request was sampled or not.
         if ($context->fromHeader()) {
-            if (!headers_sent()) {
-                header('X-Cloud-Trace-Context: ' . $propagator->serialize($context));
-            }
+            $propagator->inject($context, $headers);
         }
 
         $this->tracer = $context->enabled()

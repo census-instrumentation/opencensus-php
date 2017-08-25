@@ -18,19 +18,19 @@
 namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
 use OpenCensus\Trace\TraceContext;
-use OpenCensus\Trace\Propagator\BinaryPropagator;
+use OpenCensus\Trace\Propagator\BinaryFormatter;
 
 /**
  * @group trace
  */
-class BinaryPropagatorTest extends \PHPUnit_Framework_TestCase
+class BinaryFormatterTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider traceMetadata
      */
     public function testDeserialize($traceId, $spanId, $enabled, $hex)
     {
-        $formatter = new BinaryPropagator();
+        $formatter = new BinaryFormatter();
         $context = $formatter->deserialize(hex2bin($hex));
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
@@ -43,7 +43,7 @@ class BinaryPropagatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testSerialize($traceId, $spanId, $enabled, $hex)
     {
-        $formatter = new BinaryPropagator();
+        $formatter = new BinaryFormatter();
         $context = new TraceContext($traceId, $spanId, $enabled);
         $this->assertEquals($hex, bin2hex($formatter->serialize($context)));
     }

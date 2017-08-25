@@ -26,24 +26,9 @@ use OpenCensus\Trace\TraceContext;
  * See https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md
  * for the encoding specification.
  */
-class BinaryPropagator implements PropagatorInterface
+class BinaryFormatter implements FormatterInterface
 {
-    const METADATA_KEY = 'grpc-trace-bin';
     const OPTION_ENABLED = 1;
-
-    /**
-     * Generate a TraceContext object from the all the HTTP headers
-     *
-     * @param array $metadata
-     * @return TraceContext
-     */
-    public function parse($metadata)
-    {
-        if (array_key_exists(self::METADATA_KEY, $metadata)) {
-            return self::deserialize($metadata[self::METADATA_KEY]);
-        }
-        return new TraceContext();
-    }
 
     /**
      * Generate a TraceContext object from the Trace Context header

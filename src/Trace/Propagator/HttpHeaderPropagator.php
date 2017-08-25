@@ -31,11 +31,23 @@ use OpenCensus\Trace\TraceContext;
  */
 class HttpHeaderPropagator implements PropagatorInterface
 {
-    const HTTP_HEADERS = [
-        'HTTP_X_CLOUD_TRACE_CONTEXT',
-        'HTTP_TRACE_CONTEXT'
-    ];
-    const CONTEXT_HEADER_FORMAT = '/([0-9a-f]{32})(?:\/(\d+))?(?:;o=(\d+))?/';
+    const DEFAULT_HEADER = 'HTTP_X_CLOUD_TRACE_CONTEXT';
+
+    /**
+     * @var FormatterInterface
+     */
+    private $formatter;
+
+    /**
+     * @var string
+     */
+    private $header;
+
+    public function __construct(FormatterInterface $formatter = null, $header = null)
+    {
+        $this->formatter = $formatter ?: new CloudTraceFormatter();
+        $this->header = $header ?: self::DEFAULT_HEADER;
+    }
 
     /**
      * Generate a TraceContext object from the all the HTTP headers
@@ -43,48 +55,48 @@ class HttpHeaderPropagator implements PropagatorInterface
      * @param array $headers
      * @return TraceContext
      */
-    public function parse($headers)
+    public function extract($headers)
     {
-        foreach (self::HTTP_HEADERS as $header) {
-            if (array_key_exists($header, $headers)) {
-                return self::deserialize($headers[$header]);
-            }
+        if (array_key_exists($this->header, $headers)) {
+            return $this->formatter->deserialize($headers[$this->header]);
         }
         return new TraceContext();
     }
 
     /**
-     * Generate a TraceContext object from the Trace Context header
-     *
-     * @param string $header
-     * @return TraceContext
-     */
-    public function deserialize($header)
-    {
-        if (preg_match(self::CONTEXT_HEADER_FORMAT, $header, $matches)) {
-            return new TraceContext(
-                $matches[1],
-                array_key_exists(2, $matches) ? $matches[2] : null,
-                array_key_exists(3, $matches) ? $matches[3] == '1' : null,
-                true
-            );
-        }
-        return new TraceContext();
-    }
-
-    /**
-     * Convert a TraceContext to header string
+     * Persiste the current TraceContext back into the results of this request
      *
      * @param TraceContext $context
+     * @param array $container
+     * @return bool
+     */
+    public function inject(TraceContext $context, $container)
+    {
+        if (!headers_sent()) {
+            $header = str_replace('_', '-', $this->header);
+            header($header . ': ' . $this->formatter->serialize($context));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns the current formatter
+     *
+     * @return FormatterInterface
+     */
+    public function formatter()
+    {
+        return $this->formatter;
+    }
+
+    /**
+     * Return the key used to propagate the TraceContext
+     *
      * @return string
      */
-    public function serialize(TraceContext $context)
+    public function key()
     {
-        $ret = '' . $context->traceId();
-        if ($context->spanId()) {
-            $ret .= '/' . $context->spanId();
-        }
-        $ret .= ';o=' . ($context->enabled() ? '1' : '0');
-        return $ret;
+        return $this->header();
     }
 }
