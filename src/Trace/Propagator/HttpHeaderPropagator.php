@@ -70,16 +70,13 @@ class HttpHeaderPropagator implements PropagatorInterface
      *
      * @param TraceContext $context
      * @param array $container
-     * @return bool
+     * @return array
      */
     public function inject(TraceContext $context, $container)
     {
-        if (!headers_sent()) {
-            $header = str_replace('_', '-', $this->header);
-            header($header . ': ' . $this->formatter->serialize($context));
-            return true;
-        }
-        return false;
+        $header = str_replace('_', '-', preg_replace('/^HTTP_/', '', $this->header));
+        $container[$header] = $this->formatter->serialize($context);
+        return $container;
     }
 
     /**

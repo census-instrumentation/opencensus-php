@@ -44,12 +44,36 @@ class HttpHeaderPropagatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testExtractCustomKey($traceId, $spanId, $enabled, $header)
     {
-        $propagator = new HttpHeaderPropagator(new CloudTraceFormatter(), 'HTTP_X_CLOUD_TRACE_CONTEXT');
-        $context = $propagator->extract(['HTTP_X_CLOUD_TRACE_CONTEXT' => $header]);
+        $propagator = new HttpHeaderPropagator(new CloudTraceFormatter(), 'HTTP_TRACE_CONTEXT');
+        $context = $propagator->extract(['HTTP_TRACE_CONTEXT' => $header]);
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
         $this->assertEquals($enabled, $context->enabled());
         $this->assertTrue($context->fromHeader());
+    }
+
+    /**
+     * @dataProvider traceMetadata
+     */
+    public function testInject($traceId, $spanId, $enabled, $header)
+    {
+        $propagator = new HttpHeaderPropagator();
+        $context = new TraceContext($traceId, $spanId, $enabled);
+        $output = $propagator->inject($context, []);
+        $this->assertArrayHasKey('X-CLOUD-TRACE-CONTEXT', $output);
+        $this->assertEquals($header, $output['X-CLOUD-TRACE-CONTEXT']);
+    }
+
+    /**
+     * @dataProvider traceMetadata
+     */
+    public function testInjectCustomKey($traceId, $spanId, $enabled, $header)
+    {
+        $propagator = new HttpHeaderPropagator(new CloudTraceFormatter(), 'HTTP_TRACE_CONTEXT');
+        $context = new TraceContext($traceId, $spanId, $enabled);
+        $output = $propagator->inject($context, []);
+        $this->assertArrayHasKey('TRACE-CONTEXT', $output);
+        $this->assertEquals($header, $output['TRACE-CONTEXT']);
     }
 
     /**

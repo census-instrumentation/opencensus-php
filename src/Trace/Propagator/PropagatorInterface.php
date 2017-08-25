@@ -38,7 +38,7 @@ interface PropagatorInterface
      *
      * @param TraceContext $context
      * @param mixed $container
-     * @return bool
+     * @return array
      */
     public function inject(TraceContext $context, $container);
 

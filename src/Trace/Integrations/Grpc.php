@@ -18,6 +18,7 @@
 namespace OpenCensus\Trace\Integrations;
 
 use Grpc\BaseStub;
+use OpenCensus\Trace\RequestTracer;
 use OpenCensus\Trace\Propagator\GrpcMetadataPropagator;
 
 /**

@@ -81,7 +81,11 @@ class RequestHandler
         // If the request was provided with a trace context header, we need to send it back with the response
         // including whether the request was sampled or not.
         if ($context->fromHeader()) {
-            $propagator->inject($context, $headers);
+            if (!headers_sent()) {
+                foreach ($propagator->inject($context, $headers) as $header => $value) {
+                    header("$header: $value");
+                }
+            }
         }
 
         $this->tracer = $context->enabled()

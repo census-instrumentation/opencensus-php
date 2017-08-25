@@ -67,14 +67,16 @@ class GrpcMetadataPropagator implements PropagatorInterface
     }
 
     /**
-     * Fetch the formatter for propagating the TraceContext
+     * Persiste the current TraceContext back into the results of this request
      *
-     * @return FormatterInterface
+     * @param TraceContext $context
+     * @param array $container
+     * @return array
      */
     public function inject(TraceContext $context, $metadata)
     {
         $metadata[$this->key] = $this->formatter->serialize($context);
-        return true;
+        return $metadata;
     }
 
     /**
