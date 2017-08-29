@@ -23,7 +23,9 @@ This extension allows you to easily gather latency and other metadata by watchin
   <api>{{ lastRelease.stability }}</api>
  </stability>
  <license>Apache 2.0</license>
- <notes>{{ lastRelease.notes }}</notes>
+ <notes>
+{{ lastRelease.notes }}
+ </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
 {% for srcfile in srcfiles %}
@@ -53,7 +55,7 @@ This extension allows you to easily gather latency and other metadata by watchin
  <providesextension>opencensus</providesextension>
  <extsrcrelease />
  <changelog>
-  {% for release in releases %}
+{% for release in releases %}
   <release>
    <version>
     <release>{{ release.version }}</release>
@@ -69,6 +71,6 @@ This extension allows you to easily gather latency and other metadata by watchin
 {{ release.notes }}
    </notes>
   </release>
-  {% endfor %}
+{% endfor %}
  </changelog>
 </package>
