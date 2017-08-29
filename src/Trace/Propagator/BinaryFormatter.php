@@ -38,7 +38,11 @@ class BinaryFormatter implements FormatterInterface
      */
     public function deserialize($bin)
     {
-        $data = unpack('Cversion/Cfield0/H32traceId/Cfield1/H16spanId/Cfield2/Coptions', $bin);
+        $data = @unpack('Cversion/Cfield0/H32traceId/Cfield1/H16spanId/Cfield2/Coptions', $bin);
+        if ($data === false) {
+            trigger_error('Invalid binary format for TraceContext', E_USER_WARNING);
+            return new TraceContext();
+        }
         $enabled = !!($data['options'] & self::OPTION_ENABLED);
         return new TraceContext($data['traceId'], hexdec($data['spanId']), $enabled, true);
     }
