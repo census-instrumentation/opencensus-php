@@ -19,20 +19,19 @@ namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
 use OpenCensus\Trace\TraceContext;
 use OpenCensus\Trace\Propagator\BinaryFormatter;
-use OpenCensus\Trace\Propagator\GrpcMetadataPropagator;
 
 /**
  * @group trace
  */
-class GrpcMetadataPropagatorTest extends \PHPUnit_Framework_TestCase
+class BinaryFormatterTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider traceMetadata
      */
-    public function testExtract($traceId, $spanId, $enabled, $hex)
+    public function testDeserialize($traceId, $spanId, $enabled, $hex)
     {
-        $propagator = new GrpcMetadataPropagator();
-        $context = $propagator->extract(['grpc-trace-bin' => hex2bin($hex)]);
+        $formatter = new BinaryFormatter();
+        $context = $formatter->deserialize(hex2bin($hex));
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
         $this->assertEquals($enabled, $context->enabled());
@@ -42,14 +41,28 @@ class GrpcMetadataPropagatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider traceMetadata
      */
-    public function testExtractCustomKey($traceId, $spanId, $enabled, $hex)
+    public function testSerialize($traceId, $spanId, $enabled, $hex)
     {
-        $propagator = new GrpcMetadataPropagator(new BinaryFormatter(), 'foobar');
-        $context = $propagator->extract(['foobar' => hex2bin($hex)]);
-        $this->assertEquals($traceId, $context->traceId());
-        $this->assertEquals($spanId, $context->spanId());
-        $this->assertEquals($enabled, $context->enabled());
-        $this->assertTrue($context->fromHeader());
+        $formatter = new BinaryFormatter();
+        $context = new TraceContext($traceId, $spanId, $enabled);
+        $this->assertEquals($hex, bin2hex($formatter->serialize($context)));
+    }
+
+    /**
+     * @expectedException \PHPUnit_Framework_Error_Warning
+     */
+    public function testDeserializeBadData()
+    {
+        $formatter = new BinaryFormatter();
+        $context = $formatter->deserialize(hex2bin("0012341abc"));
+    }
+
+    public function testDeserializeBadDataReturnsEmptyTraceContext()
+    {
+        $formatter = new BinaryFormatter();
+        $context = @$formatter->deserialize(hex2bin("0012341abc"));
+        $this->assertNull($context->spanId());
+        $this->assertNull($context->enabled());
     }
 
     /**

@@ -18,6 +18,8 @@
 namespace OpenCensus\Trace\Integrations;
 
 use Grpc\BaseStub;
+use OpenCensus\Trace\RequestTracer;
+use OpenCensus\Trace\Propagator\GrpcMetadataPropagator;
 
 /**
  * This class handles instrumenting grpc requests using the opencensus extension.
@@ -87,5 +89,36 @@ class Grpc implements IntegrationInterface
                 ]
             ];
         });
+    }
+
+    /**
+     * Update metadata handler for grpc clients.
+     *
+     * Example:
+     *
+     * ```
+     * use OpenCensus\Trace\Integrations\Grpc;
+     *
+     * # MathClient is the generated client from the proto definition
+     * $client = new Math\MathClient($host, ['update_metadata' => [Grpc::class, 'updateMetadata']]);
+     *
+     * # The call will pass the current trace context using the GrpcMetadataPropagator and BinaryFormatter
+     * $call = $client->Div($divArgs);
+     * $response = $call->wait();
+     * ```
+     *
+     * @param array $metadata
+     * @param string $jwtAuthUri
+     * @return array
+     */
+    public static function updateMetadata($metadata, $jwtAuthUri)
+    {
+        if ($context = RequestTracer::context()) {
+            $propagator = new GrpcMetadataPropagator();
+            $metadata += [
+                $propagator->key() => $propagator->formatter()->serialize($context)
+            ];
+        }
+        return $metadata;
     }
 }

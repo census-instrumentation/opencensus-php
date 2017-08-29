@@ -18,6 +18,8 @@
 namespace OpenCensus\Trace\Integrations\Guzzle;
 
 use OpenCensus\Trace\RequestTracer;
+use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
+use OpenCensus\Trace\Propagator\PropagatorInterface;
 use GuzzleHttp\Event\BeforeEvent;
 use GuzzleHttp\Event\EndEvent;
 use GuzzleHttp\Event\SubscriberInterface;
@@ -39,7 +41,21 @@ use GuzzleHttp\Event\SubscriberInterface;
  */
 class EventSubscriber implements SubscriberInterface
 {
-    const TRACE_CONTEXT_HEADER = 'X-Cloud-Trace-Context';
+    /**
+     * @var PropagatorInterface
+     */
+    private $propagator;
+
+    /**
+     * Create a new Guzzle event listener that creates trace spans and propagates the current
+     * trace context to the downstream request.
+     *
+     * @param PropagatorInterface $propagator Interface responsible for serializing trace context
+     */
+    public function __construct(PropagatorInterface $propagator = null)
+    {
+        $this->propagator = $propagator ?: new HttpHeaderPropagator();
+    }
 
     /**
      * Returns an array of event names this subscriber wants to listen to.
@@ -64,7 +80,7 @@ class EventSubscriber implements SubscriberInterface
     {
         $request = $event->getRequest();
         if ($context = RequestTracer::context()) {
-            $request->setHeader(self::TRACE_CONTEXT_HEADER, $context);
+            $request->setHeader($this->propagator->key(), $this->propagator->formatter->serialize($context));
         }
         RequestTracer::startSpan([
             'name' => 'GuzzleHttp::request',

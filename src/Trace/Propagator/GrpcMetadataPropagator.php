@@ -20,16 +20,37 @@ namespace OpenCensus\Trace\Propagator;
 use OpenCensus\Trace\TraceContext;
 
 /**
- * This propagator will contain the canonical method for propagating
- * TraceContext over grpc. The specification is not finalized yet. The
- * current design uses a metadata key `grpc-trace-bin` with a binary
- * encoding. Do not use this propagator until it's implemented.
- *
- * @experimental
+ * This propagator contains the logic for propagating TraceContext over
+ * grpc using its request metadata. It will default to using the BinaryFormatter
+ * to serialize/deserialize TraceContext.
  */
 class GrpcMetadataPropagator implements PropagatorInterface
 {
-    const METADATA_KEY = 'grpc-trace-bin';
+    const DEFAULT_METADATA_KEY = 'grpc-trace-bin';
+
+    /**
+     * @var FormatterInterface
+     */
+    private $formatter;
+
+    /**
+     * @var string
+     */
+    private $key;
+
+    /**
+     * Create a new GrpcMetadataPropagator
+     *
+     * @param FormatterInterface $formatter [optional] The formatter used to serialize/deserialize TraceContext
+     *        **Defaults to** a new BinaryFormatter.
+     * @param string $key [optional] The grpc metadata key to store/retrieve the encoded TraceContext.
+     *        **Defaults to** `grpc-trace-bin`
+     */
+    public function __construct(FormatterInterface $formatter = null, $key = null)
+    {
+        $this->formatter = $formatter ?: new BinaryFormatter();
+        $this->key = $key ?: self::DEFAULT_METADATA_KEY;
+    }
 
     /**
      * Generate a TraceContext object from the all the HTTP headers
@@ -37,35 +58,44 @@ class GrpcMetadataPropagator implements PropagatorInterface
      * @param array $metadata
      * @return TraceContext
      */
-    public function parse($metadata)
+    public function extract($metadata)
     {
-        if (array_key_exists(self::METADATA_KEY, $metadata)) {
-            return self::deserialize($metadata[self::METADATA_KEY]);
+        if (array_key_exists($this->key, $metadata)) {
+            return $this->formatter->deserialize($metadata[$this->key]);
         }
         return new TraceContext();
     }
 
     /**
-     * Generate a TraceContext object from the Trace Context header
+     * Persiste the current TraceContext back into the results of this request
      *
-     * @param string $header
-     * @return TraceContext
+     * @param TraceContext $context
+     * @param array $container
+     * @return array
      */
-    public function deserialize($bin)
+    public function inject(TraceContext $context, $metadata)
     {
-        // TODO: implement when spec is finalized
-        return new TraceContext();
+        $metadata[$this->key] = $this->formatter->serialize($context);
+        return $metadata;
     }
 
     /**
-     * Convert a TraceContext to header string
+     * Fetch the formatter for propagating the TraceContext
      *
-     * @param TraceContext $context
+     * @return FormatterInterface
+     */
+    public function formatter()
+    {
+        return $this->formatter;
+    }
+
+    /**
+     * Return the key used to propagate the TraceContext
+     *
      * @return string
      */
-    public function serialize(TraceContext $context)
+    public function key()
     {
-        // TODO: implement when spec is finalized
-        return '';
+        return $this->key;
     }
 }
