@@ -49,6 +49,23 @@ class BinaryFormatterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \PHPUnit_Framework_Error_Warning
+     */
+    public function testDeserializeBadData()
+    {
+        $formatter = new BinaryFormatter();
+        $context = $formatter->deserialize(hex2bin("0012341abc"));
+    }
+
+    public function testDeserializeBadDataReturnsEmptyTraceContext()
+    {
+        $formatter = new BinaryFormatter();
+        $context = @$formatter->deserialize(hex2bin("0012341abc"));
+        $this->assertNull($context->spanId());
+        $this->assertNull($context->enabled());
+    }
+
+    /**
      * Data provider for testing serialization and serialization. We use hex strings here to make
      * the test human readable to see that our test data adheres to the spec.
      * See https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md
