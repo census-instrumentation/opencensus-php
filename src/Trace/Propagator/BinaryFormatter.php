@@ -20,7 +20,7 @@ namespace OpenCensus\Trace\Propagator;
 use OpenCensus\Trace\TraceContext;
 
 /**
- * This propagator will contains the method for serializaing and deserializing
+ * This propagator contains the method for serializaing and deserializing
  * TraceContext over a binary format.
  *
  * See https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md

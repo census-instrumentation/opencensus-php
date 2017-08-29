@@ -20,7 +20,7 @@ namespace OpenCensus\Trace\Propagator;
 use OpenCensus\Trace\TraceContext;
 
 /**
- * This propagator will contains the logic for propagating TraceContext over
+ * This propagator contains the logic for propagating TraceContext over
  * grpc using its request metadata. It will default to using the BinaryFormatter
  * to serialize/deserialize TraceContext.
  */
