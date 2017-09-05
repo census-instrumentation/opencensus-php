@@ -41,8 +41,8 @@ class Postgres implements IntegrationInterface
         // resource pg_query([resource $connection], string $query)
         opencensus_trace_function('pg_query', function () {
             $query = func_num_args() > 1
-                ? func_get_arg(2)
-                : func_get_arg(1);
+                ? func_get_arg(1)
+                : func_get_arg(0);
             return [
                 'labels' => ['query' => $query]
             ];
@@ -51,8 +51,8 @@ class Postgres implements IntegrationInterface
         // resource pg_query_params([resource $connection], $string $query, array $params)
         opencensus_trace_function('pg_query_params', function () {
             $query = func_num_args() > 2
-                ? func_get_arg(2)
-                : func_get_arg(1);
+                ? func_get_arg(1)
+                : func_get_arg(0);
             return [
                 'labels' => ['query' => $query]
             ];
@@ -61,8 +61,8 @@ class Postgres implements IntegrationInterface
         // resource pg_execute([resource $connection], string $stmtname, array $params)
         opencensus_trace_function('pg_execute', function () {
             $statementName = func_num_args() > 2
-                ? func_get_arg(2)
-                : func_get_arg(1);
+                ? func_get_arg(1)
+                : func_get_arg(0);
             return [
                 'labels' => ['statement' => $statementName]
             ];

@@ -37,7 +37,7 @@ class Wordpress implements IntegrationInterface
         $nameClosure = function () {
             if (func_num_args() > 0) {
                 return [
-                    'labels' => ['name' => func_get_arg(1)]
+                    'labels' => ['name' => func_get_arg(0)]
                 ];
             }
             return [];

@@ -57,7 +57,7 @@ class Mysql implements IntegrationInterface
             if (func_num_args() > 2) {
                 return [
                     'labels' => [
-                        'name' => func_get_arg(3)
+                        'name' => func_get_arg(2)
                     ]
                 ];
             } else {
@@ -99,7 +99,7 @@ class Mysql implements IntegrationInterface
             if (func_num_args() > 1) {
                 return [
                     'labels' => [
-                        'name' => func_get_arg(2)
+                        'name' => func_get_arg(1)
                     ]
                 ];
             } else {
