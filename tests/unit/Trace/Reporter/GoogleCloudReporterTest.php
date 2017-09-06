@@ -79,7 +79,7 @@ class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
         $this->expectOutputString(
             'Reporting the Trace data failed: error_log test'
         );
-        $reporter->report($tracer);
+        $this->assertFalse($reporter->report($tracer));
     }
 
     public function testHandlesKind()

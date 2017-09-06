@@ -61,6 +61,7 @@ class LoggerReporter implements ReporterInterface
         try {
             $this->logger->log($this->level, json_encode($tracer->spans()));
         } catch (\Exception $e) {
+            error_log('Reporting the Trace data failed: ' . $e->getMessage());
             return false;
         }
         return true;
