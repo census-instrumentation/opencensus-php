@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Reporter;
 
+require_once __DIR__ . '/mock_error_log.php';
+
 use OpenCensus\Trace\Reporter\GoogleCloudReporter;
 use OpenCensus\Trace\TraceContext;
 use OpenCensus\Trace\Tracer\TracerInterface;
@@ -59,6 +61,25 @@ class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
             $this->assertRegExp('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z/', $span->info()['startTime']);
             $this->assertRegExp('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z/', $span->info()['endTime']);
         }
+    }
+
+    public function testReportWithAnExceptionErrorLog()
+    {
+        $tracer = new ContextTracer(new TraceContext('testtraceid'));
+        $tracer->inSpan(['name' => 'main'], function () {});
+        $this->client->insert(Argument::any())->willThrow(
+            new \Exception('error_log test')
+        );
+        $trace = $this->prophesize(Trace::class);
+        $trace->setSpans(Argument::any())->shouldBeCalled();
+        $this->client->trace(Argument::any())->willReturn($trace->reveal());
+        $reporter = new GoogleCloudReporter(
+            ['client' => $this->client->reveal()]
+        );
+        $this->expectOutputString(
+            'Reporting the Trace data failed: error_log test'
+        );
+        $this->assertFalse($reporter->report($tracer));
     }
 
     public function testHandlesKind()
