@@ -177,6 +177,7 @@ class GoogleCloudReporter implements ReporterInterface
                 return self::$client->insert($trace);
             }
         } catch (\Exception $e) {
+            error_log('Reporting the Trace data failed: ' . $e->getMessage());
             return false;
         }
     }
