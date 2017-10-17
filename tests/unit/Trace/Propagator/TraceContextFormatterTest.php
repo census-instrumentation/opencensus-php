@@ -28,15 +28,15 @@ class TraceContextFormatterTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider traceHeaders
      */
-    // public function testParseContext($traceId, $spanId, $enabled, $header)
-    // {
-    //     $formatter = new TraceContextFormatter();
-    //     $context = $formatter->deserialize($header);
-    //     $this->assertEquals($traceId, $context->traceId());
-    //     $this->assertEquals($spanId, $context->spanId());
-    //     $this->assertEquals($enabled, $context->enabled());
-    //     $this->assertTrue($context->fromHeader());
-    // }
+    public function testParseContext($traceId, $spanId, $enabled, $header)
+    {
+        $formatter = new TraceContextFormatter();
+        $context = $formatter->deserialize($header);
+        $this->assertEquals($traceId, $context->traceId());
+        $this->assertEquals($spanId, $context->spanId());
+        $this->assertEquals($enabled, $context->enabled());
+        $this->assertTrue($context->fromHeader());
+    }
 
     /**
      * @dataProvider traceHeaders
