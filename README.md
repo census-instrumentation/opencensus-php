@@ -47,7 +47,7 @@ bottom of the webpage.
 
 If you would like to provide your own reporter, create a class that implements `ReporterInterface`.
 
-Currently implemented reporters:
+#### Currently implemented reporters
 
 | Class | Description |
 | ----- | ----------- |
@@ -85,6 +85,15 @@ and you include the cache/apcu-adapter composer package, we will set up the cach
 
 You can also choose to use the `RandomSampler` which simply samples a flat
 percentage of requests.
+
+#### Currently implemented samplers
+
+| Class | Description |
+| ----- | ----------- |
+| [AlwaysOffSampler](src/Trace/Sampler/AlwaysOffSampler.php) | Never trace any requests |
+| [AlwaysOnSampler](src/Trace/Sampler/AlwaysOnSampler.php) | Trace all requests |
+| [QpsSampler](src/Trace/Sampler/QpsSampler.php) | Trace X requests per second. Requires a PSR-6 cache implementation |
+| [RandomSampler](src/Trace/Sampler/RandomSampler.php) | Trace X percent of requests. |
 
 ```php
 use OpenCensus\Trace\Reporter\EchoReporter;
