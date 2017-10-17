@@ -83,6 +83,15 @@ static zend_function_entry opencensus_functions[] = {
     PHP_FE_END
 };
 
+PHP_MINFO_FUNCTION(opencensus)
+{
+    php_info_print_table_start();
+    php_info_print_table_row(2, "OpenCensus support", "enabled");
+    php_info_print_table_row(2, "OpenCensus module version", PHP_OPENCENSUS_VERSION);
+    php_info_print_table_end();
+    DISPLAY_INI_ENTRIES();
+}
+
 /* Registers the lifecycle hooks for this extension */
 zend_module_entry opencensus_module_entry = {
     STANDARD_MODULE_HEADER,
@@ -92,7 +101,7 @@ zend_module_entry opencensus_module_entry = {
     PHP_MSHUTDOWN(opencensus),
     PHP_RINIT(opencensus),
     PHP_RSHUTDOWN(opencensus),
-    NULL, /* name of the MINFO function or NULL if not applicable */
+    PHP_MINFO(opencensus),
     PHP_OPENCENSUS_VERSION,
     STANDARD_MODULE_PROPERTIES
 };
