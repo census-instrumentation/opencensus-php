@@ -302,7 +302,7 @@ class GoogleCloudReporter implements ReporterInterface
             }
         }
         $tracer->addRootLabel(self::PID, '' . getmypid());
-        $tracer->addRootLabel(self::AGENT, 'opencensus ' . self::VERSION);
+        $tracer->addRootLabel(self::AGENT, 'opencensus-php ' . self::VERSION);
     }
 
     private function detectKey(array $keys, array $array)
