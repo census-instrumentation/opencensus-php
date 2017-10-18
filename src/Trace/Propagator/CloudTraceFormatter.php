@@ -28,7 +28,7 @@ use OpenCensus\Trace\TraceContext;
  */
 class CloudTraceFormatter implements FormatterInterface
 {
-    const CONTEXT_HEADER_FORMAT = '/([0-9a-f]{32})(?:\/(\d+))?(?:;o=(\d+))?/';
+    const CONTEXT_HEADER_FORMAT = '/([0-9a-fA-F]{32})(?:\/(\d+))?(?:;o=(\d+))?/';
 
     /**
      * Generate a TraceContext object from the Trace Context header
@@ -40,7 +40,7 @@ class CloudTraceFormatter implements FormatterInterface
     {
         if (preg_match(self::CONTEXT_HEADER_FORMAT, $header, $matches)) {
             return new TraceContext(
-                $matches[1],
+                strtolower($matches[1]),
                 array_key_exists(2, $matches) && !empty($matches[2])
                     ? dechex((int)($matches[2]))
                     : null,

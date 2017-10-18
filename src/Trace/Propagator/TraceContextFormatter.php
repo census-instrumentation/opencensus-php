@@ -26,8 +26,8 @@ use OpenCensus\Trace\TraceContext;
  */
 class TraceContextFormatter implements FormatterInterface
 {
-    const CONTEXT_HEADER_FORMAT = '/([0-9a-f]{2})-(.*)/';
-    const VERSION_0_FORMAT = '/([0-9a-f]{32})-([0-9a-f]{16})(?:-([0-9a-f]{2}))?/';
+    const CONTEXT_HEADER_FORMAT = '/([0-9a-fA-F]{2})-(.*)/';
+    const VERSION_0_FORMAT = '/([0-9a-fA-F]{32})-([0-9a-fA-F]{16})(?:-([0-9a-fA-F]{2}))?/';
 
     /**
      * Generate a TraceContext object from the Trace Context header
@@ -69,8 +69,8 @@ class TraceContextFormatter implements FormatterInterface
     {
         if (preg_match(self::VERSION_0_FORMAT, $header, $matches)) {
             return new TraceContext(
-                $matches[1],
-                $matches[2],
+                strtolower($matches[1]),
+                strtolower($matches[2]),
                 array_key_exists(3, $matches) ? $matches[3] == '01' : null,
                 true
             );

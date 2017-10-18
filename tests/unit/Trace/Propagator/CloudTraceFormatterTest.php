@@ -39,6 +39,19 @@ class CloudTraceFormatterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider upperTraceHeaders
+     */
+    public function testParseUppercaseHexContext($traceId, $spanId, $enabled, $header)
+    {
+        $formatter = new CloudTraceFormatter();
+        $context = $formatter->deserialize($header);
+        $this->assertEquals($traceId, $context->traceId());
+        $this->assertEquals($spanId, $context->spanId());
+        $this->assertEquals($enabled, $context->enabled());
+        $this->assertTrue($context->fromHeader());
+    }
+
+    /**
      * @dataProvider traceHeaders
      */
     public function testToString($traceId, $spanId, $enabled, $expected)
@@ -57,6 +70,18 @@ class CloudTraceFormatterTest extends \PHPUnit_Framework_TestCase
             ['123456789012345678901234567890ab', null, false,  '123456789012345678901234567890ab;o=0'],
             ['123456789012345678901234567890ab', null, true,   '123456789012345678901234567890ab;o=1'],
             ['123456789012345678901234567890ab', null, null,   '123456789012345678901234567890ab'],
+        ];
+    }
+
+    public function upperTraceHeaders()
+    {
+        return [
+            ['123456789012345678901234567890ab', '4d2', false, '123456789012345678901234567890AB/1234;o=0'],
+            ['123456789012345678901234567890ab', '4d2', true,  '123456789012345678901234567890AB/1234;o=1'],
+            ['123456789012345678901234567890ab', '4d2', null,  '123456789012345678901234567890AB/1234'],
+            ['123456789012345678901234567890ab', null, false,  '123456789012345678901234567890AB;o=0'],
+            ['123456789012345678901234567890ab', null, true,   '123456789012345678901234567890AB;o=1'],
+            ['123456789012345678901234567890ab', null, null,   '123456789012345678901234567890AB'],
         ];
     }
 }

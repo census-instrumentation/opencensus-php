@@ -39,6 +39,19 @@ class TraceContextFormatterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider upperTraceHeaders
+     */
+    public function testParseUppercaseHexContext($traceId, $spanId, $enabled, $header)
+    {
+        $formatter = new TraceContextFormatter();
+        $context = $formatter->deserialize($header);
+        $this->assertEquals($traceId, $context->traceId());
+        $this->assertEquals($spanId, $context->spanId());
+        $this->assertEquals($enabled, $context->enabled());
+        $this->assertTrue($context->fromHeader());
+    }
+
+    /**
      * @dataProvider traceHeaders
      */
     public function testToString($traceId, $spanId, $enabled, $expected)
@@ -55,6 +68,16 @@ class TraceContextFormatterTest extends \PHPUnit_Framework_TestCase
             ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", true,  '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01'],
             ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", null,  '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7'],
             ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", null,  '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7']
+        ];
+    }
+
+    public function upperTraceHeaders()
+    {
+        return [
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", false, '00-4BF92F3577B34DA6A3CE929D0E0E4736-00F067AA0BA902B7-00'],
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", true,  '00-4BF92F3577B34DA6A3CE929D0E0E4736-00F067AA0BA902B7-01'],
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", null,  '00-4BF92F3577B34DA6A3CE929D0E0E4736-00F067AA0BA902B7'],
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", null,  '00-4BF92F3577B34DA6A3CE929D0E0E4736-00F067AA0BA902B7']
         ];
     }
 }
