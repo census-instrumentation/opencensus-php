@@ -34,7 +34,7 @@ print_r($span->labels());
 ?>
 --EXPECT--
 Number of traces: 1
-Span id is a integer
+Span id is a string
 Span name is: 'foo'
 Span startTime is a double: 1
 Span startTime is: '0.1'

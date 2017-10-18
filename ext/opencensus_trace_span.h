@@ -30,7 +30,7 @@ extern zend_class_entry* opencensus_trace_span_ce;
 // TraceSpan struct
 typedef struct opencensus_trace_span_t {
     zend_string *name;
-    uint32_t span_id;
+    zend_string *span_id;
     double start;
     double stop;
     struct opencensus_trace_span_t *parent;

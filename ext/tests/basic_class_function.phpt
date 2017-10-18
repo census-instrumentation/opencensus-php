@@ -29,7 +29,7 @@ var_dump($span->labels());
 ?>
 --EXPECT--
 Number of traces: 1
-Span id is a integer
+Span id is a string
 Span name is: 'Foo::bar'
 Span startTime is a double: 1
 Span endTime is a double: 1

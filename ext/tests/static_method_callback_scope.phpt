@@ -32,7 +32,7 @@ print_r($span->labels());
 --EXPECT--
 2 + 3 = 5
 Number of traces: 1
-Span id is a integer
+Span id is a string
 Span name is: 'Foo::plus'
 Span startTime is a double: 1
 Span endTime is a double: 1
