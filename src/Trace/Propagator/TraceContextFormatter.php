@@ -21,14 +21,13 @@ use OpenCensus\Trace\TraceContext;
 
 /**
  * This format using a human readable string encoding to propagate TraceContext.
- * The current format of the header is <trace-id>[/<span-id>][;o=<options>].
- * The options are a bitmask of options. Currently the only option is the
- * least significant bit which signals whether the request was traced or not
- * (1 = traced, 0 = not traced).
+ * See https://github.com/TraceContext/tracecontext-spec/blob/master/trace_context/HTTP_HEADER_FORMAT.md
+ * for the definition.
  */
-class CloudTraceFormatter implements FormatterInterface
+class TraceContextFormatter implements FormatterInterface
 {
-    const CONTEXT_HEADER_FORMAT = '/([0-9a-fA-F]{32})(?:\/(\d+))?(?:;o=(\d+))?/';
+    const CONTEXT_HEADER_FORMAT = '/([0-9a-fA-F]{2})-(.*)/';
+    const VERSION_0_FORMAT = '/([0-9a-fA-F]{32})-([0-9a-fA-F]{16})(?:-([0-9a-fA-F]{2}))?/';
 
     /**
      * Generate a TraceContext object from the Trace Context header
@@ -39,33 +38,43 @@ class CloudTraceFormatter implements FormatterInterface
     public function deserialize($header)
     {
         if (preg_match(self::CONTEXT_HEADER_FORMAT, $header, $matches)) {
-            return new TraceContext(
-                strtolower($matches[1]),
-                array_key_exists(2, $matches) && !empty($matches[2])
-                    ? dechex((int)($matches[2]))
-                    : null,
-                array_key_exists(3, $matches) ? $matches[3] == '1' : null,
-                true
-            );
+            if ($matches[1] == "00") {
+                return $this->deserializeVersion0($matches[2]);
+            } else {
+                trigger_error("Unrecognized TraceContext header version: " . $matches[1], E_USER_WARNING);
+            }
         }
         return new TraceContext();
     }
 
     /**
-     * Convert a TraceContext to header string
+     * Convert a TraceContext to header string. Uses version 0.
      *
      * @param TraceContext $context
      * @return string
      */
     public function serialize(TraceContext $context)
     {
-        $ret = '' . $context->traceId();
+        $ret = '00-' . $context->traceId();
         if ($context->spanId()) {
-            $ret .= '/' . hexdec($context->spanId());
+            $ret .= '-' . str_pad($context->spanId(), 16, "0", STR_PAD_LEFT);
         }
         if ($context->enabled() !== null) {
-            $ret .= ';o=' . ($context->enabled() ? '1' : '0');
+            $ret .= '-' . ($context->enabled() ? '01' : '00');
         }
         return $ret;
+    }
+
+    private function deserializeVersion0($header)
+    {
+        if (preg_match(self::VERSION_0_FORMAT, $header, $matches)) {
+            return new TraceContext(
+                strtolower($matches[1]),
+                strtolower($matches[2]),
+                array_key_exists(3, $matches) ? $matches[3] == '01' : null,
+                true
+            );
+        }
+        trigger_error("Unrecognized TraceContext version 0 format: " . $header, E_USER_WARNING);
     }
 }

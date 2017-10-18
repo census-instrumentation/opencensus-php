@@ -66,18 +66,19 @@ class BinaryFormatterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Data provider for testing serialization and serialization. We use hex strings here to make
-     * the test human readable to see that our test data adheres to the spec.
-     * See https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md
+     * Data provider for testing serialization and serialization. We use hex
+     * strings here to make the test human readable to see that our test data
+     * adheres to the spec. See
+     * https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md
      * for the encoding specification.
      */
     public function traceMetadata()
     {
         return [
-            ['123456789012345678901234567890ab', 1234, false, '00' . '00123456789012345678901234567890ab' . '0100000000000004d2' . '0200'],
-            ['123456789012345678901234567890ab', 1234, true,  '00' . '00123456789012345678901234567890ab' . '0100000000000004d2' . '0201'],
-            ['123456789012345678901234567890ab', null, false, '00' . '00123456789012345678901234567890ab' . '010000000000000000' . '0200'],
-            ['123456789012345678901234567890ab', null, true,  '00' . '00123456789012345678901234567890ab' . '010000000000000000' . '0201']
+            ['123456789012345678901234567890ab', '00000000000004d2', false, '00' . '00123456789012345678901234567890ab' . '01' . '00000000000004d2' . '02' . '00'],
+            ['123456789012345678901234567890ab', '00000000000004d2', true,  '00' . '00123456789012345678901234567890ab' . '01' . '00000000000004d2' . '02' . '01'],
+            ['123456789012345678901234567890ab', null, false, '00' . '00123456789012345678901234567890ab' . '01' . '0000000000000000' . '02' . '00'],
+            ['123456789012345678901234567890ab', null, true,  '00' . '00123456789012345678901234567890ab' . '01' . '0000000000000000' . '02' . '01']
         ];
     }
 }

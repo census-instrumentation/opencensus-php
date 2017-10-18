@@ -49,7 +49,7 @@ print_r($span->labels());
 ?>
 --EXPECT--
 Number of traces: 2
-Span id is a integer
+Span id is a string
 Span name is: '/'
 Span startTime is a double: 1
 Span startTime is: '0.1'
@@ -58,7 +58,7 @@ Array
 (
     [asdf] => qwer
 )
-Span id is a integer
+Span id is a string
 Span name is: 'inner-1'
 Span startTime is a double: 1
 Span endTime is a double: 1

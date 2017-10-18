@@ -24,7 +24,7 @@ Array
     [0] => OpenCensus\Trace\Span Object
         (
             [name:protected] => /
-            [spanId:protected] => %d
+            [spanId:protected] => %s
             [parentSpanId:protected] =>%s
             [startTime:protected] => %d.%d
             [endTime:protected] => %d.%d
@@ -42,8 +42,8 @@ Array
     [1] => OpenCensus\Trace\Span Object
         (
             [name:protected] => inner-1
-            [spanId:protected] => %d
-            [parentSpanId:protected] => %d
+            [spanId:protected] => %s
+            [parentSpanId:protected] => %s
             [startTime:protected] => %d.%d
             [endTime:protected] => %d.%d
             [kind:protected] => %d

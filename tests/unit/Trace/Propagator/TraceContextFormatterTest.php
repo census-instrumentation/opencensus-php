@@ -18,19 +18,19 @@
 namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
 use OpenCensus\Trace\TraceContext;
-use OpenCensus\Trace\Propagator\CloudTraceFormatter;
+use OpenCensus\Trace\Propagator\TraceContextFormatter;
 
 /**
  * @group trace
  */
-class CloudTraceFormatterTest extends \PHPUnit_Framework_TestCase
+class TraceContextFormatterTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider traceHeaders
      */
     public function testParseContext($traceId, $spanId, $enabled, $header)
     {
-        $formatter = new CloudTraceFormatter();
+        $formatter = new TraceContextFormatter();
         $context = $formatter->deserialize($header);
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
@@ -43,7 +43,7 @@ class CloudTraceFormatterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseUppercaseHexContext($traceId, $spanId, $enabled, $header)
     {
-        $formatter = new CloudTraceFormatter();
+        $formatter = new TraceContextFormatter();
         $context = $formatter->deserialize($header);
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
@@ -56,7 +56,7 @@ class CloudTraceFormatterTest extends \PHPUnit_Framework_TestCase
      */
     public function testToString($traceId, $spanId, $enabled, $expected)
     {
-        $formatter = new CloudTraceFormatter();
+        $formatter = new TraceContextFormatter();
         $context = new TraceContext($traceId, $spanId, $enabled);
         $this->assertEquals($expected, $formatter->serialize($context));
     }
@@ -64,24 +64,20 @@ class CloudTraceFormatterTest extends \PHPUnit_Framework_TestCase
     public function traceHeaders()
     {
         return [
-            ['123456789012345678901234567890ab', '4d2', false, '123456789012345678901234567890ab/1234;o=0'],
-            ['123456789012345678901234567890ab', '4d2', true,  '123456789012345678901234567890ab/1234;o=1'],
-            ['123456789012345678901234567890ab', '4d2', null,  '123456789012345678901234567890ab/1234'],
-            ['123456789012345678901234567890ab', null, false,  '123456789012345678901234567890ab;o=0'],
-            ['123456789012345678901234567890ab', null, true,   '123456789012345678901234567890ab;o=1'],
-            ['123456789012345678901234567890ab', null, null,   '123456789012345678901234567890ab'],
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", false, '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00'],
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", true,  '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01'],
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", null,  '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7'],
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", null,  '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7']
         ];
     }
 
     public function upperTraceHeaders()
     {
         return [
-            ['123456789012345678901234567890ab', '4d2', false, '123456789012345678901234567890AB/1234;o=0'],
-            ['123456789012345678901234567890ab', '4d2', true,  '123456789012345678901234567890AB/1234;o=1'],
-            ['123456789012345678901234567890ab', '4d2', null,  '123456789012345678901234567890AB/1234'],
-            ['123456789012345678901234567890ab', null, false,  '123456789012345678901234567890AB;o=0'],
-            ['123456789012345678901234567890ab', null, true,   '123456789012345678901234567890AB;o=1'],
-            ['123456789012345678901234567890ab', null, null,   '123456789012345678901234567890AB'],
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", false, '00-4BF92F3577B34DA6A3CE929D0E0E4736-00F067AA0BA902B7-00'],
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", true,  '00-4BF92F3577B34DA6A3CE929D0E0E4736-00F067AA0BA902B7-01'],
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", null,  '00-4BF92F3577B34DA6A3CE929D0E0E4736-00F067AA0BA902B7'],
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", null,  '00-4BF92F3577B34DA6A3CE929D0E0E4736-00F067AA0BA902B7']
         ];
     }
 }

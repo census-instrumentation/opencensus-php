@@ -218,8 +218,8 @@ class GoogleCloudReporter implements ReporterInterface
                 'name' => $span->name(),
                 'startTime' => $span->startTime(),
                 'endTime' => $span->endTime(),
-                'spanId' => $span->spanId(),
-                'parentSpanId' => $span->parentSpanId(),
+                'spanId' => hexdec($span->spanId()),
+                'parentSpanId' => $span->parentSpanId() ? hexdec($span->parentSpanId()) : null,
                 'labels' => $labels,
                 'kind' => $kind,
             ]);

@@ -43,14 +43,14 @@ class TraceSpan
      * @param array $options [optional] {
      *      Configuration options.
      *
-     *      @type int $spanId The ID of the span. If not provided,
+     *      @type string $spanId The ID of the span. If not provided,
      *            one will be generated automatically for you.
      *      @type string $name The name of the span.
      *      @type \DateTimeInterface|int|float $startTime Start time of the span in nanoseconds.
      *            If provided as an int or float, it is treated as a Unix timestamp.
      *      @type \DateTimeInterface|int|float $endTime End time of the span in nanoseconds.
      *            If provided as an int or float, it is treated as a Unix timestamp.
-     *      @type int $parentSpanId ID of the parent span if any.
+     *      @type string $parentSpanId ID of the parent span if any.
      *      @type array $labels Associative array of $label => $value
      *            to attach to this span.
      *      @type int $kind The kind of span. One of SPAN_KIND_UNKNOWN|SPAN_KIND_CLIENT|SPAN_KIND_SERVER|
@@ -106,7 +106,6 @@ class TraceSpan
             unset($options['parentSpanId']);
         }
 
-
         $this->info['metadata'] = $options;
     }
 
@@ -155,7 +154,7 @@ class TraceSpan
     /**
      * Retrieve the ID of this span.
      *
-     * @return int
+     * @return string
      */
     public function spanId()
     {
@@ -165,7 +164,7 @@ class TraceSpan
     /**
      * Retrieve the ID of this span's parent if it exists.
      *
-     * @return int
+     * @return string
      */
     public function parentSpanId()
     {
@@ -281,11 +280,11 @@ class TraceSpan
      * Generate a random ID for this span. Must be unique per trace,
      * but does not need to be globally unique.
      *
-     * @return int
+     * @return string
      */
     private function generateSpanId()
     {
-        return mt_rand();
+        return dechex(mt_rand());
     }
 
     /**
