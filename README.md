@@ -83,23 +83,23 @@ dependency to fulfill this requirement. For PSR-6 implementations, please see th
 If the APCu extension is available (available on Google AppEngine Flexible Environment)
 and you include the cache/apcu-adapter composer package, we will set up the cache for you.
 
-You can also choose to use the `RandomSampler` which simply samples a flat
+You can also choose to use the `ProbabilitySampler` which simply samples a flat
 percentage of requests.
 
 #### Currently implemented samplers
 
 | Class | Description |
 | ----- | ----------- |
-| [AlwaysOffSampler](src/Trace/Sampler/AlwaysOffSampler.php) | Never trace any requests |
-| [AlwaysOnSampler](src/Trace/Sampler/AlwaysOnSampler.php) | Trace all requests |
+| [NeverSampleSampler](src/Trace/Sampler/NeverSampleSampler.php) | Never trace any requests |
+| [AlwaysSampleSampler](src/Trace/Sampler/AlwaysSampleSampler.php) | Trace all requests |
 | [QpsSampler](src/Trace/Sampler/QpsSampler.php) | Trace X requests per second. Requires a PSR-6 cache implementation |
-| [RandomSampler](src/Trace/Sampler/RandomSampler.php) | Trace X percent of requests. |
+| [ProbabilitySampler](src/Trace/Sampler/ProbabilitySampler.php) | Trace X percent of requests. |
 
 ```php
 use OpenCensus\Trace\Reporter\EchoReporter;
-use OpenCensus\Trace\Sampler\RandomSampler;
+use OpenCensus\Trace\Sampler\ProbabilitySampler;
 
-$sampler = new RandomSampler(0.1); // sample 10% of requests
+$sampler = new ProbabilitySampler(0.1); // sample 10% of requests
 RequestTracer::start(new EchoReporter(), ['sampler' => $sampler]);
 ```
 

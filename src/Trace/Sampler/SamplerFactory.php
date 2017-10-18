@@ -60,12 +60,12 @@ class SamplerFactory
                     $options
                 );
             case 'random':
-                return new RandomSampler($options['rate']);
+                return new ProbabilitySampler($options['rate']);
             case 'enabled':
-                return new AlwaysOnSampler();
+                return new AlwaysSampleSampler();
             case 'disabled':
             default:
-                return new AlwaysOffSampler();
+                return new NeverSampleSampler();
         }
     }
 }

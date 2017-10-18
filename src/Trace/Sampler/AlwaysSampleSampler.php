@@ -6,7 +6,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Tests\Unit\Trace\Sampler;
-
-use OpenCensus\Trace\Sampler\RandomSampler;
+namespace OpenCensus\Trace\Sampler;
 
 /**
- * @group trace
+ * This implementation of the SamplerInterface always returns false. Use this
+ * sampler to attempt to trace all requests. You may be throttled by the server.
  */
-class RandomSamplerTest extends \PHPUnit_Framework_TestCase
+class AlwaysSampleSampler implements SamplerInterface
 {
     /**
-     * @dataProvider invalidRates
-     * @expectedException \InvalidArgumentException
+     * Returns true because we always want to sample.
+     *
+     * @return bool
      */
-    public function testInvalidRate($rate)
+    public function shouldSample()
     {
-        $sampler = new RandomSampler($rate);
-    }
-
-    public function invalidRates()
-    {
-        return [
-            [-1],
-            [10],
-            [1.1]
-        ];
+        return true;
     }
 }

@@ -21,7 +21,7 @@ namespace OpenCensus\Trace\Sampler;
  * This implementation of the SamplerInterface uses a pseudo-random number generator
  * to sample a percentage of requests.
  */
-class RandomSampler implements SamplerInterface
+class ProbabilitySampler implements SamplerInterface
 {
     /**
      * @var float The percentage of requests to sample represented as a float between 0 and 1.
@@ -29,7 +29,7 @@ class RandomSampler implements SamplerInterface
     private $rate;
 
     /**
-     * Creates the RandomSampler
+     * Creates the ProbabilitySampler
      *
      * @param float $percentage The percentage of requests to sample. Must be between 0 and 1.
      */
