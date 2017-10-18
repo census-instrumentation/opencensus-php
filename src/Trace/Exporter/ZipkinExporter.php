@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Trace\Reporter;
+namespace OpenCensus\Trace\Exporter;
 
 use OpenCensus\Trace\Tracer\TracerInterface;
 use OpenCensus\Trace\TraceSpan;
 
 /**
- * This implementation of the ReporterInterface appends a json
+ * This implementation of the ExporterInterface appends a json
  * representation of the trace to a file.
  */
-class ZipkinReporter implements ReporterInterface
+class ZipkinExporter implements ExporterInterface
 {
     /**
      * @var string
@@ -47,7 +47,7 @@ class ZipkinReporter implements ReporterInterface
     private $url;
 
     /**
-     * Create a new ZipkinReporter
+     * Create a new ZipkinExporter
      *
      * @param string $name The name of this application
      * @param string $host The hostname of the Zipkin server

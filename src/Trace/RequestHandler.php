@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Trace;
 
-use OpenCensus\Trace\Reporter\ReporterInterface;
+use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Sampler\SamplerInterface;
 use OpenCensus\Trace\TraceSpan;
 use OpenCensus\Trace\Tracer\ContextTracer;
@@ -38,7 +38,7 @@ class RequestHandler
     const DEFAULT_ROOT_SPAN_NAME = 'main';
 
     /**
-     * @var ReporterInterface The reported to use at the end of the request
+     * @var ExporterInterface The reported to use at the end of the request
      */
     private $reporter;
 
@@ -50,7 +50,7 @@ class RequestHandler
     /**
      * Create a new RequestHandler.
      *
-     * @param ReporterInterface $reporter How to report the trace at the end of the request
+     * @param ExporterInterface $reporter How to report the trace at the end of the request
      * @param SamplerInterface $sampler Which sampler to use for sampling requests
      * @param PropagatorInterface $propagator TraceContext propagator
      * @param array $options [optional] {
@@ -61,7 +61,7 @@ class RequestHandler
      * }
      */
     public function __construct(
-        ReporterInterface $reporter,
+        ExporterInterface $reporter,
         SamplerInterface $sampler,
         PropagatorInterface $propagator,
         array $options = []
@@ -104,7 +104,7 @@ class RequestHandler
 
     /**
      * The function registered as the shutdown function. Cleans up the trace and
-     * reports using the provided ReporterInterface. Adds additional labels to
+     * reports using the provided ExporterInterface. Adds additional labels to
      * the root span detected from the response.
      */
     public function onExit()

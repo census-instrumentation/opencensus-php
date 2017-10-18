@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Tests\Unit\Trace\Reporter;
+namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
-use OpenCensus\Trace\Reporter\EchoReporter;
+use OpenCensus\Trace\Exporter\EchoExporter;
 use OpenCensus\Trace\TraceContext;
 use OpenCensus\Trace\TraceSpan;
 use OpenCensus\Trace\Tracer\TracerInterface;
@@ -25,7 +25,7 @@ use OpenCensus\Trace\Tracer\TracerInterface;
 /**
  * @group trace
  */
-class EchoReporterTest extends \PHPUnit_Framework_TestCase
+class EchoExporterTest extends \PHPUnit_Framework_TestCase
 {
     private $tracer;
 
@@ -47,7 +47,7 @@ class EchoReporterTest extends \PHPUnit_Framework_TestCase
         $this->tracer->spans()->willReturn($spans);
 
         ob_start();
-        $reporter = new EchoReporter();
+        $reporter = new EchoExporter();
         $this->assertTrue($reporter->report($this->tracer->reveal()));
         $output = ob_get_contents();
         ob_end_clean();

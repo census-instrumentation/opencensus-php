@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Tests\Unit\Trace\Reporter;
+namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
-use OpenCensus\Trace\Reporter\ZipkinReporter;
+use OpenCensus\Trace\Exporter\ZipkinExporter;
 use OpenCensus\Trace\TraceContext;
 use OpenCensus\Trace\TraceSpan;
 use OpenCensus\Trace\Tracer\TracerInterface;
@@ -27,7 +27,7 @@ use Prophecy\Argument;
 /**
  * @group trace
  */
-class ZipkinReporterTest extends \PHPUnit_Framework_TestCase
+class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
 {
     private $tracer;
 
@@ -51,7 +51,7 @@ class ZipkinReporterTest extends \PHPUnit_Framework_TestCase
         $this->tracer->context()->willReturn(new TraceContext());
         $this->tracer->spans()->willReturn($spans);
 
-        $reporter = new ZipkinReporter('myapp', 'localhost', 9411);
+        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
 
         $data = $reporter->convertSpans($this->tracer->reveal());
 
@@ -83,7 +83,7 @@ class ZipkinReporterTest extends \PHPUnit_Framework_TestCase
             $tracer->inSpan(['name' => 'span4', 'kind' => TraceSpan::SPAN_KIND_CONSUMER], 'usleep', [1]);
         });
 
-        $reporter = new ZipkinReporter('myapp', 'localhost', 9411);
+        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
         $spans = $reporter->convertSpans($tracer);
 
         $annotationValue = function ($annotation) {
@@ -103,7 +103,7 @@ class ZipkinReporterTest extends \PHPUnit_Framework_TestCase
         $tracer = new ContextTracer(new TraceContext('testtraceid'));
         $tracer->inSpan(['name' => 'main'], function () {});
 
-        $reporter = new ZipkinReporter('myapp', 'localhost', 9411);
+        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
         $spans = $reporter->convertSpans($tracer, [
             'HTTP_X_B3_FLAGS' => '1'
         ]);
@@ -117,7 +117,7 @@ class ZipkinReporterTest extends \PHPUnit_Framework_TestCase
         $tracer = new ContextTracer(new TraceContext('testtraceid', 12345));
         $tracer->inSpan(['name' => 'main'], function () {});
 
-        $reporter = new ZipkinReporter('myapp', 'localhost', 9411);
+        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
         $spans = $reporter->convertSpans($tracer);
 
         $this->assertCount(1, $spans);

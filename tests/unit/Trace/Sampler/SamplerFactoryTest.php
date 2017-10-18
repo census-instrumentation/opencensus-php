@@ -19,9 +19,9 @@ namespace OpenCensus\Tests\Unit\Trace\Sampler;
 
 use OpenCensus\Trace\Sampler\SamplerFactory;
 use OpenCensus\Trace\Sampler\SamplerInterface;
-use OpenCensus\Trace\Sampler\AlwaysOnSampler;
+use OpenCensus\Trace\Sampler\AlwaysSampleSampler;
 use OpenCensus\Trace\Sampler\QpsSampler;
-use OpenCensus\Trace\Sampler\RandomSampler;
+use OpenCensus\Trace\Sampler\ProbabilitySampler;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
@@ -34,7 +34,7 @@ class SamplerFactoryTest extends \PHPUnit_Framework_TestCase
         $sampler = SamplerFactory::build([]);
 
         $this->assertTrue($sampler->shouldSample());
-        $this->assertInstanceOf(AlwaysOnSampler::class, $sampler);
+        $this->assertInstanceOf(AlwaysSampleSampler::class, $sampler);
     }
 
     public function testBuildQps()
@@ -78,7 +78,7 @@ class SamplerFactoryTest extends \PHPUnit_Framework_TestCase
             'type' => 'random',
             'rate' => 0.2
         ]);
-        $this->assertInstanceOf(RandomSampler::class, $sampler);
+        $this->assertInstanceOf(ProbabilitySampler::class, $sampler);
         $this->assertEquals(0.2, $sampler->rate());
     }
 
@@ -87,7 +87,7 @@ class SamplerFactoryTest extends \PHPUnit_Framework_TestCase
         $sampler = SamplerFactory::build([
             'type' => 'random'
         ]);
-        $this->assertInstanceOf(RandomSampler::class, $sampler);
+        $this->assertInstanceOf(ProbabilitySampler::class, $sampler);
         $this->assertEquals(0.1, $sampler->rate());
     }
 

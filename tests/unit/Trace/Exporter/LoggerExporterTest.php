@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Tests\Unit\Trace\Reporter;
+namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
 require_once __DIR__ . '/mock_error_log.php';
 
 use Psr\Log\LoggerInterface;
-use OpenCensus\Trace\Reporter\LoggerReporter;
+use OpenCensus\Trace\Exporter\LoggerExporter;
 use OpenCensus\Trace\TraceContext;
 use OpenCensus\Trace\TraceSpan;
 use OpenCensus\Trace\Tracer\TracerInterface;
@@ -29,7 +29,7 @@ use Prophecy\Argument;
 /**
  * @group trace
  */
-class LoggerReporterTest extends \PHPUnit_Framework_TestCase
+class LoggerExporterTest extends \PHPUnit_Framework_TestCase
 {
     private $tracer;
     private $logger;
@@ -55,7 +55,7 @@ class LoggerReporterTest extends \PHPUnit_Framework_TestCase
             new \Exception('error_log test')
         );
 
-        $reporter = new LoggerReporter($this->logger->reveal(), 'some-level');
+        $reporter = new LoggerExporter($this->logger->reveal(), 'some-level');
         $this->expectOutputString(
             'Reporting the Trace data failed: error_log test'
         );
@@ -76,7 +76,7 @@ class LoggerReporterTest extends \PHPUnit_Framework_TestCase
 
         $this->logger->log('some-level', Argument::type('string'))->shouldBeCalled();
 
-        $reporter = new LoggerReporter($this->logger->reveal(), 'some-level');
+        $reporter = new LoggerExporter($this->logger->reveal(), 'some-level');
         $this->assertTrue($reporter->report($this->tracer->reveal()));
     }
 }

@@ -19,7 +19,7 @@ namespace OpenCensus\Trace;
 
 use OpenCensus\Trace\Sampler\SamplerFactory;
 use OpenCensus\Trace\Sampler\SamplerInterface;
-use OpenCensus\Trace\Reporter\ReporterInterface;
+use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Propagator\PropagatorInterface;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 
@@ -33,9 +33,9 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
  * Example:
  * ```
  * use OpenCensus\Trace\RequestTracer;
- * use OpenCensus\Trace\Reporter\EchoReporter;
+ * use OpenCensus\Trace\Exporter\EchoExporter;
  *
- * $reporter = new EchoReporter();
+ * $reporter = new EchoExporter();
  * RequestTracer::start($reporter);
  * ```
  *
@@ -110,7 +110,7 @@ class RequestTracer
      * Start a new trace session for this request. You should call this as early as
      * possible for the most accurate results.
      *
-     * @param ReporterInterface $reporter
+     * @param ExporterInterface $reporter
      * @param array $options {
      *      Configuration options. See
      *      {@see OpenCensus\Trace\TraceSpan::__construct()} for the other available options.
@@ -123,7 +123,7 @@ class RequestTracer
      * }
      * @return RequestHandler
      */
-    public static function start(ReporterInterface $reporter, array $options = [])
+    public static function start(ExporterInterface $reporter, array $options = [])
     {
         $samplerOptions = array_key_exists('sampler', $options) ? $options['sampler'] : [];
         unset($options['sampler']);

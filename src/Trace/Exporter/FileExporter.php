@@ -15,16 +15,31 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Trace\Reporter;
+namespace OpenCensus\Trace\Exporter;
 
 use OpenCensus\Trace\Tracer\TracerInterface;
 
 /**
- * This implementation of the ReporterInterface uses `print_r` to output
- * the trace's representation to stdout.
+ * This implementation of the ExporterInterface appends a json
+ * representation of the trace to a file.
  */
-class EchoReporter implements ReporterInterface
+class FileExporter implements ExporterInterface
 {
+    /**
+     * @var string The path to the output file.
+     */
+    private $filename;
+
+    /**
+     * Create a new EchoExporter
+     *
+     * @param string $filename The path to the output file.
+     */
+    public function __construct($filename)
+    {
+        $this->filename = $filename;
+    }
+
     /**
      * Report the provided Trace to a backend.
      *
@@ -33,7 +48,6 @@ class EchoReporter implements ReporterInterface
      */
     public function report(TracerInterface $tracer)
     {
-        print_r($tracer->spans());
-        return true;
+        return file_put_contents($this->filename, json_encode($tracer->spans()) . PHP_EOL, FILE_APPEND) !== false;
     }
 }

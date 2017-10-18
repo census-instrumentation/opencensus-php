@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Trace\Sampler;
+namespace OpenCensus\Trace\Exporter;
+
+use OpenCensus\Trace\Tracer\TracerInterface;
 
 /**
- * This implementation of the SamplerInterface always returns false. Use this
- * sampler to attempt to trace all requests. You may be throttled by the server.
+ * This implementation of the ExporterInterface does nothing.
  */
-class AlwaysOnSampler implements SamplerInterface
+class NullExporter implements ExporterInterface
 {
     /**
-     * Returns true because we always want to sample.
+     * Does nothing.
      *
+     * @param  TracerInterface $tracer
      * @return bool
      */
-    public function shouldSample()
+    public function report(TracerInterface $tracer)
     {
         return true;
     }

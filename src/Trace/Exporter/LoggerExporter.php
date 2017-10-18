@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Trace\Reporter;
+namespace OpenCensus\Trace\Exporter;
 
 use OpenCensus\Trace\Tracer\TracerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * This implementation of the ReporterInterface appends a json
+ * This implementation of the ExporterInterface appends a json
  * representation of the trace to a file.
  */
-class LoggerReporter implements ReporterInterface
+class LoggerExporter implements ExporterInterface
 {
     const DEFAULT_LOG_LEVEL = 'notice';
 
@@ -39,7 +39,7 @@ class LoggerReporter implements ReporterInterface
     private $level;
 
     /**
-     * Create a new LoggerReporter
+     * Create a new LoggerExporter
      *
      * @param LoggerInterface $logger The logger to write to.
      * @param string $level The logger level to write as. **Defaults to** `notice`.

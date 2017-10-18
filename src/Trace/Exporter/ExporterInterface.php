@@ -6,7 +6,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,30 +15,20 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Tests\Unit\Trace\Sampler;
+namespace OpenCensus\Trace\Exporter;
 
-use OpenCensus\Trace\Sampler\RandomSampler;
+use OpenCensus\Trace\Tracer\TracerInterface;
 
 /**
- * @group trace
+ * The ExporterInterface allows you to swap out the Trace reporting mechanism
  */
-class RandomSamplerTest extends \PHPUnit_Framework_TestCase
+interface ExporterInterface
 {
     /**
-     * @dataProvider invalidRates
-     * @expectedException \InvalidArgumentException
+     * Report the provided Trace to a backend.
+     *
+     * @param  TracerInterface $tracer
+     * @return bool
      */
-    public function testInvalidRate($rate)
-    {
-        $sampler = new RandomSampler($rate);
-    }
-
-    public function invalidRates()
-    {
-        return [
-            [-1],
-            [10],
-            [1.1]
-        ];
-    }
+    public function report(TracerInterface $tracer);
 }

@@ -6,7 +6,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,13 +15,21 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Trace\Reporter;
+namespace OpenCensus\Trace\Sampler;
 
 /**
- * A mock function for testing error_log function.
+ * This implementation of the SamplerInterface always returns false. Use this
+ * sampler to disable all tracing.
  */
-
-function error_log($msg)
+class NeverSampleSampler implements SamplerInterface
 {
-    echo $msg;
+    /**
+     * Returns false because we never want to sample.
+     *
+     * @return bool
+     */
+    public function shouldSample()
+    {
+        return false;
+    }
 }

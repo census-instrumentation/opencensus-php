@@ -19,7 +19,7 @@ namespace OpenCensus\Tests\Unit\Trace;
 
 use OpenCensus\Trace\TraceSpan;
 use OpenCensus\Trace\RequestHandler;
-use OpenCensus\Trace\Reporter\ReporterInterface;
+use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Sampler\SamplerInterface;
 use OpenCensus\Trace\Tracer\NullTracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
@@ -38,7 +38,7 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
         if (extension_loaded('stackdriver')) {
             stackdriver_trace_clear();
         }
-        $this->reporter = $this->prophesize(ReporterInterface::class);
+        $this->reporter = $this->prophesize(ExporterInterface::class);
         $this->sampler = $this->prophesize(SamplerInterface::class);
     }
 

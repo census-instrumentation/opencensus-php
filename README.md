@@ -19,9 +19,9 @@ $ composer require opencensus/opencensus
 
 ```php
 use OpenCensus\Trace\RequestTracer;
-use OpenCensus\Trace\Reporter\EchoReporter;
+use OpenCensus\Trace\Exporter\EchoExporter;
 
-RequestTracer::start(new EchoReporter());
+RequestTracer::start(new EchoExporter());
 ```
 
 ### PHP Extension
@@ -42,21 +42,21 @@ extension=opencensus.so
 
 ### Reporting Traces
 
-The above sample uses the `EchoReporter` to dump trace results to the
+The above sample uses the `EchoExporter` to dump trace results to the
 bottom of the webpage.
 
-If you would like to provide your own reporter, create a class that implements `ReporterInterface`.
+If you would like to provide your own reporter, create a class that implements `ExporterInterface`.
 
 #### Currently implemented reporters
 
 | Class | Description |
 | ----- | ----------- |
-| [EchoReporter](src/Trace/Reporter/EchoReporter.php) | Output the collected spans to stdout |
-| [FileReporter](src/Trace/Reporter/FileReporter.php) | Output JSON encoded spans to a file |
-| [GoogleCloudReporter](src/Trace/Reporter/GoogleCloudReporter.php) | Report traces to Google Cloud Stackdriver Trace |
-| [LoggerReporter](src/Trace/Reporter/LoggerReporter.php) | Reporter JSON encoded spans to a PSR-3 logger |
-| [NullReporter](scr/Trace/Reporter/NullReporter.php) | No-op |
-| [ZipkinReporter](src/Trace/Reporter/ZipkinReporter.php) | Report collected spans to a Zipkin server |
+| [EchoExporter](src/Trace/Exporter/EchoExporter.php) | Output the collected spans to stdout |
+| [FileExporter](src/Trace/Exporter/FileExporter.php) | Output JSON encoded spans to a file |
+| [GoogleCloudExporter](src/Trace/Exporter/GoogleCloudExporter.php) | Report traces to Google Cloud Stackdriver Trace |
+| [LoggerExporter](src/Trace/Exporter/LoggerExporter.php) | Exporter JSON encoded spans to a PSR-3 logger |
+| [NullExporter](scr/Trace/Exporter/NullExporter.php) | No-op |
+| [ZipkinExporter](src/Trace/Exporter/ZipkinExporter.php) | Report collected spans to a Zipkin server |
 
 ### Sampling Rate
 
@@ -68,12 +68,12 @@ The preferred sampler is the `QpsSampler` (Queries Per Second). This sampler imp
 requires a PSR-6 cache implementation to function.
 
 ```php
-use OpenCensus\Trace\Reporter\EchoReporter;
+use OpenCensus\Trace\Exporter\EchoExporter;
 use OpenCensus\Trace\Sampler\QpsSampler;
 
 $cache = new SomeCacheImplementation();
 $sampler = new QpsSampler($cache, ['rate' => 0.1]); // sample 0.1 requests per second
-RequestTracer::start(new EchoReporter(), ['sampler' => $sampler]);
+RequestTracer::start(new EchoExporter(), ['sampler' => $sampler]);
 ```
 
 Please note: While required for the `QpsSampler`, a PSR-6 implementation is
@@ -83,24 +83,24 @@ dependency to fulfill this requirement. For PSR-6 implementations, please see th
 If the APCu extension is available (available on Google AppEngine Flexible Environment)
 and you include the cache/apcu-adapter composer package, we will set up the cache for you.
 
-You can also choose to use the `RandomSampler` which simply samples a flat
+You can also choose to use the `ProbabilitySampler` which simply samples a flat
 percentage of requests.
 
 #### Currently implemented samplers
 
 | Class | Description |
 | ----- | ----------- |
-| [AlwaysOffSampler](src/Trace/Sampler/AlwaysOffSampler.php) | Never trace any requests |
-| [AlwaysOnSampler](src/Trace/Sampler/AlwaysOnSampler.php) | Trace all requests |
+| [NeverSampleSampler](src/Trace/Sampler/NeverSampleSampler.php) | Never trace any requests |
+| [AlwaysSampleSampler](src/Trace/Sampler/AlwaysSampleSampler.php) | Trace all requests |
 | [QpsSampler](src/Trace/Sampler/QpsSampler.php) | Trace X requests per second. Requires a PSR-6 cache implementation |
-| [RandomSampler](src/Trace/Sampler/RandomSampler.php) | Trace X percent of requests. |
+| [ProbabilitySampler](src/Trace/Sampler/ProbabilitySampler.php) | Trace X percent of requests. |
 
 ```php
-use OpenCensus\Trace\Reporter\EchoReporter;
-use OpenCensus\Trace\Sampler\RandomSampler;
+use OpenCensus\Trace\Exporter\EchoExporter;
+use OpenCensus\Trace\Sampler\ProbabilitySampler;
 
-$sampler = new RandomSampler(0.1); // sample 10% of requests
-RequestTracer::start(new EchoReporter(), ['sampler' => $sampler]);
+$sampler = new ProbabilitySampler(0.1); // sample 10% of requests
+RequestTracer::start(new EchoExporter(), ['sampler' => $sampler]);
 ```
 
 If you would like to provide your own sampler, create a class that implements `SamplerInterface`.
