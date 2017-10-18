@@ -41,7 +41,9 @@ class CloudTraceFormatter implements FormatterInterface
         if (preg_match(self::CONTEXT_HEADER_FORMAT, $header, $matches)) {
             return new TraceContext(
                 $matches[1],
-                array_key_exists(2, $matches) ? $matches[2] : null,
+                array_key_exists(2, $matches) && !empty($matches[2])
+                    ? dechex((int)($matches[2]))
+                    : null,
                 array_key_exists(3, $matches) ? $matches[3] == '1' : null,
                 true
             );
@@ -59,9 +61,11 @@ class CloudTraceFormatter implements FormatterInterface
     {
         $ret = '' . $context->traceId();
         if ($context->spanId()) {
-            $ret .= '/' . $context->spanId();
+            $ret .= '/' . hexdec($context->spanId());
         }
-        $ret .= ';o=' . ($context->enabled() ? '1' : '0');
+        if ($context->enabled() !== null) {
+            $ret .= ';o=' . ($context->enabled() ? '1' : '0');
+        }
         return $ret;
     }
 }

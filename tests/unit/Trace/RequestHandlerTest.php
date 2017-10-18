@@ -77,7 +77,7 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
             ]
         );
         $span = $rt->tracer()->spans()[0];
-        $this->assertEquals('5555', $span->info()['parentSpanId']);
+        $this->assertEquals('15b3', $span->info()['parentSpanId']);
         $context = $rt->context();
         $this->assertEquals('12345678901234567890123456789012', $context->traceId());
     }
