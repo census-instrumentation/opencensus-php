@@ -36,7 +36,7 @@ class ExtensionTracer implements TracerInterface
     public function __construct(TraceContext $context = null)
     {
         $context = $context ?: new TraceContext();
-        opencensus_trace_set_context($context->traceId(), (int) $context->spanId());
+        opencensus_trace_set_context($context->traceId(), $context->spanId());
     }
 
     /**
