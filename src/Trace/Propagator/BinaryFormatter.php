@@ -44,7 +44,10 @@ class BinaryFormatter implements FormatterInterface
             return new TraceContext();
         }
         $enabled = !!($data['options'] & self::OPTION_ENABLED);
-        return new TraceContext($data['traceId'], hexdec($data['spanId']), $enabled, true);
+        $spanId = $data['spanId'] == "0000000000000000"
+            ? null
+            : $data['spanId'];
+        return new TraceContext($data['traceId'], $spanId, $enabled, true);
     }
 
     /**
@@ -55,7 +58,7 @@ class BinaryFormatter implements FormatterInterface
      */
     public function serialize(TraceContext $context)
     {
-        $spanHex = str_pad(dechex($context->spanId()), 16, "0", STR_PAD_LEFT);
+        $spanHex = str_pad($context->spanId(), 16, "0", STR_PAD_LEFT);
         $traceOptions = $context->enabled() ? self::OPTION_ENABLED : 0;
         return pack("CCH*CH*CC", 0, 0, $context->traceId(), 1, $spanHex, 2, $traceOptions);
     }
