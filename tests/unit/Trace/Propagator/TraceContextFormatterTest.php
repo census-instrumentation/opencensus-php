@@ -51,10 +51,10 @@ class TraceContextFormatterTest extends \PHPUnit_Framework_TestCase
     public function traceHeaders()
     {
         return [
-            ['4bf92f3577b34da6a3ce929d0e0e4736', 67667974448284343, false, '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00'],
-            ['4bf92f3577b34da6a3ce929d0e0e4736', 67667974448284343, true,  '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01'],
-            ['4bf92f3577b34da6a3ce929d0e0e4736', 67667974448284343, null,  '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7'],
-            ['4bf92f3577b34da6a3ce929d0e0e4736', 67667974448284343, null,  '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7']
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", false, '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00'],
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", true,  '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01'],
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", null,  '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7'],
+            ['4bf92f3577b34da6a3ce929d0e0e4736', "00f067aa0ba902b7", null,  '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7']
         ];
     }
 }

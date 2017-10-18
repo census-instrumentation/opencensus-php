@@ -57,7 +57,7 @@ class TraceContextFormatter implements FormatterInterface
     {
         $ret = '00-' . $context->traceId();
         if ($context->spanId()) {
-            $ret .= '-' . str_pad(dechex($context->spanId()), 16, "0", STR_PAD_LEFT);
+            $ret .= '-' . str_pad($context->spanId(), 16, "0", STR_PAD_LEFT);
         }
         if ($context->enabled() !== null) {
             $ret .= '-' . ($context->enabled() ? '01' : '00');
@@ -70,7 +70,7 @@ class TraceContextFormatter implements FormatterInterface
         if (preg_match(self::VERSION_0_FORMAT, $header, $matches)) {
             return new TraceContext(
                 $matches[1],
-                hexdec($matches[2]),
+                $matches[2],
                 array_key_exists(3, $matches) ? $matches[3] == '01' : null,
                 true
             );
