@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Trace\Reporter;
+namespace OpenCensus\Trace\Exporter;
 
 use Google\Cloud\Core\Batch\BatchRunner;
 use Google\Cloud\Core\Batch\BatchTrait;
@@ -25,15 +25,15 @@ use OpenCensus\Trace\Tracer\TracerInterface;
 use OpenCensus\Trace\TraceSpan as OpenCensusTraceSpan;
 
 /**
- * This implementation of the ReporterInterface use the BatchRunner to provide
+ * This implementation of the ExporterInterface use the BatchRunner to provide
  * reporting of Traces and their TraceSpans to Google Cloud Stackdriver Trace.
  *
  * Example:
  * ```
  * use OpenCensus\Trace\RequestTracer;
- * use OpenCensus\Trace\Reporter\GoogleCloudReporter;
+ * use OpenCensus\Trace\Exporter\GoogleCloudExporter;
  *
- * $reporter = new GoogleCloudReporter([
+ * $reporter = new GoogleCloudExporter([
  *   'clientConfig' => [
  *      'projectId' => 'my-project'
  *   ]
@@ -48,9 +48,9 @@ use OpenCensus\Trace\TraceSpan as OpenCensusTraceSpan;
  * Example:
  * ```
  * use OpenCensus\Trace\RequestTracer;
- * use OpenCensus\Trace\Reporter\GoogleCloudReporter;
+ * use OpenCensus\Trace\Exporter\GoogleCloudExporter;
  *
- * $reporter = new GoogleCloudReporter([
+ * $reporter = new GoogleCloudExporter([
  *   'async' => true,
  *   'clientConfig' => [
  *      'projectId' => 'my-project'
@@ -67,7 +67,7 @@ use OpenCensus\Trace\TraceSpan as OpenCensusTraceSpan;
  *      incompatible ways. Please use with caution, and test thoroughly when
  *      upgrading.
  */
-class GoogleCloudReporter implements ReporterInterface
+class GoogleCloudExporter implements ExporterInterface
 {
     const VERSION = '0.1.0';
 
@@ -108,7 +108,7 @@ class GoogleCloudReporter implements ReporterInterface
     private $async;
 
     /**
-     * Create a TraceReporter that utilizes background batching.
+     * Create a TraceExporter that utilizes background batching.
      *
      * @param array $options [optional] {
      *     Configuration options.

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Tests\Unit\Trace\Reporter;
+namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
-use OpenCensus\Trace\Reporter\FileReporter;
+use OpenCensus\Trace\Exporter\FileExporter;
 use OpenCensus\Trace\TraceContext;
 use OpenCensus\Trace\TraceSpan;
 use OpenCensus\Trace\Tracer\TracerInterface;
@@ -25,7 +25,7 @@ use OpenCensus\Trace\Tracer\TracerInterface;
 /**
  * @group trace
  */
-class FileReporterTest extends \PHPUnit_Framework_TestCase
+class FileExporterTest extends \PHPUnit_Framework_TestCase
 {
     private $tracer;
     private $filename;
@@ -53,7 +53,7 @@ class FileReporterTest extends \PHPUnit_Framework_TestCase
         $this->tracer->context()->willReturn(new TraceContext('testtraceid'));
         $this->tracer->spans()->willReturn($spans);
 
-        $reporter = new FileReporter($this->filename);
+        $reporter = new FileExporter($this->filename);
         $this->assertTrue($reporter->report($this->tracer->reveal()));
         $this->assertGreaterThan(0, strlen(@file_get_contents($this->filename)));
     }

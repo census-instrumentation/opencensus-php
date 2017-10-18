@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Tests\Unit\Trace\Reporter;
+namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
 require_once __DIR__ . '/mock_error_log.php';
 
-use OpenCensus\Trace\Reporter\GoogleCloudReporter;
+use OpenCensus\Trace\Exporter\GoogleCloudExporter;
 use OpenCensus\Trace\TraceContext;
 use OpenCensus\Trace\Tracer\TracerInterface;
 use OpenCensus\Trace\Tracer\ContextTracer;
@@ -32,7 +32,7 @@ use Google\Cloud\Trace\TraceClient;
 /**
  * @group trace
  */
-class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
+class GoogleCloudExporterTest extends \PHPUnit_Framework_TestCase
 {
     private $client;
 
@@ -50,7 +50,7 @@ class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
             $tracer->inSpan(['name' => 'span2'], 'usleep', [20]);
         });
 
-        $reporter = new GoogleCloudReporter(['client' => $this->client->reveal()]);
+        $reporter = new GoogleCloudExporter(['client' => $this->client->reveal()]);
         $spans = $reporter->convertSpans($tracer);
 
         $this->assertCount(3, $spans);
@@ -73,7 +73,7 @@ class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
         $trace = $this->prophesize(Trace::class);
         $trace->setSpans(Argument::any())->shouldBeCalled();
         $this->client->trace(Argument::any())->willReturn($trace->reveal());
-        $reporter = new GoogleCloudReporter(
+        $reporter = new GoogleCloudExporter(
             ['client' => $this->client->reveal()]
         );
         $this->expectOutputString(
@@ -92,7 +92,7 @@ class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
             $tracer->inSpan(['name' => 'span4', 'kind' => OpenCensusTraceSpan::SPAN_KIND_CONSUMER], 'usleep', [1]);
         });
 
-        $reporter = new GoogleCloudReporter(['client' => $this->client->reveal()]);
+        $reporter = new GoogleCloudExporter(['client' => $this->client->reveal()]);
         $spans = $reporter->convertSpans($tracer);
 
         $this->assertCount(5, $spans);
@@ -111,7 +111,7 @@ class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
         $tracer = new ContextTracer(new TraceContext('testtraceid'));
         $tracer->inSpan(['name' => 'main'], function () {});
 
-        $reporter = new GoogleCloudReporter(['client' => $this->client->reveal()]);
+        $reporter = new GoogleCloudExporter(['client' => $this->client->reveal()]);
         $reporter->processSpans($tracer, [$headerKey => $headerValue]);
         $spans = $tracer->spans();
         $labels = $spans[0]->labels();
@@ -149,7 +149,7 @@ class GoogleCloudReporterTest extends \PHPUnit_Framework_TestCase
         $tracer = new ContextTracer(new TraceContext('testtraceid'));
         $tracer->inSpan(['backtrace' => $backtrace], function () {});
 
-        $reporter = new GoogleCloudReporter(['client' => $this->client->reveal()]);
+        $reporter = new GoogleCloudExporter(['client' => $this->client->reveal()]);
         $spans = $reporter->convertSpans($tracer);
 
         $labels = $spans[0]->info()['labels'];

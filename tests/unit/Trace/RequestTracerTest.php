@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace;
 
-use OpenCensus\Trace\Reporter\ReporterInterface;
+use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\RequestTracer;
 use OpenCensus\Trace\Tracer\NullTracer;
 
@@ -30,7 +30,7 @@ class RequestTracerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->reporter = $this->prophesize(ReporterInterface::class);
+        $this->reporter = $this->prophesize(ExporterInterface::class);
     }
 
     public function testForceDisabled()

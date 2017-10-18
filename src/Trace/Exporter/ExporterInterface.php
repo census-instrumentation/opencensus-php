@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Trace\Reporter;
+namespace OpenCensus\Trace\Exporter;
 
 use OpenCensus\Trace\Tracer\TracerInterface;
 
 /**
- * This implementation of the ReporterInterface does nothing.
+ * The ExporterInterface allows you to swap out the Trace reporting mechanism
  */
-class NullReporter implements ReporterInterface
+interface ExporterInterface
 {
     /**
-     * Does nothing.
+     * Report the provided Trace to a backend.
      *
      * @param  TracerInterface $tracer
      * @return bool
      */
-    public function report(TracerInterface $tracer)
-    {
-        return true;
-    }
+    public function report(TracerInterface $tracer);
 }

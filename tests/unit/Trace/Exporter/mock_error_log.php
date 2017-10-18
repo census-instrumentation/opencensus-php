@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Trace\Reporter;
+namespace OpenCensus\Trace\Exporter;
 
 /**
  * A mock function for testing error_log function.

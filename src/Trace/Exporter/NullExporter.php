@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Trace\Reporter;
+namespace OpenCensus\Trace\Exporter;
 
 use OpenCensus\Trace\Tracer\TracerInterface;
 
 /**
- * This implementation of the ReporterInterface uses `print_r` to output
- * the trace's representation to stdout.
+ * This implementation of the ExporterInterface does nothing.
  */
-class EchoReporter implements ReporterInterface
+class NullExporter implements ExporterInterface
 {
     /**
-     * Report the provided Trace to a backend.
+     * Does nothing.
      *
      * @param  TracerInterface $tracer
      * @return bool
      */
     public function report(TracerInterface $tracer)
     {
-        print_r($tracer->spans());
         return true;
     }
 }
