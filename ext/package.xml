@@ -15,8 +15,8 @@ This extension allows you to easily gather latency and other metadata by watchin
  <date>2017-10-20</date>
  <time>13:11:00</time>
  <version>
-  <release></release>
-  <api></api>
+  <release>0.0.4</release>
+  <api>0.0.4</api>
  </version>
  <stability>
   <release>devel</release>
@@ -154,8 +154,8 @@ First dev release
   </release>
   <release>
    <version>
-    <release></release>
-    <api></api>
+    <release>0.0.4</release>
+    <api>0.0.4</api>
    </version>
    <stability>
     <release>devel</release>

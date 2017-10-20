@@ -23,6 +23,7 @@ releases:
 
   - date: '2017-10-20'
     time: 13:11:00
+    version: 0.0.4
     stability: devel
     notes: |-
       - Adds php_info() section (#42)
