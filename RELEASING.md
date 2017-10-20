@@ -16,7 +16,7 @@ The PHP library and extension are released independently of each other.
 
 1. Run the extension release script:
 
-    `php ext_release.php > ext/package.xml`
+    `php scripts/ext_release.php > ext/package.xml`
 
 1. Go to the extension directory:
 

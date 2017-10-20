@@ -12,11 +12,11 @@ This extension allows you to easily gather latency and other metadata by watchin
   <email>chingor@google.com</email>
   <active>yes</active>
  </lead>
- <date>2017-08-25</date>
- <time>10:34:00</time>
+ <date>2017-10-20</date>
+ <time>13:11:00</time>
  <version>
-  <release>0.0.3</release>
-  <api>0.0.3</api>
+  <release></release>
+  <api></api>
  </version>
  <stability>
   <release>devel</release>
@@ -24,8 +24,8 @@ This extension allows you to easily gather latency and other metadata by watchin
  </stability>
  <license>Apache 2.0</license>
  <notes>
-- Capture span kind (#19)
-- Capture stacktrace (#21)
+- Adds php_info() section (#42)
+- Span ids are captured as hex strings (#44)
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -150,6 +150,22 @@ First dev release
    <notes>
 - Capture span kind (#19)
 - Capture stacktrace (#21)
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release></release>
+    <api></api>
+   </version>
+   <stability>
+    <release>devel</release>
+    <api>devel</api>
+   </stability>
+   <date>2017-10-20</date>
+   <license>Apache 2.0</license>
+   <notes>
+- Adds php_info() section (#42)
+- Span ids are captured as hex strings (#44)
    </notes>
   </release>
  </changelog>
