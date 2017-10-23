@@ -29,7 +29,7 @@ This extension has been built and tested on the following PHP versions:
 1. [Download a release](https://github.com/census-instrumentation/opencensus-php/releases)
 
    ```bash
-   curl https://github.com/census-instrumentation/opencensus-php/archive/v0.0.1.tar.gz -o opencensus.tar.gz
+   curl https://github.com/census-instrumentation/opencensus-php/archive/v0.0.4.tar.gz -o opencensus.tar.gz
    ```
 
 1. Untar the package
