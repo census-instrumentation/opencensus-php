@@ -20,3 +20,11 @@ releases:
     notes: |-
       - Capture span kind (#19)
       - Capture stacktrace (#21)
+
+  - date: '2017-10-20'
+    time: 13:11:00
+    version: 0.0.4
+    stability: devel
+    notes: |-
+      - Adds php_info() section (#42)
+      - Span ids are captured as hex strings (#44)

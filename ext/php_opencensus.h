@@ -24,7 +24,7 @@
 #include "php.h"
 #include "opencensus_trace.h"
 
-#define PHP_OPENCENSUS_VERSION "0.0.3"
+#define PHP_OPENCENSUS_VERSION "0.0.4"
 #define PHP_OPENCENSUS_EXTNAME "opencensus"
 
 #define PHP_OPENCENSUS_MAKE_STD_ZVAL(pzv) \
