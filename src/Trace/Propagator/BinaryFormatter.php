@@ -17,11 +17,11 @@
 
 namespace OpenCensus\Trace\Propagator;
 
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\SpanContext;
 
 /**
  * This propagator contains the method for serializaing and deserializing
- * TraceContext over a binary format.
+ * SpanContext over a binary format.
  *
  * See https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md
  * for the encoding specification.
@@ -31,32 +31,32 @@ class BinaryFormatter implements FormatterInterface
     const OPTION_ENABLED = 1;
 
     /**
-     * Generate a TraceContext object from the Trace Context header
+     * Generate a SpanContext object from the Trace Context header
      *
      * @param string $header
-     * @return TraceContext
+     * @return SpanContext
      */
     public function deserialize($bin)
     {
         $data = @unpack('Cversion/Cfield0/H32traceId/Cfield1/H16spanId/Cfield2/Coptions', $bin);
         if ($data === false) {
-            trigger_error('Invalid binary format for TraceContext', E_USER_WARNING);
-            return new TraceContext();
+            trigger_error('Invalid binary format for SpanContext', E_USER_WARNING);
+            return new SpanContext();
         }
         $enabled = !!($data['options'] & self::OPTION_ENABLED);
         $spanId = $data['spanId'] == "0000000000000000"
             ? null
             : $data['spanId'];
-        return new TraceContext($data['traceId'], $spanId, $enabled, true);
+        return new SpanContext($data['traceId'], $spanId, $enabled, true);
     }
 
     /**
-     * Convert a TraceContext to header string
+     * Convert a SpanContext to header string
      *
-     * @param TraceContext $context
+     * @param SpanContext $context
      * @return string
      */
-    public function serialize(TraceContext $context)
+    public function serialize(SpanContext $context)
     {
         $spanHex = str_pad($context->spanId(), 16, "0", STR_PAD_LEFT);
         $traceOptions = $context->enabled() ? self::OPTION_ENABLED : 0;

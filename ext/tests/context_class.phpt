@@ -5,11 +5,11 @@ OpenCensus Trace: Context Class Test
 
 require_once(__DIR__ . '/common.php');
 
-if (class_exists('OpenCensus\Trace\Context')) {
-    echo "OpenCensus\\Trace\\Context class is defined.\n";
+if (class_exists('OpenCensus\Trace\Ext\SpanContext')) {
+    echo "OpenCensus\\Trace\\Ext\SpanContext class is defined.\n";
 }
 
-$context = new OpenCensus\Trace\Context([
+$context = new OpenCensus\Trace\Ext\SpanContext([
     'spanId' => 1234,
     'traceId' => 'foo'
 ]);
@@ -19,6 +19,6 @@ echo "Trace id: {$context->traceId()}\n";
 
 ?>
 --EXPECT--
-OpenCensus\Trace\Context class is defined.
+OpenCensus\Trace\Ext\SpanContext class is defined.
 Span id: 1234
 Trace id: foo

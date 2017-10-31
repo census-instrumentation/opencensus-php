@@ -198,14 +198,14 @@ opencensus_trace_finish();
 
 ### Retrieving span data
 
-Retrieve an array of collected spans. This returns an array of `OpenCensus\Trace\Span` instances. In general,
+Retrieve an array of collected spans. This returns an array of `OpenCensus\Trace\Ext\Span` instances. In general,
 you will do this at the end of the request. See the [PHP equivalent code](span.php).
 
 ```php
 /**
  * Retrieve the list of collected trace spans
  *
- * @return OpenCensus\Trace\Span[]
+ * @return OpenCensus\Trace\Ext\Span[]
  */
 function opencensus_trace_list();
 
@@ -221,13 +221,13 @@ function opencensus_trace_clear();
 
 As you create spans, your trace context is automatically maintained for you. Trace context consists of a `$traceId`
 and current `$spanId`. At any point, you can ask for the current trace context. This returns a
-`OpenCensus\Trace\Context` object. See the [PHP equivalent code](context.php).
+`OpenCensus\Trace\Ext\SpanContext` object. See the [PHP equivalent code](span_context.php).
 
 ```php
 /**
  * Fetch the current trace context
  *
- * @return OpenCensus\Trace\Context
+ * @return OpenCensus\Trace\Ext\SpanContext
  */
 function opencensus_trace_context();
 ```

@@ -263,7 +263,7 @@ static zend_function_entry opencensus_trace_span_methods[] = {
 int opencensus_trace_span_minit(INIT_FUNC_ARGS) {
     zend_class_entry ce;
 
-    INIT_CLASS_ENTRY(ce, "OpenCensus\\Trace\\Span", opencensus_trace_span_methods);
+    INIT_CLASS_ENTRY(ce, "OpenCensus\\Trace\\Ext\\Span", opencensus_trace_span_methods);
     opencensus_trace_span_ce = zend_register_internal_class(&ce);
 
     zend_declare_property_string(

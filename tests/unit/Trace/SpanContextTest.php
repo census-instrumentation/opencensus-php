@@ -6,7 +6,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Trace;
+namespace OpenCensus\Tests\Unit\Trace;
+
+use OpenCensus\Trace\SpanContext;
 
 /**
- * This is the equivalent PHP class created by the opencensus C extension
+ * @group trace
  */
-class Context {
-    protected $traceId;
-    protected $spanId;
-
-    public function __construct(array $contextOptions)
+class SpanContextTest extends \PHPUnit_Framework_TestCase
+{
+    public function testGeneratesDefaultTraceId()
     {
-        foreach ($contextOptions as $k => $v) {
-            $this->__set($k, $v);
-        }
-    }
-
-    public function spanId()
-    {
-        return $this->spanId;
-    }
-
-    public function traceId()
-    {
-        return $this->traceId;
+        $context = new SpanContext();
+        $this->assertRegexp('/[0-9a-z]{32}/', $context->traceId());
     }
 }

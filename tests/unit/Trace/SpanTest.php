@@ -17,18 +17,18 @@
 
 namespace OpenCensus\Tests\Unit\Trace;
 
-use OpenCensus\Trace\TraceSpan;
+use OpenCensus\Trace\Span;
 
 /**
  * @group trace
  */
-class TraceSpanTest extends \PHPUnit_Framework_TestCase
+class SpanTest extends \PHPUnit_Framework_TestCase
 {
     const EXPECTED_TIMESTAMP_FORMAT = '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z$/';
 
     public function testGeneratesDefaultSpanId()
     {
-        $traceSpan = new TraceSpan();
+        $traceSpan = new Span();
         $info = $traceSpan->info();
         $this->assertArrayHasKey('spanId', $info);
         $this->assertEquals($info['spanId'], $traceSpan->spanId());
@@ -36,7 +36,7 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
 
     public function testReadsSpanId()
     {
-        $traceSpan = new TraceSpan(['spanId' => '1234']);
+        $traceSpan = new Span(['spanId' => '1234']);
         $info = $traceSpan->info();
         $this->assertArrayHasKey('spanId', $info);
         $this->assertEquals('1234', $info['spanId']);
@@ -44,7 +44,7 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
 
     public function testReadsLabels()
     {
-        $traceSpan = new TraceSpan(['labels' => ['foo' => 'bar']]);
+        $traceSpan = new Span(['labels' => ['foo' => 'bar']]);
         $info = $traceSpan->info();
         $this->assertArrayHasKey('labels', $info);
         $this->assertEquals('bar', $info['labels']['foo']);
@@ -52,7 +52,7 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
 
     public function testCanAddLabel()
     {
-        $traceSpan = new TraceSpan();
+        $traceSpan = new Span();
         $traceSpan->addLabel('foo', 'bar');
         $info = $traceSpan->info();
         $this->assertArrayHasKey('labels', $info);
@@ -61,21 +61,21 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
 
     public function testNoLabels()
     {
-        $traceSpan = new TraceSpan();
+        $traceSpan = new Span();
         $info = $traceSpan->info();
         $this->assertArrayNotHasKey('labels', $info);
     }
 
     public function testEmptyLabels()
     {
-        $traceSpan = new TraceSpan(['labels' => []]);
+        $traceSpan = new Span(['labels' => []]);
         $info = $traceSpan->info();
         $this->assertArrayNotHasKey('labels', $info);
     }
 
     public function testGeneratesDefaultSpanName()
     {
-        $traceSpan = new TraceSpan();
+        $traceSpan = new Span();
         $info = $traceSpan->info();
         $this->assertArrayHasKey('name', $info);
         $this->assertStringStartsWith('app', $info['name']);
@@ -84,7 +84,7 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
 
     public function testReadsName()
     {
-        $traceSpan = new TraceSpan(['name' => 'myspan']);
+        $traceSpan = new Span(['name' => 'myspan']);
         $info = $traceSpan->info();
         $this->assertArrayHasKey('name', $info);
         $this->assertEquals('myspan', $info['name']);
@@ -92,7 +92,7 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
 
     public function testStartFormat()
     {
-        $traceSpan = new TraceSpan();
+        $traceSpan = new Span();
         $traceSpan->setStartTime();
         $info = $traceSpan->info();
         $this->assertArrayHasKey('startTime', $info);
@@ -101,7 +101,7 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
 
     public function testFinishFormat()
     {
-        $traceSpan = new TraceSpan();
+        $traceSpan = new Span();
         $traceSpan->setEndTime();
         $info = $traceSpan->info();
         $this->assertArrayHasKey('endTime', $info);
@@ -110,29 +110,29 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
 
     public function testGeneratesDefaultKind()
    {
-       $traceSpan = new TraceSpan();
+       $traceSpan = new Span();
        $info = $traceSpan->info();
        $this->assertArrayHasKey('kind', $info);
-       $this->assertEquals(TraceSpan::SPAN_KIND_UNKNOWN, $info['kind']);
+       $this->assertEquals(Span::SPAN_KIND_UNKNOWN, $info['kind']);
    }
    public function testReadsKind()
    {
-       $traceSpan = new TraceSpan(['kind' => TraceSpan::SPAN_KIND_CLIENT]);
+       $traceSpan = new Span(['kind' => Span::SPAN_KIND_CLIENT]);
        $info = $traceSpan->info();
        $this->assertArrayHasKey('kind', $info);
-       $this->assertEquals(TraceSpan::SPAN_KIND_CLIENT, $info['kind']);
+       $this->assertEquals(Span::SPAN_KIND_CLIENT, $info['kind']);
    }
 
     public function testIgnoresUnknownFields()
     {
-        $traceSpan = new TraceSpan(['extravalue' => 'something']);
+        $traceSpan = new Span(['extravalue' => 'something']);
         $info = $traceSpan->info();
         $this->assertArrayNotHasKey('extravalue', $info);
     }
 
     public function testGeneratesBacktrace()
     {
-        $traceSpan = new TraceSpan();
+        $traceSpan = new Span();
         $this->assertInternalType('array', $traceSpan->backtrace());
         $this->assertTrue(count($traceSpan->backtrace()) > 0);
         $stackframe = $traceSpan->backtrace()[0];
@@ -150,7 +150,7 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
                 'type' => '::'
             ]
         ];
-        $traceSpan = new TraceSpan([
+        $traceSpan = new Span([
             'backtrace' => $backtrace
         ]);
 
@@ -165,7 +165,7 @@ class TraceSpanTest extends \PHPUnit_Framework_TestCase
      */
     public function testCanFormatTimestamps($field, $timestamp, $expected)
     {
-        $traceSpan = new TraceSpan([$field => $timestamp]);
+        $traceSpan = new Span([$field => $timestamp]);
         $this->assertEquals($expected, $traceSpan->info()[$field]->format('Y-m-d\TH:i:s.u000\Z'));
     }
 

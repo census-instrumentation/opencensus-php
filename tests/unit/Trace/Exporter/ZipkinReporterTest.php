@@ -18,8 +18,8 @@
 namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
 use OpenCensus\Trace\Exporter\ZipkinExporter;
-use OpenCensus\Trace\TraceContext;
-use OpenCensus\Trace\TraceSpan;
+use OpenCensus\Trace\SpanContext;
+use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer\TracerInterface;
 use OpenCensus\Trace\Tracer\ContextTracer;
 use Prophecy\Argument;
@@ -42,13 +42,13 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
     public function testFormatsTrace()
     {
         $spans = [
-            new TraceSpan([
+            new Span([
                 'name' => 'span',
                 'startTime' => microtime(true),
                 'endTime' => microtime(true) + 10
             ])
         ];
-        $this->tracer->context()->willReturn(new TraceContext());
+        $this->tracer->context()->willReturn(new SpanContext());
         $this->tracer->spans()->willReturn($spans);
 
         $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
@@ -75,12 +75,12 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
 
     public function testSpanKind()
     {
-        $tracer = new ContextTracer(new TraceContext('testtraceid'));
+        $tracer = new ContextTracer(new SpanContext('testtraceid'));
         $tracer->inSpan(['name' => 'main'], function () use ($tracer) {
-            $tracer->inSpan(['name' => 'span1', 'kind' => TraceSpan::SPAN_KIND_CLIENT], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span2', 'kind' => TraceSpan::SPAN_KIND_SERVER], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span3', 'kind' => TraceSpan::SPAN_KIND_PRODUCER], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span4', 'kind' => TraceSpan::SPAN_KIND_CONSUMER], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span1', 'kind' => Span::SPAN_KIND_CLIENT], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span2', 'kind' => Span::SPAN_KIND_SERVER], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span3', 'kind' => Span::SPAN_KIND_PRODUCER], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span4', 'kind' => Span::SPAN_KIND_CONSUMER], 'usleep', [1]);
         });
 
         $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
@@ -100,7 +100,7 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
 
     public function testSpanDebug()
     {
-        $tracer = new ContextTracer(new TraceContext('testtraceid'));
+        $tracer = new ContextTracer(new SpanContext('testtraceid'));
         $tracer->inSpan(['name' => 'main'], function () {});
 
         $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
@@ -114,7 +114,7 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
 
     public function testSpanShared()
     {
-        $tracer = new ContextTracer(new TraceContext('testtraceid', 12345));
+        $tracer = new ContextTracer(new SpanContext('testtraceid', 12345));
         $tracer->inSpan(['name' => 'main'], function () {});
 
         $reporter = new ZipkinExporter('myapp', 'localhost', 9411);

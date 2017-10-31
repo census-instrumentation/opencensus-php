@@ -17,40 +17,40 @@
 
 namespace OpenCensus\Trace\Propagator;
 
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\SpanContext;
 
 /**
- * This interface lets us define separate TraceContext Propagator formats. This interface is responsible for
- * parsing and propagating the TraceContext to upstream and downstream requests.
+ * This interface lets us define separate SpanContext Propagator formats. This interface is responsible for
+ * parsing and propagating the SpanContext to upstream and downstream requests.
  */
 interface PropagatorInterface
 {
     /**
-     * Extract the TraceContext from some container
+     * Extract the SpanContext from some container
      *
      * @param mixed $container
-     * @return TraceContext
+     * @return SpanContext
      */
     public function extract($container);
 
     /**
-     * Inject the TraceContext back into the response
+     * Inject the SpanContext back into the response
      *
-     * @param TraceContext $context
+     * @param SpanContext $context
      * @param mixed $container
      * @return array
      */
-    public function inject(TraceContext $context, $container);
+    public function inject(SpanContext $context, $container);
 
     /**
-     * Fetch the formatter for propagating the TraceContext
+     * Fetch the formatter for propagating the SpanContext
      *
      * @return FormatterInterface
      */
     public function formatter();
 
     /**
-     * Return the key used to propagate the TraceContext
+     * Return the key used to propagate the SpanContext
      *
      * @return string
      */

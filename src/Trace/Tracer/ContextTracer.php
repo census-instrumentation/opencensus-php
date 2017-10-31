@@ -17,47 +17,47 @@
 
 namespace OpenCensus\Trace\Tracer;
 
-use OpenCensus\Trace\TraceSpan;
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\Span;
+use OpenCensus\Trace\SpanContext;
 
 /**
  * This implementation of the TracerInterface manages your trace context throughout
- * the request. It maintains a stack of `TraceSpan` records that are currently open
+ * the request. It maintains a stack of `Span` records that are currently open
  * allowing you to know the current context at any moment.
  */
 class ContextTracer implements TracerInterface
 {
     /**
-     * @var TraceSpan[] List of Spans to report
+     * @var Span[] List of Spans to report
      */
     private $spans = [];
 
     /**
-     * @var TraceSpan[] Stack of Spans that maintain our nested call stack.
+     * @var Span[] Stack of Spans that maintain our nested call stack.
      */
     private $stack = [];
 
     /**
-     * @var TraceContext The current context of this tracer.
+     * @var SpanContext The current context of this tracer.
      */
     private $context;
 
     /**
      * Create a new ContextTracer
      *
-     * @param TraceContext $context [optional] The TraceContext to begin with. If none
-     *        provided, a fresh TraceContext will be generated.
+     * @param SpanContext $context [optional] The SpanContext to begin with. If none
+     *        provided, a fresh SpanContext will be generated.
      */
-    public function __construct(TraceContext $context = null)
+    public function __construct(SpanContext $context = null)
     {
-        $this->context = $context ?: new TraceContext();
+        $this->context = $context ?: new SpanContext();
     }
 
     /**
      * Instrument a callable by creating a Span that manages the startTime and endTime.
      *
      * @param array $spanOptions Options for the span.
-     *        {@see OpenCensus\Trace\TraceSpan::__construct()}
+     *        {@see OpenCensus\Trace\Span::__construct()}
      * @param callable $callable The callable to instrument.
      * @param array $arguments [optional] Arguments for the callable.
      * @return mixed The result of the callable
@@ -76,7 +76,7 @@ class ContextTracer implements TracerInterface
      * Start a new Span. The start time is already set to the current time.
      *
      * @param array $spanOptions [optional] Options for the span.
-     *        {@see OpenCensus\Trace\TraceSpan::__construct()}
+     *        {@see OpenCensus\Trace\Span::__construct()}
      */
     public function startSpan(array $spanOptions = [])
     {
@@ -85,7 +85,7 @@ class ContextTracer implements TracerInterface
             'startTime' => microtime(true)
         ];
 
-        $span = new TraceSpan($spanOptions);
+        $span = new Span($spanOptions);
         array_push($this->spans, $span);
         array_unshift($this->stack, $span);
         $this->context->setSpanId($span->spanId());
@@ -110,7 +110,7 @@ class ContextTracer implements TracerInterface
     /**
      * Return the current context.
      *
-     * @return TraceContext
+     * @return SpanContext
      */
     public function context()
     {
@@ -120,7 +120,7 @@ class ContextTracer implements TracerInterface
     /**
      * Return the spans collected.
      *
-     * @return TraceSpan[]
+     * @return Span[]
      */
     public function spans()
     {
@@ -128,7 +128,7 @@ class ContextTracer implements TracerInterface
     }
 
     /**
-     * Add a label to the current TraceSpan
+     * Add a label to the current Span
      *
      * @param string $label
      * @param string $value
@@ -141,7 +141,7 @@ class ContextTracer implements TracerInterface
     }
 
     /**
-     * Add a label to the primary TraceSpan
+     * Add a label to the primary Span
      *
      * @param string $label
      * @param string $value

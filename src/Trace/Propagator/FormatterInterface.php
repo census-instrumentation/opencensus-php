@@ -17,26 +17,26 @@
 
 namespace OpenCensus\Trace\Propagator;
 
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\SpanContext;
 
 /**
- * This interface lets us define serialization strategies for TraceContext.
+ * This interface lets us define serialization strategies for SpanContext.
  */
 interface FormatterInterface
 {
     /**
-     * Generate a TraceContext object from the Trace Context header
+     * Generate a SpanContext object from the Trace Context header
      *
      * @param string $header
-     * @return TraceContext
+     * @return SpanContext
      */
     public function deserialize($header);
 
     /**
-     * Convert a TraceContext to header string
+     * Convert a SpanContext to header string
      *
-     * @param TraceContext $context
+     * @param SpanContext $context
      * @return string
      */
-    public function serialize(TraceContext $context);
+    public function serialize(SpanContext $context);
 }

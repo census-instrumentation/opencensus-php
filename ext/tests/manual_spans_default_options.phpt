@@ -21,7 +21,7 @@ print_r($traces);
 Number of traces: 2
 Array
 (
-    [0] => OpenCensus\Trace\Span Object
+    [0] => OpenCensus\Trace\Ext\Span Object
         (
             [name:protected] => /
             [spanId:protected] => %s
@@ -39,7 +39,7 @@ Array
 
         )
 
-    [1] => OpenCensus\Trace\Span Object
+    [1] => OpenCensus\Trace\Ext\Span Object
         (
             [name:protected] => inner-1
             [spanId:protected] => %s

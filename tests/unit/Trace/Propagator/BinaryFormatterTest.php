@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Propagator\BinaryFormatter;
 
 /**
@@ -44,7 +44,7 @@ class BinaryFormatterTest extends \PHPUnit_Framework_TestCase
     public function testSerialize($traceId, $spanId, $enabled, $hex)
     {
         $formatter = new BinaryFormatter();
-        $context = new TraceContext($traceId, $spanId, $enabled);
+        $context = new SpanContext($traceId, $spanId, $enabled);
         $this->assertEquals($hex, bin2hex($formatter->serialize($context)));
     }
 
@@ -57,7 +57,7 @@ class BinaryFormatterTest extends \PHPUnit_Framework_TestCase
         $context = $formatter->deserialize(hex2bin("0012341abc"));
     }
 
-    public function testDeserializeBadDataReturnsEmptyTraceContext()
+    public function testDeserializeBadDataReturnsEmptySpanContext()
     {
         $formatter = new BinaryFormatter();
         $context = @$formatter->deserialize(hex2bin("0012341abc"));
