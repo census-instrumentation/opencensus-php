@@ -31,9 +31,9 @@ use OpenCensus\Trace\Span as OpenCensusSpan;
  * Example:
  * ```
  * use OpenCensus\Trace\RequestTracer;
- * use OpenCensus\Trace\Exporter\GoogleCloudExporter;
+ * use OpenCensus\Trace\Exporter\StackdriverExporter;
  *
- * $reporter = new GoogleCloudExporter([
+ * $reporter = new StackdriverExporter([
  *   'clientConfig' => [
  *      'projectId' => 'my-project'
  *   ]
@@ -48,9 +48,9 @@ use OpenCensus\Trace\Span as OpenCensusSpan;
  * Example:
  * ```
  * use OpenCensus\Trace\RequestTracer;
- * use OpenCensus\Trace\Exporter\GoogleCloudExporter;
+ * use OpenCensus\Trace\Exporter\StackdriverExporter;
  *
- * $reporter = new GoogleCloudExporter([
+ * $reporter = new StackdriverExporter([
  *   'async' => true,
  *   'clientConfig' => [
  *      'projectId' => 'my-project'
@@ -67,7 +67,7 @@ use OpenCensus\Trace\Span as OpenCensusSpan;
  *      incompatible ways. Please use with caution, and test thoroughly when
  *      upgrading.
  */
-class GoogleCloudExporter implements ExporterInterface
+class StackdriverExporter implements ExporterInterface
 {
     const VERSION = '0.1.0';
 

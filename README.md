@@ -53,7 +53,7 @@ If you would like to provide your own reporter, create a class that implements `
 | ----- | ----------- |
 | [EchoExporter](src/Trace/Exporter/EchoExporter.php) | Output the collected spans to stdout |
 | [FileExporter](src/Trace/Exporter/FileExporter.php) | Output JSON encoded spans to a file |
-| [GoogleCloudExporter](src/Trace/Exporter/GoogleCloudExporter.php) | Report traces to Google Cloud Stackdriver Trace |
+| [StackdriverExporter](src/Trace/Exporter/StackdriverExporter.php) | Report traces to Google Cloud Stackdriver Trace |
 | [LoggerExporter](src/Trace/Exporter/LoggerExporter.php) | Exporter JSON encoded spans to a PSR-3 logger |
 | [NullExporter](scr/Trace/Exporter/NullExporter.php) | No-op |
 | [ZipkinExporter](src/Trace/Exporter/ZipkinExporter.php) | Report collected spans to a Zipkin server |
