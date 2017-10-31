@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Trace;
+namespace OpenCensus\Trace\Ext;
 
 /**
  * This is the equivalent PHP class created by the opencensus C extension
  */
-class Context {
+class SpanContext {
     protected $traceId;
     protected $spanId;
 

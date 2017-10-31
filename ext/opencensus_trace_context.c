@@ -15,7 +15,7 @@
  */
 
 /*
- * This is the implementation of the OpenCensus\Trace\Context class. The PHP
+ * This is the implementation of the OpenCensus\Trace\SpanContext class. The PHP
  * equivalent is:
  *
  * namespace OpenCensus\Trace;
@@ -52,7 +52,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_OpenCensusTraceContext_construct, 0, 0, 1)
 ZEND_END_ARG_INFO();
 
 /**
- * Initializer for OpenCensus\Trace\Context
+ * Initializer for OpenCensus\Trace\SpanContext
  *
  * @param array $contextOptions
  */
@@ -105,7 +105,7 @@ static PHP_METHOD(OpenCensusTraceContext, traceId) {
     RETURN_ZVAL(val, 1, 0);
 }
 
-/* Declare method entries for the OpenCensus\Trace\Context class */
+/* Declare method entries for the OpenCensus\Trace\SpanContext class */
 static zend_function_entry opencensus_trace_context_methods[] = {
     PHP_ME(OpenCensusTraceContext, __construct, arginfo_OpenCensusTraceContext_construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(OpenCensusTraceContext, spanId, NULL, ZEND_ACC_PUBLIC)
@@ -113,11 +113,11 @@ static zend_function_entry opencensus_trace_context_methods[] = {
     PHP_FE_END
 };
 
-/* Module init handler for registering the OpenCensus\Trace\Context class */
+/* Module init handler for registering the OpenCensus\Trace\SpanContext class */
 int opencensus_trace_context_minit(INIT_FUNC_ARGS) {
     zend_class_entry ce;
 
-    INIT_CLASS_ENTRY(ce, "OpenCensus\\Trace\\Ext\\Context", opencensus_trace_context_methods);
+    INIT_CLASS_ENTRY(ce, "OpenCensus\\Trace\\Ext\\SpanContext", opencensus_trace_context_methods);
     opencensus_trace_context_ce = zend_register_internal_class(&ce);
 
     zend_declare_property_null(opencensus_trace_context_ce, "spanId", sizeof("spanId") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);

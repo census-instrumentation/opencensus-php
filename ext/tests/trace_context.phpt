@@ -9,15 +9,15 @@ require_once(__DIR__ . '/common.php');
 opencensus_trace_method("Foo", "context");
 opencensus_trace_set_context("traceid", 1234);
 $context = opencensus_trace_context();
-if ($context instanceof OpenCensus\Trace\Context) {
-    echo "Context is a OpenCensus\\Trace\\Context.\n";
+if ($context instanceof OpenCensus\Trace\Ext\SpanContext) {
+    echo "Context is a OpenCensus\\Trace\\Ext\\SpanContext.\n";
 }
 
 $f = new Foo();
 $context = $f->context();
 
-if ($context instanceof OpenCensus\Trace\Context) {
-    echo "Nested context is a OpenCensus\\Trace\\Context.\n";
+if ($context instanceof OpenCensus\Trace\Ext\SpanContext) {
+    echo "Nested context is a OpenCensus\\Trace\\Ext\\SpanContext.\n";
 }
 
 $traces = opencensus_trace_list();
@@ -33,8 +33,8 @@ echo "Span parent id: {$span->parentSpanId()}\n";
 echo "Context trace id: {$context->traceId()}\n";
 ?>
 --EXPECT--
-Context is a OpenCensus\Trace\Context.
-Nested context is a OpenCensus\Trace\Context.
+Context is a OpenCensus\Trace\Ext\SpanContext.
+Nested context is a OpenCensus\Trace\Ext\SpanContext.
 Number of traces: 1
 Span id matches context's span id.
 Span parent id: 1234

@@ -5,7 +5,7 @@ OpenCensus Trace: Span Class Test
 
 require_once(__DIR__ . '/common.php');
 
-$span = new OpenCensus\Trace\Span([
+$span = new OpenCensus\Trace\Ext\Span([
     'spanId' => 1234,
     'name' => 'foo',
     'startTime' => 12345.1,

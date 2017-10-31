@@ -446,7 +446,7 @@ PHP_FUNCTION(opencensus_trace_set_context)
 /**
  * Return the current trace context
  *
- * @return OpenCensus\Trace\Context
+ * @return OpenCensus\Trace\SpanContext
  */
 PHP_FUNCTION(opencensus_trace_context)
 {

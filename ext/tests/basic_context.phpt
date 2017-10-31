@@ -14,6 +14,6 @@ echo "Span id: {$context->spanId()}\n";
 ?>
 --EXPECT--
 Set context: 1
-Context class: OpenCensus\Trace\Context
+Context class: OpenCensus\Trace\Ext\SpanContext
 Trace id: traceid
 Span id: 1234
