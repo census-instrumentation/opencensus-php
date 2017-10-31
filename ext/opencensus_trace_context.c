@@ -117,7 +117,7 @@ static zend_function_entry opencensus_trace_context_methods[] = {
 int opencensus_trace_context_minit(INIT_FUNC_ARGS) {
     zend_class_entry ce;
 
-    INIT_CLASS_ENTRY(ce, "OpenCensus\\Trace\\Context", opencensus_trace_context_methods);
+    INIT_CLASS_ENTRY(ce, "OpenCensus\\Trace\\Ext\\Context", opencensus_trace_context_methods);
     opencensus_trace_context_ce = zend_register_internal_class(&ce);
 
     zend_declare_property_null(opencensus_trace_context_ce, "spanId", sizeof("spanId") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
