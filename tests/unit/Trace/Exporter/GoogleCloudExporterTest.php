@@ -20,10 +20,10 @@ namespace OpenCensus\Tests\Unit\Trace\Exporter;
 require_once __DIR__ . '/mock_error_log.php';
 
 use OpenCensus\Trace\Exporter\GoogleCloudExporter;
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Tracer\TracerInterface;
 use OpenCensus\Trace\Tracer\ContextTracer;
-use OpenCensus\Trace\TraceSpan as OpenCensusTraceSpan;
+use OpenCensus\Trace\Span as OpenCensusSpan;
 use Prophecy\Argument;
 use Google\Cloud\Trace\Trace;
 use Google\Cloud\Trace\TraceSpan;
@@ -44,7 +44,7 @@ class GoogleCloudExporterTest extends \PHPUnit_Framework_TestCase
 
     public function testFormatsTrace()
     {
-        $tracer = new ContextTracer(new TraceContext('testtraceid'));
+        $tracer = new ContextTracer(new SpanContext('testtraceid'));
         $tracer->inSpan(['name' => 'main'], function () use ($tracer) {
             $tracer->inSpan(['name' => 'span1'], 'usleep', [10]);
             $tracer->inSpan(['name' => 'span2'], 'usleep', [20]);
@@ -65,7 +65,7 @@ class GoogleCloudExporterTest extends \PHPUnit_Framework_TestCase
 
     public function testReportWithAnExceptionErrorLog()
     {
-        $tracer = new ContextTracer(new TraceContext('testtraceid'));
+        $tracer = new ContextTracer(new SpanContext('testtraceid'));
         $tracer->inSpan(['name' => 'main'], function () {});
         $this->client->insert(Argument::any())->willThrow(
             new \Exception('error_log test')
@@ -84,12 +84,12 @@ class GoogleCloudExporterTest extends \PHPUnit_Framework_TestCase
 
     public function testHandlesKind()
     {
-        $tracer = new ContextTracer(new TraceContext('testtraceid'));
+        $tracer = new ContextTracer(new SpanContext('testtraceid'));
         $tracer->inSpan(['name' => 'main'], function () use ($tracer) {
-            $tracer->inSpan(['name' => 'span1', 'kind' => OpenCensusTraceSpan::SPAN_KIND_CLIENT], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span2', 'kind' => OpenCensusTraceSpan::SPAN_KIND_SERVER], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span3', 'kind' => OpenCensusTraceSpan::SPAN_KIND_PRODUCER], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span4', 'kind' => OpenCensusTraceSpan::SPAN_KIND_CONSUMER], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span1', 'kind' => OpenCensusSpan::SPAN_KIND_CLIENT], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span2', 'kind' => OpenCensusSpan::SPAN_KIND_SERVER], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span3', 'kind' => OpenCensusSpan::SPAN_KIND_PRODUCER], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span4', 'kind' => OpenCensusSpan::SPAN_KIND_CONSUMER], 'usleep', [1]);
         });
 
         $reporter = new GoogleCloudExporter(['client' => $this->client->reveal()]);
@@ -108,7 +108,7 @@ class GoogleCloudExporterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParsesDefaultLabels($headerKey, $headerValue, $expectedLabelKey, $expectedLabelValue)
     {
-        $tracer = new ContextTracer(new TraceContext('testtraceid'));
+        $tracer = new ContextTracer(new SpanContext('testtraceid'));
         $tracer->inSpan(['name' => 'main'], function () {});
 
         $reporter = new GoogleCloudExporter(['client' => $this->client->reveal()]);
@@ -146,7 +146,7 @@ class GoogleCloudExporterTest extends \PHPUnit_Framework_TestCase
                 'type' => '::'
             ]
         ];
-        $tracer = new ContextTracer(new TraceContext('testtraceid'));
+        $tracer = new ContextTracer(new SpanContext('testtraceid'));
         $tracer->inSpan(['backtrace' => $backtrace], function () {});
 
         $reporter = new GoogleCloudExporter(['client' => $this->client->reveal()]);

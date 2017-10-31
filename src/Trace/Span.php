@@ -24,7 +24,7 @@ namespace OpenCensus\Trace;
  * for its suboperations. Spans do not need to be contiguous. There may be
  * gaps between spans in a trace.
  */
-class TraceSpan
+class Span
 {
     /**
      * @var array Associative array containing all the fields representing this Span.

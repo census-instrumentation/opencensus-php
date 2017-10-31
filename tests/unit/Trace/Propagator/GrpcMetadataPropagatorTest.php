@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Propagator\BinaryFormatter;
 use OpenCensus\Trace\Propagator\GrpcMetadataPropagator;
 

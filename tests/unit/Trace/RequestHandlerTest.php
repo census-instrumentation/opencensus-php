@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace;
 
-use OpenCensus\Trace\TraceSpan;
+use OpenCensus\Trace\Span;
 use OpenCensus\Trace\RequestHandler;
 use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Sampler\SamplerInterface;
@@ -56,7 +56,7 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
         $spans = $rt->tracer()->spans();
         $this->assertCount(2, $spans);
         foreach ($spans as $span) {
-            $this->assertInstanceOf(TraceSpan::class, $span);
+            $this->assertInstanceOf(Span::class, $span);
             $this->assertArrayHasKey('endTime', $span->info());
         }
         $this->assertEquals('main', $spans[0]->name());

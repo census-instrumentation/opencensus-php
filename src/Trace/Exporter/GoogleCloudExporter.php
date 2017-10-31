@@ -22,11 +22,11 @@ use Google\Cloud\Core\Batch\BatchTrait;
 use Google\Cloud\Trace\TraceClient;
 use Google\Cloud\Trace\TraceSpan;
 use OpenCensus\Trace\Tracer\TracerInterface;
-use OpenCensus\Trace\TraceSpan as OpenCensusTraceSpan;
+use OpenCensus\Trace\Span as OpenCensusSpan;
 
 /**
  * This implementation of the ExporterInterface use the BatchRunner to provide
- * reporting of Traces and their TraceSpans to Google Cloud Stackdriver Trace.
+ * reporting of Traces and their Spans to Google Cloud Stackdriver Trace.
  *
  * Example:
  * ```
@@ -164,7 +164,7 @@ class GoogleCloudExporter implements ExporterInterface
             return false;
         }
 
-        // build a Trace object and assign TraceSpans
+        // build a Trace object and assign Spans
         $trace = self::$client->trace(
             $tracer->context()->traceId()
         );
@@ -203,11 +203,11 @@ class GoogleCloudExporter implements ExporterInterface
     public function convertSpans(TracerInterface $tracer)
     {
         $spanKindMap = [
-            OpenCensusTraceSpan::SPAN_KIND_CLIENT => TraceSpan::SPAN_KIND_RPC_CLIENT,
-            OpenCensusTraceSpan::SPAN_KIND_SERVER => TraceSpan::SPAN_KIND_RPC_SERVER
+            OpenCensusSpan::SPAN_KIND_CLIENT => TraceSpan::SPAN_KIND_RPC_CLIENT,
+            OpenCensusSpan::SPAN_KIND_SERVER => TraceSpan::SPAN_KIND_RPC_SERVER
         ];
 
-        // transform OpenCensus TraceSpans to Google\Cloud\TraceSpans
+        // transform OpenCensus Spans to Google\Cloud\Spans
         return array_map(function ($span) use ($spanKindMap) {
             $kind = array_key_exists($span->kind(), $spanKindMap)
                 ? $spanKindMap[$span->kind()]

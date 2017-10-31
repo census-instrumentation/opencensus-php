@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Tracer;
 
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Tracer\ContextTracer;
 
 /**
@@ -28,7 +28,7 @@ class ContextTracerTest extends \PHPUnit_Framework_TestCase
     public function testMaintainsContext()
     {
         $parentSpanId = 12345;
-        $initialContext = new TraceContext('traceid', $parentSpanId);
+        $initialContext = new SpanContext('traceid', $parentSpanId);
 
         $tracer = new ContextTracer($initialContext);
         $context = $tracer->context();

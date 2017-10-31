@@ -18,8 +18,8 @@
 namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
 use OpenCensus\Trace\Exporter\EchoExporter;
-use OpenCensus\Trace\TraceContext;
-use OpenCensus\Trace\TraceSpan;
+use OpenCensus\Trace\SpanContext;
+use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer\TracerInterface;
 
 /**
@@ -37,13 +37,13 @@ class EchoExporterTest extends \PHPUnit_Framework_TestCase
     public function testLogsTrace()
     {
         $spans = [
-            new TraceSpan([
+            new Span([
                 'name' => 'span',
                 'startTime' => microtime(true),
                 'endTime' => microtime(true) + 10
             ])
         ];
-        $this->tracer->context()->willReturn(new TraceContext('testtraceid'));
+        $this->tracer->context()->willReturn(new SpanContext('testtraceid'));
         $this->tracer->spans()->willReturn($spans);
 
         ob_start();

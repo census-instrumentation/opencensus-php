@@ -18,7 +18,7 @@
 namespace OpenCensus\Trace;
 
 /**
- * TraceContext encapsulates your current context within your request's trace. It includes
+ * SpanContext encapsulates your current context within your request's trace. It includes
  * 3 fields: the `traceId`, the current `spanId`, and an `enabled` flag which indicates whether
  * or not the request is being traced.
  *
@@ -30,7 +30,7 @@ namespace OpenCensus\Trace;
  * echo $context; // output the header format for using the current context in a remote call
  * ```
  */
-class TraceContext
+class SpanContext
 {
     use IdGeneratorTrait;
 
@@ -51,7 +51,7 @@ class TraceContext
     private $enabled;
 
     /**
-     * Creates a new TraceContext instance
+     * Creates a new SpanContext instance
      *
      * @param string $traceId The current traceId. If not set, one will be
      *        generated for you.

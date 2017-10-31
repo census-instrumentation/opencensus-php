@@ -18,7 +18,7 @@
 namespace OpenCensus\Trace\Exporter;
 
 use OpenCensus\Trace\Tracer\TracerInterface;
-use OpenCensus\Trace\TraceSpan;
+use OpenCensus\Trace\Span;
 
 /**
  * This implementation of the ExporterInterface appends a json
@@ -110,10 +110,10 @@ class ZipkinExporter implements ExporterInterface
         $traceId = $tracer->context()->traceId();
 
         $kindMap = [
-            TraceSpan::SPAN_KIND_CLIENT => 'CLIENT',
-            TraceSpan::SPAN_KIND_SERVER => 'SERVER',
-            TraceSpan::SPAN_KIND_PRODUCER => 'PRODUCER',
-            TraceSpan::SPAN_KIND_CONSUMER => 'CONSUMER'
+            Span::SPAN_KIND_CLIENT => 'CLIENT',
+            Span::SPAN_KIND_SERVER => 'SERVER',
+            Span::SPAN_KIND_PRODUCER => 'PRODUCER',
+            Span::SPAN_KIND_CONSUMER => 'CONSUMER'
         ];
 
         // True is a request to store this span even if it overrides sampling policy.

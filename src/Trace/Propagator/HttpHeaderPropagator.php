@@ -17,10 +17,10 @@
 
 namespace OpenCensus\Trace\Propagator;
 
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\SpanContext;
 
 /**
- * This propagator uses HTTP headers to propagate TraceContext over HTTP.
+ * This propagator uses HTTP headers to propagate SpanContext over HTTP.
  * The default headers is `X-Cloud-Trace-Context`.
  */
 class HttpHeaderPropagator implements PropagatorInterface
@@ -40,9 +40,9 @@ class HttpHeaderPropagator implements PropagatorInterface
     /**
      * Create a new HttpHeaderPropagator
      *
-     * @param FormatterInterface $formatter The formatter used to serialize/deserialize TraceContext
+     * @param FormatterInterface $formatter The formatter used to serialize/deserialize SpanContext
      *        **Defaults to** a new CloudTraceFormatter.
-     * @param string $key [optional] The header key to store/retrieve the encoded TraceContext.
+     * @param string $key [optional] The header key to store/retrieve the encoded SpanContext.
      *        **Defaults to** `HTTP_X_CLOUD_TRACE_CONTEXT`
      */
     public function __construct(FormatterInterface $formatter = null, $header = null)
@@ -52,27 +52,27 @@ class HttpHeaderPropagator implements PropagatorInterface
     }
 
     /**
-     * Generate a TraceContext object from the all the HTTP headers
+     * Generate a SpanContext object from the all the HTTP headers
      *
      * @param array $headers
-     * @return TraceContext
+     * @return SpanContext
      */
     public function extract($headers)
     {
         if (array_key_exists($this->header, $headers)) {
             return $this->formatter->deserialize($headers[$this->header]);
         }
-        return new TraceContext();
+        return new SpanContext();
     }
 
     /**
-     * Persiste the current TraceContext back into the results of this request
+     * Persiste the current SpanContext back into the results of this request
      *
-     * @param TraceContext $context
+     * @param SpanContext $context
      * @param array $container
      * @return array
      */
-    public function inject(TraceContext $context, $container)
+    public function inject(SpanContext $context, $container)
     {
         $header = str_replace('_', '-', preg_replace('/^HTTP_/', '', $this->header));
         $container[$header] = $this->formatter->serialize($context);
@@ -90,7 +90,7 @@ class HttpHeaderPropagator implements PropagatorInterface
     }
 
     /**
-     * Return the key used to propagate the TraceContext
+     * Return the key used to propagate the SpanContext
      *
      * @return string
      */

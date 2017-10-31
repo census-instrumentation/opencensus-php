@@ -19,7 +19,7 @@ namespace OpenCensus\Trace;
 
 use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Sampler\SamplerInterface;
-use OpenCensus\Trace\TraceSpan;
+use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer\ContextTracer;
 use OpenCensus\Trace\Tracer\ExtensionTracer;
 use OpenCensus\Trace\Tracer\NullTracer;
@@ -52,10 +52,10 @@ class RequestHandler
      *
      * @param ExporterInterface $reporter How to report the trace at the end of the request
      * @param SamplerInterface $sampler Which sampler to use for sampling requests
-     * @param PropagatorInterface $propagator TraceContext propagator
+     * @param PropagatorInterface $propagator SpanContext propagator
      * @param array $options [optional] {
      *      Configuration options. See
-     *      {@see OpenCensus\Trace\TraceSpan::__construct()} for the other available options.
+     *      {@see OpenCensus\Trace\Span::__construct()} for the other available options.
      *
      *      @type array $headers Optional array of headers to use in place of $_SERVER
      * }
@@ -127,13 +127,13 @@ class RequestHandler
     }
 
     /**
-     * Instrument a callable by creating a TraceSpan that manages the startTime
+     * Instrument a callable by creating a Span that manages the startTime
      * and endTime. If an exception is thrown while executing the callable, the
      * exception will be caught, the span will be closed, and the exception will
      * be re-thrown.
      *
      * @param array $spanOptions Options for the span.
-     *        {@see OpenCensus\Trace\TraceSpan::__construct()}
+     *        {@see OpenCensus\Trace\Span::__construct()}
      * @param callable $callable The callable to instrument.
      * @return mixed Returns whatever the callable returns
      */
@@ -143,12 +143,12 @@ class RequestHandler
     }
 
     /**
-     * Explicitly start a new TraceSpan. You will need to manage finishing the TraceSpan,
+     * Explicitly start a new Span. You will need to manage finishing the Span,
      * including handling any thrown exceptions.
      *
      * @param array $spanOptions [optional] Options for the span.
-     *        {@see OpenCensus\Trace\TraceSpan::__construct()}
-     * @return TraceSpan
+     *        {@see OpenCensus\Trace\Span::__construct()}
+     * @return Span
      */
     public function startSpan(array $spanOptions = [])
     {
@@ -156,9 +156,9 @@ class RequestHandler
     }
 
     /**
-     * Explicitly finish the current context (TraceSpan).
+     * Explicitly finish the current context (Span).
      *
-     * @return TraceSpan
+     * @return Span
      */
     public function endSpan()
     {
@@ -166,9 +166,9 @@ class RequestHandler
     }
 
     /**
-     * Return the current context (TraceSpan)
+     * Return the current context (Span)
      *
-     * @return TraceContext
+     * @return SpanContext
      */
     public function context()
     {

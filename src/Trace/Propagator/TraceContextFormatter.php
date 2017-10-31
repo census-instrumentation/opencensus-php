@@ -17,11 +17,11 @@
 
 namespace OpenCensus\Trace\Propagator;
 
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\SpanContext;
 
 /**
- * This format using a human readable string encoding to propagate TraceContext.
- * See https://github.com/TraceContext/tracecontext-spec/blob/master/trace_context/HTTP_HEADER_FORMAT.md
+ * This format using a human readable string encoding to propagate SpanContext.
+ * See https://github.com/SpanContext/tracecontext-spec/blob/master/trace_context/HTTP_HEADER_FORMAT.md
  * for the definition.
  */
 class TraceContextFormatter implements FormatterInterface
@@ -30,10 +30,10 @@ class TraceContextFormatter implements FormatterInterface
     const VERSION_0_FORMAT = '/([0-9a-fA-F]{32})-([0-9a-fA-F]{16})(?:-([0-9a-fA-F]{2}))?/';
 
     /**
-     * Generate a TraceContext object from the Trace Context header
+     * Generate a SpanContext object from the Trace Context header
      *
      * @param string $header
-     * @return TraceContext
+     * @return SpanContext
      */
     public function deserialize($header)
     {
@@ -41,19 +41,19 @@ class TraceContextFormatter implements FormatterInterface
             if ($matches[1] == "00") {
                 return $this->deserializeVersion0($matches[2]);
             } else {
-                trigger_error("Unrecognized TraceContext header version: " . $matches[1], E_USER_WARNING);
+                trigger_error("Unrecognized SpanContext header version: " . $matches[1], E_USER_WARNING);
             }
         }
-        return new TraceContext();
+        return new SpanContext();
     }
 
     /**
-     * Convert a TraceContext to header string. Uses version 0.
+     * Convert a SpanContext to header string. Uses version 0.
      *
-     * @param TraceContext $context
+     * @param SpanContext $context
      * @return string
      */
-    public function serialize(TraceContext $context)
+    public function serialize(SpanContext $context)
     {
         $ret = '00-' . $context->traceId();
         if ($context->spanId()) {
@@ -68,13 +68,13 @@ class TraceContextFormatter implements FormatterInterface
     private function deserializeVersion0($header)
     {
         if (preg_match(self::VERSION_0_FORMAT, $header, $matches)) {
-            return new TraceContext(
+            return new SpanContext(
                 strtolower($matches[1]),
                 strtolower($matches[2]),
                 array_key_exists(3, $matches) ? $matches[3] == '01' : null,
                 true
             );
         }
-        trigger_error("Unrecognized TraceContext version 0 format: " . $header, E_USER_WARNING);
+        trigger_error("Unrecognized SpanContext version 0 format: " . $header, E_USER_WARNING);
     }
 }

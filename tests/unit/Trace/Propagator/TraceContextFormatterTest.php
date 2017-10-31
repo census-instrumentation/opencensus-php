@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Propagator\TraceContextFormatter;
 
 /**
@@ -57,7 +57,7 @@ class TraceContextFormatterTest extends \PHPUnit_Framework_TestCase
     public function testToString($traceId, $spanId, $enabled, $expected)
     {
         $formatter = new TraceContextFormatter();
-        $context = new TraceContext($traceId, $spanId, $enabled);
+        $context = new SpanContext($traceId, $spanId, $enabled);
         $this->assertEquals($expected, $formatter->serialize($context));
     }
 

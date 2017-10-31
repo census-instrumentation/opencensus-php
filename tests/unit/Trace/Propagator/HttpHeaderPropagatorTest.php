@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Propagator\CloudTraceFormatter;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 
@@ -58,7 +58,7 @@ class HttpHeaderPropagatorTest extends \PHPUnit_Framework_TestCase
     public function testInject($traceId, $spanId, $enabled, $header)
     {
         $propagator = new HttpHeaderPropagator();
-        $context = new TraceContext($traceId, $spanId, $enabled);
+        $context = new SpanContext($traceId, $spanId, $enabled);
         $output = $propagator->inject($context, []);
         $this->assertArrayHasKey('X-CLOUD-TRACE-CONTEXT', $output);
         $this->assertEquals($header, $output['X-CLOUD-TRACE-CONTEXT']);
@@ -70,7 +70,7 @@ class HttpHeaderPropagatorTest extends \PHPUnit_Framework_TestCase
     public function testInjectCustomKey($traceId, $spanId, $enabled, $header)
     {
         $propagator = new HttpHeaderPropagator(new CloudTraceFormatter(), 'HTTP_TRACE_CONTEXT');
-        $context = new TraceContext($traceId, $spanId, $enabled);
+        $context = new SpanContext($traceId, $spanId, $enabled);
         $output = $propagator->inject($context, []);
         $this->assertArrayHasKey('TRACE-CONTEXT', $output);
         $this->assertEquals($header, $output['TRACE-CONTEXT']);

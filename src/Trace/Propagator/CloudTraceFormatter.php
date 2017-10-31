@@ -17,10 +17,10 @@
 
 namespace OpenCensus\Trace\Propagator;
 
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\SpanContext;
 
 /**
- * This format using a human readable string encoding to propagate TraceContext.
+ * This format using a human readable string encoding to propagate SpanContext.
  * The current format of the header is <trace-id>[/<span-id>][;o=<options>].
  * The options are a bitmask of options. Currently the only option is the
  * least significant bit which signals whether the request was traced or not
@@ -31,15 +31,15 @@ class CloudTraceFormatter implements FormatterInterface
     const CONTEXT_HEADER_FORMAT = '/([0-9a-fA-F]{32})(?:\/(\d+))?(?:;o=(\d+))?/';
 
     /**
-     * Generate a TraceContext object from the Trace Context header
+     * Generate a SpanContext object from the Trace Context header
      *
      * @param string $header
-     * @return TraceContext
+     * @return SpanContext
      */
     public function deserialize($header)
     {
         if (preg_match(self::CONTEXT_HEADER_FORMAT, $header, $matches)) {
-            return new TraceContext(
+            return new SpanContext(
                 strtolower($matches[1]),
                 array_key_exists(2, $matches) && !empty($matches[2])
                     ? dechex((int)($matches[2]))
@@ -48,16 +48,16 @@ class CloudTraceFormatter implements FormatterInterface
                 true
             );
         }
-        return new TraceContext();
+        return new SpanContext();
     }
 
     /**
-     * Convert a TraceContext to header string
+     * Convert a SpanContext to header string
      *
-     * @param TraceContext $context
+     * @param SpanContext $context
      * @return string
      */
-    public function serialize(TraceContext $context)
+    public function serialize(SpanContext $context)
     {
         $ret = '' . $context->traceId();
         if ($context->spanId()) {

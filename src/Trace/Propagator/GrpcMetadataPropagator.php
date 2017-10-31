@@ -17,12 +17,12 @@
 
 namespace OpenCensus\Trace\Propagator;
 
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\SpanContext;
 
 /**
- * This propagator contains the logic for propagating TraceContext over
+ * This propagator contains the logic for propagating SpanContext over
  * grpc using its request metadata. It will default to using the BinaryFormatter
- * to serialize/deserialize TraceContext.
+ * to serialize/deserialize SpanContext.
  */
 class GrpcMetadataPropagator implements PropagatorInterface
 {
@@ -41,9 +41,9 @@ class GrpcMetadataPropagator implements PropagatorInterface
     /**
      * Create a new GrpcMetadataPropagator
      *
-     * @param FormatterInterface $formatter [optional] The formatter used to serialize/deserialize TraceContext
+     * @param FormatterInterface $formatter [optional] The formatter used to serialize/deserialize SpanContext
      *        **Defaults to** a new BinaryFormatter.
-     * @param string $key [optional] The grpc metadata key to store/retrieve the encoded TraceContext.
+     * @param string $key [optional] The grpc metadata key to store/retrieve the encoded SpanContext.
      *        **Defaults to** `grpc-trace-bin`
      */
     public function __construct(FormatterInterface $formatter = null, $key = null)
@@ -53,34 +53,34 @@ class GrpcMetadataPropagator implements PropagatorInterface
     }
 
     /**
-     * Generate a TraceContext object from the all the HTTP headers
+     * Generate a SpanContext object from the all the HTTP headers
      *
      * @param array $metadata
-     * @return TraceContext
+     * @return SpanContext
      */
     public function extract($metadata)
     {
         if (array_key_exists($this->key, $metadata)) {
             return $this->formatter->deserialize($metadata[$this->key]);
         }
-        return new TraceContext();
+        return new SpanContext();
     }
 
     /**
-     * Persiste the current TraceContext back into the results of this request
+     * Persiste the current SpanContext back into the results of this request
      *
-     * @param TraceContext $context
+     * @param SpanContext $context
      * @param array $container
      * @return array
      */
-    public function inject(TraceContext $context, $metadata)
+    public function inject(SpanContext $context, $metadata)
     {
         $metadata[$this->key] = $this->formatter->serialize($context);
         return $metadata;
     }
 
     /**
-     * Fetch the formatter for propagating the TraceContext
+     * Fetch the formatter for propagating the SpanContext
      *
      * @return FormatterInterface
      */
@@ -90,7 +90,7 @@ class GrpcMetadataPropagator implements PropagatorInterface
     }
 
     /**
-     * Return the key used to propagate the TraceContext
+     * Return the key used to propagate the SpanContext
      *
      * @return string
      */

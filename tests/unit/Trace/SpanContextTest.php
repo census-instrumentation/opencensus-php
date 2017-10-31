@@ -17,16 +17,16 @@
 
 namespace OpenCensus\Tests\Unit\Trace;
 
-use OpenCensus\Trace\TraceContext;
+use OpenCensus\Trace\SpanContext;
 
 /**
  * @group trace
  */
-class TraceContextTest extends \PHPUnit_Framework_TestCase
+class SpanContextTest extends \PHPUnit_Framework_TestCase
 {
     public function testGeneratesDefaultTraceId()
     {
-        $context = new TraceContext();
+        $context = new SpanContext();
         $this->assertRegexp('/[0-9a-z]{32}/', $context->traceId());
     }
 }
