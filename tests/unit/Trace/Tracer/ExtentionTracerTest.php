@@ -37,8 +37,9 @@ class ExtensionTracerTest extends \PHPUnit_Framework_TestCase
     {
         $parentSpanId = 12345;
         $initialContext = new SpanContext('traceid', $parentSpanId);
+        $initialContext->attach();
 
-        $tracer = new ExtensionTracer($initialContext);
+        $tracer = new ExtensionTracer();
         $context = $tracer->context();
 
         $this->assertEquals('traceid', $context->traceId());
@@ -59,11 +60,11 @@ class ExtensionTracerTest extends \PHPUnit_Framework_TestCase
     public function testAddsLabelsToCurrentSpan()
     {
         $tracer = new ExtensionTracer();
-        $tracer->startSpan(['name' => 'root']);
-        $tracer->startSpan(['name' => 'inner']);
-        $tracer->addLabel('foo', 'bar');
-        $tracer->endSpan();
-        $tracer->endSpan();
+        $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
+            $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
+                $tracer->addLabel('foo', 'bar');
+            });
+        });
 
         $spans = $tracer->spans();
         $this->assertCount(2, $spans);
@@ -76,11 +77,11 @@ class ExtensionTracerTest extends \PHPUnit_Framework_TestCase
     public function testAddsLabelsToRootSpan()
     {
         $tracer = new ExtensionTracer();
-        $tracer->startSpan(['name' => 'root']);
-        $tracer->startSpan(['name' => 'inner']);
-        $tracer->addRootLabel('foo', 'bar');
-        $tracer->endSpan();
-        $tracer->endSpan();
+        $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
+            $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
+                $tracer->addRootLabel('foo', 'bar');
+            });
+        });
 
         $spans = $tracer->spans();
         $this->assertCount(2, $spans);

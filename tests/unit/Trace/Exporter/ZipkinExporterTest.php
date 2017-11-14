@@ -102,7 +102,10 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
 
     public function testSpanDebug()
     {
-        $tracer = new ContextTracer(new SpanContext('testtraceid'));
+        $spanContext = new SpanContext('testtraceid');
+        $spanContext->attach();
+
+        $tracer = new ContextTracer();
         $tracer->inSpan(['name' => 'main'], function () {});
 
         $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
@@ -116,7 +119,10 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
 
     public function testSpanShared()
     {
-        $tracer = new ContextTracer(new SpanContext('testtraceid', 12345));
+        $spanContext = new SpanContext('testtraceid', 12345);
+        $spanContext->attach();
+
+        $tracer = new ContextTracer();
         $tracer->inSpan(['name' => 'main'], function () {});
 
         $reporter = new ZipkinExporter('myapp', 'localhost', 9411);

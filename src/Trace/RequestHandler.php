@@ -92,8 +92,9 @@ class RequestHandler
             }
         }
 
+        $spanContext->attach();
         $this->tracer = $spanContext->enabled()
-            ? extension_loaded('opencensus') ? new ExtensionTracer($spanContext) : new ContextTracer($spanContext)
+            ? extension_loaded('opencensus') ? new ExtensionTracer() : new ContextTracer()
             : new NullTracer();
 
         $spanOptions = $options + [

@@ -29,8 +29,9 @@ class ContextTracerTest extends \PHPUnit_Framework_TestCase
     {
         $parentSpanId = 12345;
         $initialContext = new SpanContext('traceid', $parentSpanId);
+        $initialContext->attach();
 
-        $tracer = new ContextTracer($initialContext);
+        $tracer = new ContextTracer();
         $context = SpanContext::current();
 
         $this->assertEquals('traceid', $context->traceId());

@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Trace\Integrations\Guzzle;
 
+use OpenCensus\Core\Scope;
 use OpenCensus\Trace\RequestTracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 use OpenCensus\Trace\Propagator\PropagatorInterface;
@@ -45,6 +46,11 @@ class EventSubscriber implements SubscriberInterface
      * @var PropagatorInterface
      */
     private $propagator;
+
+    /**
+     * @var Scope
+     */
+    private $scope
 
     /**
      * Create a new Guzzle event listener that creates trace spans and propagates the current
@@ -82,13 +88,14 @@ class EventSubscriber implements SubscriberInterface
         if ($context = RequestTracer::context()) {
             $request->setHeader($this->propagator->key(), $this->propagator->formatter->serialize($context));
         }
-        RequestTracer::startSpan([
+        $span = RequestTracer::startSpan([
             'name' => 'GuzzleHttp::request',
             'labels' => [
                 'method' => $request->getMethod(),
                 'uri' => $request->getUrl()
             ]
         ]);
+        $this->scope = RequestTracer::withSpan($span);
     }
 
     /**
@@ -99,6 +106,6 @@ class EventSubscriber implements SubscriberInterface
      */
     public function onEnd(EndEvent $event)
     {
-        RequestTracer::endSpan();
+        $this->scope->close();
     }
 }

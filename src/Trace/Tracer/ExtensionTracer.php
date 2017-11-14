@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Trace\Tracer;
 
+use OpenCensus\Core\Scope;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
 
@@ -27,18 +28,6 @@ use OpenCensus\Trace\Span;
  */
 class ExtensionTracer implements TracerInterface
 {
-    /**
-     * Create a new ExtensionTracer
-     *
-     * @param SpanContext $context [optional] The SpanContext to begin with. If none
-     *      provided, a fresh SpanContext will be generated.
-     */
-    public function __construct(SpanContext $context = null)
-    {
-        $context = $context ?: new SpanContext();
-        opencensus_trace_set_context($context->traceId(), $context->spanId());
-    }
-
     /**
      * Instrument a callable by creating a Span
      *
@@ -67,10 +56,10 @@ class ExtensionTracer implements TracerInterface
      */
     public function startSpan(array $spanOptions)
     {
-        $name = array_key_exists('name', $spanOptions)
-            ? $spanOptions['name']
-            : $this->generateSpanName();
-        opencensus_trace_begin($name, $spanOptions);
+        if (!array_key_exists('name', $spanOptions)) {
+            $spanOption['name'] = $this->generateSpanName();
+        }
+        return new Span($spanOptions);
     }
 
     /**
@@ -82,6 +71,7 @@ class ExtensionTracer implements TracerInterface
      */
     public function withSpan(Span $span)
     {
+        opencensus_trace_begin($span->name(), $span->info());
         return new Scope(function () {
             opencensus_trace_finish();
         });

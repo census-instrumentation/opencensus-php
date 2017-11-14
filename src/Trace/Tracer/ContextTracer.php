@@ -34,18 +34,6 @@ class ContextTracer implements TracerInterface
      */
     private $spans = [];
 
-    public function __construct(SpanContext $context = null)
-    {
-        if ($context) {
-            Context::current()
-                ->withValue('traceId', $context->traceId())
-                ->withValue('spanId', $context->spanId())
-                ->withValue('enabled', $context->enabled())
-                ->withValue('fromHeader', $context->fromHeader())
-                ->attach();
-        }
-    }
-
     /**
      * Instrument a callable by creating a Span that manages the startTime and endTime.
      *
@@ -76,6 +64,9 @@ class ContextTracer implements TracerInterface
      */
     public function startSpan(array $spanOptions = [])
     {
+        if (!array_key_exists('name', $spanOptions)) {
+            $spanOption['name'] = $this->generateSpanName();
+        }
         $spanOptions += [
             'parentSpanId' => SpanContext::current()->spanId(),
             'startTime' => microtime(true)
