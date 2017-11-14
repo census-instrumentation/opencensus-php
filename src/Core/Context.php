@@ -151,6 +151,8 @@ class Context
     /**
      * Resets the context to an initial state. This is generally used only for
      * testing.
+     *
+     * @internal
      */
     public static function reset()
     {
