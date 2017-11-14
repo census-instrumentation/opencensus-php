@@ -71,6 +71,21 @@ class Context
     }
 
     /**
+     * Creates a new context with the given key/values.
+     *
+     * @param array $data
+     * @return Context
+     */
+    public function withValues($data)
+    {
+        $copy = $this->values;
+        foreach ($data as $key => $value) {
+            $copy[$key] = $value;
+        }
+        return new Context($copy);
+    }
+
+    /**
      * Fetches the value for a given key in this context. Returns the provided
      * default if not set.
      *
@@ -94,7 +109,7 @@ class Context
     public function attach()
     {
         $current = self::current();
-        self::setCurrent($this);
+        self::$current = $this;
         return $current;
     }
 
@@ -110,7 +125,7 @@ class Context
             trigger_error('Unexpected context to detach.', E_USER_WARNING);
         }
 
-        self::setCurrent($toAttach);
+        self::$current = $toAttach;
     }
 
     /**
@@ -132,15 +147,10 @@ class Context
     public static function current()
     {
         if (!self::$current) {
-            self::setCurrent(self::background());
+            self::$current = self::background();
         }
 
         return self::$current;
-    }
-
-    public static function setCurrent(Context $toAttach)
-    {
-        self::$current = $toAttach;
     }
 
     /**
@@ -156,6 +166,8 @@ class Context
     /**
      * Resets the context to an initial state. This is generally used only for
      * testing.
+     *
+     * @internal
      */
     public static function reset()
     {
