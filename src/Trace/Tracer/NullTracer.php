@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Trace\Tracer;
 
+use OpenCensus\Core\Scope;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
 
@@ -42,19 +43,27 @@ class NullTracer implements TracerInterface
 
     /**
      * Start a new Span. The start time is already set to the current time.
+     * The newly created span is not attached to the current context.
      *
      * @param array $spanOptions [optional] Options for the span.
      *      {@see OpenCensus\Trace\Span::__construct()}
+     * @return Span
      */
     public function startSpan(array $spanOptions)
     {
+        return new Span();
     }
 
     /**
-     * Finish the current context's Span.
+     * Attaches the provided span as the current span and returns a Scope
+     * object which must be closed.
+     *
+     * @param Span $span
+     * @return Scope
      */
-    public function endSpan()
+    public function withSpan(Span $span)
     {
+        return new Scope(function () {});
     }
 
     /**

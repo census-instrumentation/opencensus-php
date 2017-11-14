@@ -43,7 +43,7 @@ class EchoExporterTest extends \PHPUnit_Framework_TestCase
                 'endTime' => microtime(true) + 10
             ])
         ];
-        $this->tracer->context()->willReturn(new SpanContext('testtraceid'));
+
         $this->tracer->spans()->willReturn($spans);
 
         ob_start();

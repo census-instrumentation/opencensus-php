@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace\Tracer;
 
+use OpenCensus\Core\Context;
+use OpenCensus\Core\Scope;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanContext;
 
@@ -32,25 +34,16 @@ class ContextTracer implements TracerInterface
      */
     private $spans = [];
 
-    /**
-     * @var Span[] Stack of Spans that maintain our nested call stack.
-     */
-    private $stack = [];
-
-    /**
-     * @var SpanContext The current context of this tracer.
-     */
-    private $context;
-
-    /**
-     * Create a new ContextTracer
-     *
-     * @param SpanContext $context [optional] The SpanContext to begin with. If none
-     *        provided, a fresh SpanContext will be generated.
-     */
     public function __construct(SpanContext $context = null)
     {
-        $this->context = $context ?: new SpanContext();
+        if ($context) {
+            Context::current()
+                ->withValue('traceId', $context->traceId())
+                ->withValue('spanId', $context->spanId())
+                ->withValue('enabled', $context->enabled())
+                ->withValue('fromHeader', $context->fromHeader())
+                ->attach();
+        }
     }
 
     /**
@@ -64,57 +57,55 @@ class ContextTracer implements TracerInterface
      */
     public function inSpan(array $spanOptions, callable $callable, array $arguments = [])
     {
-        $this->startSpan($spanOptions);
+        $span = $this->startSpan($spanOptions);
+        $scope = $this->withSpan($span);
         try {
             return call_user_func_array($callable, $arguments);
         } finally {
-            $this->endSpan();
+            $scope->close();
         }
     }
 
     /**
-     * Start a new Span. The start time is already set to the current time.
+     * Create a new Span. The start time is already set to the current time.
+     * The newly created span is not attached to the current context.
      *
      * @param array $spanOptions [optional] Options for the span.
      *        {@see OpenCensus\Trace\Span::__construct()}
+     * @return Span
      */
     public function startSpan(array $spanOptions = [])
     {
         $spanOptions += [
-            'parentSpanId' => $this->context()->spanId(),
+            'parentSpanId' => SpanContext::current()->spanId(),
             'startTime' => microtime(true)
         ];
 
-        $span = new Span($spanOptions);
+        return new Span($spanOptions);
+    }
+
+    /**
+     * Attaches the provided span as the current span and returns a Scope
+     * object which must be closed.
+     *
+     * @param Span $span
+     * @return Scope
+     */
+    public function withSpan(Span $span)
+    {
         array_push($this->spans, $span);
-        array_unshift($this->stack, $span);
-        $this->context->setSpanId($span->spanId());
-    }
-
-    /**
-     * Finish the current context's Span.
-     *
-     * @return bool
-     */
-    public function endSpan()
-    {
-        $span = array_shift($this->stack);
-        $this->context->setSpanId(empty($this->stack) ? null : $this->stack[0]->spanId());
-        if ($span) {
-            $span->setEndTime();
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Return the current context.
-     *
-     * @return SpanContext
-     */
-    public function context()
-    {
-        return $this->context;
+        $prevContext = Context::current()
+            ->withValue('currentSpan', $span)
+            ->withValue('spanId', $span->spanId())
+            ->attach();
+        return new Scope(function () use ($prevContext) {
+            $currentContext = Context::current();
+            $span = $currentContext->value('currentSpan');
+            if ($span) {
+                $span->setEndTime();
+            }
+            $currentContext->detach($prevContext);
+        });
     }
 
     /**
@@ -135,8 +126,9 @@ class ContextTracer implements TracerInterface
      */
     public function addLabel($label, $value)
     {
-        if (!empty($this->stack)) {
-            $this->stack[0]->addLabel($label, $value);
+        $span = Context::current()->value('currentSpan');
+        if ($span) {
+            $span->addLabel($label, $value);
         }
     }
 
@@ -160,6 +152,6 @@ class ContextTracer implements TracerInterface
      */
     public function enabled()
     {
-        return $this->context->enabled();
+        return SpanContext::current()->enabled();
     }
 }

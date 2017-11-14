@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace;
 
+use OpenCensus\Core\Context;
+
 /**
  * SpanContext encapsulates your current context within your request's trace. It includes
  * 3 fields: the `traceId`, the current `spanId`, and an `enabled` flag which indicates whether
@@ -127,5 +129,20 @@ class SpanContext
     public function fromHeader()
     {
         return $this->fromHeader;
+    }
+
+    public static function current()
+    {
+        if (extension_loaded('opencensus')) {
+            return new static(); // FIXME
+        } else {
+            $context = Context::current();
+            return new static(
+                $context->value('traceId'),
+                $context->value('spanId'),
+                $context->value('enabled'),
+                $context->value('fromHeader')
+            );
+        }
     }
 }

@@ -193,22 +193,9 @@ class RequestTracer
         return self::$instance->startSpan($spanOptions);
     }
 
-    /**
-    * Explicitly finish the current context (Span).
-     */
-    public static function endSpan()
+    public static function withSpan(Span $span)
     {
-        return self::$instance->endSpan();
-    }
-
-    /**
-     * Return the current context
-     *
-     * @return SpanContext
-     */
-    public static function context()
-    {
-        return self::$instance->context();
+        return self::$instance->withSpan($span);
     }
 
     /**

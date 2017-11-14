@@ -31,13 +31,13 @@ class ContextTracerTest extends \PHPUnit_Framework_TestCase
         $initialContext = new SpanContext('traceid', $parentSpanId);
 
         $tracer = new ContextTracer($initialContext);
-        $context = $tracer->context();
+        $context = SpanContext::current();
 
         $this->assertEquals('traceid', $context->traceId());
         $this->assertEquals($parentSpanId, $context->spanId());
 
-        $tracer->inSpan(['name' => 'test'], function () use ($tracer, $parentSpanId) {
-            $context = $tracer->context();
+        $tracer->inSpan(['name' => 'test'], function () use ($parentSpanId) {
+            $context = SpanContext::current();
             $this->assertNotEquals($parentSpanId, $context->spanId());
         });
 
@@ -51,11 +51,11 @@ class ContextTracerTest extends \PHPUnit_Framework_TestCase
     public function testAddsLabelsToCurrentSpan()
     {
         $tracer = new ContextTracer();
-        $tracer->startSpan(['name' => 'root']);
-        $tracer->startSpan(['name' => 'inner']);
-        $tracer->addLabel('foo', 'bar');
-        $tracer->endSpan();
-        $tracer->endSpan();
+        $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
+            $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
+                $tracer->addLabel('foo', 'bar');
+            });
+        });
 
         $spans = $tracer->spans();
         $this->assertCount(2, $spans);
@@ -68,11 +68,11 @@ class ContextTracerTest extends \PHPUnit_Framework_TestCase
     public function testAddsLabelsToRootSpan()
     {
         $tracer = new ContextTracer();
-        $tracer->startSpan(['name' => 'root']);
-        $tracer->startSpan(['name' => 'inner']);
-        $tracer->addRootLabel('foo', 'bar');
-        $tracer->endSpan();
-        $tracer->endSpan();
+        $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
+            $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
+                $tracer->addRootLabel('foo', 'bar');
+            });
+        });
 
         $spans = $tracer->spans();
         $this->assertCount(2, $spans);

@@ -18,6 +18,7 @@
 namespace OpenCensus\Tests\Unit\Trace;
 
 use OpenCensus\Trace\Span;
+use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\RequestHandler;
 use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Sampler\SamplerInterface;
@@ -35,8 +36,8 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        if (extension_loaded('stackdriver')) {
-            stackdriver_trace_clear();
+        if (extension_loaded('opencensus')) {
+            opencensus_trace_clear();
         }
         $this->reporter = $this->prophesize(ExporterInterface::class);
         $this->sampler = $this->prophesize(SamplerInterface::class);
@@ -78,7 +79,7 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
         );
         $span = $rt->tracer()->spans()[0];
         $this->assertEquals('15b3', $span->info()['parentSpanId']);
-        $context = $rt->context();
+        $context = SpanContext::current();
         $this->assertEquals('12345678901234567890123456789012', $context->traceId());
     }
 

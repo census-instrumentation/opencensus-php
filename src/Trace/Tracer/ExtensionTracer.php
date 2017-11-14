@@ -50,11 +50,12 @@ class ExtensionTracer implements TracerInterface
      */
     public function inSpan(array $spanOptions, callable $callable, array $arguments = [])
     {
-        $this->startSpan($spanOptions);
+        $span = $this->startSpan($spanOptions);
+        $scope = $this->withSpan($span);
         try {
             return call_user_func_array($callable, $arguments);
         } finally {
-            $this->endSpan();
+            $scope->close();
         }
     }
 
@@ -73,13 +74,17 @@ class ExtensionTracer implements TracerInterface
     }
 
     /**
-     * Finish the current context's Span.
+     * Attaches the provided span as the current span and returns a Scope
+     * object which must be closed.
      *
-     * @return bool
+     * @param Span $span
+     * @return Scope
      */
-    public function endSpan()
+    public function withSpan(Span $span)
     {
-        return opencensus_trace_finish();
+        return new Scope(function () {
+            opencensus_trace_finish();
+        });
     }
 
     /**

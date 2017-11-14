@@ -40,22 +40,20 @@ interface TracerInterface
 
     /**
      * Start a new Span. The start time is already set to the current time.
+     * The newly created span is not attached to the current context.
      *
      * @param  array  $spanOptions [description]
      */
     public function startSpan(array $spanOptions);
 
     /**
-     * Finish the current context's Span.
-     */
-    public function endSpan();
-
-    /**
-     * Return the current context.
+     * Attaches the provided span as the current span and returns a Scope
+     * object which must be closed.
      *
-     * @return SpanContext
+     * @param Span $span
+     * @return Scope
      */
-    public function context();
+    public function withSpan(Span $span);
 
     /**
      * Return the spans collected.
