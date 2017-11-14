@@ -121,4 +121,14 @@ class ContextTest extends \PHPUnit_Framework_TestCase
         $context = new Context();
         $this->assertEquals($default, $context->value('foo', $default));
     }
+
+    public function testApplyMultipleValues()
+    {
+        $context = new Context(['foo' => 'bar']);
+        $newContext = $context->withValues([
+            'asdf' => 'qwer',
+            'zxcv' => 'jkl;'
+        ]);
+        $this->assertEquals(['foo' => 'bar', 'asdf' => 'qwer', 'zxcv' => 'jkl;'], $newContext->values());
+    }
 }

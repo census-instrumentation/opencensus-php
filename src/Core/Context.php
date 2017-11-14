@@ -71,6 +71,21 @@ class Context
     }
 
     /**
+     * Creates a new context with the given key/values.
+     *
+     * @param array $data
+     * @return Context
+     */
+    public function withValues($data)
+    {
+        $copy = $this->values;
+        foreach ($data as $key => $value) {
+            $copy[$key] = $value;
+        }
+        return new Context($copy);
+    }
+
+    /**
      * Fetches the value for a given key in this context. Returns the provided
      * default if not set.
      *
@@ -94,7 +109,7 @@ class Context
     public function attach()
     {
         $current = self::current();
-        self::current = $this;
+        self::$current = $this;
         return $current;
     }
 
