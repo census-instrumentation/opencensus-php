@@ -64,9 +64,6 @@ class ContextTracer implements TracerInterface
      */
     public function startSpan(array $spanOptions = [])
     {
-        if (!array_key_exists('name', $spanOptions)) {
-            $spanOption['name'] = $this->generateSpanName();
-        }
         $spanOptions += [
             'parentSpanId' => SpanContext::current()->spanId(),
             'startTime' => microtime(true)
