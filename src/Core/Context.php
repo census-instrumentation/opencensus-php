@@ -94,7 +94,7 @@ class Context
     public function attach()
     {
         $current = self::current();
-        self::setCurrent($this);
+        self::current = $this;
         return $current;
     }
 
@@ -110,7 +110,7 @@ class Context
             trigger_error('Unexpected context to detach.', E_USER_WARNING);
         }
 
-        self::setCurrent($toAttach);
+        self::$current = $toAttach;
     }
 
     /**
@@ -132,15 +132,10 @@ class Context
     public static function current()
     {
         if (!self::$current) {
-            self::setCurrent(self::background());
+            self::$current = self::background();
         }
 
         return self::$current;
-    }
-
-    public static function setCurrent(Context $toAttach)
-    {
-        self::$current = $toAttach;
     }
 
     /**
