@@ -102,4 +102,23 @@ class ContextTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['foo' => 'baz'], $newContext->values());
         $this->assertEquals(['foo' => 'bar'], $context->values());
     }
+
+    public function testFetchingExistingValue()
+    {
+        $context = new Context(['foo' => 'bar']);
+        $this->assertEquals('bar', $context->value('foo'));
+    }
+
+    public function testFetchingNonExistentValue()
+    {
+        $context = new Context();
+        $this->assertNull($context->value('foo'));
+    }
+
+    public function testFetchingNonExistentValueWithDefault()
+    {
+        $default = 'bar';
+        $context = new Context();
+        $this->assertEquals($default, $context->value('foo', $default));
+    }
 }

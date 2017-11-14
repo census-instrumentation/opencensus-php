@@ -71,6 +71,21 @@ class Context
     }
 
     /**
+     * Fetches the value for a given key in this context. Returns the provided
+     * default if not set.
+     *
+     * @param string $key
+     * @param mixed $default [optional]
+     * @return mixed
+     */
+    public function value($key, $default = null)
+    {
+        return array_key_exists($key, $this->values)
+            ? $this->values[$key]
+            : $default;
+    }
+
+    /**
      * Attaches this context, thus entering a new scope within which this
      * context is current(). The previously current context is returned.
      *
