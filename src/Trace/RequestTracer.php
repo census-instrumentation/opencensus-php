@@ -88,18 +88,21 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
  *
  * Explicitly tracing spans:
  * ```
- * RequestTracer::start($reporter);
- * RequestTracer::startSpan(['name' => 'expensive-operation']);
+ * // Creates a detached span
+ * $span = RequestTracer::startSpan(['name' => 'expensive-operation']);
+ *
+ * // Opens a scope that attaches the span to the current context
+ * $scope = RequestTracer::withSpan($span);
  * try {
- *     // do expensive operation
- * } catch (\Exception $e) {
- *     RequestTracer::endSpan();
+ *     $pi = calculatePi(1000);
+ * } finally {
+ *     // Closes the scope (ends the span)
+ *     $scope->close();
  * }
  * ```
  *
  * It is recommended that you use the {@see OpenCensus\Trace\RequestTracer::inSpan()}
- * method where you can. An uncaught exception between {@see OpenCensus\Trace\RequestTracer::startSpan()}
- * and {@see OpenCensus\Trace\RequestTracer::endSpan()} may not correctly close spans.
+ * method where you can.
  */
 class RequestTracer
 {
