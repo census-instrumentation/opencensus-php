@@ -24,6 +24,9 @@
         "twig/twig": "~2.0",
         "symfony/yaml": "~3.3"
     },
+    "conflict": {
+        "ext-opencensus": "> 0.0.4"
+    },
     "suggest": {
         "ext-opencensus": "Enable tracing arbitrary functions.",
         "cache/apcu-adapter": "Enable QpsSampler to use apcu cache.",
