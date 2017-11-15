@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Tracer;
 
+use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Tracer\ExtensionTracer;
 
@@ -97,5 +98,17 @@ class ExtensionTracerTest extends \PHPUnit_Framework_TestCase
         $stackframe = $span->backtrace()[0];
         $this->assertEquals('testPersistsBacktrace', $stackframe['function']);
         $this->assertEquals(self::class, $stackframe['class']);
+    }
+
+    public function testWithSpan()
+    {
+        $span = new Span(['name' => 'foo']);
+        $tracer = new ExtensionTracer();
+
+        $this->assertNull($tracer->spanContext()->spanId());
+        $scope = $tracer->withSpan($span);
+        $this->assertEquals($span->spanId(), $tracer->spanContext()->spanId());
+        $scope->close();
+        $this->assertNull($tracer->spanContext()->spanId());
     }
 }
