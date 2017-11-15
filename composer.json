@@ -25,7 +25,7 @@
         "symfony/yaml": "~3.3"
     },
     "conflict": {
-        "ext-opencensus": "> 0.0.4"
+        "ext-opencensus": ">= 0.1.0"
     },
     "suggest": {
         "ext-opencensus": "Enable tracing arbitrary functions.",
