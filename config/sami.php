@@ -1,8 +1,7 @@
 <?php
 
 use Sami\Sami;
-use Sami\RemoteRepository\GitHubRemoteRepository;
-use Sami\Version\GitVersionCollection;
+// use Sami\Version\GitVersionCollection;
 use Symfony\Component\Finder\Finder;
 
 $root_dir = __DIR__ . '/../';
@@ -12,11 +11,11 @@ $iterator = Finder::create()
     ->name('*.php')
     ->in(__DIR__ . '/../src');
 
-$versions = GitVersionCollection::create($root_dir)
-    ->addFromTags('v2.0.*')
-    ->add('master', 'master branch');
+// $versions = GitVersionCollection::create($root_dir)
+//     ->addFromTags('v0.*')
+//     ->add('master', 'master branch');
 
 return new Sami($iterator, [
-    'versions'  => $versions,
+    // 'versions'  => $versions,
     'build_dir' => __DIR__ . '/../docs'
 ]);
