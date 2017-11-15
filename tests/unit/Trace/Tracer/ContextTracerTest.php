@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Tracer;
 
+use OpenCensus\Core\Context;
+use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Tracer\ContextTracer;
 
@@ -25,19 +27,23 @@ use OpenCensus\Trace\Tracer\ContextTracer;
  */
 class ContextTracerTest extends \PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        Context::reset();
+    }
+
     public function testMaintainsContext()
     {
         $parentSpanId = 12345;
         $initialContext = new SpanContext('traceid', $parentSpanId);
-
         $tracer = new ContextTracer($initialContext);
-        $context = $tracer->context();
+        $context = $tracer->spanContext();
 
         $this->assertEquals('traceid', $context->traceId());
         $this->assertEquals($parentSpanId, $context->spanId());
 
-        $tracer->inSpan(['name' => 'test'], function () use ($tracer, $parentSpanId) {
-            $context = $tracer->context();
+        $tracer->inSpan(['name' => 'test'], function () use ($parentSpanId, $tracer) {
+            $context = $tracer->spanContext();
             $this->assertNotEquals($parentSpanId, $context->spanId());
         });
 
@@ -51,11 +57,11 @@ class ContextTracerTest extends \PHPUnit_Framework_TestCase
     public function testAddsLabelsToCurrentSpan()
     {
         $tracer = new ContextTracer();
-        $tracer->startSpan(['name' => 'root']);
-        $tracer->startSpan(['name' => 'inner']);
-        $tracer->addLabel('foo', 'bar');
-        $tracer->endSpan();
-        $tracer->endSpan();
+        $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
+            $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
+                $tracer->addLabel('foo', 'bar');
+            });
+        });
 
         $spans = $tracer->spans();
         $this->assertCount(2, $spans);
@@ -68,11 +74,11 @@ class ContextTracerTest extends \PHPUnit_Framework_TestCase
     public function testAddsLabelsToRootSpan()
     {
         $tracer = new ContextTracer();
-        $tracer->startSpan(['name' => 'root']);
-        $tracer->startSpan(['name' => 'inner']);
-        $tracer->addRootLabel('foo', 'bar');
-        $tracer->endSpan();
-        $tracer->endSpan();
+        $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
+            $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
+                $tracer->addRootLabel('foo', 'bar');
+            });
+        });
 
         $spans = $tracer->spans();
         $this->assertCount(2, $spans);
@@ -90,5 +96,17 @@ class ContextTracerTest extends \PHPUnit_Framework_TestCase
         $stackframe = $span->backtrace()[0];
         $this->assertEquals('testPersistsBacktrace', $stackframe['function']);
         $this->assertEquals(self::class, $stackframe['class']);
+    }
+
+    public function testWithSpan()
+    {
+        $span = new Span(['name' => 'foo']);
+        $tracer = new ContextTracer();
+
+        $this->assertNull($tracer->spanContext()->spanId());
+        $scope = $tracer->withSpan($span);
+        $this->assertEquals($span->spanId(), $tracer->spanContext()->spanId());
+        $scope->close();
+        $this->assertNull($tracer->spanContext()->spanId());
     }
 }

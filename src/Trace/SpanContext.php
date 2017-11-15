@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace;
 
+use OpenCensus\Core\Context;
+
 /**
  * SpanContext encapsulates your current context within your request's trace. It includes
  * 3 fields: the `traceId`, the current `spanId`, and an `enabled` flag which indicates whether

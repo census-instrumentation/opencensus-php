@@ -124,12 +124,16 @@ $pi = RequestTracer::inSpan(['name' => 'expensive-operation'], 'calculatePi', [1
 ### Explicit Span Management
 
 ```php
-RequestTracer::startSpan(['name' => 'expensive-operation']);
+// Creates a detached span
+$span = RequestTracer::startSpan(['name' => 'expensive-operation']);
+
+// Opens a scope that attaches the span to the current context
+$scope = RequestTracer::withSpan($span);
 try {
     $pi = calculatePi(1000);
 } finally {
-    // Make sure we close the span to avoid mismatched span boundaries
-    RequestTracer::endSpan();
+    // Closes the scope (ends the span)
+    $scope->close();
 }
 ```
 

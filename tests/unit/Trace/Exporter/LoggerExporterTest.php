@@ -49,7 +49,7 @@ class LoggerExporterTest extends \PHPUnit_Framework_TestCase
                 'endTime' => microtime(true) + 10
             ])
         ];
-        $this->tracer->context()->willReturn(new SpanContext('testtraceid'));
+
         $this->tracer->spans()->willReturn($spans);
         $this->logger->log('some-level', Argument::type('string'))->willThrow(
             new \Exception('error_log test')
@@ -71,7 +71,6 @@ class LoggerExporterTest extends \PHPUnit_Framework_TestCase
                 'endTime' => microtime(true) + 10
             ])
         ];
-        $this->tracer->context()->willReturn(new SpanContext('testtraceid'));
         $this->tracer->spans()->willReturn($spans);
 
         $this->logger->log('some-level', Argument::type('string'))->shouldBeCalled();

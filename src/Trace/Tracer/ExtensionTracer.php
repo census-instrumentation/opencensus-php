@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Trace\Tracer;
 
+use OpenCensus\Core\Scope;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
 
@@ -27,16 +28,11 @@ use OpenCensus\Trace\Span;
  */
 class ExtensionTracer implements TracerInterface
 {
-    /**
-     * Create a new ExtensionTracer
-     *
-     * @param SpanContext $context [optional] The SpanContext to begin with. If none
-     *      provided, a fresh SpanContext will be generated.
-     */
-    public function __construct(SpanContext $context = null)
+    public function __construct(SpanContext $initialContext = null)
     {
-        $context = $context ?: new SpanContext();
-        opencensus_trace_set_context($context->traceId(), $context->spanId());
+        if ($initialContext) {
+            opencensus_trace_set_context($initialContext->traceId(), $initialContext->spanId());
+        }
     }
 
     /**
@@ -50,11 +46,12 @@ class ExtensionTracer implements TracerInterface
      */
     public function inSpan(array $spanOptions, callable $callable, array $arguments = [])
     {
-        $this->startSpan($spanOptions);
+        $span = $this->startSpan($spanOptions);
+        $scope = $this->withSpan($span);
         try {
             return call_user_func_array($callable, $arguments);
         } finally {
-            $this->endSpan();
+            $scope->close();
         }
     }
 
@@ -66,36 +63,25 @@ class ExtensionTracer implements TracerInterface
      */
     public function startSpan(array $spanOptions)
     {
-        $name = array_key_exists('name', $spanOptions)
-            ? $spanOptions['name']
-            : $this->generateSpanName();
-        opencensus_trace_begin($name, $spanOptions);
+        if (!array_key_exists('name', $spanOptions)) {
+            $spanOption['name'] = $this->generateSpanName();
+        }
+        return new Span($spanOptions);
     }
 
     /**
-     * Finish the current context's Span.
+     * Attaches the provided span as the current span and returns a Scope
+     * object which must be closed.
      *
-     * @return bool
+     * @param Span $span
+     * @return Scope
      */
-    public function endSpan()
+    public function withSpan(Span $span)
     {
-        return opencensus_trace_finish();
-    }
-
-    /**
-     * Return the current context.
-     *
-     * @return SpanContext
-     */
-    public function context()
-    {
-        // This should be a OpenCensus\Context object
-        $context = opencensus_trace_context();
-        return new SpanContext(
-            $context->traceId(),
-            $context->spanId(),
-            true
-        );
+        opencensus_trace_begin($span->name(), $span->info());
+        return new Scope(function () {
+            opencensus_trace_finish();
+        });
     }
 
     /**
@@ -150,6 +136,21 @@ class ExtensionTracer implements TracerInterface
     public function enabled()
     {
         return true;
+    }
+
+    /**
+     * Returns the current SpanContext
+     *
+     * @return SpanContext
+     */
+    public function spanContext()
+    {
+        $context = opencensus_trace_context();
+        return new SpanContext(
+            $context->traceId(),
+            $context->spanId(),
+            true
+        );
     }
 
     /**
