@@ -50,7 +50,7 @@ class EventSubscriber implements SubscriberInterface
     /**
      * @var Scope
      */
-    private $scope
+    private $scope;
 
     /**
      * Create a new Guzzle event listener that creates trace spans and propagates the current

@@ -63,7 +63,8 @@ class NullTracer implements TracerInterface
      */
     public function withSpan(Span $span)
     {
-        return new Scope(function () {});
+        return new Scope(function () {
+        });
     }
 
     /**

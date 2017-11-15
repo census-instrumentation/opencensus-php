@@ -201,9 +201,6 @@ class RequestTracer
      * Attaches the provided span as the current span and returns a Scope
      * object which must be closed.
      *
-     * @param Span $span
-     * @return Scope
-     *
      * Example:
      * ```
      * $span = RequestTracer::startSpan(['name' => 'expensive-operation']);
@@ -214,6 +211,9 @@ class RequestTracer
      *     $scope->close();
      * }
      * ```
+     *
+     * @param Span $span
+     * @return Scope
      */
     public static function withSpan(Span $span)
     {
