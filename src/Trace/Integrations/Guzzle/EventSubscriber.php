@@ -84,7 +84,7 @@ class EventSubscriber implements SubscriberInterface
         }
         Tracer::startSpan([
             'name' => 'GuzzleHttp::request',
-            'labels' => [
+            'attributes' => [
                 'method' => $request->getMethod(),
                 'uri' => $request->getUrl()
             ]

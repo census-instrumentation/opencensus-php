@@ -3,7 +3,7 @@
 [OpenCensus](https://opencensus.io/) is a free, open-source distributed tracing
 implementation based on the [Dapper Paper](https://research.google.com/pubs/pub36356.html).
 This extension allows you to "watch" class method and function calls in order to
-automatically collect nested spans (labelled timing data).
+automatically collect nested spans (attributeled timing data).
 
 This library can optionally work in conjunction with the PHP library
 [opencensus/opencensus](https://packagist.org/packages/opencensus/opencensus) in order
@@ -103,7 +103,7 @@ If an array is provided, it should be an associative array with the following op
 * `name` - string - the name of the span to create. **Defaults to** the full method name (i.e. `Foobar::__construct`).
 * `startTime` - float - the start time of the span. **Defaults to** the time that the method was invoked.
 * `endTime` - float - the end time of the span. **Defaults to** the time that the method invocation completed.
-* `labels` - array - an associative array of string => string tags for this span.
+* `attributes` - array - an associative array of string => string tags for this span.
 
 If a callback is provided, it will be passed the instance of the class (scope) and a copy of each parameter
 provided to the watched method. The callback should return an array with the above options. If the callback does
@@ -113,7 +113,7 @@ not return an array, an `E_USER_WARNING` error is thrown.
 // Example: supply a static array of span options as the handler
 opencensus_trace_method('Foobar', '__construct', [
     'name' => 'Foobar::__construct',
-    'labels' => [
+    'attributes' => [
         'foo' => 'bar'
     ]
 ]);
@@ -121,7 +121,7 @@ opencensus_trace_method('Foobar', '__construct', [
 // Example: supply a closure
 opencensus_trace_method('Foobar', '__construct', function ($scope, $constructArg1, $constructArg2) {
     return [
-        'labels' => [
+        'attributes' => [
             'arg1' => $constructArg1
         ]
     ];
@@ -131,7 +131,7 @@ opencensus_trace_method('Foobar', '__construct', function ($scope, $constructArg
 function my_callback($scope, $constructArg1, $constructArg2)
 {
     return [
-        'labels' => [
+        'attributes' => [
             'arg1' => $constructArg1
         ]
     ];
@@ -164,7 +164,7 @@ not object scope available.
 opencensus_trace_function('var_dump', function ($value) {
     return [
         'name' => 'Foobar::__construct',
-        'labels' => [
+        'attributes' => [
           'value' => $value
         ]
     ];
@@ -244,24 +244,24 @@ You may also set the initial trace context. Note that doing this after spans hav
 function opencensus_trace_set_context($traceId, $parentSpanId = null);
 ```
 
-### Add labels to spans
+### Add attributes to spans
 
 ```php
 /**
- * Add a label to the current span
+ * Add a attribute to the current span
  *
  * @param string $key
  * @param string $value
  */
-function opencensus_trace_add_label($key, $value);
+function opencensus_trace_add_attribute($key, $value);
 
 /**
- * Add a label to the root current span
+ * Add a attribute to the root current span
  *
  * @param string $key
  * @param string $value
  */
-function opencensus_trace_add_root_label($key, $value);
+function opencensus_trace_add_root_attribute($key, $value);
 ```
 
 ## Versioning

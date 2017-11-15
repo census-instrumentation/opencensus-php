@@ -54,7 +54,7 @@ class Symfony implements IntegrationInterface
         opencensus_trace_method(EventDispatcher::class, 'dispatch', function ($dispatcher, $eventName) {
             return [
                 'name' => $eventName,
-                'labels' => ['eventName' => $eventName]
+                'attributes' => ['eventName' => $eventName]
             ];
         });
     }

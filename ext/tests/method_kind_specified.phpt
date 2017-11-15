@@ -6,7 +6,7 @@ OpenCensus Trace: Provided span kind
 require_once(__DIR__ . '/common.php');
 
 // 1: Sanity test a simple profile run
-opencensus_trace_method("Foo", "bar", ['name' => 'foo', 'startTime' => 0.1, 'labels' => ['asdf' => 'qwer'], 'kind' => 1]);
+opencensus_trace_method("Foo", "bar", ['name' => 'foo', 'startTime' => 0.1, 'attributes' => ['asdf' => 'qwer'], 'kind' => 1]);
 $f = new Foo();
 $f->bar();
 $traces = opencensus_trace_list();

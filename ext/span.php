@@ -32,7 +32,7 @@ class Span {
     protected $parentSpanId;
     protected $startTime;
     protected $endTime;
-    protected $labels;
+    protected $attributes;
     protected $kind;
 
     public function __construct(array $spanOptions)
@@ -67,9 +67,9 @@ class Span {
         return $this->endTime;
     }
 
-    public function labels()
+    public function attributes()
     {
-        return $this->labels;
+        return $this->attributes;
     }
 
     public function kind()

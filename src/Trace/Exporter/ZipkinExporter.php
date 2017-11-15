@@ -148,7 +148,7 @@ class ZipkinExporter implements ExporterInterface
                 'debug' => $isDebug,
                 'shared' => $isShared,
                 'localEndpoint' => $localEndpoint,
-                'tags' => $span->labels()
+                'tags' => $span->attributes()
             ];
             if (array_key_exists($span->kind(), $kindMap)) {
                 $zipkinSpan['kind'] = $kindMap[$span->kind()];

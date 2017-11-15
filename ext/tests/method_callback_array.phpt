@@ -9,7 +9,7 @@ class CallbackTest
 {
     public static function handle()
     {
-        return ['name' => 'foo', 'startTime' => 0.1, 'labels' => ['asdf' => 'qwer', 'zxcv' => 'jkl;']];
+        return ['name' => 'foo', 'startTime' => 0.1, 'attributes' => ['asdf' => 'qwer', 'zxcv' => 'jkl;']];
     }
 }
 
@@ -34,7 +34,7 @@ echo "Span startTime is: '{$span->startTime()}'\n";
 $test = gettype($span->endTime()) == 'double';
 echo "Span endTime is a double: $test\n";
 
-print_r($span->labels());
+print_r($span->attributes());
 ?>
 --EXPECT--
 Number of traces: 1

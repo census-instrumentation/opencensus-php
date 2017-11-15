@@ -104,9 +104,9 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider labelHeaders
+     * @dataProvider attributeHeaders
      */
-    public function testParsesDefaultLabels($headerKey, $headerValue, $expectedLabelKey, $expectedLabelValue)
+    public function testParsesDefaultAttributes($headerKey, $headerValue, $expectedAttributeKey, $expectedAttributeValue)
     {
         $tracer = new ContextTracer(new SpanContext('testtraceid'));
         $tracer->inSpan(['name' => 'main'], function () {});
@@ -114,12 +114,12 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
         $reporter = new StackdriverExporter(['client' => $this->client->reveal()]);
         $reporter->processSpans($tracer, [$headerKey => $headerValue]);
         $spans = $tracer->spans();
-        $labels = $spans[0]->labels();
-        $this->assertArrayHasKey($expectedLabelKey, $labels);
-        $this->assertEquals($expectedLabelValue, $labels[$expectedLabelKey]);
+        $attributes = $spans[0]->attributes();
+        $this->assertArrayHasKey($expectedAttributeKey, $attributes);
+        $this->assertEquals($expectedAttributeValue, $attributes[$expectedAttributeKey]);
     }
 
-    public function labelHeaders()
+    public function attributeHeaders()
     {
         return [
             ['REQUEST_URI', '/foobar', '/http/url', '/foobar'],
@@ -135,7 +135,7 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testStacktraceLabel()
+    public function testStacktraceAttribute()
     {
         $backtrace = [
             [
@@ -152,8 +152,8 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
         $reporter = new StackdriverExporter(['client' => $this->client->reveal()]);
         $spans = $reporter->convertSpans($tracer);
 
-        $labels = $spans[0]->info()['labels'];
-        $this->assertArrayHasKey('/stacktrace', $labels);
+        $attributes = $spans[0]->info()['labels'];
+        $this->assertArrayHasKey('/stacktrace', $attributes);
 
         $expected = [
             'stack_frame' => [
@@ -165,7 +165,7 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ];
-        $data = json_decode($labels['/stacktrace'], true);
+        $data = json_decode($attributes['/stacktrace'], true);
         $this->assertEquals($expected, $data);
     }
 }

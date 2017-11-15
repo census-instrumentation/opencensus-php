@@ -48,7 +48,7 @@ class Grpc implements IntegrationInterface
         opencensus_trace_method(BaseStub::class, '_simpleRequest', function ($stub, $method) {
             return [
                 'name' => 'grpc/simpleRequest',
-                'labels' => [
+                'attributes' => [
                     'host' => $stub->getTarget(),
                     'uri' => $method
                 ]
@@ -60,7 +60,7 @@ class Grpc implements IntegrationInterface
         opencensus_trace_method(BaseStub::class, '_clientStreamRequest', function ($stub, $method) {
             return [
                 'name' => 'grpc/clientStreamRequest',
-                'labels' => [
+                'attributes' => [
                     'host' => $stub->getTarget(),
                     'uri' => $method
                 ]
@@ -72,7 +72,7 @@ class Grpc implements IntegrationInterface
         opencensus_trace_method(BaseStub::class, '_serverStreamRequest', function ($stub, $method) {
             return [
                 'name' => 'grpc/serverStreamRequest',
-                'labels' => [
+                'attributes' => [
                     'host' => $stub->getTarget(),
                     'uri' => $method
                 ]
@@ -83,7 +83,7 @@ class Grpc implements IntegrationInterface
         opencensus_trace_method(BaseStub::class, '_bidiRequest', function ($stub, $method) {
             return [
                 'name' => 'grpc/bidiRequest',
-                'labels' => [
+                'attributes' => [
                     'host' => $stub->getTarget(),
                     'uri' => $method
                 ]

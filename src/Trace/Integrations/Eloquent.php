@@ -45,7 +45,7 @@ class Eloquent implements IntegrationInterface
         opencensus_trace_method(Builder::class, 'getModels', function ($builder) {
             return [
                 'name' => 'eloquent/get',
-                'labels' => [
+                'attributes' => [
                     'query' => $builder->toBase()->toSql()
                 ]
             ];
@@ -55,7 +55,7 @@ class Eloquent implements IntegrationInterface
         opencensus_trace_method(Model::class, 'performInsert', function ($model, $query) {
             return [
                 'name' => 'eloquent/insert',
-                'labels' => [
+                'attributes' => [
                     'query' => $query->toBase()->toSql()
                 ]
             ];
@@ -65,7 +65,7 @@ class Eloquent implements IntegrationInterface
         opencensus_trace_method(Model::class, 'performUpdate', function ($model, $query) {
             return [
                 'name' => 'eloquent/update',
-                'labels' => [
+                'attributes' => [
                     'query' => $query->toBase()->toSql()
                 ]
             ];
@@ -75,7 +75,7 @@ class Eloquent implements IntegrationInterface
         opencensus_trace_method(Model::class, 'delete', function ($model, $query) {
             return [
                 'name' => 'eloquent/delete',
-                'labels' => [
+                'attributes' => [
                     'query' => $query->toBase()->toSql()
                 ]
             ];

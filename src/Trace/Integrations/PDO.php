@@ -67,7 +67,7 @@ class PDO implements IntegrationInterface
     public static function handleQuery($pdo, $query)
     {
         return [
-            'labels' => ['query' => $query]
+            'attributes' => ['query' => $query]
         ];
     }
 
@@ -81,7 +81,7 @@ class PDO implements IntegrationInterface
     public static function handleConnect($pdo, $dsn)
     {
         return [
-            'labels' => ['dsn' => $dsn]
+            'attributes' => ['dsn' => $dsn]
         ];
     }
 
@@ -94,7 +94,7 @@ class PDO implements IntegrationInterface
     public static function handleStatementExecute($statement)
     {
         return [
-            'labels' => ['query' => $statement->queryString]
+            'attributes' => ['query' => $statement->queryString]
         ];
     }
 }

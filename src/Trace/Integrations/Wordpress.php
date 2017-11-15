@@ -37,7 +37,7 @@ class Wordpress implements IntegrationInterface
         $nameClosure = function () {
             if (func_num_args() > 0) {
                 return [
-                    'labels' => ['name' => func_get_arg(0)]
+                    'attributes' => ['name' => func_get_arg(0)]
                 ];
             }
             return [];
@@ -55,14 +55,14 @@ class Wordpress implements IntegrationInterface
         // bool function load_textdomain( $domain, $mofile )
         opencensus_trace_function('load_textdomain', function ($name, $mofile) {
             return [
-                'labels' => ['name' => $name]
+                'attributes' => ['name' => $name]
             ];
         });
 
         // void load_template(string $template, bool $require_once = true)
         opencensus_trace_function('load_template', function ($template) {
             return [
-                'labels' => ['template' => $template]
+                'attributes' => ['template' => $template]
             ];
         });
     }

@@ -29,8 +29,8 @@ PHP_FUNCTION(opencensus_trace_finish);
 PHP_FUNCTION(opencensus_trace_clear);
 PHP_FUNCTION(opencensus_trace_set_context);
 PHP_FUNCTION(opencensus_trace_context);
-PHP_FUNCTION(opencensus_trace_add_label);
-PHP_FUNCTION(opencensus_trace_add_root_label);
+PHP_FUNCTION(opencensus_trace_add_attribute);
+PHP_FUNCTION(opencensus_trace_add_root_attribute);
 
 // Extension lifecycle hooks
 int opencensus_minit(INIT_FUNC_ARGS);

@@ -114,32 +114,32 @@ class ExtensionTracer implements TracerInterface
                 'parentSpanId' => $span->parentSpanId(),
                 'startTime' => $span->startTime(),
                 'endTime' => $span->endTime(),
-                'labels' => $span->labels(),
+                'attributes' => $span->attributes(),
                 'backtrace' => $span->backtrace()
             ]);
         }, opencensus_trace_list());
     }
 
     /**
-     * Add a label to the current Span
+     * Add a attribute to the current Span
      *
-     * @param string $label
+     * @param string $attribute
      * @param string $value
      */
-    public function addLabel($label, $value)
+    public function addAttribute($attribute, $value)
     {
-        opencensus_trace_add_label($label, $value);
+        opencensus_trace_add_attribute($attribute, $value);
     }
 
     /**
-     * Add a label to the primary Span
+     * Add a attribute to the primary Span
      *
-     * @param string $label
+     * @param string $attribute
      * @param string $value
      */
-    public function addRootLabel($label, $value)
+    public function addRootAttribute($attribute, $value)
     {
-        opencensus_trace_add_root_label($label, $value);
+        opencensus_trace_add_root_attribute($attribute, $value);
     }
 
     /**

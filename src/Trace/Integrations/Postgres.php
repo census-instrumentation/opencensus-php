@@ -44,7 +44,7 @@ class Postgres implements IntegrationInterface
                 ? func_get_arg(1)
                 : func_get_arg(0);
             return [
-                'labels' => ['query' => $query]
+                'attributes' => ['query' => $query]
             ];
         });
 
@@ -54,7 +54,7 @@ class Postgres implements IntegrationInterface
                 ? func_get_arg(1)
                 : func_get_arg(0);
             return [
-                'labels' => ['query' => $query]
+                'attributes' => ['query' => $query]
             ];
         });
 
@@ -64,7 +64,7 @@ class Postgres implements IntegrationInterface
                 ? func_get_arg(1)
                 : func_get_arg(0);
             return [
-                'labels' => ['statement' => $statementName]
+                'attributes' => ['statement' => $statementName]
             ];
         });
     }

@@ -7,7 +7,7 @@ require_once(__DIR__ . '/common.php');
 
 // Scope should not be available for a static method
 opencensus_trace_function("Foo::plus", function ($x, $y) {
-    return ['labels' => ['x' => '' . $x, 'y' => '' . $y]];
+    return ['attributes' => ['x' => '' . $x, 'y' => '' . $y]];
 });
 $output = Foo::plus(2, 3);
 echo "2 + 3 = $output\n";
@@ -26,7 +26,7 @@ echo "Span startTime is a double: $test\n";
 $test = gettype($span->endTime()) == 'double';
 echo "Span endTime is a double: $test\n";
 
-print_r($span->labels());
+print_r($span->attributes());
 
 ?>
 --EXPECT--

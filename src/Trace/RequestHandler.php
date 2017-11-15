@@ -95,7 +95,7 @@ class RequestHandler
         $spanOptions = $options + [
             'startTime' => $this->startTimeFromHeaders($headers),
             'name' => $this->nameFromHeaders($headers),
-            'labels' => []
+            'attributes' => []
         ];
         $this->tracer->startSpan($spanOptions);
 
@@ -104,7 +104,7 @@ class RequestHandler
 
     /**
      * The function registered as the shutdown function. Cleans up the trace and
-     * reports using the provided ExporterInterface. Adds additional labels to
+     * reports using the provided ExporterInterface. Adds additional attributes to
      * the root span detected from the response.
      */
     public function onExit()

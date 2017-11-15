@@ -47,7 +47,7 @@ class Laravel implements IntegrationInterface
         opencensus_trace_method(CompilerEngine::class, 'get', function ($scope, $path, $data) {
             return [
                 'name' => 'laravel/view',
-                'labels' => [
+                'attributes' => [
                     'path' => $path
                 ]
             ];

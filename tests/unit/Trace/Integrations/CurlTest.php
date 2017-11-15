@@ -30,7 +30,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
         $spanOptions = Curl::handleCurlResource($resource);
         $expected = [
-            'labels' => [
+            'attributes' => [
                 'uri' => 'https://www.google.com'
             ]
         ];

@@ -77,7 +77,7 @@ class Middleware
             }
             return Tracer::inSpan([
                 'name' => 'GuzzleHttp::request',
-                'labels' => [
+                'attributes' => [
                     'method' => $request->getMethod(),
                     'uri' => (string)$request->getUri()
                 ]
