@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>OpenCensus\Trace\Integrations\Guzzle\EventSubscriber | API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../../css/sami.css">
+        <script src="../../../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../../../js/bootstrap.min.js"></script>
+        <script src="../../../../js/typeahead.min.js"></script>
+        <script src="../../../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:OpenCensus_Trace_Integrations_Guzzle_EventSubscriber" data-root-path="../../../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                <script>
+            $('option[data-version="'+window.projectVersion+'"]').prop('selected', true);
+        </script>
+        <form id="search-form" action="../../../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../../../index.html">API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../../../classes.html">Classes</a></li>
+                                            <li><a href="../../../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../../../traits.html">Traits</a></li>
+                    <li><a href="../../../../doc-index.html">Index</a></li>
+                    <li><a href="../../../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                        <li><a href="../../../../OpenCensus.html">OpenCensus</a></li><li class="backslash">\</li><li><a href="../../../../OpenCensus/Trace.html">Trace</a></li><li class="backslash">\</li><li><a href="../../../../OpenCensus/Trace/Integrations.html">Integrations</a></li><li class="backslash">\</li><li><a href="../../../../OpenCensus/Trace/Integrations/Guzzle.html">Guzzle</a></li><li class="backslash">\</li><li>EventSubscriber</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>
+            EventSubscriber
+                
+        </h1>
+    </div>
+
+    <p>    class
+    <strong>EventSubscriber</strong>        implements
+        <abbr title="GuzzleHttp\Event\SubscriberInterface">SubscriberInterface</abbr>
+</p>
+
+        
+    
+
+            <div class="description">
+            <p>This class handles integration with GuzzleHttp 5. Attaching this EventSubscriber to
+your Guzzle client, will enable distrubted tracing by passing along the trace context
+header and will also create trace spans for all outgoing requests.</p>            <p>Example:</p>
+
+<pre><code>use GuzzleHttp\Client;
+use OpenCensus\Trace\Integrations\Guzzle\EventSubscriber;
+
+$client = new Client();
+$subscriber = new EventSubscriber();
+$client-&gt;getEmitter()-&gt;attach($subscriber);
+</code></pre>
+</p>                    </div>
+    
+    
+    
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___construct">__construct</a>(<a href="../../../../OpenCensus/Trace/Propagator/PropagatorInterface.html"><abbr title="OpenCensus\Trace\Propagator\PropagatorInterface">PropagatorInterface</abbr></a> $propagator = null)
+        
+                                            <p>Create a new Guzzle event listener that creates trace spans and propagates the current
+trace context to the downstream request.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    array
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getEvents">getEvents</a>()
+        
+                                            <p>Returns an array of event names this subscriber wants to listen to.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_onBefore">onBefore</a>(<abbr title="GuzzleHttp\Event\BeforeEvent">BeforeEvent</abbr> $event)
+        
+                                            <p>Handler for the BeforeEvent request lifecycle event. Adds the current trace context
+as the trace context header. Also starts a span representing this outgoing http request.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_onEnd">onEnd</a>(<abbr title="GuzzleHttp\Event\EndEvent">EndEvent</abbr> $event)
+        
+                                            <p>Handler for the EndEvent request lifecycle event. Ends the current span which should be
+the span started in the BeforeEvent handler.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method___construct">
+        <div class="location">at         line 55</div>
+        <code>                    
+    <strong>__construct</strong>(<a href="../../../../OpenCensus/Trace/Propagator/PropagatorInterface.html"><abbr title="OpenCensus\Trace\Propagator\PropagatorInterface">PropagatorInterface</abbr></a> $propagator = null)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Create a new Guzzle event listener that creates trace spans and propagates the current
+trace context to the downstream request.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../../OpenCensus/Trace/Propagator/PropagatorInterface.html"><abbr title="OpenCensus\Trace\Propagator\PropagatorInterface">PropagatorInterface</abbr></a></td>
+                <td>$propagator</td>
+                <td>Interface responsible for serializing trace context</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getEvents">
+        <div class="location">at         line 65</div>
+        <code>                    array
+    <strong>getEvents</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns an array of event names this subscriber wants to listen to.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>array</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_onBefore">
+        <div class="location">at         line 79</div>
+        <code>                    
+    <strong>onBefore</strong>(<abbr title="GuzzleHttp\Event\BeforeEvent">BeforeEvent</abbr> $event)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Handler for the BeforeEvent request lifecycle event. Adds the current trace context
+as the trace context header. Also starts a span representing this outgoing http request.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="GuzzleHttp\Event\BeforeEvent">BeforeEvent</abbr></td>
+                <td>$event</td>
+                <td>Event object emitted before a request is sent</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_onEnd">
+        <div class="location">at         line 100</div>
+        <code>                    
+    <strong>onEnd</strong>(<abbr title="GuzzleHttp\Event\EndEvent">EndEvent</abbr> $event)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Handler for the EndEvent request lifecycle event. Ends the current span which should be
+the span started in the BeforeEvent handler.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="GuzzleHttp\Event\EndEvent">EndEvent</abbr></td>
+                <td>$event</td>
+                <td>A terminal event that is emitted when a request transaction has ended</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

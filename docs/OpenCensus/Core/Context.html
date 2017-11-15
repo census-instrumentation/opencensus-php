@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>OpenCensus\Core\Context | API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/sami.css">
+        <script src="../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script src="../../js/typeahead.min.js"></script>
+        <script src="../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:OpenCensus_Core_Context" data-root-path="../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                <script>
+            $('option[data-version="'+window.projectVersion+'"]').prop('selected', true);
+        </script>
+        <form id="search-form" action="../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../index.html">API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../classes.html">Classes</a></li>
+                                            <li><a href="../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../traits.html">Traits</a></li>
+                    <li><a href="../../doc-index.html">Index</a></li>
+                    <li><a href="../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                        <li><a href="../../OpenCensus.html">OpenCensus</a></li><li class="backslash">\</li><li><a href="../../OpenCensus/Core.html">Core</a></li><li class="backslash">\</li><li>Context</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>
+            Context
+                
+        </h1>
+    </div>
+
+    <p>    class
+    <strong>Context</strong>
+</p>
+
+        
+    
+
+            <div class="description">
+            <p>This class is an implementation of a generic context.</p>            <p>Example:</p>
+
+<pre><code>// Create and set a new context, which inherits values from the current
+// context and adds a new key/value pair of 'foo'/'bar'.
+$prev = Context::current()-&gt;withValue('foo', 'bar')-&gt;attach();
+try {
+  // Do something within the context
+} finally {
+  // This makes sure that $prev will be current after this execution
+  Context::current()-&gt;detach($prev);
+}
+// Here, we are 100% sure $prev is the current context.
+</code></pre>
+</p>                    </div>
+    
+    
+    
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___construct">__construct</a>(array $initialValues = [])
+        
+                                            <p>Creates a new Context.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_withValue">withValue</a>(string $key, mixed $value)
+        
+                                            <p>Creates a new context with the given key/value set.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_withValues">withValues</a>(array $data)
+        
+                                            <p>Creates a new context with the given key/values.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    mixed
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_value">value</a>(string $key, mixed $default = null)
+        
+                                            <p>Fetches the value for a given key in this context. Returns the provided
+default if not set.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_attach">attach</a>()
+        
+                                            <p>Attaches this context, thus entering a new scope within which this
+context is current(). The previously current context is returned.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_detach">detach</a>(<a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a> $toAttach)
+        
+                                            <p>Reverses an attach(), restoring the previous context and exiting the
+current scope.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    array
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_values">values</a>()
+        
+                                            <p>Returns all the contained data.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_current">current</a>()
+        
+                                            <p>Returns the context associated with the current scope, will never return
+null.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_background">background</a>()
+        
+                                            <p>Returns an empty context.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_reset">reset</a>()
+        
+                                            <p>Resets the context to an initial state. This is generally used only for
+testing.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method___construct">
+        <div class="location">at         line 54</div>
+        <code>                    
+    <strong>__construct</strong>(array $initialValues = [])
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Creates a new Context.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$initialValues</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_withValue">
+        <div class="location">at         line 66</div>
+        <code>                    <a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a>
+    <strong>withValue</strong>(string $key, mixed $value)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Creates a new context with the given key/value set.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$key</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td>mixed</td>
+                <td>$value</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_withValues">
+        <div class="location">at         line 79</div>
+        <code>                    <a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a>
+    <strong>withValues</strong>(array $data)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Creates a new context with the given key/values.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$data</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_value">
+        <div class="location">at         line 96</div>
+        <code>                    mixed
+    <strong>value</strong>(string $key, mixed $default = null)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Fetches the value for a given key in this context. Returns the provided
+default if not set.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$key</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td>mixed</td>
+                <td>$default</td>
+                <td>[optional]</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>mixed</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_attach">
+        <div class="location">at         line 109</div>
+        <code>                    <a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a>
+    <strong>attach</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Attaches this context, thus entering a new scope within which this
+context is current(). The previously current context is returned.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_detach">
+        <div class="location">at         line 122</div>
+        <code>                    
+    <strong>detach</strong>(<a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a> $toAttach)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Reverses an attach(), restoring the previous context and exiting the
+current scope.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a></td>
+                <td>$toAttach</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_values">
+        <div class="location">at         line 136</div>
+        <code>                    array
+    <strong>values</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns all the contained data.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>array</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_current">
+        <div class="location">at         line 147</div>
+        <code>        static            <a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a>
+    <strong>current</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns the context associated with the current scope, will never return
+null.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_background">
+        <div class="location">at         line 161</div>
+        <code>        static            <a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a>
+    <strong>background</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns an empty context.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_reset">
+        <div class="location">at         line 172</div>
+        <code>        static            
+    <strong>reset</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Resets the context to an initial state. This is generally used only for
+testing.</p>                                                </div>
+                <div class="tags">
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>
