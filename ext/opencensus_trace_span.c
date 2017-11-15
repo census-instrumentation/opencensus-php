@@ -356,7 +356,9 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
             span->name = zend_string_copy(Z_STR_P(v));
         } else if (strcmp(ZSTR_VAL(k), "kind") == 0) {
             span->kind = Z_LVAL_P(v);
-        }
+        } else if (strcmp(ZSTR_VAL(k), "spanId") == 0) {
+			span->span_id = zend_string_copy(Z_STR_P(v));
+		}
     } ZEND_HASH_FOREACH_END();
     return SUCCESS;
 }
