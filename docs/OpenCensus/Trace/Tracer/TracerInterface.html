@@ -117,22 +117,13 @@ the configured tracer is null or a real tracer.</p>                    </div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    
+                    <abbr title="OpenCensus\Trace\Tracer\Scope">Scope</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_endSpan">endSpan</a>()
+                    <a href="#method_withSpan">withSpan</a>(<a href="../../../OpenCensus/Trace/Span.html"><abbr title="OpenCensus\Trace\Span">Span</abbr></a> $span)
         
-                                            <p>Finish the current context's Span.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    <a href="../../../OpenCensus/Trace/SpanContext.html"><abbr title="OpenCensus\Trace\SpanContext">SpanContext</abbr></a>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_context">context</a>()
-        
-                                            <p>Return the current context.</p>                </div>
+                                            <p>Attaches the provided span as the current span and returns a Scope
+object which must be closed.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -173,6 +164,16 @@ the configured tracer is null or a real tracer.</p>                    </div>
                     <a href="#method_enabled">enabled</a>()
         
                                             <p>Whether or not this tracer is enabled.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../OpenCensus/Trace/SpanContext.html"><abbr title="OpenCensus\Trace\SpanContext">SpanContext</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_spanContext">spanContext</a>()
+        
+                                            <p>Returns the current SpanContext</p>                </div>
                 <div class="col-md-2"></div>
             </div>
             </div>
@@ -234,7 +235,7 @@ the configured tracer is null or a real tracer.</p>                    </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_startSpan">
-        <div class="location">at         line 46</div>
+        <div class="location">at         line 47</div>
         <code>                    
     <strong>startSpan</strong>(array $spanOptions)
         </code>
@@ -244,7 +245,7 @@ the configured tracer is null or a real tracer.</p>                    </div>
     
 
                     <div class="method-description">
-                                    <p>Start a new Span. The start time is already set to the current time.</p>                                                </div>
+                                    <p>Start a new Span. The start time is already set to the current time.</p>                    <p>The newly created span is not attached to the current context.</p>                            </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
@@ -264,10 +265,10 @@ the configured tracer is null or a real tracer.</p>                    </div>
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_endSpan">
-        <div class="location">at         line 51</div>
-        <code>                    
-    <strong>endSpan</strong>()
+                    <h3 id="method_withSpan">
+        <div class="location">at         line 56</div>
+        <code>                    <abbr title="OpenCensus\Trace\Tracer\Scope">Scope</abbr>
+    <strong>withSpan</strong>(<a href="../../../OpenCensus/Trace/Span.html"><abbr title="OpenCensus\Trace\Span">Span</abbr></a> $span)
         </code>
     </h3>
     <div class="details">
@@ -275,35 +276,25 @@ the configured tracer is null or a real tracer.</p>                    </div>
     
 
                     <div class="method-description">
-                                    <p>Finish the current context's Span.</p>                                                </div>
+                                    <p>Attaches the provided span as the current span and returns a Scope
+object which must be closed.</p>                                                </div>
                 <div class="tags">
-            
-            
-            
-                    </div>
-    </div>
+                            <h4>Parameters</h4>
 
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_context">
-        <div class="location">at         line 58</div>
-        <code>                    <a href="../../../OpenCensus/Trace/SpanContext.html"><abbr title="OpenCensus\Trace\SpanContext">SpanContext</abbr></a>
-    <strong>context</strong>()
-        </code>
-    </h3>
-    <div class="details">
-            
-    
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../OpenCensus/Trace/Span.html"><abbr title="OpenCensus\Trace\Span">Span</abbr></a></td>
+                <td>$span</td>
+                <td></td>
+            </tr>
+            </table>
 
-                    <div class="method-description">
-                                    <p>Return the current context.</p>                                                </div>
-                <div class="tags">
             
                             <h4>Return Value</h4>
 
                     <table class="table table-condensed">
         <tr>
-            <td><a href="../../../OpenCensus/Trace/SpanContext.html"><abbr title="OpenCensus\Trace\SpanContext">SpanContext</abbr></a></td>
+            <td><abbr title="OpenCensus\Trace\Tracer\Scope">Scope</abbr></td>
             <td></td>
         </tr>
     </table>
@@ -316,7 +307,7 @@ the configured tracer is null or a real tracer.</p>                    </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_spans">
-        <div class="location">at         line 65</div>
+        <div class="location">at         line 63</div>
         <code>                    <a href="../../../OpenCensus/Trace/Span.html"><abbr title="OpenCensus\Trace\Span">Span</abbr></a>[]
     <strong>spans</strong>()
         </code>
@@ -346,7 +337,7 @@ the configured tracer is null or a real tracer.</p>                    </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_addLabel">
-        <div class="location">at         line 73</div>
+        <div class="location">at         line 71</div>
         <code>                    
     <strong>addLabel</strong>(string $label, string $value)
         </code>
@@ -382,7 +373,7 @@ the configured tracer is null or a real tracer.</p>                    </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_addRootLabel">
-        <div class="location">at         line 81</div>
+        <div class="location">at         line 79</div>
         <code>                    
     <strong>addRootLabel</strong>(string $label, string $value)
         </code>
@@ -418,7 +409,7 @@ the configured tracer is null or a real tracer.</p>                    </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_enabled">
-        <div class="location">at         line 88</div>
+        <div class="location">at         line 86</div>
         <code>                    bool
     <strong>enabled</strong>()
         </code>
@@ -436,6 +427,36 @@ the configured tracer is null or a real tracer.</p>                    </div>
                     <table class="table table-condensed">
         <tr>
             <td>bool</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_spanContext">
+        <div class="location">at         line 93</div>
+        <code>                    <a href="../../../OpenCensus/Trace/SpanContext.html"><abbr title="OpenCensus\Trace\SpanContext">SpanContext</abbr></a>
+    <strong>spanContext</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns the current SpanContext</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../OpenCensus/Trace/SpanContext.html"><abbr title="OpenCensus\Trace\SpanContext">SpanContext</abbr></a></td>
             <td></td>
         </tr>
     </table>
