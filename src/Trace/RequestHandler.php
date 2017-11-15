@@ -49,6 +49,9 @@ class RequestHandler
      */
     private $tracer;
 
+    /**
+     * @var Scope
+     */
     private $scope;
 
     /**
@@ -92,9 +95,8 @@ class RequestHandler
             }
         }
 
-        $spanContext->attach();
         $this->tracer = $spanContext->enabled()
-            ? extension_loaded('opencensus') ? new ExtensionTracer() : new ContextTracer()
+            ? extension_loaded('opencensus') ? new ExtensionTracer($spanContext) : new ContextTracer($spanContext)
             : new NullTracer();
 
         $spanOptions = $options + [

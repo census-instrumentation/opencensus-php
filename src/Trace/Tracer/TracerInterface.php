@@ -84,4 +84,11 @@ interface TracerInterface
      * @return bool
      */
     public function enabled();
+
+    /**
+     * Returns the current SpanContext
+     *
+     * @return SpanContext
+     */
+    public function spanContext();
 }

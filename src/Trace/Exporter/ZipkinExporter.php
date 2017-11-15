@@ -108,7 +108,7 @@ class ZipkinExporter implements ExporterInterface
         $headers = $headers ?: $_SERVER;
         $spans = $tracer->spans();
         $rootSpan = $spans[0];
-        $traceId = SpanContext::current()->traceId();
+        $traceId = $tracer->spanContext()->traceId();
 
         $kindMap = [
             Span::SPAN_KIND_CLIENT => 'CLIENT',

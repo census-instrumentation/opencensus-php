@@ -34,6 +34,18 @@ class ContextTracer implements TracerInterface
      */
     private $spans = [];
 
+    public function __construct(SpanContext $initialContext = null)
+    {
+        if ($initialContext) {
+            Context::current()->withValues([
+                'traceId' => $initialContext->traceId(),
+                'spanId' => $initialContext->spanId(),
+                'enabled' => $initialContext->enabled(),
+                'fromHeader' => $initialContext->fromHeader()
+            ])->attach();
+        }
+    }
+
     /**
      * Instrument a callable by creating a Span that manages the startTime and endTime.
      *
@@ -65,7 +77,7 @@ class ContextTracer implements TracerInterface
     public function startSpan(array $spanOptions = [])
     {
         $spanOptions += [
-            'parentSpanId' => SpanContext::current()->spanId(),
+            'parentSpanId' => $this->spanContext()->spanId(),
             'startTime' => microtime(true)
         ];
 
@@ -83,8 +95,10 @@ class ContextTracer implements TracerInterface
     {
         array_push($this->spans, $span);
         $prevContext = Context::current()
-            ->withValue('currentSpan', $span)
-            ->withValue('spanId', $span->spanId())
+            ->withValues([
+                'currentSpan' => $span,
+                'spanId' => $span->spanId()
+            ])
             ->attach();
         return new Scope(function () use ($prevContext) {
             $currentContext = Context::current();
@@ -140,6 +154,22 @@ class ContextTracer implements TracerInterface
      */
     public function enabled()
     {
-        return SpanContext::current()->enabled();
+        return $this->spanContext()->enabled();
+    }
+
+    /**
+     * Returns the current SpanContext
+     *
+     * @return SpanContext
+     */
+    public function spanContext()
+    {
+        $context = Context::current();
+        return new SpanContext(
+            $context->value('traceId'),
+            $context->value('spanId'),
+            $context->value('enabled'),
+            $context->value('fromHeader')
+        );
     }
 }

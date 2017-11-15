@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Tracer;
 
+use OpenCensus\Core\Context;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Tracer\ContextTracer;
 
@@ -25,20 +26,23 @@ use OpenCensus\Trace\Tracer\ContextTracer;
  */
 class ContextTracerTest extends \PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        Context::reset();
+    }
+
     public function testMaintainsContext()
     {
         $parentSpanId = 12345;
         $initialContext = new SpanContext('traceid', $parentSpanId);
-        $initialContext->attach();
-
-        $tracer = new ContextTracer();
-        $context = SpanContext::current();
+        $tracer = new ContextTracer($initialContext);
+        $context = $tracer->spanContext();
 
         $this->assertEquals('traceid', $context->traceId());
         $this->assertEquals($parentSpanId, $context->spanId());
 
-        $tracer->inSpan(['name' => 'test'], function () use ($parentSpanId) {
-            $context = SpanContext::current();
+        $tracer->inSpan(['name' => 'test'], function () use ($parentSpanId, $tracer) {
+            $context = $tracer->spanContext();
             $this->assertNotEquals($parentSpanId, $context->spanId());
         });
 

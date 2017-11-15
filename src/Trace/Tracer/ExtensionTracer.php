@@ -28,6 +28,13 @@ use OpenCensus\Trace\Span;
  */
 class ExtensionTracer implements TracerInterface
 {
+    public function __construct(SpanContext $initialContext = null)
+    {
+        if ($initialContext) {
+            opencensus_trace_set_context($initialContext->traceId(), $initialContext->spanId());
+        }
+    }
+
     /**
      * Instrument a callable by creating a Span
      *
@@ -75,22 +82,6 @@ class ExtensionTracer implements TracerInterface
         return new Scope(function () {
             opencensus_trace_finish();
         });
-    }
-
-    /**
-     * Return the current context.
-     *
-     * @return SpanContext
-     */
-    public function context()
-    {
-        // This should be a OpenCensus\Context object
-        $context = opencensus_trace_context();
-        return new SpanContext(
-            $context->traceId(),
-            $context->spanId(),
-            true
-        );
     }
 
     /**
@@ -145,6 +136,21 @@ class ExtensionTracer implements TracerInterface
     public function enabled()
     {
         return true;
+    }
+
+    /**
+     * Returns the current SpanContext
+     *
+     * @return SpanContext
+     */
+    public function spanContext()
+    {
+        $context = opencensus_trace_context();
+        return new SpanContext(
+            $context->traceId(),
+            $context->spanId(),
+            true
+        );
     }
 
     /**

@@ -130,38 +130,4 @@ class SpanContext
     {
         return $this->fromHeader;
     }
-
-    public function attach()
-    {
-        if (extension_loaded('opencensus')) {
-            opencensus_trace_set_context($this->traceId(), $this->spanId());
-        } else {
-            Context::current()->withValues([
-                'traceId' => $context->traceId(),
-                'spanId' => $context->spanId(),
-                'enabled' => $context->enabled(),
-                'fromHeader' => $context->fromHeader()
-            ])->attach();
-        }
-    }
-
-    public static function current()
-    {
-        if (extension_loaded('opencensus')) {
-            $context = opencensus_trace_context();
-            return new static(
-                $context->traceId(),
-                $context->spanId(),
-                true
-            );
-        } else {
-            $context = Context::current();
-            return new static(
-                $context->value('traceId'),
-                $context->value('spanId'),
-                $context->value('enabled'),
-                $context->value('fromHeader')
-            );
-        }
-    }
 }

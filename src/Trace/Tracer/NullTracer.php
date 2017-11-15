@@ -67,16 +67,6 @@ class NullTracer implements TracerInterface
     }
 
     /**
-     * Return the current context.
-     *
-     * @return SpanContext
-     */
-    public function context()
-    {
-        return new SpanContext(null, null, false);
-    }
-
-    /**
      * Return the spans collected.
      *
      * @return Span[]
@@ -114,5 +104,15 @@ class NullTracer implements TracerInterface
     public function enabled()
     {
         return false;
+    }
+
+    /**
+     * Returns the current SpanContext
+     *
+     * @return SpanContext
+     */
+    public function spanContext()
+    {
+        return new SpanContext();
     }
 }

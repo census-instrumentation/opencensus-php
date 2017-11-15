@@ -167,7 +167,7 @@ class StackdriverExporter implements ExporterInterface
 
         // build a Trace object and assign Spans
         $trace = self::$client->trace(
-            SpanContext::current()->traceId()
+            $tracer->spanContext()->traceId()
         );
         $trace->setSpans($spans);
 
