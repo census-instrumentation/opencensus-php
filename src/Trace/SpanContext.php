@@ -136,12 +136,12 @@ class SpanContext
         if (extension_loaded('opencensus')) {
             opencensus_trace_set_context($this->traceId(), $this->spanId());
         } else {
-            Context::current()
-                ->withValue('traceId', $context->traceId())
-                ->withValue('spanId', $context->spanId())
-                ->withValue('enabled', $context->enabled())
-                ->withValue('fromHeader', $context->fromHeader())
-                ->attach();
+            Context::current()->withValues([
+                'traceId' => $context->traceId(),
+                'spanId' => $context->spanId(),
+                'enabled' => $context->enabled(),
+                'fromHeader' => $context->fromHeader()
+            ])->attach();
         }
     }
 

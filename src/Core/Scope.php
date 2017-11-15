@@ -17,17 +17,48 @@
 
 namespace OpenCensus\Core;
 
+/**
+ * This class in an implementation of a generic scope that has something to
+ * execute when the scope finishes.
+ *
+ * Example:
+ * ```
+ * $scope = RequestTracer.withSpan($span);
+ * try {
+ *   return do_something();
+ * } finally {
+ *   $scope->close();
+ * }
+ * ```
+ */
 class Scope
 {
+    /**
+     * @var callable
+     */
     private $callback;
 
-    public function __construct($callback)
+    /**
+     * @var array
+     */
+    private $args;
+
+    /**
+     * Creates a new Scope
+     *
+     * @param callable $callback
+     */
+    public function __construct(callable $callback, $args = [])
     {
         $this->callback = $callback;
+        $this->args = $args;
     }
 
+    /**
+     * Close and clean up the scope. Runs the initial callback provided.
+     */
     public function close()
     {
-        call_user_func($this->callback);
+        call_user_func_array($this->callback, $this->args);
     }
 }
