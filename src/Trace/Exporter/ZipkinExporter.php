@@ -19,7 +19,6 @@ namespace OpenCensus\Trace\Exporter;
 
 use OpenCensus\Trace\Tracer\TracerInterface;
 use OpenCensus\Trace\Span;
-use OpenCensus\Trace\SpanContext;
 
 /**
  * This implementation of the ExporterInterface appends a json

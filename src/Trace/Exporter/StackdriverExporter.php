@@ -23,7 +23,6 @@ use Google\Cloud\Trace\TraceClient;
 use Google\Cloud\Trace\TraceSpan;
 use OpenCensus\Trace\Tracer\TracerInterface;
 use OpenCensus\Trace\Span;
-use OpenCensus\Trace\SpanContext;
 
 /**
  * This implementation of the ExporterInterface use the BatchRunner to provide
