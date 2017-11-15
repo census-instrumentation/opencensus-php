@@ -22,7 +22,7 @@ use Google\Cloud\Core\Batch\BatchTrait;
 use Google\Cloud\Trace\TraceClient;
 use Google\Cloud\Trace\TraceSpan;
 use OpenCensus\Trace\Tracer\TracerInterface;
-use OpenCensus\Trace\Span as OpenCensusSpan;
+use OpenCensus\Trace\Span;
 
 /**
  * This implementation of the ExporterInterface use the BatchRunner to provide
@@ -166,7 +166,7 @@ class StackdriverExporter implements ExporterInterface
 
         // build a Trace object and assign Spans
         $trace = self::$client->trace(
-            $tracer->context()->traceId()
+            $tracer->spanContext()->traceId()
         );
         $trace->setSpans($spans);
 
@@ -203,8 +203,8 @@ class StackdriverExporter implements ExporterInterface
     public function convertSpans(TracerInterface $tracer)
     {
         $spanKindMap = [
-            OpenCensusSpan::SPAN_KIND_CLIENT => TraceSpan::SPAN_KIND_RPC_CLIENT,
-            OpenCensusSpan::SPAN_KIND_SERVER => TraceSpan::SPAN_KIND_RPC_SERVER
+            Span::SPAN_KIND_CLIENT => TraceSpan::SPAN_KIND_RPC_CLIENT,
+            Span::SPAN_KIND_SERVER => TraceSpan::SPAN_KIND_RPC_SERVER
         ];
 
         // transform OpenCensus Spans to Google\Cloud\Spans

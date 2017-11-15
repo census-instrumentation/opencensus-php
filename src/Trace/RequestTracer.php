@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace;
 
+use OpenCensus\Core\Scope;
+use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Sampler\SamplerFactory;
 use OpenCensus\Trace\Sampler\SamplerInterface;
 use OpenCensus\Trace\Exporter\ExporterInterface;
@@ -86,18 +88,21 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
  *
  * Explicitly tracing spans:
  * ```
- * RequestTracer::start($reporter);
- * RequestTracer::startSpan(['name' => 'expensive-operation']);
+ * // Creates a detached span
+ * $span = RequestTracer::startSpan(['name' => 'expensive-operation']);
+ *
+ * // Opens a scope that attaches the span to the current context
+ * $scope = RequestTracer::withSpan($span);
  * try {
- *     // do expensive operation
- * } catch (\Exception $e) {
- *     RequestTracer::endSpan();
+ *     $pi = calculatePi(1000);
+ * } finally {
+ *     // Closes the scope (ends the span)
+ *     $scope->close();
  * }
  * ```
  *
  * It is recommended that you use the {@see OpenCensus\Trace\RequestTracer::inSpan()}
- * method where you can. An uncaught exception between {@see OpenCensus\Trace\RequestTracer::startSpan()}
- * and {@see OpenCensus\Trace\RequestTracer::endSpan()} may not correctly close spans.
+ * method where you can.
  */
 class RequestTracer
 {
@@ -172,21 +177,23 @@ class RequestTracer
     }
 
     /**
-     * Explicitly start a new Span. You will need to manage finishing the Span,
-     * including handling any thrown exceptions.
+     * Explicitly start a new Span. You will need to attach the span and handle
+     * any thrown exceptions.
      *
      * Example:
      * ```
-     * RequestTracer::startSpan(['name' => 'expensive-operation']);
+     * $span = RequestTracer::startSpan(['name' => 'expensive-operation']);
      * try {
      *     // do something expensive
      * } catch (\Exception $e) {
-     *     RequestTracer::endSpan();
+     * } finally {
+     *     $span->setEndTime();
      * }
      * ```
      *
      * @param array $spanOptions [optional] Options for the span.
      *      {@see OpenCensus\Trace\Span::__construct()}
+     * @return Span
      */
     public static function startSpan(array $spanOptions = [])
     {
@@ -194,30 +201,25 @@ class RequestTracer
     }
 
     /**
-    * Explicitly finish the current context (Span).
-     */
-    public static function endSpan()
-    {
-        return self::$instance->endSpan();
-    }
-
-    /**
-     * Return the current context
+     * Attaches the provided span as the current span and returns a Scope
+     * object which must be closed.
      *
-     * @return SpanContext
-     */
-    public static function context()
-    {
-        return self::$instance->context();
-    }
-
-    /**
-     * Returns the RequestHandler instance
+     * Example:
+     * ```
+     * $span = RequestTracer::startSpan(['name' => 'expensive-operation']);
+     * $scope = RequestTracer::withSpan($span);
+     * try {
+     *     // do something expensive
+     * } finally {
+     *     $scope->close();
+     * }
+     * ```
      *
-     * @return RequestHandler
+     * @param Span $span
+     * @return Scope
      */
-    public static function instance()
+    public static function withSpan(Span $span)
     {
-        return self::$instance;
+        return self::$instance->withSpan($span);
     }
 }
