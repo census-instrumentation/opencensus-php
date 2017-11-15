@@ -23,7 +23,7 @@ namespace OpenCensus\Core;
  *
  * Example:
  * ```
- * $scope = RequestTracer.withSpan($span);
+ * $scope = RequestTracer::withSpan($span);
  * try {
  *   return do_something();
  * } finally {
