@@ -18,7 +18,7 @@
 namespace OpenCensus\Trace\Integrations;
 
 use Grpc\BaseStub;
-use OpenCensus\Trace\RequestTracer;
+use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Propagator\GrpcMetadataPropagator;
 
 /**
@@ -113,7 +113,7 @@ class Grpc implements IntegrationInterface
      */
     public static function updateMetadata($metadata, $jwtAuthUri)
     {
-        if ($context = RequestTracer::context()) {
+        if ($context = Tracer::context()) {
             $propagator = new GrpcMetadataPropagator();
             $metadata += [
                 $propagator->key() => $propagator->formatter()->serialize($context)

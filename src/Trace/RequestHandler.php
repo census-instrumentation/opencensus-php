@@ -29,7 +29,7 @@ use OpenCensus\Trace\Propagator\PropagatorInterface;
 /**
  * This class manages the logic for sampling and reporting a trace within a
  * single request. It is not meant to be used directly -- instead, it should
- * be managed by the RequestTracer as its singleton instance.
+ * be managed by the Tracer as its singleton instance.
  *
  * @internal
  */

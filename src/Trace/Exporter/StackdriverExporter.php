@@ -30,7 +30,7 @@ use OpenCensus\Trace\Span as OpenCensusSpan;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\RequestTracer;
+ * use OpenCensus\Trace\Tracer;
  * use OpenCensus\Trace\Exporter\StackdriverExporter;
  *
  * $reporter = new StackdriverExporter([
@@ -38,7 +38,7 @@ use OpenCensus\Trace\Span as OpenCensusSpan;
  *      'projectId' => 'my-project'
  *   ]
  * ]);
- * RequestTracer::start($reporter);
+ * Tracer::start($reporter);
  * ```
  *
  * The above configuration will synchronously report the traces to Google Cloud
@@ -47,7 +47,7 @@ use OpenCensus\Trace\Span as OpenCensusSpan;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\RequestTracer;
+ * use OpenCensus\Trace\Tracer;
  * use OpenCensus\Trace\Exporter\StackdriverExporter;
  *
  * $reporter = new StackdriverExporter([
@@ -56,7 +56,7 @@ use OpenCensus\Trace\Span as OpenCensusSpan;
  *      'projectId' => 'my-project'
  *   ]
  * ]);
- * RequestTracer::start($reporter);
+ * Tracer::start($reporter);
  * ```
  *
  * Note that to use the `async` option, you will also need to set the

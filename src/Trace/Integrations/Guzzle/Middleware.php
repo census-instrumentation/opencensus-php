@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Trace\Integrations\Guzzle;
 
-use OpenCensus\Trace\RequestTracer;
+use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 use OpenCensus\Trace\Propagator\PropagatorInterface;
 use Psr\Http\Message\RequestInterface;
@@ -69,13 +69,13 @@ class Middleware
     public function __invoke(callable $handler)
     {
         return function (RequestInterface $request, $options) use ($handler) {
-            if ($context = RequestTracer::context()) {
+            if ($context = Tracer::context()) {
                 $request = $request->withHeader(
                     $this->propagator->key(),
                     $this->propagator->formatter()->serialize($context)
                 );
             }
-            return RequestTracer::inSpan([
+            return Tracer::inSpan([
                 'name' => 'GuzzleHttp::request',
                 'labels' => [
                     'method' => $request->getMethod(),
