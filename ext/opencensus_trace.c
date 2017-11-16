@@ -273,7 +273,7 @@ static opencensus_trace_span_t *opencensus_trace_begin(zend_string *function_nam
 {
     opencensus_trace_span_t *span = opencensus_trace_span_alloc();
 
-    zend_fetch_debug_backtrace(&span->backtrace, 1, DEBUG_BACKTRACE_IGNORE_ARGS, 0);
+    zend_fetch_debug_backtrace(&span->stackTrace, 1, DEBUG_BACKTRACE_IGNORE_ARGS, 0);
 
     span->start = opencensus_now();
     span->name = zend_string_copy(function_name);
@@ -628,7 +628,7 @@ PHP_FUNCTION(opencensus_trace_list)
         ZVAL_ARR(&attribute, trace_span->attributes);
         zend_update_property(opencensus_trace_span_ce, &span, "attributes", sizeof("attributes") - 1, &attribute);
 
-        zend_update_property(opencensus_trace_span_ce, &span, "backtrace", sizeof("backtrace") - 1, &trace_span->backtrace);
+        zend_update_property(opencensus_trace_span_ce, &span, "stackTrace", sizeof("stackTrace") - 1, &trace_span->stackTrace);
 
         add_next_index_zval(return_value, &span);
     } ZEND_HASH_FOREACH_END();

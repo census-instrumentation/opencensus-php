@@ -28,121 +28,95 @@ class SpanTest extends \PHPUnit_Framework_TestCase
 
     public function testGeneratesDefaultSpanId()
     {
-        $traceSpan = new Span();
-        $info = $traceSpan->info();
-        $this->assertArrayHasKey('spanId', $info);
-        $this->assertEquals($info['spanId'], $traceSpan->spanId());
+        $span = new Span();
+
+        $this->assertNotEmpty($span->spanId());
     }
 
     public function testReadsSpanId()
     {
-        $traceSpan = new Span(['spanId' => '1234']);
-        $info = $traceSpan->info();
-        $this->assertArrayHasKey('spanId', $info);
-        $this->assertEquals('1234', $info['spanId']);
+        $span = new Span(['spanId' => '1234']);
+
+        $this->assertEquals('1234', $span->spanId());
     }
 
     public function testReadsAttributes()
     {
-        $traceSpan = new Span(['attributes' => ['foo' => 'bar']]);
-        $info = $traceSpan->info();
-        $this->assertArrayHasKey('attributes', $info);
-        $this->assertEquals('bar', $info['attributes']['foo']);
+        $span = new Span(['attributes' => ['foo' => 'bar']]);
+
+        $attributes = $span->attributes();
+        $this->assertArrayHasKey('foo', $attributes);
+        $this->assertEquals('bar', $attributes['foo']);
     }
 
     public function testCanAddAttribute()
     {
-        $traceSpan = new Span();
-        $traceSpan->addAttribute('foo', 'bar');
-        $info = $traceSpan->info();
-        $this->assertArrayHasKey('attributes', $info);
-        $this->assertEquals('bar', $info['attributes']['foo']);
+        $span = new Span();
+        $span->addAttribute('foo', 'bar');
+
+        $attributes = $span->attributes();
+        $this->assertArrayHasKey('foo', $attributes);
+        $this->assertEquals('bar', $attributes['foo']);
     }
 
     public function testNoAttributes()
     {
-        $traceSpan = new Span();
-        $info = $traceSpan->info();
-        $this->assertArrayNotHasKey('attributes', $info);
+        $span = new Span();
+
+        $this->assertEmpty($span->attributes());
     }
 
     public function testEmptyAttributes()
     {
-        $traceSpan = new Span(['attributes' => []]);
-        $info = $traceSpan->info();
-        $this->assertArrayNotHasKey('attributes', $info);
+        $span = new Span(['attributes' => []]);
+
+        $this->assertEquals([], $span->attributes());
     }
 
     public function testGeneratesDefaultSpanName()
     {
-        $traceSpan = new Span();
-        $info = $traceSpan->info();
-        $this->assertArrayHasKey('name', $info);
-        $this->assertStringStartsWith('app', $info['name']);
-        $this->assertEquals($info['name'], $traceSpan->name());
+        $span = new Span();
+
+        $this->assertStringStartsWith('app', $span->name());
     }
 
     public function testReadsName()
     {
-        $traceSpan = new Span(['name' => 'myspan']);
-        $info = $traceSpan->info();
-        $this->assertArrayHasKey('name', $info);
-        $this->assertEquals('myspan', $info['name']);
+        $span = new Span(['name' => 'myspan']);
+
+        $this->assertEquals('myspan', $span->name());
     }
 
     public function testStartFormat()
     {
-        $traceSpan = new Span();
-        $traceSpan->setStartTime();
-        $info = $traceSpan->info();
-        $this->assertArrayHasKey('startTime', $info);
-        $this->assertInstanceOf(\DateTimeInterface::class, $info['startTime']);
+        $span = new Span();
+        $span->setStartTime();
+
+        $this->assertInstanceOf(\DateTimeInterface::class, $span->startTime());
     }
 
     public function testFinishFormat()
     {
-        $traceSpan = new Span();
-        $traceSpan->setEndTime();
-        $info = $traceSpan->info();
-        $this->assertArrayHasKey('endTime', $info);
-        $this->assertInstanceOf(\DateTimeInterface::class, $info['endTime']);
-    }
+        $span = new Span();
+        $span->setEndTime();
 
-    public function testGeneratesDefaultKind()
-   {
-       $traceSpan = new Span();
-       $info = $traceSpan->info();
-       $this->assertArrayHasKey('kind', $info);
-       $this->assertEquals(Span::SPAN_KIND_UNKNOWN, $info['kind']);
-   }
-   public function testReadsKind()
-   {
-       $traceSpan = new Span(['kind' => Span::SPAN_KIND_CLIENT]);
-       $info = $traceSpan->info();
-       $this->assertArrayHasKey('kind', $info);
-       $this->assertEquals(Span::SPAN_KIND_CLIENT, $info['kind']);
-   }
-
-    public function testIgnoresUnknownFields()
-    {
-        $traceSpan = new Span(['extravalue' => 'something']);
-        $info = $traceSpan->info();
-        $this->assertArrayNotHasKey('extravalue', $info);
+        $this->assertInstanceOf(\DateTimeInterface::class, $span->endTime());
     }
 
     public function testGeneratesBacktrace()
     {
-        $traceSpan = new Span();
-        $this->assertInternalType('array', $traceSpan->backtrace());
-        $this->assertTrue(count($traceSpan->backtrace()) > 0);
-        $stackframe = $traceSpan->backtrace()[0];
+        $span = new Span();
+
+        $this->assertInternalType('array', $span->stackTrace());
+        $this->assertTrue(count($span->stackTrace()) > 0);
+        $stackframe = $span->stackTrace()[0];
         $this->assertEquals('testGeneratesBacktrace', $stackframe['function']);
         $this->assertEquals(self::class, $stackframe['class']);
     }
 
     public function testOverrideBacktrace()
     {
-        $backtrace = [
+        $stackTrace = [
             [
                 'class' => 'Foo',
                 'line' => 1234,
@@ -150,12 +124,12 @@ class SpanTest extends \PHPUnit_Framework_TestCase
                 'type' => '::'
             ]
         ];
-        $traceSpan = new Span([
-            'backtrace' => $backtrace
+        $span = new Span([
+            'stackTrace' => $stackTrace
         ]);
 
-        $this->assertCount(1, $traceSpan->backtrace());
-        $stackframe = $traceSpan->backtrace()[0];
+        $this->assertCount(1, $span->stackTrace());
+        $stackframe = $span->stackTrace()[0];
         $this->assertEquals('asdf', $stackframe['function']);
         $this->assertEquals('Foo', $stackframe['class']);
     }
@@ -165,8 +139,10 @@ class SpanTest extends \PHPUnit_Framework_TestCase
      */
     public function testCanFormatTimestamps($field, $timestamp, $expected)
     {
-        $traceSpan = new Span([$field => $timestamp]);
-        $this->assertEquals($expected, $traceSpan->info()[$field]->format('Y-m-d\TH:i:s.u000\Z'));
+        $span = new Span([$field => $timestamp]);
+        $date = call_user_func([$span, $field]);
+        $this->assertInstanceOf(\DateTimeInterface::class, $date);
+        $this->assertEquals($expected, $date->format('Y-m-d\TH:i:s.u000\Z'));
     }
 
     public function timestampFields()

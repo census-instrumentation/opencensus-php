@@ -213,7 +213,7 @@ class StackdriverExporter implements ExporterInterface
                 ? $spanKindMap[$span->kind()]
                 :  TraceSpan::SPAN_KIND_UNSPECIFIED;
             $attributes = $span->attributes();
-            $attributes[self::STACKTRACE] = $this->formatBacktrace($span->backtrace());
+            $attributes[self::STACKTRACE] = $this->formatBacktrace($span->stackTrace());
             return new TraceSpan([
                 'name' => $span->name(),
                 'startTime' => $span->startTime(),

@@ -33,7 +33,7 @@ Array
                 (
                 )
 
-            [backtrace:protected] => Array
+            [stackTrace:protected] => Array
                 (
                 )
 
@@ -51,7 +51,7 @@ Array
                 (
                 )
 
-            [backtrace:protected] => Array
+            [stackTrace:protected] => Array
                 (
                 )
 

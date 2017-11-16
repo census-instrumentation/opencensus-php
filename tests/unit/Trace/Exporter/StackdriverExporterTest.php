@@ -137,7 +137,7 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
 
     public function testStacktraceAttribute()
     {
-        $backtrace = [
+        $stackTrace = [
             [
                 'file' => '/path/to/file.php',
                 'class' => 'Foo',
@@ -147,7 +147,7 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
         $tracer = new ContextTracer(new SpanContext('testtraceid'));
-        $tracer->inSpan(['backtrace' => $backtrace], function () {});
+        $tracer->inSpan(['stackTrace' => $stackTrace], function () {});
 
         $reporter = new StackdriverExporter(['client' => $this->client->reveal()]);
         $spans = $reporter->convertSpans($tracer);

@@ -20,7 +20,7 @@ $traces = opencensus_trace_list();
 echo "Number of traces: " . count($traces) . "\n";
 
 foreach ($traces as $span) {
-    var_dump($span->backtrace());
+    var_dump($span->stackTrace());
 }
 ?>
 --EXPECTF--
