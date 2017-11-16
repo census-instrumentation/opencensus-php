@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace;
 
+use OpenCensus\Core\Context;
+use OpenCensus\Core\Scope;
 use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Sampler\SamplerInterface;
 use OpenCensus\Trace\Span;
@@ -48,6 +50,11 @@ class RequestHandler
     private $tracer;
 
     /**
+     * @var Scope
+     */
+    private $scope;
+
+    /**
      * Create a new RequestHandler.
      *
      * @param ExporterInterface $reporter How to report the trace at the end of the request
@@ -71,25 +78,25 @@ class RequestHandler
             ? $options['headers']
             : $_SERVER;
 
-        $context = $propagator->extract($headers);
+        $spanContext = $propagator->extract($headers);
 
         // If the context force disables tracing, don't consult the $sampler.
-        if ($context->enabled() !== false) {
-            $context->setEnabled($context->enabled() || $sampler->shouldSample());
+        if ($spanContext->enabled() !== false) {
+            $spanContext->setEnabled($spanContext->enabled() || $sampler->shouldSample());
         }
 
         // If the request was provided with a trace context header, we need to send it back with the response
         // including whether the request was sampled or not.
-        if ($context->fromHeader()) {
+        if ($spanContext->fromHeader()) {
             if (!headers_sent()) {
-                foreach ($propagator->inject($context, $headers) as $header => $value) {
+                foreach ($propagator->inject($spanContext, $headers) as $header => $value) {
                     header("$header: $value");
                 }
             }
         }
 
-        $this->tracer = $context->enabled()
-            ? extension_loaded('opencensus') ? new ExtensionTracer($context) : new ContextTracer($context)
+        $this->tracer = $spanContext->enabled()
+            ? extension_loaded('opencensus') ? new ExtensionTracer($spanContext) : new ContextTracer($spanContext)
             : new NullTracer();
 
         $spanOptions = $options + [
@@ -97,7 +104,8 @@ class RequestHandler
             'name' => $this->nameFromHeaders($headers),
             'attributes' => []
         ];
-        $this->tracer->startSpan($spanOptions);
+        $span = $this->tracer->startSpan($spanOptions);
+        $this->scope = $this->tracer->withSpan($span);
 
         register_shutdown_function([$this, 'onExit']);
     }
@@ -109,10 +117,7 @@ class RequestHandler
      */
     public function onExit()
     {
-        // close all open spans
-        do {
-            $span = $this->tracer->endSpan();
-        } while ($span);
+        $this->scope->close();
         $this->reporter->report($this->tracer);
     }
 
@@ -156,23 +161,15 @@ class RequestHandler
     }
 
     /**
-     * Explicitly finish the current context (Span).
+     * Attaches the provided span as the current span and returns a Scope
+     * object which must be closed.
      *
-     * @return Span
+     * @param Span $span
+     * @return Scope
      */
-    public function endSpan()
+    public function withSpan(Span $span)
     {
-        return $this->tracer->endSpan();
-    }
-
-    /**
-     * Return the current context (Span)
-     *
-     * @return SpanContext
-     */
-    public function context()
-    {
-        return $this->tracer->context();
+        return $this->tracer->withSpan($span);
     }
 
     private function startTimeFromHeaders(array $headers)

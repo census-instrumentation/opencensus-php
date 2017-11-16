@@ -101,6 +101,16 @@ class Context
     }
 
     /**
+     * Returns all the contained data.
+     *
+     * @return array
+     */
+    public function values()
+    {
+        return $this->values;
+    }
+
+    /**
      * Attaches this context, thus entering a new scope within which this
      * context is current(). The previously current context is returned.
      *
@@ -126,16 +136,6 @@ class Context
         }
 
         self::$current = $toAttach;
-    }
-
-    /**
-     * Returns all the contained data.
-     *
-     * @return array
-     */
-    public function values()
-    {
-        return $this->values;
     }
 
     /**

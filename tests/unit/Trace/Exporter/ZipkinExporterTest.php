@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
+use OpenCensus\Core\Context;
 use OpenCensus\Trace\Exporter\ZipkinExporter;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
@@ -34,6 +35,7 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->tracer = $this->prophesize(TracerInterface::class);
+        Context::reset();
     }
 
     /**
@@ -48,7 +50,8 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
                 'endTime' => microtime(true) + 10
             ])
         ];
-        $this->tracer->context()->willReturn(new SpanContext());
+
+        $this->tracer->spanContext()->willReturn(new SpanContext());
         $this->tracer->spans()->willReturn($spans);
 
         $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
@@ -100,7 +103,8 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
 
     public function testSpanDebug()
     {
-        $tracer = new ContextTracer(new SpanContext('testtraceid'));
+        $spanContext = new SpanContext('testtraceid');
+        $tracer = new ContextTracer($spanContext);
         $tracer->inSpan(['name' => 'main'], function () {});
 
         $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
@@ -114,7 +118,8 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
 
     public function testSpanShared()
     {
-        $tracer = new ContextTracer(new SpanContext('testtraceid', 12345));
+        $spanContext = new SpanContext('testtraceid', 12345);
+        $tracer = new ContextTracer($spanContext);
         $tracer->inSpan(['name' => 'main'], function () {});
 
         $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
