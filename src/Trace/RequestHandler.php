@@ -50,6 +50,11 @@ class RequestHandler
     private $tracer;
 
     /**
+     * @var Span The primary span for this request
+     */
+    private $rootSpan;
+
+    /**
      * @var Scope
      */
     private $scope;
@@ -104,8 +109,8 @@ class RequestHandler
             'name' => $this->nameFromHeaders($headers),
             'attributes' => []
         ];
-        $span = $this->tracer->startSpan($spanOptions);
-        $this->scope = $this->tracer->withSpan($span);
+        $this->rootSpan = $this->tracer->startSpan($spanOptions);
+        $this->scope = $this->tracer->withSpan($this->rootSpan);
 
         register_shutdown_function([$this, 'onExit']);
     }
@@ -117,6 +122,17 @@ class RequestHandler
      */
     public function onExit()
     {
+        $responseCode = http_response_code();
+        if ($responseCode == 301 || $responseCode == 302) {
+            foreach (headers_list() as $header) {
+                if (substr($header, 0, 9) == 'Location:') {
+                    $this->rootSpan->addAttribute(self::HTTP_REDIRECTED_URL, substr($header, 10));
+                    break;
+                }
+            }
+        }
+        $this->rootSpan->setStatus($responseCode, "HTTP status code: $responseCode");
+
         $this->scope->close();
         $this->reporter->report($this->tracer);
     }

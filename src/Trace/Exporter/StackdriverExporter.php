@@ -263,18 +263,6 @@ class StackdriverExporter implements ExporterInterface
     {
         $headers = $headers ?: $_SERVER;
 
-        // If a redirect, add the HTTP_REDIRECTED_URL attribute to the main span
-        $responseCode = http_response_code();
-        if ($responseCode == 301 || $responseCode == 302) {
-            foreach (headers_list() as $header) {
-                if (substr($header, 0, 9) == 'Location:') {
-                    $tracer->addRootAttribute(self::HTTP_REDIRECTED_URL, substr($header, 10));
-                    break;
-                }
-            }
-        }
-        $tracer->addRootAttribute(self::HTTP_STATUS_CODE, $responseCode);
-
         $attributeMap = [
             self::HTTP_URL => ['REQUEST_URI'],
             self::HTTP_METHOD => ['REQUEST_METHOD'],
