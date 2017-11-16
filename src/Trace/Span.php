@@ -168,6 +168,10 @@ class Span
             $this->parentSpanId = $options['parentSpanId'];
         }
 
+        if (array_key_exists('status', $options)) {
+            $this->status = $options['status'];
+        }
+
         if (array_key_exists('sameProcessAsParentSpan', $options)) {
             $this->sameProcessAsParentSpan = $options['sameProcessAsParentSpan'];
         }
@@ -255,6 +259,17 @@ class Span
     public function attributes()
     {
         return $this->attributes;
+    }
+
+    /**
+     * Set the status for this span.
+     *
+     * @param int $code The status code
+     * @param string $message A developer-facing error message
+     */
+    public function setStatus($code, $message)
+    {
+        $this->status = new Status($code, $message);
     }
 
     /**

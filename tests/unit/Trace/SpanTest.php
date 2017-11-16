@@ -18,6 +18,7 @@
 namespace OpenCensus\Tests\Unit\Trace;
 
 use OpenCensus\Trace\Span;
+use OpenCensus\Trace\Status;
 
 /**
  * @group trace
@@ -132,6 +133,33 @@ class SpanTest extends \PHPUnit_Framework_TestCase
         $stackframe = $span->stackTrace()[0];
         $this->assertEquals('asdf', $stackframe['function']);
         $this->assertEquals('Foo', $stackframe['class']);
+    }
+
+    public function testDefaultStatus()
+    {
+        $span = new Span();
+
+        $this->assertNull($span->status());
+    }
+
+    public function testConstructingWithStatus()
+    {
+        $status = new Status(200, 'OK');
+        $span = new Span(['status' => $status]);
+
+        $this->assertInstanceOf(Status::class, $span->status());
+        $this->assertEquals($status, $span->status());
+    }
+
+    public function testSettingStatus()
+    {
+        $span = new Span();
+        $span->setStatus(500, 'A server error occurred');
+
+        $status = $span->status();
+        $this->assertInstanceOf(Status::class, $status);
+        $this->assertEquals(500, $status->code());
+        $this->assertEquals('A server error occurred', $status->message());
     }
 
     /**
