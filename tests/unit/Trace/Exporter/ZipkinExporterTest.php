@@ -80,10 +80,10 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
     {
         $tracer = new ContextTracer(new SpanContext('testtraceid'));
         $tracer->inSpan(['name' => 'main'], function () use ($tracer) {
-            $tracer->inSpan(['name' => 'span1', 'kind' => Span::SPAN_KIND_CLIENT], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span2', 'kind' => Span::SPAN_KIND_SERVER], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span3', 'kind' => Span::SPAN_KIND_PRODUCER], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span4', 'kind' => Span::SPAN_KIND_CONSUMER], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span1'], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span2'], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span3'], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span4'], 'usleep', [1]);
         });
 
         $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
@@ -95,10 +95,6 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(5, $spans);
         $this->assertFalse(array_key_exists('kind', $spans[0]));
-        $this->assertEquals('CLIENT', $spans[1]['kind']);
-        $this->assertEquals('SERVER', $spans[2]['kind']);
-        $this->assertEquals('PRODUCER', $spans[3]['kind']);
-        $this->assertEquals('CONSUMER', $spans[4]['kind']);
     }
 
     public function testSpanDebug()

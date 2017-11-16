@@ -202,16 +202,8 @@ class StackdriverExporter implements ExporterInterface
      */
     public function convertSpans(TracerInterface $tracer)
     {
-        $spanKindMap = [
-            Span::SPAN_KIND_CLIENT => TraceSpan::SPAN_KIND_RPC_CLIENT,
-            Span::SPAN_KIND_SERVER => TraceSpan::SPAN_KIND_RPC_SERVER
-        ];
-
         // transform OpenCensus Spans to Google\Cloud\Spans
-        return array_map(function ($span) use ($spanKindMap) {
-            $kind = array_key_exists($span->kind(), $spanKindMap)
-                ? $spanKindMap[$span->kind()]
-                :  TraceSpan::SPAN_KIND_UNSPECIFIED;
+        return array_map(function ($span) {
             $attributes = $span->attributes();
             $attributes[self::STACKTRACE] = $this->formatBacktrace($span->stackTrace());
             return new TraceSpan([
@@ -220,8 +212,7 @@ class StackdriverExporter implements ExporterInterface
                 'endTime' => $span->endTime(),
                 'spanId' => hexdec($span->spanId()),
                 'parentSpanId' => $span->parentSpanId() ? hexdec($span->parentSpanId()) : null,
-                'labels' => $attributes,
-                'kind' => $kind,
+                'labels' => $attributes
             ]);
             $span->info();
         }, $tracer->spans());
