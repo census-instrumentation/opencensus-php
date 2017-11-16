@@ -3,7 +3,7 @@
 [OpenCensus](https://opencensus.io/) is a free, open-source distributed tracing
 implementation based on the [Dapper Paper](https://research.google.com/pubs/pub36356.html).
 This extension allows you to "watch" class method and function calls in order to
-automatically collect nested spans (attributeled timing data).
+automatically collect nested spans (timing data).
 
 This library can optionally work in conjunction with the PHP library
 [opencensus/opencensus](https://packagist.org/packages/opencensus/opencensus) in order
