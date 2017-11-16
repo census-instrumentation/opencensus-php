@@ -31,7 +31,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
         $spanOptions = PDO::handleQuery($scope, $query);
         $expected = [
-            'labels' => [
+            'attributes' => [
                 'query' => 'select * from users'
             ]
         ];
@@ -44,7 +44,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $dsn = 'mysql:host=localhost;dbname=testdb';
         $spanOptions = PDO::handleConnect(null, $dsn);
         $expected = [
-            'labels' => [
+            'attributes' => [
                 'dsn' => 'mysql:host=localhost;dbname=testdb'
             ]
         ];

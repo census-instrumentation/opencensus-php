@@ -53,7 +53,7 @@ class Curl implements IntegrationInterface
     public static function handleCurlResource($resource)
     {
         return [
-            'labels' => [
+            'attributes' => [
                 'uri' => curl_getinfo($resource, CURLINFO_EFFECTIVE_URL)
             ]
         ];

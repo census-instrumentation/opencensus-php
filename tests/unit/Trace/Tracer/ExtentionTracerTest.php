@@ -56,12 +56,12 @@ class ExtensionTracerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($parentSpanId, $span->parentSpanId());
     }
 
-    public function testAddsLabelsToCurrentSpan()
+    public function testAddsAttributesToCurrentSpan()
     {
         $tracer = new ExtensionTracer();
         $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
             $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
-                $tracer->addLabel('foo', 'bar');
+                $tracer->addAttribute('foo', 'bar');
             });
         });
 
@@ -70,15 +70,15 @@ class ExtensionTracerTest extends \PHPUnit_Framework_TestCase
         $span = $spans[1];
         $this->assertEquals('inner', $span->name());
         $info = $span->info();
-        $this->assertEquals('bar', $info['labels']['foo']);
+        $this->assertEquals('bar', $info['attributes']['foo']);
     }
 
-    public function testAddsLabelsToRootSpan()
+    public function testAddsAttributesToRootSpan()
     {
         $tracer = new ExtensionTracer();
         $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
             $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
-                $tracer->addRootLabel('foo', 'bar');
+                $tracer->addRootAttribute('foo', 'bar');
             });
         });
 
@@ -87,7 +87,7 @@ class ExtensionTracerTest extends \PHPUnit_Framework_TestCase
         $span = $spans[0];
         $this->assertEquals('root', $span->name());
         $info = $span->info();
-        $this->assertEquals('bar', $info['labels']['foo']);
+        $this->assertEquals('bar', $info['attributes']['foo']);
     }
 
     public function testPersistsBacktrace()

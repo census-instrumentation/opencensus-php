@@ -26,9 +26,9 @@ use OpenCensus\Core\Context;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\RequestTracer;
+ * use OpenCensus\Trace\Tracer;
  *
- * $context = RequestTracer::context();
+ * $context = Tracer::context();
  * echo $context; // output the header format for using the current context in a remote call
  * ```
  */

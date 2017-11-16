@@ -24,7 +24,7 @@ echo "Span startTime is a double: $test\n";
 $test = gettype($span->endTime()) == 'double';
 echo "Span endTime is a double: $test\n";
 
-var_dump($span->labels());
+var_dump($span->attributes());
 
 ?>
 --EXPECT--

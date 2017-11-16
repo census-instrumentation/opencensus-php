@@ -66,7 +66,7 @@ This extension allows you to easily gather latency and other metadata by watchin
     <file name="function_kind_default.phpt" role="test" />
     <file name="function_kind_specified.phpt" role="test" />
     <file name="inherit_context.phpt" role="test" />
-    <file name="labels.phpt" role="test" />
+    <file name="attributes.phpt" role="test" />
     <file name="manual_spans.phpt" role="test" />
     <file name="manual_spans_default_options.phpt" role="test" />
     <file name="many_spans_test.phpt" role="test" />
@@ -80,11 +80,11 @@ This extension allows you to easily gather latency and other metadata by watchin
     <file name="method_kind_specified.phpt" role="test" />
     <file name="module_callback_static_string.phpt" role="test" />
     <file name="nested_spans.phpt" role="test" />
-    <file name="non-string-labels-function-callback.phpt" role="test" />
-    <file name="non-string-labels-function.phpt" role="test" />
-    <file name="non-string-labels-method-callback.phpt" role="test" />
-    <file name="non-string-labels-method.phpt" role="test" />
-    <file name="non-string-labels.phpt" role="test" />
+    <file name="non-string-attributes-function-callback.phpt" role="test" />
+    <file name="non-string-attributes-function.phpt" role="test" />
+    <file name="non-string-attributes-method-callback.phpt" role="test" />
+    <file name="non-string-attributes-method.phpt" role="test" />
+    <file name="non-string-attributes.phpt" role="test" />
     <file name="span_class.phpt" role="test" />
     <file name="static_method_callback_scope.phpt" role="test" />
     <file name="static_method_test.phpt" role="test" />

@@ -7,7 +7,7 @@ require_once(__DIR__ . '/common.php');
 
 // 1: Sanity test a simple profile run
 opencensus_trace_method("Foo", "add", function($scope, $x, $y) {
-    return ['name' => 'foo', 'startTime' => 0.1, 'labels' => ['val' => '' . $scope->val]];
+    return ['name' => 'foo', 'startTime' => 0.1, 'attributes' => ['val' => '' . $scope->val]];
 });
 $f = new Foo(2);
 $f->add(3, 4);
@@ -28,7 +28,7 @@ echo "Span startTime is: '{$span->startTime()}'\n";
 $test = gettype($span->endTime()) == 'double';
 echo "Span endTime is a double: $test\n";
 
-print_r($span->labels());
+print_r($span->attributes());
 ?>
 --EXPECT--
 Number of traces: 1

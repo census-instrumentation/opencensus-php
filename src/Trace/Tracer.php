@@ -28,17 +28,17 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 /**
  * This class provides static functions to give you access to the current
  * request's singleton tracer. You should use this class to instrument your code.
- * The first step, is to configure and start your `RequestTracer`. Calling `start`
+ * The first step, is to configure and start your `Tracer`. Calling `start`
  * will collect trace data during your request and report the results at the
  * request using the provided reporter.
  *
  * Example:
  * ```
- * use OpenCensus\Trace\RequestTracer;
+ * use OpenCensus\Trace\Tracer;
  * use OpenCensus\Trace\Exporter\EchoExporter;
  *
  * $reporter = new EchoExporter();
- * RequestTracer::start($reporter);
+ * Tracer::start($reporter);
  * ```
  *
  * In the above example, every request is traced. This is not advised as it will
@@ -49,7 +49,7 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
  * ```
  * // $cache is a PSR-6 cache implementation
  * $sampler = new QpsSampler($cache, ['rate' => 0.1]);
- * RequestTracer::start($reporter, [
+ * Tracer::start($reporter, [
  *     'sampler' => $sampler
  * ]);
  * ```
@@ -62,7 +62,7 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
  *
  * ```
  * // $cache is a PSR-6 cache implementation
- * RequestTracer::start($reporter, [
+ * Tracer::start($reporter, [
  *     'sampler' => [
  *         'type' => 'qps',
  *         'rate' => 0.1,
@@ -71,13 +71,13 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
  * ]);
  * ```
  *
- * To trace code, you can use static {@see OpenCensus\Trace\RequestTracer::inSpan()} helper function:
+ * To trace code, you can use static {@see OpenCensus\Trace\Tracer::inSpan()} helper function:
  *
  * ```
- * RequestTracer::start($reporter);
- * RequestTracer::inSpan(['name' => 'outer'], function () {
+ * Tracer::start($reporter);
+ * Tracer::inSpan(['name' => 'outer'], function () {
  *     // some code
- *     RequestTracer::inSpan(['name' => 'inner'], function () {
+ *     Tracer::inSpan(['name' => 'inner'], function () {
  *         // some code
  *     });
  *     // some code
@@ -89,10 +89,10 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
  * Explicitly tracing spans:
  * ```
  * // Creates a detached span
- * $span = RequestTracer::startSpan(['name' => 'expensive-operation']);
+ * $span = Tracer::startSpan(['name' => 'expensive-operation']);
  *
  * // Opens a scope that attaches the span to the current context
- * $scope = RequestTracer::withSpan($span);
+ * $scope = Tracer::withSpan($span);
  * try {
  *     $pi = calculatePi(1000);
  * } finally {
@@ -101,10 +101,10 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
  * }
  * ```
  *
- * It is recommended that you use the {@see OpenCensus\Trace\RequestTracer::inSpan()}
+ * It is recommended that you use the {@see OpenCensus\Trace\Tracer::inSpan()}
  * method where you can.
  */
-class RequestTracer
+class Tracer
 {
     /**
      * @var RequestHandler Singleton instance
@@ -153,7 +153,7 @@ class RequestTracer
      * Example:
      * ```
      * // Instrumenting code as a closure
-     * RequestTracer::inSpan(['name' => 'some-closure'], function () {
+     * Tracer::inSpan(['name' => 'some-closure'], function () {
      *   // do something expensive
      * });
      * ```
@@ -163,7 +163,7 @@ class RequestTracer
      * function fib($n) {
      *   // do something expensive
      * }
-     * $number = RequestTracer::inSpan(['name' => 'some-callable'], 'fib', [10]);
+     * $number = Tracer::inSpan(['name' => 'some-callable'], 'fib', [10]);
      * ```
      *
      * @param array $spanOptions Options for the span.
@@ -182,12 +182,13 @@ class RequestTracer
      *
      * Example:
      * ```
-     * $span = RequestTracer::startSpan(['name' => 'expensive-operation']);
+     * $span = Tracer::startSpan(['name' => 'expensive-operation']);
+     * $scope = Tracer::withSpan($span);
      * try {
      *     // do something expensive
      * } catch (\Exception $e) {
      * } finally {
-     *     $span->setEndTime();
+     *     $scope->close();
      * }
      * ```
      *

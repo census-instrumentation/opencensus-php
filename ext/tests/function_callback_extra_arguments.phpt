@@ -10,7 +10,7 @@ function foo() {
 // 1: Sanity test a simple profile run
 opencensus_trace_function('foo', function () {
     $args = func_get_args();
-    return ['labels' => ['argc' => count($args), 'argc2' => func_num_args(), 'arg' => $args[0]]];
+    return ['attributes' => ['argc' => count($args), 'argc2' => func_num_args(), 'arg' => $args[0]]];
 });
 
 foo(3);
@@ -18,7 +18,7 @@ $traces = opencensus_trace_list();
 echo "Number of traces: " . count($traces) . "\n";
 $span = $traces[0];
 
-print_r($span->labels());
+print_r($span->attributes());
 ?>
 --EXPECT--
 Number of traces: 1

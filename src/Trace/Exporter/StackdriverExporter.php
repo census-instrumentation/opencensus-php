@@ -30,7 +30,7 @@ use OpenCensus\Trace\Span;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\RequestTracer;
+ * use OpenCensus\Trace\Tracer;
  * use OpenCensus\Trace\Exporter\StackdriverExporter;
  *
  * $reporter = new StackdriverExporter([
@@ -38,7 +38,7 @@ use OpenCensus\Trace\Span;
  *      'projectId' => 'my-project'
  *   ]
  * ]);
- * RequestTracer::start($reporter);
+ * Tracer::start($reporter);
  * ```
  *
  * The above configuration will synchronously report the traces to Google Cloud
@@ -47,7 +47,7 @@ use OpenCensus\Trace\Span;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\RequestTracer;
+ * use OpenCensus\Trace\Tracer;
  * use OpenCensus\Trace\Exporter\StackdriverExporter;
  *
  * $reporter = new StackdriverExporter([
@@ -56,7 +56,7 @@ use OpenCensus\Trace\Span;
  *      'projectId' => 'my-project'
  *   ]
  * ]);
- * RequestTracer::start($reporter);
+ * Tracer::start($reporter);
  * ```
  *
  * Note that to use the `async` option, you will also need to set the
@@ -71,7 +71,7 @@ class StackdriverExporter implements ExporterInterface
 {
     const VERSION = '0.1.0';
 
-    // These are Stackdriver Trace's common labels
+    // These are Stackdriver Trace's common attributes
     const AGENT = '/agent';
     const COMPONENT = '/component';
     const ERROR_MESSAGE = '/error/message';
@@ -190,8 +190,8 @@ class StackdriverExporter implements ExporterInterface
      */
     public function processSpans(TracerInterface $tracer, $headers = null)
     {
-        // detect common labels
-        $this->addCommonLabels($tracer, $headers);
+        // detect common attributes
+        $this->addCommonAttributes($tracer, $headers);
     }
 
     /**
@@ -212,15 +212,15 @@ class StackdriverExporter implements ExporterInterface
             $kind = array_key_exists($span->kind(), $spanKindMap)
                 ? $spanKindMap[$span->kind()]
                 :  TraceSpan::SPAN_KIND_UNSPECIFIED;
-            $labels = $span->labels();
-            $labels[self::STACKTRACE] = $this->formatBacktrace($span->backtrace());
+            $attributes = $span->attributes();
+            $attributes[self::STACKTRACE] = $this->formatBacktrace($span->backtrace());
             return new TraceSpan([
                 'name' => $span->name(),
                 'startTime' => $span->startTime(),
                 'endTime' => $span->endTime(),
                 'spanId' => hexdec($span->spanId()),
                 'parentSpanId' => $span->parentSpanId() ? hexdec($span->parentSpanId()) : null,
-                'labels' => $labels,
+                'labels' => $attributes,
                 'kind' => $kind,
             ]);
             $span->info();
@@ -268,23 +268,23 @@ class StackdriverExporter implements ExporterInterface
         return [self::$client, $this->batchMethod];
     }
 
-    private function addCommonLabels(&$tracer, $headers = null)
+    private function addCommonAttributes(&$tracer, $headers = null)
     {
         $headers = $headers ?: $_SERVER;
 
-        // If a redirect, add the HTTP_REDIRECTED_URL label to the main span
+        // If a redirect, add the HTTP_REDIRECTED_URL attribute to the main span
         $responseCode = http_response_code();
         if ($responseCode == 301 || $responseCode == 302) {
             foreach (headers_list() as $header) {
                 if (substr($header, 0, 9) == 'Location:') {
-                    $tracer->addRootLabel(self::HTTP_REDIRECTED_URL, substr($header, 10));
+                    $tracer->addRootAttribute(self::HTTP_REDIRECTED_URL, substr($header, 10));
                     break;
                 }
             }
         }
-        $tracer->addRootLabel(self::HTTP_STATUS_CODE, $responseCode);
+        $tracer->addRootAttribute(self::HTTP_STATUS_CODE, $responseCode);
 
-        $labelMap = [
+        $attributeMap = [
             self::HTTP_URL => ['REQUEST_URI'],
             self::HTTP_METHOD => ['REQUEST_METHOD'],
             self::HTTP_CLIENT_PROTOCOL => ['SERVER_PROTOCOL'],
@@ -296,13 +296,13 @@ class StackdriverExporter implements ExporterInterface
             self::HTTP_CLIENT_REGION => ['HTTP_X_APPENGINE_REGION'],
             self::HTTP_CLIENT_COUNTRY => ['HTTP_X_APPENGINE_COUNTRY']
         ];
-        foreach ($labelMap as $labelKey => $headerKeys) {
+        foreach ($attributeMap as $attributeKey => $headerKeys) {
             if ($val = $this->detectKey($headerKeys, $headers)) {
-                $tracer->addRootLabel($labelKey, $val);
+                $tracer->addRootAttribute($attributeKey, $val);
             }
         }
-        $tracer->addRootLabel(self::PID, '' . getmypid());
-        $tracer->addRootLabel(self::AGENT, 'opencensus-php ' . self::VERSION);
+        $tracer->addRootAttribute(self::PID, '' . getmypid());
+        $tracer->addRootAttribute(self::AGENT, 'opencensus-php ' . self::VERSION);
     }
 
     private function detectKey(array $keys, array $array)

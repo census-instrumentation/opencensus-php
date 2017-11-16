@@ -18,7 +18,7 @@
 namespace OpenCensus\Trace\Integrations\Guzzle;
 
 use OpenCensus\Core\Scope;
-use OpenCensus\Trace\RequestTracer;
+use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 use OpenCensus\Trace\Propagator\PropagatorInterface;
 use GuzzleHttp\Event\BeforeEvent;
@@ -85,17 +85,17 @@ class EventSubscriber implements SubscriberInterface
     public function onBefore(BeforeEvent $event)
     {
         $request = $event->getRequest();
-        if ($context = RequestTracer::context()) {
+        if ($context = Tracer::context()) {
             $request->setHeader($this->propagator->key(), $this->propagator->formatter->serialize($context));
         }
-        $span = RequestTracer::startSpan([
+        $span = Tracer::startSpan([
             'name' => 'GuzzleHttp::request',
-            'labels' => [
+            'attributes' => [
                 'method' => $request->getMethod(),
                 'uri' => $request->getUrl()
             ]
         ]);
-        $this->scope = RequestTracer::withSpan($span);
+        $this->scope = Tracer::withSpan($span);
     }
 
     /**

@@ -51,7 +51,7 @@ class Span
      *      @type \DateTimeInterface|int|float $endTime End time of the span in nanoseconds.
      *            If provided as an int or float, it is treated as a Unix timestamp.
      *      @type string $parentSpanId ID of the parent span if any.
-     *      @type array $labels Associative array of $label => $value
+     *      @type array $attributes Associative array of $attribute => $value
      *            to attach to this span.
      *      @type int $kind The kind of span. One of SPAN_KIND_UNKNOWN|SPAN_KIND_CLIENT|SPAN_KIND_SERVER|
      *            SPAN_KIND_CONSUMER|SPAN_KIND_PRODUCER. **Defaults to** SPAN_KIND_UNKNOWN,
@@ -68,9 +68,9 @@ class Span
             unset($options['endTime']);
         }
 
-        if (array_key_exists('labels', $options)) {
-            $this->addLabels($options['labels']);
-            unset($options['labels']);
+        if (array_key_exists('attributes', $options)) {
+            $this->addAttributes($options['attributes']);
+            unset($options['attributes']);
         }
 
         if (array_key_exists('spanId', $options)) {
@@ -184,14 +184,14 @@ class Span
     }
 
     /**
-     * Retrieve the list of labels for this span
+     * Retrieve the list of attributes for this span
      *
      * @return array
      */
-    public function labels()
+    public function attributes()
     {
-        return array_key_exists('labels', $this->info)
-            ? $this->info['labels']
+        return array_key_exists('attributes', $this->info)
+            ? $this->info['attributes']
             : [];
     }
 
@@ -226,29 +226,29 @@ class Span
     }
 
     /**
-     * Attach labels to this span.
+     * Attach attributes to this span.
      *
-     * @param array $labels Labels in the form of $label => $value
+     * @param array $attributes Attributes in the form of $attribute => $value
      */
-    public function addLabels(array $labels)
+    public function addAttributes(array $attributes)
     {
-        foreach ($labels as $label => $value) {
-            $this->addLabel($label, $value);
+        foreach ($attributes as $attribute => $value) {
+            $this->addAttribute($attribute, $value);
         }
     }
 
     /**
-     * Attach a single label to this span.
+     * Attach a single attribute to this span.
      *
-     * @param string $label The name of the label.
-     * @param mixed $value The value of the label. Will be cast to a string
+     * @param string $attribute The name of the attribute.
+     * @param mixed $value The value of the attribute. Will be cast to a string
      */
-    public function addLabel($label, $value)
+    public function addAttribute($attribute, $value)
     {
-        if (!array_key_exists('labels', $this->info)) {
-            $this->info['labels'] = [];
+        if (!array_key_exists('attributes', $this->info)) {
+            $this->info['attributes'] = [];
         }
-        $this->info['labels'][$label] = (string) $value;
+        $this->info['attributes'][$attribute] = (string) $value;
     }
 
     /**

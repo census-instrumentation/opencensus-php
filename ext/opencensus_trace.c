@@ -63,7 +63,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_opencensus_trace_set_context, 0, 0, 1)
     ZEND_ARG_TYPE_INFO(0, parentSpanId, IS_STRING, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_opencensus_trace_add_label, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_opencensus_trace_add_attribute, 0, 0, 2)
     ZEND_ARG_TYPE_INFO(0, key, IS_STRING, 0)
     ZEND_ARG_TYPE_INFO(0, value, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -79,8 +79,8 @@ static zend_function_entry opencensus_functions[] = {
     PHP_FE(opencensus_trace_clear, NULL)
     PHP_FE(opencensus_trace_set_context, arginfo_opencensus_trace_set_context)
     PHP_FE(opencensus_trace_context, NULL)
-    PHP_FE(opencensus_trace_add_label, arginfo_opencensus_trace_add_label)
-    PHP_FE(opencensus_trace_add_root_label, arginfo_opencensus_trace_add_label)
+    PHP_FE(opencensus_trace_add_attribute, arginfo_opencensus_trace_add_attribute)
+    PHP_FE(opencensus_trace_add_root_attribute, arginfo_opencensus_trace_add_attribute)
     PHP_FE_END
 };
 
@@ -120,13 +120,13 @@ PHP_FUNCTION(opencensus_version)
 }
 
 /**
- * Add a label to the current trace span
+ * Add a attribute to the current trace span
  *
  * @param string $key
  * @param string $value
  * @return bool
  */
-PHP_FUNCTION(opencensus_trace_add_label)
+PHP_FUNCTION(opencensus_trace_add_attribute)
 {
     zend_string *k, *v;
     opencensus_trace_span_t *span;
@@ -139,7 +139,7 @@ PHP_FUNCTION(opencensus_trace_add_label)
         RETURN_FALSE;
     }
 
-    if (opencensus_trace_span_add_label(span, k, v) == SUCCESS) {
+    if (opencensus_trace_span_add_attribute(span, k, v) == SUCCESS) {
         RETURN_TRUE;
     }
 
@@ -147,13 +147,13 @@ PHP_FUNCTION(opencensus_trace_add_label)
 }
 
 /**
- * Add a label to the root trace span
+ * Add a attribute to the root trace span
  *
  * @param string $key
  * @param string $value
  * @return bool
  */
-PHP_FUNCTION(opencensus_trace_add_root_label)
+PHP_FUNCTION(opencensus_trace_add_root_attribute)
 {
     zend_string *k, *v;
     opencensus_trace_span_t *span;
@@ -169,7 +169,7 @@ PHP_FUNCTION(opencensus_trace_add_root_label)
     /* fetch the first span */
     span = Z_PTR(OPENCENSUS_TRACE_G(spans)->arData->val);
 
-    if (opencensus_trace_span_add_label(span, k, v) == SUCCESS) {
+    if (opencensus_trace_span_add_attribute(span, k, v) == SUCCESS) {
         RETURN_TRUE;
     }
 
@@ -608,7 +608,7 @@ PHP_FUNCTION(opencensus_trace_method)
 PHP_FUNCTION(opencensus_trace_list)
 {
     opencensus_trace_span_t *trace_span;
-    zval label, span;
+    zval attribute, span;
 
     array_init(return_value);
 
@@ -625,8 +625,8 @@ PHP_FUNCTION(opencensus_trace_list)
         zend_update_property_double(opencensus_trace_span_ce, &span, "endTime", sizeof("endTime") - 1, trace_span->stop);
         zend_update_property_long(opencensus_trace_span_ce, &span, "kind", sizeof("kind") - 1, trace_span->kind);
 
-        ZVAL_ARR(&label, trace_span->labels);
-        zend_update_property(opencensus_trace_span_ce, &span, "labels", sizeof("labels") - 1, &label);
+        ZVAL_ARR(&attribute, trace_span->attributes);
+        zend_update_property(opencensus_trace_span_ce, &span, "attributes", sizeof("attributes") - 1, &attribute);
 
         zend_update_property(opencensus_trace_span_ce, &span, "backtrace", sizeof("backtrace") - 1, &trace_span->backtrace);
 

@@ -1,23 +1,23 @@
 --TEST--
-OpenCensus Trace: Test setting labels
+OpenCensus Trace: Test setting attributes
 --FILE--
 <?php
 
 opencensus_trace_begin('root', []);
-opencensus_trace_add_label('foo', 'bar');
+opencensus_trace_add_attribute('foo', 'bar');
 opencensus_trace_begin('inner', []);
-opencensus_trace_add_root_label('asdf', 'qwer');
-opencensus_trace_add_label('abc', 'def');
+opencensus_trace_add_root_attribute('asdf', 'qwer');
+opencensus_trace_add_attribute('abc', 'def');
 opencensus_trace_finish();
 opencensus_trace_finish();
 
 $traces = opencensus_trace_list();
 echo "Number of traces: " . count($traces) . "\n";
 $span = $traces[0];
-print_r($span->labels());
+print_r($span->attributes());
 
 $span2 = $traces[1];
-print_r($span2->labels());
+print_r($span2->attributes());
 ?>
 --EXPECT--
 Number of traces: 2

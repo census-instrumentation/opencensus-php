@@ -42,35 +42,35 @@ class SpanTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('1234', $info['spanId']);
     }
 
-    public function testReadsLabels()
+    public function testReadsAttributes()
     {
-        $traceSpan = new Span(['labels' => ['foo' => 'bar']]);
+        $traceSpan = new Span(['attributes' => ['foo' => 'bar']]);
         $info = $traceSpan->info();
-        $this->assertArrayHasKey('labels', $info);
-        $this->assertEquals('bar', $info['labels']['foo']);
+        $this->assertArrayHasKey('attributes', $info);
+        $this->assertEquals('bar', $info['attributes']['foo']);
     }
 
-    public function testCanAddLabel()
+    public function testCanAddAttribute()
     {
         $traceSpan = new Span();
-        $traceSpan->addLabel('foo', 'bar');
+        $traceSpan->addAttribute('foo', 'bar');
         $info = $traceSpan->info();
-        $this->assertArrayHasKey('labels', $info);
-        $this->assertEquals('bar', $info['labels']['foo']);
+        $this->assertArrayHasKey('attributes', $info);
+        $this->assertEquals('bar', $info['attributes']['foo']);
     }
 
-    public function testNoLabels()
+    public function testNoAttributes()
     {
         $traceSpan = new Span();
         $info = $traceSpan->info();
-        $this->assertArrayNotHasKey('labels', $info);
+        $this->assertArrayNotHasKey('attributes', $info);
     }
 
-    public function testEmptyLabels()
+    public function testEmptyAttributes()
     {
-        $traceSpan = new Span(['labels' => []]);
+        $traceSpan = new Span(['attributes' => []]);
         $info = $traceSpan->info();
-        $this->assertArrayNotHasKey('labels', $info);
+        $this->assertArrayNotHasKey('attributes', $info);
     }
 
     public function testGeneratesDefaultSpanName()

@@ -31,7 +31,7 @@ use OpenCensus\Trace\Propagator\PropagatorInterface;
 /**
  * This class manages the logic for sampling and reporting a trace within a
  * single request. It is not meant to be used directly -- instead, it should
- * be managed by the RequestTracer as its singleton instance.
+ * be managed by the Tracer as its singleton instance.
  *
  * @internal
  */
@@ -102,7 +102,7 @@ class RequestHandler
         $spanOptions = $options + [
             'startTime' => $this->startTimeFromHeaders($headers),
             'name' => $this->nameFromHeaders($headers),
-            'labels' => []
+            'attributes' => []
         ];
         $span = $this->tracer->startSpan($spanOptions);
         $this->scope = $this->tracer->withSpan($span);
@@ -112,7 +112,7 @@ class RequestHandler
 
     /**
      * The function registered as the shutdown function. Cleans up the trace and
-     * reports using the provided ExporterInterface. Adds additional labels to
+     * reports using the provided ExporterInterface. Adds additional attributes to
      * the root span detected from the response.
      */
     public function onExit()

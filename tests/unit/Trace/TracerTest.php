@@ -18,13 +18,13 @@
 namespace OpenCensus\Tests\Unit\Trace;
 
 use OpenCensus\Trace\Exporter\ExporterInterface;
-use OpenCensus\Trace\RequestTracer;
+use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Tracer\NullTracer;
 
 /**
  * @group trace
  */
-class RequestTracerTest extends \PHPUnit_Framework_TestCase
+class TracerTest extends \PHPUnit_Framework_TestCase
 {
     private $reporter;
 
@@ -35,7 +35,7 @@ class RequestTracerTest extends \PHPUnit_Framework_TestCase
 
     public function testForceDisabled()
     {
-        $rt = RequestTracer::start($this->reporter->reveal(), [
+        $rt = Tracer::start($this->reporter->reveal(), [
             'sampler' => ['type' => 'disabled']
         ]);
         $tracer = $rt->tracer();
@@ -46,7 +46,7 @@ class RequestTracerTest extends \PHPUnit_Framework_TestCase
 
     public function testForceEnabled()
     {
-        $rt = RequestTracer::start($this->reporter->reveal(), [
+        $rt = Tracer::start($this->reporter->reveal(), [
             'sampler' => ['type' => 'enabled']
         ]);
         $tracer = $rt->tracer();

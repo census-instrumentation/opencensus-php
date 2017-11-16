@@ -24,14 +24,14 @@ use OpenCensus\Trace\Integrations\Memcache;
  */
 class MemcacheTest extends \PHPUnit_Framework_TestCase
 {
-    public function testHandleLabelString()
+    public function testHandleAttributeString()
     {
         $key = 'mykey';
         $memcache = null;
 
-        $spanOptions = Memcache::handleLabels($memcache, $key);
+        $spanOptions = Memcache::handleAttributes($memcache, $key);
         $expected = [
-            'labels' => [
+            'attributes' => [
                 'key' => 'mykey'
             ]
         ];
@@ -39,7 +39,7 @@ class MemcacheTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $spanOptions);
     }
 
-    public function testHandleLabelArray()
+    public function testHandleAttributeArray()
     {
         $key = [
             'key1',
@@ -47,9 +47,9 @@ class MemcacheTest extends \PHPUnit_Framework_TestCase
         ];
         $memcache = null;
 
-        $spanOptions = Memcache::handleLabels($memcache, $key);
+        $spanOptions = Memcache::handleAttributes($memcache, $key);
         $expected = [
-            'labels' => [
+            'attributes' => [
                 'key' => 'key1,key2'
             ]
         ];

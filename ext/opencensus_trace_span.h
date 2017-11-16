@@ -38,11 +38,11 @@ typedef struct opencensus_trace_span_t {
     zend_long kind;
 
     // zend_string* => zval*
-    HashTable *labels;
+    HashTable *attributes;
 } opencensus_trace_span_t;
 
-int opencensus_trace_span_add_label(opencensus_trace_span_t *span, zend_string *k, zend_string *v);
-int opencensus_trace_span_add_label_str(opencensus_trace_span_t *span, char *k, zend_string *v);
+int opencensus_trace_span_add_attribute(opencensus_trace_span_t *span, zend_string *k, zend_string *v);
+int opencensus_trace_span_add_attribute_str(opencensus_trace_span_t *span, char *k, zend_string *v);
 int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval *span_options);
 opencensus_trace_span_t *opencensus_trace_span_alloc();
 void opencensus_trace_span_free(opencensus_trace_span_t *span);

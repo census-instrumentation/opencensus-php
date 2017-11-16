@@ -5,9 +5,9 @@ OpenCensus Trace: Customize the trace span options for a function
 
 require_once(__DIR__ . '/common.php');
 
-opencensus_trace_begin('/', ['startTime' => 0.1, 'labels' => ['asdf' => 'qwer']]);
+opencensus_trace_begin('/', ['startTime' => 0.1, 'attributes' => ['asdf' => 'qwer']]);
 
-opencensus_trace_begin('inner-1', ['labels' => ['foo' => 'bar']]);
+opencensus_trace_begin('inner-1', ['attributes' => ['foo' => 'bar']]);
 
 opencensus_trace_finish();
 
@@ -30,7 +30,7 @@ echo "Span startTime is: '{$span->startTime()}'\n";
 $test = gettype($span->endTime()) == 'double';
 echo "Span endTime is a double: $test\n";
 
-print_r($span->labels());
+print_r($span->attributes());
 
 $span = $traces[1];
 
@@ -45,7 +45,7 @@ echo "Span startTime is a double: $test\n";
 $test = gettype($span->endTime()) == 'double';
 echo "Span endTime is a double: $test\n";
 
-print_r($span->labels());
+print_r($span->attributes());
 ?>
 --EXPECT--
 Number of traces: 2

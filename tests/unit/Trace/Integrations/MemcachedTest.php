@@ -24,14 +24,14 @@ use OpenCensus\Trace\Integrations\Memcached;
  */
 class MemcachedTest extends \PHPUnit_Framework_TestCase
 {
-    public function testHandleLabelsString()
+    public function testHandleAttributesString()
     {
         $key = 'mykey';
         $memcache = null;
 
-        $spanOptions = Memcached::handleLabels($memcache, $key);
+        $spanOptions = Memcached::handleAttributes($memcache, $key);
         $expected = [
-            'labels' => [
+            'attributes' => [
                 'key' => 'mykey'
             ]
         ];
@@ -39,7 +39,7 @@ class MemcachedTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $spanOptions);
     }
 
-    public function testHandleLabelsArray()
+    public function testHandleAttributesArray()
     {
         $key = [
             'key1',
@@ -47,9 +47,9 @@ class MemcachedTest extends \PHPUnit_Framework_TestCase
         ];
         $memcache = null;
 
-        $spanOptions = Memcached::handleLabels($memcache, $key);
+        $spanOptions = Memcached::handleAttributes($memcache, $key);
         $expected = [
-            'labels' => [
+            'attributes' => [
                 'key' => 'key1,key2'
             ]
         ];
@@ -57,15 +57,15 @@ class MemcachedTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $spanOptions);
     }
 
-    public function testHandleLabelsByKeyString()
+    public function testHandleAttributesByKeyString()
     {
         $key = 'mykey';
         $memcache = null;
         $serverKey = 'server1';
 
-        $spanOptions = Memcached::handleLabelsByKey($memcache, $serverKey, $key);
+        $spanOptions = Memcached::handleAttributesByKey($memcache, $serverKey, $key);
         $expected = [
-            'labels' => [
+            'attributes' => [
                 'serverKey' => 'server1',
                 'key' => 'mykey'
             ]
@@ -74,7 +74,7 @@ class MemcachedTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $spanOptions);
     }
 
-    public function testHandleLabelsByKeyArray()
+    public function testHandleAttributesByKeyArray()
     {
         $key = [
             'key1',
@@ -83,9 +83,9 @@ class MemcachedTest extends \PHPUnit_Framework_TestCase
         $memcache = null;
         $serverKey = 'server1';
 
-        $spanOptions = Memcached::handleLabelsByKey($memcache, $serverKey, $key);
+        $spanOptions = Memcached::handleAttributesByKey($memcache, $serverKey, $key);
         $expected = [
-            'labels' => [
+            'attributes' => [
                 'serverKey' => 'server1',
                 'key' => 'key1,key2'
             ]
@@ -102,7 +102,7 @@ class MemcachedTest extends \PHPUnit_Framework_TestCase
 
         $spanOptions = Memcached::handleCas($memcache, $casToken, $key);
         $expected = [
-            'labels' => [
+            'attributes' => [
                 'casToken' => 'token1',
                 'key' => 'key1'
             ]
@@ -120,7 +120,7 @@ class MemcachedTest extends \PHPUnit_Framework_TestCase
 
         $spanOptions = Memcached::handleCasByKey($memcache, $casToken, $serverKey, $key);
         $expected = [
-            'labels' => [
+            'attributes' => [
                 'casToken' => 'token1',
                 'serverKey' => 'server1',
                 'key' => 'key1'
@@ -140,7 +140,7 @@ class MemcachedTest extends \PHPUnit_Framework_TestCase
 
         $spanOptions = Memcached::handleSetMulti($memcache, $items);
         $expected = [
-            'labels' => [
+            'attributes' => [
                 'key' => 'foo,asdf'
             ]
         ];
@@ -159,7 +159,7 @@ class MemcachedTest extends \PHPUnit_Framework_TestCase
 
         $spanOptions = Memcached::handleSetMultiByKey($memcache, $serverKey, $items);
         $expected = [
-            'labels' => [
+            'attributes' => [
                 'serverKey' => 'server1',
                 'key' => 'foo,asdf'
             ]

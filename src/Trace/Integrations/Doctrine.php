@@ -51,7 +51,7 @@ class Doctrine implements IntegrationInterface
         opencensus_trace_method($persisterClass, 'load', function ($bep) {
             return [
                 'name' => 'doctrine/load',
-                'labels' => ['entity' => $bep->getClassMetadata()->name]
+                'attributes' => ['entity' => $bep->getClassMetadata()->name]
             ];
         });
 
@@ -59,7 +59,7 @@ class Doctrine implements IntegrationInterface
         opencensus_trace_method($persisterClass, 'loadAll', function ($bep) {
             return [
                 'name' => 'doctrine/loadAll',
-                'labels' => ['entity' => $bep->getClassMetadata()->name]
+                'attributes' => ['entity' => $bep->getClassMetadata()->name]
             ];
         });
 
@@ -67,7 +67,7 @@ class Doctrine implements IntegrationInterface
         opencensus_trace_method(PDOConnection::class, 'exec', function ($scope, $query) {
             return [
                 'name' => 'doctrine/exec',
-                'labels' => ['query' => $query]
+                'attributes' => ['query' => $query]
             ];
         });
     }

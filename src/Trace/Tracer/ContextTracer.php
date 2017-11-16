@@ -121,29 +121,29 @@ class ContextTracer implements TracerInterface
     }
 
     /**
-     * Add a label to the current Span
+     * Add a attribute to the current Span
      *
-     * @param string $label
+     * @param string $attribute
      * @param string $value
      */
-    public function addLabel($label, $value)
+    public function addAttribute($attribute, $value)
     {
         $span = Context::current()->value('currentSpan');
         if ($span) {
-            $span->addLabel($label, $value);
+            $span->addAttribute($attribute, $value);
         }
     }
 
     /**
-     * Add a label to the primary Span
+     * Add a attribute to the primary Span
      *
-     * @param string $label
+     * @param string $attribute
      * @param string $value
      */
-    public function addRootLabel($label, $value)
+    public function addRootAttribute($attribute, $value)
     {
         if (!empty($this->spans)) {
-            $this->spans[0]->addLabel($label, $value);
+            $this->spans[0]->addAttribute($attribute, $value);
         }
     }
 

@@ -29,7 +29,7 @@ Array
             [startTime:protected] => %d.%d
             [endTime:protected] => %d.%d
             [kind:protected] => %d
-            [labels:protected] => Array
+            [attributes:protected] => Array
                 (
                 )
 
@@ -47,7 +47,7 @@ Array
             [startTime:protected] => %d.%d
             [endTime:protected] => %d.%d
             [kind:protected] => %d
-            [labels:protected] => Array
+            [attributes:protected] => Array
                 (
                 )
 

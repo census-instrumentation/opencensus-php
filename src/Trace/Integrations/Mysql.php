@@ -41,14 +41,14 @@ class Mysql implements IntegrationInterface
         // mixed mysqli_query ( mysqli $link , string $query [, int $resultmode = MYSQLI_STORE_RESULT ] )
         opencensus_trace_function('mysqli_query', function ($mysqli, $query) {
             return [
-                'labels' => ['query' => $query]
+                'attributes' => ['query' => $query]
             ];
         });
 
         // mysqli_stmt mysqli_prepare ( mysqli $link , string $query )
         opencensus_trace_function('mysqli_prepare', function ($mysqli, $query) {
             return [
-                'labels' => ['query' => $query]
+                'attributes' => ['query' => $query]
             ];
         });
 
@@ -56,7 +56,7 @@ class Mysql implements IntegrationInterface
         opencensus_trace_function('mysqli_commit', function ($mysqli) {
             if (func_num_args() > 2) {
                 return [
-                    'labels' => [
+                    'attributes' => [
                         'name' => func_get_arg(2)
                     ]
                 ];
@@ -73,7 +73,7 @@ class Mysql implements IntegrationInterface
         //      [, string $socket = ini_get("mysqli.default_socket") ]]]]]] )
         opencensus_trace_function('mysqli_connect', function ($host) {
             return [
-                'labels' => ['host' => $host]
+                'attributes' => ['host' => $host]
             ];
         });
 
@@ -83,14 +83,14 @@ class Mysql implements IntegrationInterface
         // mixed mysqli::query ( string $query [, int $resultmode = MYSQLI_STORE_RESULT ] )
         opencensus_trace_method('mysqli', 'query', function ($mysqli, $query) {
             return [
-                'labels' => ['query' => $query]
+                'attributes' => ['query' => $query]
             ];
         });
 
         // mysqli_stmt mysqli::prepare ( string $query )
         opencensus_trace_method('mysqli', 'prepare', function ($mysqli, $query) {
             return [
-                'labels' => ['query' => $query]
+                'attributes' => ['query' => $query]
             ];
         });
 
@@ -98,7 +98,7 @@ class Mysql implements IntegrationInterface
         opencensus_trace_method('mysqli', 'commit', function ($mysqli) {
             if (func_num_args() > 1) {
                 return [
-                    'labels' => [
+                    'attributes' => [
                         'name' => func_get_arg(1)
                     ]
                 ];
@@ -115,7 +115,7 @@ class Mysql implements IntegrationInterface
         //      [, string $socket = ini_get("mysqli.default_socket") ]]]]]] )
         opencensus_trace_method('mysqli', '__construct', function ($mysqli, $host) {
             return [
-                'labels' => ['host' => $host]
+                'attributes' => ['host' => $host]
             ];
         });
 

@@ -17,7 +17,7 @@ class Foo {
 }
 
 opencensus_trace_method('Foo', 'bar', function ($scope, $x) {
-    return ['name' => 'foo', 'startTime' => 0.1, 'labels' => ['asdf' => $x->bar(), 'zxcv' => 'jkl;']];
+    return ['name' => 'foo', 'startTime' => 0.1, 'attributes' => ['asdf' => $x->bar(), 'zxcv' => 'jkl;']];
 });
 $bar = new Bar();
 $foo = new Foo();
