@@ -130,7 +130,7 @@ class ContextTracer implements TracerInterface
     {
         $span = Context::current()->value('currentSpan');
         if ($span) {
-            $span->addAttribute($label, $value);
+            $span->addAttribute($attribute, $value);
         }
     }
 
