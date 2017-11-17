@@ -4,13 +4,19 @@
     "type": "project",
     "require": {
         "silex/silex": "^2.2",
-        "opencensus/opencensus": "^0.0.4"
+        "opencensus/opencensus": "dev-master"
     },
     "license": "Apache-2.0",
     "authors": [
         {
             "name": "Jeff Ching",
             "email": "chingor@google.com"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/census-instrumentation/opencensus-php"
         }
     ]
 }
