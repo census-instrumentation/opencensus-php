@@ -109,13 +109,6 @@ class ZipkinExporter implements ExporterInterface
         $rootSpan = $spans[0];
         $traceId = $tracer->spanContext()->traceId();
 
-        $kindMap = [
-            Span::SPAN_KIND_CLIENT => 'CLIENT',
-            Span::SPAN_KIND_SERVER => 'SERVER',
-            Span::SPAN_KIND_PRODUCER => 'PRODUCER',
-            Span::SPAN_KIND_CONSUMER => 'CONSUMER'
-        ];
-
         // True is a request to store this span even if it overrides sampling policy.
         // This is true when the X-B3-Flags header has a value of 1.
         $isDebug = array_key_exists('HTTP_X_B3_FLAGS', $headers) && $headers['HTTP_X_B3_FLAGS'] == '1';
@@ -150,9 +143,6 @@ class ZipkinExporter implements ExporterInterface
                 'localEndpoint' => $localEndpoint,
                 'tags' => $span->attributes()
             ];
-            if (array_key_exists($span->kind(), $kindMap)) {
-                $zipkinSpan['kind'] = $kindMap[$span->kind()];
-            }
 
             $zipkinSpans[] = $zipkinSpan;
         }

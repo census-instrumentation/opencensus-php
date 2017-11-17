@@ -86,10 +86,10 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
     {
         $tracer = new ContextTracer(new SpanContext('testtraceid'));
         $tracer->inSpan(['name' => 'main'], function () use ($tracer) {
-            $tracer->inSpan(['name' => 'span1', 'kind' => OpenCensusSpan::SPAN_KIND_CLIENT], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span2', 'kind' => OpenCensusSpan::SPAN_KIND_SERVER], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span3', 'kind' => OpenCensusSpan::SPAN_KIND_PRODUCER], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span4', 'kind' => OpenCensusSpan::SPAN_KIND_CONSUMER], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span1'], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span2'], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span3'], 'usleep', [1]);
+            $tracer->inSpan(['name' => 'span4'], 'usleep', [1]);
         });
 
         $reporter = new StackdriverExporter(['client' => $this->client->reveal()]);
@@ -97,10 +97,6 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(5, $spans);
         $this->assertEquals(TraceSpan::SPAN_KIND_UNSPECIFIED, $spans[0]->info()['kind']);
-        $this->assertEquals(TraceSpan::SPAN_KIND_RPC_CLIENT, $spans[1]->info()['kind']);
-        $this->assertEquals(TraceSpan::SPAN_KIND_RPC_SERVER, $spans[2]->info()['kind']);
-        $this->assertEquals(TraceSpan::SPAN_KIND_UNSPECIFIED, $spans[3]->info()['kind']);
-        $this->assertEquals(TraceSpan::SPAN_KIND_UNSPECIFIED, $spans[4]->info()['kind']);
     }
 
     /**
@@ -137,7 +133,7 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
 
     public function testStacktraceAttribute()
     {
-        $backtrace = [
+        $stackTrace = [
             [
                 'file' => '/path/to/file.php',
                 'class' => 'Foo',
@@ -147,7 +143,7 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
         $tracer = new ContextTracer(new SpanContext('testtraceid'));
-        $tracer->inSpan(['backtrace' => $backtrace], function () {});
+        $tracer->inSpan(['stackTrace' => $stackTrace], function () {});
 
         $reporter = new StackdriverExporter(['client' => $this->client->reveal()]);
         $spans = $reporter->convertSpans($tracer);

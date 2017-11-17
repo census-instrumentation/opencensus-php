@@ -78,7 +78,14 @@ class ExtensionTracer implements TracerInterface
      */
     public function withSpan(Span $span)
     {
-        opencensus_trace_begin($span->name(), $span->info());
+        $info = [
+            'spanId' => $span->spanId(),
+            'parentSpanId' => $span->parentSpanId(),
+            'startTime' => $span->startTime(),
+            'attributes' => $span->attributes(),
+            'stackTrace' => $span->stackTrace()
+        ];
+        opencensus_trace_begin($span->name(), $info);
         return new Scope(function () {
             opencensus_trace_finish();
         });
@@ -101,7 +108,7 @@ class ExtensionTracer implements TracerInterface
                 'startTime' => $span->startTime(),
                 'endTime' => $span->endTime(),
                 'attributes' => $span->attributes(),
-                'backtrace' => $span->backtrace()
+                'stackTrace' => $span->stackTrace()
             ]);
         }, opencensus_trace_list());
     }

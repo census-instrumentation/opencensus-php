@@ -27,15 +27,89 @@ namespace OpenCensus\Trace;
 class Span
 {
     /**
-     * @var array Associative array containing all the fields representing this Span.
+     * Unique identifier for a trace. All spans from the same Trace share the
+     * same `traceId`. 16-byte value encoded as a hex string.
+     *
+     * @var string
      */
-    private $info = [];
+    private $traceId;
 
-    const SPAN_KIND_UNKNOWN = 0;
-    const SPAN_KIND_CLIENT = 1;
-    const SPAN_KIND_SERVER = 2;
-    const SPAN_KIND_PRODUCER = 3;
-    const SPAN_KIND_CONSUMER = 4;
+    /**
+     * Unique identifier for a span within a trace, assigned when the span is
+     * created. 8-byte value encoded as a hex string.
+     *
+     * @var string
+     */
+    private $spanId;
+
+    /**
+     * The `spanId` of this span's parent span. If this is a root span, then
+     * this field must be empty. 8-byte value encoded as a hex string.
+     *
+     * @var string
+     */
+    private $parentSpanId;
+
+    /**
+     * A description of the span's operation.
+     *
+     * For example, the name can be a qualified method name or a file name
+     * and a line number where the operation is called. A best practice is to
+     * use the same display name within an application and at the same call
+     * point. This makes it easier to correlate spans in different traces.
+     *
+     * @var string
+     */
+    private $name;
+
+    /**
+     * The start time of the span. On the client side, this is the time kept by
+     * the local machine where the span execution starts. On the server side,
+     * this is the time when the server's application handler starts running.
+     *
+     * @var \DateTimeInterface
+     */
+    private $startTime;
+
+    /**
+     * The end time of the span. On the client side, this is the time kept by
+     * the local machine where the span execution ends. On the server side, this
+     * is the time when the server application handler stops running.
+     *
+     * @var \DateTimeInterface
+     */
+    private $endTime;
+
+    /**
+     * A set of attributes on the span. An associative array of string => mixed
+     *
+     * @var array
+     */
+    private $attributes;
+
+    /**
+     * Stack trace captured at the start of the span. This is in the format of
+     * `debug_backtrace`.
+     *
+     * @var array
+     */
+    private $stackTrace;
+
+    /**
+     * An optional final status for this span.
+     *
+     * @var Status
+     */
+    private $status;
+
+    /**
+     * A highly recommended but not required flag that identifies when a trace
+     * crosses a process boundary. True when the parent_span belongs to the
+     * same process as the current span.
+     *
+     * @var bool
+     */
+    private $sameProcessAsParentSpan;
 
     /**
      * Instantiate a new Span instance.
@@ -61,52 +135,46 @@ class Span
     {
         if (array_key_exists('startTime', $options)) {
             $this->setStartTime($options['startTime']);
-            unset($options['startTime']);
-        }
-        if (array_key_exists('endTime', $options)) {
-            $this->setEndTime($options['endTime']);
-            unset($options['endTime']);
         }
 
+        if (array_key_exists('endTime', $options)) {
+            $this->setEndTime($options['endTime']);
+        }
+
+        $this->attributes = [];
         if (array_key_exists('attributes', $options)) {
             $this->addAttributes($options['attributes']);
-            unset($options['attributes']);
         }
 
         if (array_key_exists('spanId', $options)) {
-            $this->info['spanId'] = $options['spanId'];
-            unset($options['spanId']);
+            $this->spanId = $options['spanId'];
         } else {
-            $this->info['spanId'] = $this->generateSpanId();
+            $this->spanId = $this->generateSpanId();
         }
 
-        if (array_key_exists('backtrace', $options)) {
-            $this->info['backtrace'] = $this->filterBacktrace($options['backtrace']);
-            unset($options['backtrace']);
+        if (array_key_exists('stackTrace', $options)) {
+            $this->stackTrace = $this->filterStackTrace($options['stackTrace']);
         } else {
-            $this->info['backtrace'] = $this->filterBacktrace(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS));
-        }
-
-        if (array_key_exists('kind', $options)) {
-            $this->info['kind'] = $options['kind'];
-            unset($options['kind']);
-        } else {
-            $this->info['kind'] = self::SPAN_KIND_UNKNOWN;
+            $this->stackTrace = $this->filterStackTrace(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS));
         }
 
         if (array_key_exists('name', $options)) {
-            $this->info['name'] = $options['name'];
-            unset($options['name']);
+            $this->name = $options['name'];
         } else {
-            $this->info['name'] = $this->generateSpanName();
+            $this->name = $this->generateSpanName();
         }
 
         if (array_key_exists('parentSpanId', $options)) {
-            $this->info['parentSpanId'] = $options['parentSpanId'];
-            unset($options['parentSpanId']);
+            $this->parentSpanId = $options['parentSpanId'];
         }
 
-        $this->info['metadata'] = $options;
+        if (array_key_exists('status', $options)) {
+            $this->status = $options['status'];
+        }
+
+        if (array_key_exists('sameProcessAsParentSpan', $options)) {
+            $this->sameProcessAsParentSpan = $options['sameProcessAsParentSpan'];
+        }
     }
 
     /**
@@ -116,18 +184,19 @@ class Span
      */
     public function startTime()
     {
-        return $this->info['startTime'];
+        return $this->startTime;
     }
 
     /**
      * Set the start time for this span.
      *
-     * @param  \DateTimeInterface|int|float $when [optional] The start time of this span.
-     *         **Defaults to** now. If provided as an int or float, it is expected to be a Unix timestamp.
+     * @param  \DateTimeInterface|int|float $when [optional] The start time of
+     *         this span. **Defaults to** now. If provided as an int or float,
+     *         it is expected to be a Unix timestamp.
      */
     public function setStartTime($when = null)
     {
-        $this->info['startTime'] = $this->formatDate($when);
+        $this->startTime = $this->formatDate($when);
     }
 
     /**
@@ -137,18 +206,19 @@ class Span
      */
     public function endTime()
     {
-        return $this->info['endTime'];
+        return $this->endTime;
     }
 
     /**
      * Set the end time for this span.
      *
-     * @param  \DateTimeInterface|int|float $when [optional] The end time of this span.
-     *         **Defaults to** now. If provided as an int or float, it is expected to be a Unix timestamp.
+     * @param  \DateTimeInterface|int|float $when [optional] The end time of
+     *         this span. **Defaults to** now. If provided as an int or float,
+     *         it is expected to be a Unix timestamp.
      */
     public function setEndTime($when = null)
     {
-        $this->info['endTime'] = $this->formatDate($when);
+        $this->endTime = $this->formatDate($when);
     }
 
     /**
@@ -158,7 +228,7 @@ class Span
      */
     public function spanId()
     {
-        return $this->info['spanId'];
+        return $this->spanId;
     }
 
     /**
@@ -168,9 +238,7 @@ class Span
      */
     public function parentSpanId()
     {
-        return array_key_exists('parentSpanId', $this->info)
-            ? $this->info['parentSpanId']
-            : null;
+        return $this->parentSpanId;
     }
 
     /**
@@ -180,7 +248,7 @@ class Span
      */
     public function name()
     {
-        return $this->info['name'];
+        return $this->name;
     }
 
     /**
@@ -190,39 +258,48 @@ class Span
      */
     public function attributes()
     {
-        return array_key_exists('attributes', $this->info)
-            ? $this->info['attributes']
-            : [];
+        return $this->attributes;
     }
 
     /**
-     * Retrieve the backtrace at the moment this span was created
+     * Set the status for this span.
+     *
+     * @param int $code The status code
+     * @param string $message A developer-facing error message
+     */
+    public function setStatus($code, $message)
+    {
+        $this->status = new Status($code, $message);
+    }
+
+    /**
+     * Retrieve the final status for this span.
+     *
+     * @return Status
+     */
+    public function status()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Retrieve the stackTrace at the moment this span was created
      *
      * @return array
      */
-    public function backtrace()
+    public function stackTrace()
     {
-        return $this->info['backtrace'];
+        return $this->stackTrace;
     }
 
     /**
-     * Retrieve the kind of span
+     * Whether or not this span is in the same process as its parent.
      *
-     * @return int One of SPAN_KIND_UNKNOWN|SPAN_KIND_CLIENT|SPAN_KIND_SERVER|SPAN_KIND_CONSUMER|SPAN_KIND_PRODUCER
+     * @return bool
      */
-    public function kind()
+    public function sameProcessAsParentSpan()
     {
-        return $this->info['kind'];
-    }
-
-    /**
-     * Returns a serializable array representing this span.
-     *
-     * @return array
-     */
-    public function info()
-    {
-        return $this->info;
+        return $this->sameProcessAsParentSpan;
     }
 
     /**
@@ -245,10 +322,7 @@ class Span
      */
     public function addAttribute($attribute, $value)
     {
-        if (!array_key_exists('attributes', $this->info)) {
-            $this->info['attributes'] = [];
-        }
-        $this->info['attributes'][$attribute] = (string) $value;
+        $this->attributes[$attribute] = (string) $value;
     }
 
     /**
@@ -288,15 +362,15 @@ class Span
     }
 
     /**
-     * Return a filtered backtrace where we strip out all functions from the OpenCensus\Trace namespace
+     * Return a filtered stackTrace where we strip out all functions from the OpenCensus\Trace namespace
      *
      * @return array
      */
-    private function filterBacktrace($backtrace)
+    private function filterStackTrace($stackTrace)
     {
         return array_values(
-            array_filter($backtrace, function ($bt) {
-                return !array_key_exists('class', $bt) || substr($bt['class'], 0, 16) != 'OpenCensus\Trace';
+            array_filter($stackTrace, function ($st) {
+                return !array_key_exists('class', $st) || substr($st['class'], 0, 16) != 'OpenCensus\Trace';
             })
         );
     }
@@ -310,16 +384,16 @@ class Span
     private function generateSpanName()
     {
         // Try to find the first stacktrace class entry that doesn't start with OpenCensus\Trace
-        foreach ($this->backtrace() as $bt) {
-            $bt += ['line' => null];
-            if (!array_key_exists('class', $bt)) {
-                return implode('/', array_filter(['app', basename($bt['file']), $bt['function'], $bt['line']]));
-            } elseif (substr($bt['class'], 0, 18) != 'OpenCensus\Trace') {
-                return implode('/', array_filter(['app', $bt['class'], $bt['function'], $bt['line']]));
+        foreach ($this->stackTrace() as $st) {
+            $st += ['line' => null];
+            if (!array_key_exists('class', $st)) {
+                return implode('/', array_filter(['app', basename($st['file']), $st['function'], $st['line']]));
+            } elseif (substr($st['class'], 0, 18) != 'OpenCensus\Trace') {
+                return implode('/', array_filter(['app', $st['class'], $st['function'], $st['line']]));
             }
         }
 
-        // We couldn't find a suitable backtrace entry - generate a random one
+        // We couldn't find a suitable stackTrace entry - generate a random one
         return uniqid('span');
     }
 }

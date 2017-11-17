@@ -58,11 +58,11 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(2, $spans);
         foreach ($spans as $span) {
             $this->assertInstanceOf(Span::class, $span);
-            $this->assertArrayHasKey('endTime', $span->info());
+            $this->assertNotEmpty($span->endTime());
         }
         $this->assertEquals('main', $spans[0]->name());
         $this->assertEquals('inner', $spans[1]->name());
-        $this->assertEquals($spans[0]->spanId(), $spans[1]->info()['parentSpanId']);
+        $this->assertEquals($spans[0]->spanId(), $spans[1]->parentSpanId());
     }
 
     public function testCanParseParentContext()
@@ -78,7 +78,7 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
             ]
         );
         $span = $rt->tracer()->spans()[0];
-        $this->assertEquals('15b3', $span->info()['parentSpanId']);
+        $this->assertEquals('15b3', $span->parentSpanId());
         $context = $rt->tracer()->spanContext();
         $this->assertEquals('12345678901234567890123456789012', $context->traceId());
     }
