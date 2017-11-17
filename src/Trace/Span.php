@@ -369,8 +369,8 @@ class Span
     private function filterStackTrace($stackTrace)
     {
         return array_values(
-            array_filter($stackTrace, function ($bt) {
-                return !array_key_exists('class', $bt) || substr($bt['class'], 0, 16) != 'OpenCensus\Trace';
+            array_filter($stackTrace, function ($st) {
+                return !array_key_exists('class', $st) || substr($st['class'], 0, 16) != 'OpenCensus\Trace';
             })
         );
     }
@@ -384,12 +384,12 @@ class Span
     private function generateSpanName()
     {
         // Try to find the first stacktrace class entry that doesn't start with OpenCensus\Trace
-        foreach ($this->stackTrace() as $bt) {
-            $bt += ['line' => null];
-            if (!array_key_exists('class', $bt)) {
-                return implode('/', array_filter(['app', basename($bt['file']), $bt['function'], $bt['line']]));
-            } elseif (substr($bt['class'], 0, 18) != 'OpenCensus\Trace') {
-                return implode('/', array_filter(['app', $bt['class'], $bt['function'], $bt['line']]));
+        foreach ($this->stackTrace() as $st) {
+            $st += ['line' => null];
+            if (!array_key_exists('class', $st)) {
+                return implode('/', array_filter(['app', basename($st['file']), $st['function'], $st['line']]));
+            } elseif (substr($st['class'], 0, 18) != 'OpenCensus\Trace') {
+                return implode('/', array_filter(['app', $st['class'], $st['function'], $st['line']]));
             }
         }
 

@@ -218,10 +218,10 @@ class StackdriverExporter implements ExporterInterface
         }, $tracer->spans());
     }
 
-    private function formatBacktrace($bt)
+    private function formatBacktrace($st)
     {
         return json_encode([
-            'stack_frame' => array_map([$this, 'mapStackframe'], $bt)
+            'stack_frame' => array_map([$this, 'mapStackframe'], $st)
         ]);
     }
 
