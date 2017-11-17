@@ -1,134 +1,65 @@
-# OpenCensus - A stats collection and distributed tracing framework
+# OpenCensus for PHP - A stats collection and distributed tracing framework
 
-This is the open-source release of Census for PHP. Census provides a
-framework to measure a server's resource usage and collect performance stats.
-This repository contains PHP related utilities and supporting software needed by
-Census.
+> [Census][census-org] for PHP. Census provides a framework to measure a
+server's resource usage and collect performance stats. This repository contains
+PHP related utilities and supporting software needed by Census.
 
-## Installation
+[![CircleCI](https://circleci.com/gh/census-instrumentation/opencensus-php.svg?style=svg)](https://circleci.com/gh/census-instrumentation/opencensus-php)
 
-### PHP library
+* [API Documentation][api-docs]
 
-1. Install with `composer` or add to your `composer.json`.
+## Installation & basic usage
 
-```
+1. Install the `opencensus/opencensus` package using [composer][composer]:
+
+```bash
 $ composer require opencensus/opencensus
 ```
 
-2. Include and start the library as the first action in your application:
+1. [Optional]: Install the `opencensus` extension from [PECL][pecl]:
 
-```php
-use OpenCensus\Trace\RequestTracer;
-use OpenCensus\Trace\Exporter\EchoExporter;
-
-RequestTracer::start(new EchoExporter());
+```bash
+$ pecl install opencensus-devel
 ```
+   Enable the extension in your `php.ini`:
 
-### PHP Extension
-
-1. Install the `opencensus` extension from PECL.
-
-```
-$ pecl install opencensus
-```
-
-2. Enable the extension in your `php.ini`.
-
-```
+```ini
 extension=opencensus.so
 ```
 
-## Customizing
-
-### Reporting Traces
-
-The above sample uses the `EchoExporter` to dump trace results to the
-bottom of the webpage.
-
-If you would like to provide your own reporter, create a class that implements `ExporterInterface`.
-
-#### Currently implemented reporters
-
-| Class | Description |
-| ----- | ----------- |
-| [EchoExporter](src/Trace/Exporter/EchoExporter.php) | Output the collected spans to stdout |
-| [FileExporter](src/Trace/Exporter/FileExporter.php) | Output JSON encoded spans to a file |
-| [StackdriverExporter](src/Trace/Exporter/StackdriverExporter.php) | Report traces to Google Cloud Stackdriver Trace |
-| [LoggerExporter](src/Trace/Exporter/LoggerExporter.php) | Exporter JSON encoded spans to a PSR-3 logger |
-| [NullExporter](scr/Trace/Exporter/NullExporter.php) | No-op |
-| [ZipkinExporter](src/Trace/Exporter/ZipkinExporter.php) | Report collected spans to a Zipkin server |
-
-### Sampling Rate
-
-By default we attempt to trace all requests. This is not ideal as it adds a little bit of
-latency and require more memory for requests that are traced. To trace only a sampling
-of requests, configure a sampler.
-
-The preferred sampler is the `QpsSampler` (Queries Per Second). This sampler implementation
-requires a PSR-6 cache implementation to function.
+1. Initialize a tracer for your application:
 
 ```php
+use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Exporter\EchoExporter;
-use OpenCensus\Trace\Sampler\QpsSampler;
 
-$cache = new SomeCacheImplementation();
-$sampler = new QpsSampler($cache, ['rate' => 0.1]); // sample 0.1 requests per second
-RequestTracer::start(new EchoExporter(), ['sampler' => $sampler]);
+Tracer::start(new EchoExporter());
 ```
 
-Please note: While required for the `QpsSampler`, a PSR-6 implementation is
-not included in this library. It will be necessary to include a separate
-dependency to fulfill this requirement. For PSR-6 implementations, please see the
-[Packagist PHP Package Repository](https://packagist.org/providers/psr/cache-implementation).
-If the APCu extension is available (available on Google AppEngine Flexible Environment)
-and you include the cache/apcu-adapter composer package, we will set up the cache for you.
+## Usage
 
-You can also choose to use the `ProbabilitySampler` which simply samples a flat
-percentage of requests.
-
-#### Currently implemented samplers
-
-| Class | Description |
-| ----- | ----------- |
-| [NeverSampleSampler](src/Trace/Sampler/NeverSampleSampler.php) | Never trace any requests |
-| [AlwaysSampleSampler](src/Trace/Sampler/AlwaysSampleSampler.php) | Trace all requests |
-| [QpsSampler](src/Trace/Sampler/QpsSampler.php) | Trace X requests per second. Requires a PSR-6 cache implementation |
-| [ProbabilitySampler](src/Trace/Sampler/ProbabilitySampler.php) | Trace X percent of requests. |
-
-```php
-use OpenCensus\Trace\Exporter\EchoExporter;
-use OpenCensus\Trace\Sampler\ProbabilitySampler;
-
-$sampler = new ProbabilitySampler(0.1); // sample 10% of requests
-RequestTracer::start(new EchoExporter(), ['sampler' => $sampler]);
-```
-
-If you would like to provide your own sampler, create a class that implements `SamplerInterface`.
-
-## Tracing Code Blocks
-
-To add tracing to a block of code, you can use the closure/callable form or explicitly open
-and close spans yourself.
+To add tracing to a block of code, you can use the closure/callable form or
+explicitly open and close spans yourself.
 
 ### Closure/Callable (preferred)
 
 ```php
-$pi = RequestTracer::inSpan(['name' => 'expensive-operation'], function() {
+$pi = Tracer::inSpan(['name' => 'expensive-operation'], function() {
     // some expensive operation
     return calculatePi(1000);
 });
 
-$pi = RequestTracer::inSpan(['name' => 'expensive-operation'], 'calculatePi', [1000]);
+$pi = Tracer::inSpan(['name' => 'expensive-operation'], 'calculatePi', [1000]);
 ```
 
 ### Explicit Span Management
 
 ```php
 // Creates a detached span
-$span = RequestTracer::startSpan(['name' => 'expensive-operation']);
+$span = Tracer::startSpan(['name' => 'expensive-operation']);
 
 // Opens a scope that attaches the span to the current context
-$scope = RequestTracer::withSpan($span);
+$scope = Tracer::withSpan($span);
 try {
     $pi = calculatePi(1000);
 } finally {
@@ -137,29 +68,46 @@ try {
 }
 ```
 
-### OpenCensus extension
+## Customization
 
-The `opencensus` extension collects nested span data throughout the course of your application's
-execution. You can collect spans in 2 ways, by watching for function/method invocations or by manually
-starting and stopping spans. In both cases, the spans will be collected together and can be retrieved
-at the end of the request.
+### Samplers
 
-See [extension README](ext/README.md) for more information.
+You can specify different samplers when initializing a tracer. The default
+sampler is the `AlwaysSampleSampler` which will attempt to trace all requests.
+
+The provided samplers are:
+
+| Class | Description |
+| ----- | ----------- |
+| [NeverSampleSampler][never-sampler] | Never trace any requests |
+| [AlwaysSampleSampler][always-sampler] | Trace all requests |
+| [QpsSampler][qps-sampler] | Trace X requests per second. Requires a PSR-6 cache implementation |
+| [ProbabilitySampler][probability-sampler] | Trace X percent of requests. |
+
+If you would like to provide your own sampler, create a class that implements
+`SamplerInterface`.
+
+### Exporters
+
+You can choose different exporters to send the collected traces to.
+
+The provided exporters are:
+
+| Class | Description |
+| ----- | ----------- |
+| [EchoExporter][echo-exporter] | Output the collected spans to stdout |
+| [FileExporter][file-exporter] | Output JSON encoded spans to a file |
+| [StackdriverExporter][stackdriver-exporter] | Report traces to Google Cloud Stackdriver Trace |
+| [LoggerExporter][logger-exporter] | Exporter JSON encoded spans to a PSR-3 logger |
+| [NullExporter][null-exporter] | No-op |
+| [ZipkinExporter][zipkin-exporter] | Report collected spans to a Zipkin server |
+
+If you would like to provide your own reporter, create a class that implements
+`ExporterInterface`.
 
 ## Versioning
 
-You can retrieve the version of this extension at runtime.
-
-```php
-/**
- * Return the current version of the opencensus_trace extension
- *
- * @return string
- */
-function opencensus_trace_version();
-```
-
-This library follows [Semantic Versioning](http://semver.org/).
+This library follows [Semantic Versioning][semver].
 
 Please note it is currently under active development. Any release versioned
 0.x.y is subject to backwards incompatible changes at any time.
@@ -192,3 +140,19 @@ Apache 2.0 - See [LICENSE](LICENSE) for more information.
 ## Disclaimer
 
 This is not an official Google product.
+
+[census-org]: https://github.com/census-instrumentation
+[api-docs]: http://opencensus.io/opencensus-php/
+[composer]: https://getcomposer.org/
+[pecl]: https://pecl.php.net/
+[never-sampler]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[always-sampler]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[qps-sampler]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[probability-sampler]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[echo-exporter]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Exporter/EchoExporter.html
+[file-exporter]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Exporter/FileExporter.html
+[stackdriver-exporter]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Exporter/StackdriverExporter.html
+[logger-exporter]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Exporter/LoggerExporter.html
+[null-exporter]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Exporter/NullExporter.html
+[zipkin-exporter]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Exporter/ZipkinExporter.html
+[semver]: http://semver.org/
