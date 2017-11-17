@@ -1,3 +1,7 @@
+language: php
+php:
+  - '7.1'
+
 install:
   - wget -O sami.phar http://get.sensiolabs.org/sami.phar
 
