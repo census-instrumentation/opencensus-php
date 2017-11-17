@@ -1,0 +1,16 @@
+{
+    "name": "opencensus/silex-app",
+    "description": "Example Silex Application with OpenCensus",
+    "type": "project",
+    "require": {
+        "silex/silex": "^2.2",
+        "opencensus/opencensus": "^0.0.4"
+    },
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Jeff Ching",
+            "email": "chingor@google.com"
+        }
+    ]
+}
