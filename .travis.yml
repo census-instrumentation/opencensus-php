@@ -1,0 +1,23 @@
+language: php
+php:
+  - '7.1'
+
+install:
+  - wget -O sami.phar http://get.sensiolabs.org/sami.phar
+
+script:
+  - php sami.phar update config/sami.php
+  - touch docs/.nojekyll
+
+branches:
+  only:
+    - master
+
+deploy:
+  provider: pages
+  local_dir: docs
+  skip_cleanup: true
+  email: chingor@google.com # To satisfy the CLA check, replace this with bot email.
+  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+  on:
+    branch: master

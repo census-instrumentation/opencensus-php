@@ -67,8 +67,9 @@ class ContextTracerTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(2, $spans);
         $span = $spans[1];
         $this->assertEquals('inner', $span->name());
-        $info = $span->info();
-        $this->assertEquals('bar', $info['attributes']['foo']);
+        $attributes = $span->attributes();
+        $this->assertArrayHasKey('foo', $attributes);
+        $this->assertEquals('bar', $attributes['foo']);
     }
 
     public function testAddsAttributesToRootSpan()
@@ -84,8 +85,9 @@ class ContextTracerTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(2, $spans);
         $span = $spans[0];
         $this->assertEquals('root', $span->name());
-        $info = $span->info();
-        $this->assertEquals('bar', $info['attributes']['foo']);
+        $attributes = $span->attributes();
+        $this->assertArrayHasKey('foo', $attributes);
+        $this->assertEquals('bar', $attributes['foo']);
     }
 
     public function testPersistsBacktrace()
@@ -93,7 +95,7 @@ class ContextTracerTest extends \PHPUnit_Framework_TestCase
         $tracer = new ContextTracer();
         $tracer->inSpan(['name' => 'test'], function () {});
         $span = $tracer->spans()[0];
-        $stackframe = $span->backtrace()[0];
+        $stackframe = $span->stackTrace()[0];
         $this->assertEquals('testPersistsBacktrace', $stackframe['function']);
         $this->assertEquals(self::class, $stackframe['class']);
     }
