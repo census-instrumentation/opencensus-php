@@ -3,6 +3,7 @@ install:
 
 script:
   - php sami.phar update config/sami.php
+  - touch docs/.nojekyll
 
 branches:
   only:
