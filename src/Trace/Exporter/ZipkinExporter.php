@@ -23,6 +23,15 @@ use OpenCensus\Trace\Span;
 /**
  * This implementation of the ExporterInterface appends a json
  * representation of the trace to a file.
+ *
+ * Example:
+ * ```
+ * use OpenCensus\Trace\Exporter\ZipkinExporter;
+ * use OpenCensus\Trace\Tracer;
+ *
+ * $exporter = new ZipkinExporter('my_app', 'localhost', 9411);
+ * Tracer::begin($exporter);
+ * ```
  */
 class ZipkinExporter implements ExporterInterface
 {
@@ -95,8 +104,8 @@ class ZipkinExporter implements ExporterInterface
     }
 
     /**
-     * Convert spans into Zipkin's expected JSON output format. See http://zipkin.io/zipkin-api/#/default/post_spans
-     * for output format.
+     * Convert spans into Zipkin's expected JSON output format. See
+     * <a href="http://zipkin.io/zipkin-api/#/default/post_spans">output format definition</a>.
      *
      * @param TracerInterface $tracer
      * @param array $headers [optional] HTTP headers to parse. **Defaults to** $_SERVER

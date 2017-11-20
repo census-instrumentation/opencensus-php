@@ -20,6 +20,13 @@ namespace OpenCensus\Trace\Sampler;
 /**
  * This implementation of the SamplerInterface always returns false. Use this
  * sampler to attempt to trace all requests. You may be throttled by the server.
+ *
+ * Example:
+ * ```
+ * use OpenCensus\Trace\Sampler\AlwaysSampleSampler;
+ *
+ * $sampler = new AlwaysSampleSampler();
+ * ```
  */
 class AlwaysSampleSampler implements SamplerInterface
 {

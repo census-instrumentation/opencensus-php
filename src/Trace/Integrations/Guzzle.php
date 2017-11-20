@@ -27,9 +27,10 @@ use GuzzleHttp\ClientInterface;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\Integrations\Guzzle
+ * use OpenCensus\Trace\Integrations\Guzzle;
  *
  * Guzzle::load();
+ * ```
  */
 class Guzzle implements IntegrationInterface
 {

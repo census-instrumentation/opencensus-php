@@ -22,7 +22,7 @@ namespace OpenCensus\Trace\Integrations;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\Integrations\Curl
+ * use OpenCensus\Trace\Integrations\Curl;
  *
  * Curl::load();
  * ```
@@ -47,6 +47,7 @@ class Curl implements IntegrationInterface
     /**
      * Handle extracting the uri from a given curl resource handler
      *
+     * @internal
      * @param resource $resource The curl handler
      * @return array
      */

@@ -30,8 +30,8 @@ class NullTracer implements TracerInterface
     /**
      * Instrument a callable by creating a Span
      *
-     * @param array $spanOptions Options for the span.
-     *      {@see OpenCensus\Trace\Span::__construct()}
+     * @param array $spanOptions Options for the span. See
+     *      <a href="../Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
      * @param callable $callable The callable to instrument.
      * @param array $arguments [optional] Arguments for the callable.
      * @return mixed The result of the callable
@@ -45,8 +45,8 @@ class NullTracer implements TracerInterface
      * Start a new Span. The start time is already set to the current time.
      * The newly created span is not attached to the current context.
      *
-     * @param array $spanOptions [optional] Options for the span.
-     *      {@see OpenCensus\Trace\Span::__construct()}
+     * @param array $spanOptions [optional] Options for the span. See
+     *      <a href="../Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
      * @return Span
      */
     public function startSpan(array $spanOptions)

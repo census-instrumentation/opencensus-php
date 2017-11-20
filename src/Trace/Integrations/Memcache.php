@@ -22,9 +22,10 @@ namespace OpenCensus\Trace\Integrations;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\Integrations\Memcache
+ * use OpenCensus\Trace\Integrations\Memcache;
  *
  * Memcache::load();
+ * ```
  */
 class Memcache implements IntegrationInterface
 {
@@ -69,6 +70,7 @@ class Memcache implements IntegrationInterface
     /**
      * Handle converting the key or keys provided to a Memcache function into a comma-separated attribute
      *
+     * @internal
      * @param \Memcache $memcache
      * @param array|string $keyOrKeys The key or keys to operate on
      * @return array
@@ -84,6 +86,7 @@ class Memcache implements IntegrationInterface
     /**
      * Extract the host as a attribute
      *
+     * @internal
      * @param \Memcache $memcache
      * @param string $host
      * @return array

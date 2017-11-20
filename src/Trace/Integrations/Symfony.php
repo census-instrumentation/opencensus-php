@@ -25,9 +25,10 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\Integrations\Symfony
+ * use OpenCensus\Trace\Integrations\Symfony;
  *
  * Symfony::load();
+ * ```
  */
 class Symfony implements IntegrationInterface
 {

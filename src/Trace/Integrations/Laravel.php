@@ -24,9 +24,10 @@ use Illuminate\View\Engines\CompilerEngine;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\Integrations\Laravel
+ * use OpenCensus\Trace\Integrations\Laravel;
  *
  * Laravel::load();
+ * ```
  */
 class Laravel implements IntegrationInterface
 {

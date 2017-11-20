@@ -23,7 +23,8 @@ use OpenCensus\Trace\SpanContext;
  * This propagator contains the method for serializaing and deserializing
  * SpanContext over a binary format.
  *
- * See https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md
+ * See
+ * <a href="https://github.com/census-instrumentation/opencensus-specs/blob/master/encodings/BinaryEncoding.md">specification</a>
  * for the encoding specification.
  */
 class BinaryFormatter implements FormatterInterface

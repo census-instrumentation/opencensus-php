@@ -40,10 +40,11 @@ class HttpHeaderPropagator implements PropagatorInterface
     /**
      * Create a new HttpHeaderPropagator
      *
-     * @param FormatterInterface $formatter The formatter used to serialize/deserialize SpanContext
-     *        **Defaults to** a new CloudTraceFormatter.
-     * @param string $key [optional] The header key to store/retrieve the encoded SpanContext.
-     *        **Defaults to** `HTTP_X_CLOUD_TRACE_CONTEXT`
+     * @param FormatterInterface $formatter The formatter used to serialize and
+     *        deserialize SpanContext. **Defaults to** a new
+     *        CloudTraceFormatter.
+     * @param string $key [optional] The header key to store/retrieve the
+     *        encoded SpanContext. **Defaults to** `HTTP_X_CLOUD_TRACE_CONTEXT`
      */
     public function __construct(FormatterInterface $formatter = null, $header = null)
     {
@@ -66,7 +67,7 @@ class HttpHeaderPropagator implements PropagatorInterface
     }
 
     /**
-     * Persiste the current SpanContext back into the results of this request
+     * Persists the current SpanContext back into the results of this request
      *
      * @param SpanContext $context
      * @param array $container
