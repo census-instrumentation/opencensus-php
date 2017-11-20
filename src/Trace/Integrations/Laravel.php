@@ -27,6 +27,7 @@ use Illuminate\View\Engines\CompilerEngine;
  * use OpenCensus\Trace\Integrations\Laravel;
  *
  * Laravel::load();
+ * ```
  */
 class Laravel implements IntegrationInterface
 {

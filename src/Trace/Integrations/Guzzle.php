@@ -30,6 +30,7 @@ use GuzzleHttp\ClientInterface;
  * use OpenCensus\Trace\Integrations\Guzzle;
  *
  * Guzzle::load();
+ * ```
  */
 class Guzzle implements IntegrationInterface
 {

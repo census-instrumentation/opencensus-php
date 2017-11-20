@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * use OpenCensus\Trace\Integrations\Eloquent;
  *
  * Eloquent::load();
+ * ```
  */
 class Eloquent implements IntegrationInterface
 {

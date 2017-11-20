@@ -28,6 +28,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  * use OpenCensus\Trace\Integrations\Symfony;
  *
  * Symfony::load();
+ * ```
  */
 class Symfony implements IntegrationInterface
 {

@@ -25,6 +25,7 @@ namespace OpenCensus\Trace\Integrations;
  * use OpenCensus\Trace\Integrations\Mysql;
  *
  * Mysql::load();
+ * ```
  */
 class Mysql implements IntegrationInterface
 {

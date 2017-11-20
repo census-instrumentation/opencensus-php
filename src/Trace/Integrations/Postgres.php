@@ -25,6 +25,7 @@ namespace OpenCensus\Trace\Integrations;
  * use OpenCensus\Trace\Integrations\Postgres;
  *
  * Postgres::load();
+ * ```
  */
 class Postgres implements IntegrationInterface
 {

@@ -25,6 +25,7 @@ namespace OpenCensus\Trace\Integrations;
  * use OpenCensus\Trace\Integrations\Memcached;
  *
  * Memcached::load();
+ * ```
  */
 class Memcached implements IntegrationInterface
 {

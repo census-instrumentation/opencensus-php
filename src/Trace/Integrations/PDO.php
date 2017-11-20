@@ -25,6 +25,7 @@ namespace OpenCensus\Trace\Integrations;
  * use OpenCensus\Trace\Integrations\PDO;
  *
  * PDO::load();
+ * ```
  */
 class PDO implements IntegrationInterface
 {

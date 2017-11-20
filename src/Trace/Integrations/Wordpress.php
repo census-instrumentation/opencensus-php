@@ -25,6 +25,7 @@ namespace OpenCensus\Trace\Integrations;
  * use OpenCensus\Trace\Integrations\Wordpress;
  *
  * Wordpress::load();
+ * ```
  */
 class Wordpress implements IntegrationInterface
 {

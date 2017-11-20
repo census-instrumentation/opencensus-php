@@ -27,6 +27,7 @@ use Doctrine\ORM\Version;
  * use OpenCensus\Trace\Integrations\Doctrine;
  *
  * Doctrine::load();
+ * ```
  */
 class Doctrine implements IntegrationInterface
 {
