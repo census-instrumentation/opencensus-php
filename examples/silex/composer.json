@@ -4,7 +4,8 @@
     "type": "project",
     "require": {
         "silex/silex": "^2.2",
-        "opencensus/opencensus": "dev-master"
+        "opencensus/opencensus": "dev-example-apps",
+        "google/cloud-trace": "^0.3"
     },
     "license": "Apache-2.0",
     "authors": [

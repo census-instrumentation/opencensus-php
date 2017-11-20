@@ -3,7 +3,8 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // Configure and start the OpenCensus Tracer
-OpenCensus\Trace\Tracer::start(new OpenCensus\Trace\Exporter\EchoExporter());
+$exporter = new OpenCensus\Trace\Exporter\StackdriverExporter();
+OpenCensus\Trace\Tracer::start($exporter);
 
 $app = new Silex\Application();
 
