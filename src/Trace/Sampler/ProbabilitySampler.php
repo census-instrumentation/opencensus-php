@@ -20,6 +20,14 @@ namespace OpenCensus\Trace\Sampler;
 /**
  * This implementation of the SamplerInterface uses a pseudo-random number generator
  * to sample a percentage of requests.
+ *
+ * Example:
+ * ```
+ * use OpenCensus\Trace\Sampler\ProbabilitySampler;
+ *
+ * // Create a new sampler that will return true 10% of the time
+ * $sampler = new ProbabilitySampler(0.1);
+ * ```
  */
 class ProbabilitySampler implements SamplerInterface
 {

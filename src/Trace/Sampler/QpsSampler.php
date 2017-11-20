@@ -23,6 +23,22 @@ use Cache\Adapter\Common\CacheItem;
 /**
  * This implementation of the SamplerInterface uses a cache to limit sampling to
  * the a certain number of queries per second. It requires a PSR-6 cache implementation.
+ *
+ * Example using cache/memcached-adapter:
+ * ```
+ * // This example uses the  Memcached extension and requires the
+ * // cache/memcached-adapter composer package
+ * use OpenCensus\Trace\Sampler\QpsSampler;
+ * use Cache\Adapter\Memcached\MemcachedCachePool;
+ * use Cache\Adapter\Common\PhpCacheItem;
+ *
+ * $client = new \Memcached();
+ * $client->addServer('localhost', 11211);
+ * $cache = new Memcached\MemcachedCachePool($client);
+ * $sampler = new QpsSampler($cache, [
+ *     'cacheItemClass' => PhpCacheItem::class
+ * ]);
+ * ```
  */
 class QpsSampler implements SamplerInterface
 {
@@ -66,7 +82,7 @@ class QpsSampler implements SamplerInterface
      *           CacheItemInterface.
      *     @type float $rate The number of queries per second to allow. Must be less than or equal to 1.
      *           **Defaults to** `0.1`
-     *     @type string $key The cache key to use. **Defaults to** `__google_cloud_trace__`
+     *     @type string $key The cache key to use. **Defaults to** `__opencensus_trace__`
      * }
      */
     public function __construct(CacheItemPoolInterface $cache = null, $options = [])
