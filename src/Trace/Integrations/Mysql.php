@@ -22,7 +22,7 @@ namespace OpenCensus\Trace\Integrations;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\Integrations\Mysql
+ * use OpenCensus\Trace\Integrations\Mysql;
  *
  * Mysql::load();
  */

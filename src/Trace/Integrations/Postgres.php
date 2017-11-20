@@ -22,7 +22,7 @@ namespace OpenCensus\Trace\Integrations;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\Integrations\Postgres
+ * use OpenCensus\Trace\Integrations\Postgres;
  *
  * Postgres::load();
  */

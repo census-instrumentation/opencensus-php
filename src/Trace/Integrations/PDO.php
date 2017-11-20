@@ -22,7 +22,7 @@ namespace OpenCensus\Trace\Integrations;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\Integrations\PDO
+ * use OpenCensus\Trace\Integrations\PDO;
  *
  * PDO::load();
  */
@@ -60,6 +60,7 @@ class PDO implements IntegrationInterface
     /**
      * Handle extracting the SQL query from the first argument
      *
+     * @internal
      * @param PDO $pdo The connectoin
      * @param string $query The SQL query to extract
      * @return array
@@ -74,6 +75,7 @@ class PDO implements IntegrationInterface
     /**
      * Handle extracting the Data Source Name (DSN) from the constructor aruments to PDO
      *
+     * @internal
      * @param PDO $pdo
      * @param string $dsn The connection DSN
      * @return array
@@ -88,6 +90,7 @@ class PDO implements IntegrationInterface
     /**
      * Handle extracting the SQL query from a PDOStatement instance
      *
+     * @internal
      * @param PDOStatement $statement The prepared statement
      * @return array
      */

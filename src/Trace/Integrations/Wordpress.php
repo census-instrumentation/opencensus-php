@@ -19,6 +19,12 @@ namespace OpenCensus\Trace\Integrations;
 
 /**
  * This class handles instrumenting the Wordpress framework's standard stack using the opencensus extension.
+ *
+ * Example:
+ * ```
+ * use OpenCensus\Trace\Integrations\Wordpress;
+ *
+ * Wordpress::load();
  */
 class Wordpress implements IntegrationInterface
 {
