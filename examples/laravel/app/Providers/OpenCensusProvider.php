@@ -18,7 +18,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use OpenCensus\Trace\Exporter\EchoExporter;
+use OpenCensus\Trace\Exporter\StackdriverExporter;
 use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Integrations\Curl;
 use OpenCensus\Trace\Integrations\Grpc;
@@ -42,7 +42,7 @@ class OpenCensusProvider extends ServiceProvider
         PDO::load();
 
         // Start the request tracing for this request
-        Tracer::start(new EchoExporter());
+        Tracer::start(new StackdriverExporter());
 
         // Create a span that starts from when Laravel first boots (public/index.php)
         Tracer::inSpan(['name' => 'bootstrap', 'startTime' => LARAVEL_START], function () {});

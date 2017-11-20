@@ -2,7 +2,7 @@
 
 namespace AppBundle;
 
-use OpenCensus\Trace\Exporter\EchoExporter;
+use OpenCensus\Trace\Exporter\StackdriverExporter;
 use OpenCensus\Trace\Integrations\Mysql;
 use OpenCensus\Trace\Integrations\PDO;
 use OpenCensus\Trace\Integrations\Symfony;
@@ -28,6 +28,6 @@ class AppBundle extends Bundle
         Symfony::load();
 
         // Start the request tracing for this request
-        Tracer::start(new EchoExporter());
+        Tracer::start(new StackdriverExporter());
     }
 }

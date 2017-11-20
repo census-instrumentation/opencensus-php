@@ -31,7 +31,9 @@
         "symfony/swiftmailer-bundle": "^2.3.10",
         "symfony/symfony": "3.3.*",
         "twig/twig": "^1.0||^2.0",
-        "opencensus/opencensus": "dev-master"
+        "opencensus/opencensus": "dev-example-apps",
+        "google/cloud-trace": "^0.3"
+
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
