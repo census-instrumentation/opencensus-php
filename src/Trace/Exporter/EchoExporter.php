@@ -22,6 +22,15 @@ use OpenCensus\Trace\Tracer\TracerInterface;
 /**
  * This implementation of the ExporterInterface uses `print_r` to output
  * the trace's representation to stdout.
+ *
+ * Example:
+ * ```
+ * use OpenCensus\Trace\Exporter\EchoExporter;
+ * use OpenCensus\Trace\Tracer;
+ *
+ * $exporter = new EchoExporter();
+ * Tracer::begin($exporter);
+ * ```
  */
 class EchoExporter implements ExporterInterface
 {

@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\Integrations\Eloquent
+ * use OpenCensus\Trace\Integrations\Eloquent;
  *
  * Eloquent::load();
  */

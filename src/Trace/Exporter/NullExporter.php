@@ -21,6 +21,15 @@ use OpenCensus\Trace\Tracer\TracerInterface;
 
 /**
  * This implementation of the ExporterInterface does nothing.
+ *
+ * Example:
+ * ```
+ * use OpenCensus\Trace\Exporter\NullExporter;
+ * use OpenCensus\Trace\Tracer;
+ *
+ * $exporter = new NullExporter();
+ * Tracer::begin($exporter);
+ * ```
  */
 class NullExporter implements ExporterInterface
 {

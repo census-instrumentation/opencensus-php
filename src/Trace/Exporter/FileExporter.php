@@ -20,8 +20,17 @@ namespace OpenCensus\Trace\Exporter;
 use OpenCensus\Trace\Tracer\TracerInterface;
 
 /**
- * This implementation of the ExporterInterface appends a json
+ * This implementation of the ExporterInterface appends a JSON
  * representation of the trace to a file.
+ *
+ * Example:
+ * ```
+ * use OpenCensus\Trace\Exporter\FileExporter;
+ * use OpenCensus\Trace\Tracer;
+ *
+ * $exporter = new FileExporter('/path/to/file.txt');
+ * Tracer::begin($exporter);
+ * ```
  */
 class FileExporter implements ExporterInterface
 {
