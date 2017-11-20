@@ -65,7 +65,8 @@ class RequestHandler
      * @param PropagatorInterface $propagator SpanContext propagator
      * @param array $options [optional] {
      *      Configuration options. See
-     *      <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a> for the other available options.
+     *      <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
+     *      for the other available options.
      *
      *      @type array $headers Optional array of headers to use in place of $_SERVER
      * }

@@ -55,10 +55,13 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
  * ```
  *
  * The above uses a query-per-second sampler at 0.1 requests/second. The implementation
- * requires a PSR-6 cache. See <a href="Sampler/QpsSampler.html">OpenCensus\Trace\Sampler\QpsSampler</a> for more information.
- * You may provide your own implementation of <a href="Sampler/SamplerInterface.html">OpenCensus\Trace\Sampler\SamplerInterface</a>
+ * requires a PSR-6 cache. See
+ * <a href="Sampler/QpsSampler.html">OpenCensus\Trace\Sampler\QpsSampler</a> for more information.
+ * You may provide your own implementation of
+ * <a href="Sampler/SamplerInterface.html">OpenCensus\Trace\Sampler\SamplerInterface</a>
  * or use one of the provided. You may provide a configuration array for the sampler instead. See
- * <a href="Sampler/SamplerFactory.html#method_build">OpenCensus\Trace\Sampler\SamplerFactory::build()</a> for builder options:
+ * <a href="Sampler/SamplerFactory.html#method_build">OpenCensus\Trace\Sampler\SamplerFactory::build()</a>
+ * for builder options:
  *
  * ```
  * // $cache is a PSR-6 cache implementation
@@ -116,7 +119,8 @@ class Tracer
      * possible for the most accurate results.
      *
      * @param ExporterInterface $reporter
-     * @param array $options Configuration options. See <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
+     * @param array $options Configuration options. See
+     *        <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
      *        for the other available options.
      *
      *      @type SamplerInterface|array $sampler Sampler or sampler factory build arguments. See

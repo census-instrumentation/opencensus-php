@@ -39,6 +39,9 @@ use Cache\Adapter\Common\CacheItem;
  *     'cacheItemClass' => PhpCacheItem::class
  * ]);
  * ```
+ *
+ * You can find a list of PSR-6 cache implementations
+ * <a href="https://packagist.org/providers/psr/cache-implementation">here.</a>
  */
 class QpsSampler implements SamplerInterface
 {

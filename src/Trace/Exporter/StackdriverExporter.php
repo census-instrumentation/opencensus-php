@@ -43,7 +43,8 @@ use OpenCensus\Trace\Span;
  *
  * The above configuration will synchronously report the traces to Google Cloud
  * Stackdriver Trace. You can enable an experimental asynchronous reporting
- * mechanism using <a href="https://github.com/GoogleCloudPlatform/google-cloud-php/tree/master/src/Core/Batch">BatchDaemon</a>.
+ * mechanism using
+ * <a href="https://github.com/GoogleCloudPlatform/google-cloud-php/tree/master/src/Core/Batch">BatchDaemon</a>.
  *
  * Example:
  * ```
