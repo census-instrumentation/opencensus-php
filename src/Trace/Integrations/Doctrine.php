@@ -24,9 +24,10 @@ use Doctrine\ORM\Version;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\Integrations\Doctrine
+ * use OpenCensus\Trace\Integrations\Doctrine;
  *
  * Doctrine::load();
+ * ```
  */
 class Doctrine implements IntegrationInterface
 {

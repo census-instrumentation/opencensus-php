@@ -104,7 +104,7 @@ class Span
 
     /**
      * A highly recommended but not required flag that identifies when a trace
-     * crosses a process boundary. True when the parent_span belongs to the
+     * crosses a process boundary. True when the parentSpanId belongs to the
      * same process as the current span.
      *
      * @var bool
@@ -114,8 +114,7 @@ class Span
     /**
      * Instantiate a new Span instance.
      *
-     * @param array $options [optional] {
-     *      Configuration options.
+     * @param array $options [optional] Configuration options.
      *
      *      @type string $spanId The ID of the span. If not provided,
      *            one will be generated automatically for you.
@@ -127,9 +126,9 @@ class Span
      *      @type string $parentSpanId ID of the parent span if any.
      *      @type array $attributes Associative array of $attribute => $value
      *            to attach to this span.
-     *      @type int $kind The kind of span. One of SPAN_KIND_UNKNOWN|SPAN_KIND_CLIENT|SPAN_KIND_SERVER|
-     *            SPAN_KIND_CONSUMER|SPAN_KIND_PRODUCER. **Defaults to** SPAN_KIND_UNKNOWN,
-     * }
+     *      @type Status $status The final status for this span.
+     *      @type bool $sameProcessAsParentSpan True when the parentSpanId
+     *            belongs to the same process as the current span.
      */
     public function __construct($options = [])
     {

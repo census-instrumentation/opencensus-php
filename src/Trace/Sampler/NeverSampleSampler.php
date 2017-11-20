@@ -20,6 +20,13 @@ namespace OpenCensus\Trace\Sampler;
 /**
  * This implementation of the SamplerInterface always returns false. Use this
  * sampler to disable all tracing.
+ *
+ * Example:
+ * ```
+ * use OpenCensus\Trace\Sampler\NeverSampleSampler;
+ *
+ * $sampler = new NeverSampleSampler();
+ * ```
  */
 class NeverSampleSampler implements SamplerInterface
 {

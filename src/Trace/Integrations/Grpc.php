@@ -26,7 +26,7 @@ use OpenCensus\Trace\Propagator\GrpcMetadataPropagator;
  *
  * Example:
  * ```
- * use OpenCensus\Trace\Integrations\Grpc
+ * use OpenCensus\Trace\Integrations\Grpc;
  *
  * Grpc::load();
  * ```

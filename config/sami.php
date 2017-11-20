@@ -18,6 +18,10 @@
 use Sami\Sami;
 // use Sami\Version\GitVersionCollection;
 use Symfony\Component\Finder\Finder;
+use Sami\Parser\Filter\FilterInterface;
+use Sami\Reflection\ClassReflection;
+use Sami\Reflection\MethodReflection;
+use Sami\Reflection\PropertyReflection;
 
 $root_dir = __DIR__ . '/../';
 
@@ -30,7 +34,31 @@ $iterator = Finder::create()
 //     ->addFromTags('v0.*')
 //     ->add('master', 'master branch');
 
-return new Sami($iterator, [
+$sami = new Sami($iterator, [
     // 'versions'  => $versions,
-    'build_dir' => __DIR__ . '/../docs'
+    'build_dir' => __DIR__ . '/../docs',
+    'title' => 'OpenCensus PHP API'
 ]);
+
+class VisibleFilter implements FilterInterface
+{
+    public function acceptClass(ClassReflection $class)
+    {
+        return true;
+    }
+
+    public function acceptMethod(MethodReflection $method)
+    {
+        return !$method->isPrivate() && empty($method->getTags('internal'));
+    }
+    public function acceptProperty(PropertyReflection $property)
+    {
+        return !$property->isPrivate();
+    }
+}
+
+$sami['filter'] = function () {
+    return new \VisibleFilter();
+};
+
+return $sami;

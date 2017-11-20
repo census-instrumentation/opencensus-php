@@ -43,7 +43,7 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
  *
  * In the above example, every request is traced. This is not advised as it will
  * add some latency to each request. We provide a sampling mechanism via the
- * {@see OpenCensus\Trace\Sampler\SamplerInterface}. To add sampling to your
+ * <a href="Sampler/SamplerInterface.html">OpenCensus\Trace\Sampler\SamplerInterface</a>. To add sampling to your
  * request tracer, provide the "sampler" option:
  *
  * ```
@@ -55,11 +55,13 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
  * ```
  *
  * The above uses a query-per-second sampler at 0.1 requests/second. The implementation
- * requires a PSR-6 cache. See {@see OpenCensus\Trace\Sampler\QpsSampler} for more information.
- * You may provide your own implementation of {@see OpenCensus\Trace\Sampler\SamplerInterface}
+ * requires a PSR-6 cache. See
+ * <a href="Sampler/QpsSampler.html">OpenCensus\Trace\Sampler\QpsSampler</a> for more information.
+ * You may provide your own implementation of
+ * <a href="Sampler/SamplerInterface.html">OpenCensus\Trace\Sampler\SamplerInterface</a>
  * or use one of the provided.
  *
- * To trace code, you can use static {@see OpenCensus\Trace\Tracer::inSpan()} helper function:
+ * To trace code, you can use static <a href="#method_inSpan">OpenCensus\Trace\Tracer::inSpan()</a> helper function:
  *
  * ```
  * Tracer::start($reporter);
@@ -89,7 +91,7 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
  * }
  * ```
  *
- * It is recommended that you use the {@see OpenCensus\Trace\Tracer::inSpan()}
+ * It is recommended that you use the <a href="#method_inSpan">OpenCensus\Trace\Tracer::inSpan()</a>
  * method where you can.
  */
 class Tracer
@@ -104,16 +106,15 @@ class Tracer
      * possible for the most accurate results.
      *
      * @param ExporterInterface $reporter
-     * @param array $options {
-     *      Configuration options. See
-     *      {@see OpenCensus\Trace\Span::__construct()} for the other available options.
+     * @param array $options Configuration options. See
+     *        <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
+     *        for the other available options.
      *
      *      @type SamplerInterface $sampler Sampler that defines the sampling rules.
      *            **Defaults to** a new `AlwaysSampleSampler`.
      *      @type PropagatorInterface $propagator SpanContext propagator. **Defaults to**
      *            a new `HttpHeaderPropagator` instance
      *      @type array $headers Optional array of headers to use in place of $_SERVER
-     * }
      * @return RequestHandler
      */
     public static function start(ExporterInterface $reporter, array $options = [])
@@ -152,9 +153,10 @@ class Tracer
      * $number = Tracer::inSpan(['name' => 'some-callable'], 'fib', [10]);
      * ```
      *
-     * @param array $spanOptions Options for the span.
-     *      {@see OpenCensus\Trace\Span::__construct()}
-     * @param  callable $callable The callable to instrument.
+     * @param array $spanOptions Options for the span. See
+     *      <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
+     * @param callable $callable The callable to instrument.
+     * @param array $arguments [optional] Arguments to the callable.
      * @return mixed Returns whatever the callable returns
      */
     public static function inSpan(array $spanOptions, callable $callable, array $arguments = [])
@@ -178,8 +180,8 @@ class Tracer
      * }
      * ```
      *
-     * @param array $spanOptions [optional] Options for the span.
-     *      {@see OpenCensus\Trace\Span::__construct()}
+     * @param array $spanOptions [optional] Options for the span. See
+     *      <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
      * @return Span
      */
     public static function startSpan(array $spanOptions = [])
