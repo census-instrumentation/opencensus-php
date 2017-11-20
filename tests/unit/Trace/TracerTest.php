@@ -18,6 +18,8 @@
 namespace OpenCensus\Tests\Unit\Trace;
 
 use OpenCensus\Trace\Exporter\ExporterInterface;
+use OpenCensus\Trace\Sampler\AlwaysSampleSampler;
+use OpenCensus\Trace\Sampler\NeverSampleSampler;
 use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Tracer\NullTracer;
 
@@ -36,7 +38,7 @@ class TracerTest extends \PHPUnit_Framework_TestCase
     public function testForceDisabled()
     {
         $rt = Tracer::start($this->reporter->reveal(), [
-            'sampler' => ['type' => 'disabled']
+            'sampler' => new NeverSampleSampler()
         ]);
         $tracer = $rt->tracer();
 
@@ -47,7 +49,7 @@ class TracerTest extends \PHPUnit_Framework_TestCase
     public function testForceEnabled()
     {
         $rt = Tracer::start($this->reporter->reveal(), [
-            'sampler' => ['type' => 'enabled']
+            'sampler' => new AlwaysSampleSampler()
         ]);
         $tracer = $rt->tracer();
 
