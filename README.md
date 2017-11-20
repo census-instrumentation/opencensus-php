@@ -5,6 +5,8 @@ server's resource usage and collect performance stats. This repository contains
 PHP related utilities and supporting software needed by Census.
 
 [![CircleCI](https://circleci.com/gh/census-instrumentation/opencensus-php.svg?style=svg)](https://circleci.com/gh/census-instrumentation/opencensus-php)
+[![Packagist](https://img.shields.io/packagist/v/opencensus/opencensus.svg)](https://packagist.org/packages/opencensus/opencensus)
+![PHP-Version](https://img.shields.io/packagist/php-v/opencensus/opencensus.svg)
 
 * [API Documentation][api-docs]
 
@@ -107,6 +109,8 @@ If you would like to provide your own reporter, create a class that implements
 
 ## Versioning
 
+[![Packagist](https://img.shields.io/packagist/v/opencensus/opencensus.svg)](https://packagist.org/packages/opencensus/opencensus)
+
 This library follows [Semantic Versioning][semver].
 
 Please note it is currently under active development. Any release versioned
@@ -122,6 +126,9 @@ and requests with a higher priority.
 
 **Alpha**: Libraries defined at an Alpha quality level are still a
 work-in-progress and are more likely to get backwards-incompatible updates.
+
+**Current Status:** Pre-Alpha
+
 
 ## Contributing
 
