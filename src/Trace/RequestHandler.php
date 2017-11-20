@@ -65,7 +65,7 @@ class RequestHandler
      * @param PropagatorInterface $propagator SpanContext propagator
      * @param array $options [optional] {
      *      Configuration options. See
-     *      {@see OpenCensus\Trace\Span::__construct()} for the other available options.
+     *      <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a> for the other available options.
      *
      *      @type array $headers Optional array of headers to use in place of $_SERVER
      * }
@@ -151,8 +151,8 @@ class RequestHandler
      * exception will be caught, the span will be closed, and the exception will
      * be re-thrown.
      *
-     * @param array $spanOptions Options for the span.
-     *        {@see OpenCensus\Trace\Span::__construct()}
+     * @param array $spanOptions Options for the span. See
+     *        <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
      * @param callable $callable The callable to instrument.
      * @return mixed Returns whatever the callable returns
      */
@@ -165,8 +165,8 @@ class RequestHandler
      * Explicitly start a new Span. You will need to manage finishing the Span,
      * including handling any thrown exceptions.
      *
-     * @param array $spanOptions [optional] Options for the span.
-     *        {@see OpenCensus\Trace\Span::__construct()}
+     * @param array $spanOptions [optional] Options for the span. See
+     *        <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
      * @return Span
      */
     public function startSpan(array $spanOptions = [])

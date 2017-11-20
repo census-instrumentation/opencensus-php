@@ -29,8 +29,7 @@ class SamplerFactory
     /**
      * Builds a sampler given the provided configuration options.
      *
-     * @param array $options {
-     *     Configuration options.
+     * @param array $options Configuration options.
      *
      *     @type string $type Which type of sampler to build. May be one of:
      *           `"qps"`, `"random"`, `"enabled"`, `"disabled"`. **Defaults to**
@@ -42,7 +41,6 @@ class SamplerFactory
      *     @type string $cacheItemClass The name of the CacheItemInterface class to use for
      *           query per second sampling.
      *     @type string $cacheKey The name of the cache key to use for query per second sampling.
-     * }
      * @return SamplerInterface
      */
     public static function build($options)

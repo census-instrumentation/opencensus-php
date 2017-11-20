@@ -31,7 +31,7 @@ interface TracerInterface
      * Instrument a callable by creating a Span
      *
      * @param array $spanOptions Options for the span.
-     *      {@see OpenCensus\Trace\Span::__construct()}
+     *      <a href="../Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
      * @param callable $callable The callable to instrument.
      * @param array $arguments [optional] Arguments for the callable.
      * @return mixed The result of the callable

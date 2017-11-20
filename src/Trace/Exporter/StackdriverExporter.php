@@ -110,24 +110,23 @@ class StackdriverExporter implements ExporterInterface
     /**
      * Create a TraceExporter that utilizes background batching.
      *
-     * @param array $options [optional] {
-     *     Configuration options.
+     * @param array $options [optional] Configuration options.
      *
      *     @type TraceClient $client A trace client used to instantiate traces
      *           to be delivered to the batch queue.
      *     @type bool $debugOutput Whether or not to output debug information.
      *           Please note debug output currently only applies in CLI based
      *           applications. **Defaults to** `false`.
-     *     @type array $batchOptions A set of options for a BatchJob.
-     *           {@see \Google\Cloud\Core\Batch\BatchJob::__construct()} for
-     *           more details.
+     *     @type array $batchOptions A set of options for a BatchJob. See
+     *           <a href="https://github.com/GoogleCloudPlatform/google-cloud-php/blob/master/src/Core/Batch/BatchJob.php">\Google\Cloud\Core\Batch\BatchJob::__construct()</a>
+     *           for more details.
      *           **Defaults to** ['batchSize' => 1000,
      *                            'callPeriod' => 2.0,
      *                            'workerNum' => 2].
      *     @type array $clientConfig Configuration options for the Trace client
      *           used to handle processing of batch items.
      *           For valid options please see
-     *           {@see \Google\Cloud\Trace\TraceClient::__construct()}.
+     *           <a href="https://github.com/GoogleCloudPlatform/google-cloud-php/blob/master/src/Trace/TraceClient.php">\Google\Cloud\Trace\TraceClient::__construct()</a>.
      *     @type BatchRunner $batchRunner A BatchRunner object. Mainly used for
      *           the tests to inject a mock. **Defaults to** a newly created
      *           BatchRunner.
@@ -135,7 +134,6 @@ class StackdriverExporter implements ExporterInterface
      *           **Defaults to** `stackdriver-trace`.
      *     @type bool $async Whether we should try to use the batch runner.
      *           **Defaults to** `false`.
-     * }
      */
     public function __construct(array $options = [])
     {
