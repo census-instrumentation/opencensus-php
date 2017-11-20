@@ -21,8 +21,8 @@ use OpenCensus\Trace\Tracer\TracerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * This implementation of the ExporterInterface appends a json
- * representation of the trace to a file.
+ * This implementation of the ExporterInterface sends log messages to a
+ * configurable PSR-3 logger.
  *
  * Example:
  * ```

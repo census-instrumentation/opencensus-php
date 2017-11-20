@@ -21,7 +21,7 @@ use OpenCensus\Trace\SpanContext;
 
 /**
  * This format using a human readable string encoding to propagate SpanContext.
- * See https://github.com/SpanContext/tracecontext-spec/blob/master/trace_context/HTTP_HEADER_FORMAT.md
+ * See <a href="https://github.com/SpanContext/tracecontext-spec/blob/master/trace_context/HTTP_HEADER_FORMAT.md">specification</a>
  * for the definition.
  */
 class TraceContextFormatter implements FormatterInterface

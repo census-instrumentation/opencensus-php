@@ -21,7 +21,7 @@ use OpenCensus\Trace\SpanContext;
 
 /**
  * This format using a human readable string encoding to propagate SpanContext.
- * The current format of the header is <trace-id>[/<span-id>][;o=<options>].
+ * The current format of the header is `<trace-id>[/<span-id>][;o=<options>]`.
  * The options are a bitmask of options. Currently the only option is the
  * least significant bit which signals whether the request was traced or not
  * (1 = traced, 0 = not traced).

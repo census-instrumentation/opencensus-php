@@ -104,8 +104,8 @@ class ZipkinExporter implements ExporterInterface
     }
 
     /**
-     * Convert spans into Zipkin's expected JSON output format. See http://zipkin.io/zipkin-api/#/default/post_spans
-     * for output format.
+     * Convert spans into Zipkin's expected JSON output format. See
+     * <a href="http://zipkin.io/zipkin-api/#/default/post_spans">output format definition</a>.
      *
      * @param TracerInterface $tracer
      * @param array $headers [optional] HTTP headers to parse. **Defaults to** $_SERVER
