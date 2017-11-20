@@ -14,29 +14,29 @@ PHP related utilities and supporting software needed by Census.
 
 1. Install the `opencensus/opencensus` package using [composer][composer]:
 
-```bash
-$ composer require opencensus/opencensus
-```
+    ```bash
+    $ composer require opencensus/opencensus
+    ```
 
 1. [Optional]: Install the `opencensus` extension from [PECL][pecl]:
 
-```bash
-$ pecl install opencensus-devel
-```
+    ```bash
+    $ pecl install opencensus-devel
+    ```
    Enable the extension in your `php.ini`:
 
-```ini
-extension=opencensus.so
-```
+    ```ini
+    extension=opencensus.so
+    ```
 
 1. Initialize a tracer for your application:
 
-```php
-use OpenCensus\Trace\Tracer;
-use OpenCensus\Trace\Exporter\EchoExporter;
+    ```php
+    use OpenCensus\Trace\Tracer;
+    use OpenCensus\Trace\Exporter\EchoExporter;
 
-Tracer::start(new EchoExporter());
-```
+    Tracer::start(new EchoExporter());
+    ```
 
 ## Usage
 
