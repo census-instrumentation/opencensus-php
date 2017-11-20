@@ -19,7 +19,7 @@ namespace OpenCensus\Trace;
 
 use OpenCensus\Core\Scope;
 use OpenCensus\Trace\Span;
-use OpenCensus\Trace\Sampler\SamplerFactory;
+use OpenCensus\Trace\Sampler\AlwaysSampleSampler;
 use OpenCensus\Trace\Sampler\SamplerInterface;
 use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Propagator\PropagatorInterface;
@@ -57,19 +57,7 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
  * The above uses a query-per-second sampler at 0.1 requests/second. The implementation
  * requires a PSR-6 cache. See {@see OpenCensus\Trace\Sampler\QpsSampler} for more information.
  * You may provide your own implementation of {@see OpenCensus\Trace\Sampler\SamplerInterface}
- * or use one of the provided. You may provide a configuration array for the sampler instead. See
- * {@see OpenCensus\Trace\Sampler\SamplerFactory::build()} for builder options:
- *
- * ```
- * // $cache is a PSR-6 cache implementation
- * Tracer::start($reporter, [
- *     'sampler' => [
- *         'type' => 'qps',
- *         'rate' => 0.1,
- *         'cache' => $cache
- *     ]
- * ]);
- * ```
+ * or use one of the provided.
  *
  * To trace code, you can use static {@see OpenCensus\Trace\Tracer::inSpan()} helper function:
  *
@@ -120,8 +108,8 @@ class Tracer
      *      Configuration options. See
      *      {@see OpenCensus\Trace\Span::__construct()} for the other available options.
      *
-     *      @type SamplerInterface|array $sampler Sampler or sampler factory build arguments. See
-     *          {@see OpenCensus\Trace\Sampler\SamplerFactory::build()} for the available options.
+     *      @type SamplerInterface $sampler Sampler that defines the sampling rules.
+     *            **Defaults to** a new `AlwaysSampleSampler`.
      *      @type PropagatorInterface $propagator SpanContext propagator. **Defaults to**
      *            a new `HttpHeaderPropagator` instance
      *      @type array $headers Optional array of headers to use in place of $_SERVER
@@ -130,12 +118,10 @@ class Tracer
      */
     public static function start(ExporterInterface $reporter, array $options = [])
     {
-        $samplerOptions = array_key_exists('sampler', $options) ? $options['sampler'] : [];
+        $sampler = array_key_exists('sampler', $options)
+            ? $options['sampler']
+            : new AlwaysSampleSampler();
         unset($options['sampler']);
-
-        $sampler = ($samplerOptions instanceof SamplerInterface)
-            ? $samplerOptions
-            : SamplerFactory::build($samplerOptions);
 
         $propagator = array_key_exists('propagator', $options)
             ? $options['propagator']
