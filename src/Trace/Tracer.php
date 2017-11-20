@@ -57,19 +57,7 @@ use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
  * The above uses a query-per-second sampler at 0.1 requests/second. The implementation
  * requires a PSR-6 cache. See {@see OpenCensus\Trace\Sampler\QpsSampler} for more information.
  * You may provide your own implementation of {@see OpenCensus\Trace\Sampler\SamplerInterface}
- * or use one of the provided. You may provide a configuration array for the sampler instead. See
- * {@see OpenCensus\Trace\Sampler\SamplerFactory::build()} for builder options:
- *
- * ```
- * // $cache is a PSR-6 cache implementation
- * Tracer::start($reporter, [
- *     'sampler' => [
- *         'type' => 'qps',
- *         'rate' => 0.1,
- *         'cache' => $cache
- *     ]
- * ]);
- * ```
+ * or use one of the provided.
  *
  * To trace code, you can use static {@see OpenCensus\Trace\Tracer::inSpan()} helper function:
  *
