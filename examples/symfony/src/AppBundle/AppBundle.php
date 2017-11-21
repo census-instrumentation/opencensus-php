@@ -13,21 +13,5 @@ class AppBundle extends Bundle
 {
     public function boot()
     {
-        $this->setupOpenCensus();
-    }
-
-    private function setupOpenCensus()
-    {
-        if (php_sapi_name() == 'cli') {
-            return;
-        }
-
-        // Enable OpenCensus extension integrations
-        Mysql::load();
-        PDO::load();
-        Symfony::load();
-
-        // Start the request tracing for this request
-        Tracer::start(new StackdriverExporter());
     }
 }

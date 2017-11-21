@@ -1,7 +1,5 @@
 # Example Laravel Application (5.5)
 
-## General
-
 ## Integrating OpenCensus
 
 1. To add OpenCensus to our Laravel application, we will create a
@@ -43,7 +41,7 @@
     In this example, we configured `StackdriverExporter`, but you can configure
     any exporter here. You can also enable any other integrations here.
 
-1. Enable this `ServiceProvider`. In `config/app.php`
+1. Enable this `ServiceProvider`. In `config/app.php`:
 
     ```php
     // in the `providers` section
