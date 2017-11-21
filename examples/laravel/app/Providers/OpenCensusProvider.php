@@ -20,8 +20,6 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use OpenCensus\Trace\Exporter\StackdriverExporter;
 use OpenCensus\Trace\Tracer;
-use OpenCensus\Trace\Integrations\Curl;
-use OpenCensus\Trace\Integrations\Grpc;
 use OpenCensus\Trace\Integrations\Laravel;
 use OpenCensus\Trace\Integrations\Mysql;
 use OpenCensus\Trace\Integrations\PDO;
@@ -35,8 +33,6 @@ class OpenCensusProvider extends ServiceProvider
         }
 
         // Enable OpenCensus extension integrations
-        Curl::load();
-        Grpc::load();
         Laravel::load();
         Mysql::load();
         PDO::load();
