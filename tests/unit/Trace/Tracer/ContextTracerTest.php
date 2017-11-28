@@ -111,4 +111,21 @@ class ContextTracerTest extends \PHPUnit_Framework_TestCase
         $scope->close();
         $this->assertNull($tracer->spanContext()->spanId());
     }
+
+    public function testSetStartTime()
+    {
+        $time = microtime(true) - 10;
+        $span = new Span(['name' => 'foo', 'startTime' => $time]);
+        $tracer = new ContextTracer();
+        $scope = $tracer->withSpan($span);
+        usleep(100);
+        $scope->close();
+
+        $this->assertEquivalentTimestamps($span->startTime(), $tracer->spans()[0]->startTime());
+    }
+
+    private function assertEquivalentTimestamps($expected, $value)
+    {
+        $this->assertEquals((float)($expected->format('U.u')), (float)($expected->format('U.u')), '', 0.000001);
+    }
 }

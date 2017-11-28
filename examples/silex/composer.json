@@ -1,0 +1,23 @@
+{
+    "name": "opencensus/silex-app",
+    "description": "Example Silex Application with OpenCensus",
+    "type": "project",
+    "require": {
+        "silex/silex": "^2.2",
+        "opencensus/opencensus": "dev-master",
+        "google/cloud-trace": "^0.3"
+    },
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Jeff Ching",
+            "email": "chingor@google.com"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/census-instrumentation/opencensus-php"
+        }
+    ]
+}

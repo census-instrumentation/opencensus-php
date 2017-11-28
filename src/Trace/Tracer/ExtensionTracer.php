@@ -78,10 +78,13 @@ class ExtensionTracer implements TracerInterface
      */
     public function withSpan(Span $span)
     {
+        $startTime = $span->startTime()
+            ? (float)($span->startTime()->format('U.u'))
+            : null;
         $info = [
             'spanId' => $span->spanId(),
             'parentSpanId' => $span->parentSpanId(),
-            'startTime' => $span->startTime(),
+            'startTime' => $startTime,
             'attributes' => $span->attributes(),
             'stackTrace' => $span->stackTrace()
         ];
