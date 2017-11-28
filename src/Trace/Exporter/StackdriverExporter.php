@@ -20,9 +20,9 @@ namespace OpenCensus\Trace\Exporter;
 use Google\Cloud\Core\Batch\BatchRunner;
 use Google\Cloud\Core\Batch\BatchTrait;
 use Google\Cloud\Trace\TraceClient;
-use Google\Cloud\Trace\TraceSpan;
+use Google\Cloud\Trace\Span;
+use Google\Cloud\Trace\Trace;
 use OpenCensus\Trace\Tracer\TracerInterface;
-use OpenCensus\Trace\Span;
 
 /**
  * This implementation of the ExporterInterface use the BatchRunner to provide
@@ -88,7 +88,6 @@ class StackdriverExporter implements ExporterInterface
     const HTTP_URL = '/http/url';
     const HTTP_USER_AGENT = '/http/user_agent';
     const PID = '/pid';
-    const STACKTRACE = '/stacktrace';
     const TID = '/tid';
 
     const GAE_APPLICATION_ERROR = 'g.co/gae/application_error';
@@ -157,16 +156,16 @@ class StackdriverExporter implements ExporterInterface
     public function report(TracerInterface $tracer)
     {
         $this->processSpans($tracer);
-        $spans = $this->convertSpans($tracer);
+        $trace = self::$client->trace(
+            $tracer->spanContext()->traceId()
+        );
+        $spans = $this->convertSpans($tracer, $trace);
 
         if (empty($spans)) {
             return false;
         }
 
         // build a Trace object and assign Spans
-        $trace = self::$client->trace(
-            $tracer->spanContext()->traceId()
-        );
         $trace->setSpans($spans);
 
         try {
@@ -196,51 +195,26 @@ class StackdriverExporter implements ExporterInterface
     /**
      * Convert spans into Zipkin's expected JSON output format.
      *
-     * @param  TracerInterface $tracer
+     * @param TracerInterface $tracer
+     * @param Trace $trace
      * @return array Representation of the collected trace spans ready for serialization
      */
     public function convertSpans(TracerInterface $tracer)
     {
-        // transform OpenCensus Spans to Google\Cloud\Spans
-        return array_map(function ($span) {
-            $attributes = $span->attributes();
-            $attributes[self::STACKTRACE] = $this->formatBacktrace($span->stackTrace());
-            return new TraceSpan([
+        $traceId = $tracer->spanContext()->traceId();
+
+        // transform OpenCensus Spans to Google\Cloud\Trace\Spans
+        return array_map(function ($span) use ($traceId) {
+            return new Span($traceId, [
                 'name' => $span->name(),
                 'startTime' => $span->startTime(),
                 'endTime' => $span->endTime(),
-                'spanId' => hexdec($span->spanId()),
-                'parentSpanId' => $span->parentSpanId() ? hexdec($span->parentSpanId()) : null,
-                'labels' => $attributes
+                'spanId' => $span->spanId(),
+                'parentSpanId' => $span->parentSpanId(),
+                'attributes' => $span->attributes(),
+                'stackTrace' => $span->stackTrace()
             ]);
-            $span->info();
         }, $tracer->spans());
-    }
-
-    private function formatBacktrace($st)
-    {
-        return json_encode([
-            'stack_frame' => array_map([$this, 'mapStackframe'], $st)
-        ]);
-    }
-
-    private function mapStackframe($sf)
-    {
-        // file and line should always be set
-        $data = [];
-        if (isset($sf['line'])) {
-            $data['line_number'] = $sf['line'];
-        }
-        if (isset($sf['file'])) {
-            $data['file_name'] = $sf['file'];
-        }
-        if (isset($sf['function'])) {
-            $data['method_name'] = $sf['function'];
-        }
-        if (isset($sf['class'])) {
-            $data['class_name'] = $sf['class'];
-        }
-        return $data;
     }
 
     /**
