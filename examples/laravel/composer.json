@@ -9,7 +9,7 @@
         "fideloper/proxy": "~3.3",
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
-        "opencensus/opencensus": "dev-example-apps",
+        "opencensus/opencensus": "dev-master",
         "google/cloud-trace": "^0.3"
     },
     "require-dev": {

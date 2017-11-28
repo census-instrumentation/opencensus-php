@@ -31,7 +31,7 @@
         "symfony/swiftmailer-bundle": "^2.3.10",
         "symfony/symfony": "3.3.*",
         "twig/twig": "^1.0||^2.0",
-        "opencensus/opencensus": "dev-example-apps",
+        "opencensus/opencensus": "dev-master",
         "google/cloud-trace": "^0.3"
 
     },
