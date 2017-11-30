@@ -117,35 +117,52 @@ class ExtensionTracer implements TracerInterface
     }
 
     /**
-     * Add a attribute to the current Span
+     * Add a attribute to the provided Span
      *
+     * @param Span $span
      * @param string $attribute
      * @param string $value
      */
-    public function addAttribute($attribute, $value)
+    public function addAttribute(Span $span, $attribute, $value)
     {
-        opencensus_trace_add_attribute($attribute, $value);
+        opencensus_trace_add_attribute($span->spanId(), $attribute, $value);
     }
 
     /**
-     * Add a attribute to the primary Span
+     * Add an annotation to the provided Span
      *
-     * @param string $attribute
-     * @param string $value
+     * @param Span $span
+     * @param string $description
+     * @param array $options
      */
-    public function addRootAttribute($attribute, $value)
+    public function addAnnotation(Span $span, $description, $options = [])
     {
-        opencensus_trace_add_root_attribute($attribute, $value);
+        opencensus_trace_add_annotation($span->spanId(), $description, $options);
     }
 
     /**
-     * Whether or not this tracer is enabled.
+     * Add a link to the provided Span
      *
-     * @return bool
+     * @param Span $span
+     * @param string $traceId
+     * @param string $spanId
+     * @param array $options
      */
-    public function enabled()
+    public function addLink(Span $span, $traceId, $spanId, $options = [])
     {
-        return true;
+        opencensus_trace_add_link($span->spanId(), $traceId, $spanId, $options);
+    }
+
+    /**
+     * Add an message event to the provided Span
+     *
+     * @param Span $span
+     * @param string $id
+     * @param array $options
+     */
+    public function addMessageEvent(Span $span, $id, $options = [])
+    {
+        opencensus_trace_add_message_event($span->spanId(), $id, $options);
     }
 
     /**
