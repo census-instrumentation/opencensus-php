@@ -1,0 +1,7 @@
+baseURL = "http://opencensus.io/opencensus-php/"
+languageCode = "en-us"
+title = "OpenCensus for PHP"
+theme = "hyde"
+
+[params]
+  description = "A stats collection and distributed tracing framework"

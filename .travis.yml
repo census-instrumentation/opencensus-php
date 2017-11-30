@@ -4,8 +4,11 @@ php:
 
 install:
   - wget -O sami.phar http://get.sensiolabs.org/sami.phar
+  - wget -O /tmp/hugo.deb https://github.com/gohugoio/hugo/releases/download/v0.30.2/hugo_0.30.2_Linux-64bit.deb
+  - sudo dpkg -i /tmp/hugo.deb
 
 script:
+  - cd docs && hugo
   - php sami.phar update config/sami.php
   - touch docs/.nojekyll
 
@@ -15,7 +18,7 @@ branches:
 
 deploy:
   provider: pages
-  local_dir: docs
+  local_dir: docs/public
   skip_cleanup: true
   email: chingor@google.com # To satisfy the CLA check, replace this with bot email.
   github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
