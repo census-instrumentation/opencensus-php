@@ -1,6 +1,11 @@
-# Example Symfony Application (3.3)
+---
+date: "2017-10-30T11:18:27-08:00"
+type: index
+---
 
-## Integrating OpenCensus
+# Integrating OpenCensus with Symfony
+
+## Symfony 3.3
 
 1. To add OpenCensus to our Symfony application, we will create a `Bundle`
    In `src/AppBundle/OpenCensusBundle.php`:
