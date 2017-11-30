@@ -1,9 +1,8 @@
 ---
-date: "2017-10-30T11:18:27-08:00"
-type: index
+title: "Integrating OpenCensus with Silex"
+date: "2017-11-30"
+type: page
 ---
-
-# Integrating OpenCensus with Silex
 
 ## Silex 2.2
 
@@ -11,6 +10,7 @@ To add OpenCensus to our Silex application, we simply start the tracer at the
 beginning of our application. In `web/index.php`:
 
 ```php
+<?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // Configure and start the OpenCensus Tracer

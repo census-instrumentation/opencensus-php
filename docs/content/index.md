@@ -9,6 +9,17 @@ type: index
 
 ## Tracing
 
+### Framework Integration
+
+* [Laravel](integrating-laravel)
+* [Silex](integrating-silex)
+* [Symfony](integrating-symfony)
+* [Wordpress](integrating-wordpress)
+
+### Other Integrations
+
+* [Guzzle](integrating-guzzle)
+
 ## Stats
 
 Coming Soon!

@@ -1,9 +1,8 @@
 ---
-date: "2017-10-30T11:18:27-08:00"
-type: index
+title: "Integrating OpenCensus with Symfony"
+date: "2017-11-30"
+type: page
 ---
-
-# Integrating OpenCensus with Symfony
 
 ## Symfony 3.3
 
@@ -11,6 +10,7 @@ type: index
    In `src/AppBundle/OpenCensusBundle.php`:
 
     ```php
+    <?php
     namespace AppBundle;
 
     use OpenCensus\Trace\Exporter\StackdriverExporter;
@@ -52,6 +52,7 @@ type: index
    `app/AppKernel.php`:
 
     ```php
+    <?php
     // in the `registerBundles()`
     ...
     $bundles = [

@@ -1,9 +1,8 @@
 ---
-date: "2017-10-30T11:18:27-08:00"
-type: index
+title: "Integrating OpenCensus with Laravel"
+date: "2017-11-30"
+type: page
 ---
-
-# Integrating OpenCensus with Laravel
 
 ## Laravel 5.5
 
@@ -11,6 +10,7 @@ type: index
    `ServiceProvider`. In `app/Providers/OpenCensusProvider.php`:
 
     ```php
+    <?php
     namespace App\Providers;
 
     use Illuminate\Support\ServiceProvider;
@@ -49,6 +49,7 @@ type: index
 1. Enable this `ServiceProvider`. In `config/app.php`:
 
     ```php
+    <?php
     // in the `providers` section
     ...
     'providers' => [
