@@ -11,7 +11,6 @@ In your `wp-config.php`:
 
 ```php
 <?php
-
 // load composer dependencies
 require_once('/path/to/vendor/autoload.php');
 

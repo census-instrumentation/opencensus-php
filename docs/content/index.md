@@ -1,5 +1,6 @@
 ---
-date: "2017-10-30T11:18:27-08:00"
+title: "OpenCensus for PHP"
+date: "2017-11-30"
 type: index
 ---
 
@@ -7,7 +8,20 @@ type: index
 
 [API Documentation][api-docs]
 
+## Installation
+
+1. Install the `opencensus/opencensus` package using [composer][composer]:
+
+    ```bash
+    $ composer require opencensus/opencensus
+    ```
+
+1. [Optional]: Install the `opencensus` extension from [PECL][pecl]. See more
+   information on [using the extension](using-the-extension).
+
 ## Tracing
+
+
 
 ### Framework Integration
 
@@ -25,3 +39,5 @@ type: index
 Coming Soon!
 
 [api-docs]: api/
+[composer]: https://getcomposer.org/
+[pecl]: https://pecl.php.net/
