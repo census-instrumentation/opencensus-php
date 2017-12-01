@@ -127,6 +127,9 @@ class ExtensionTracer implements TracerInterface
      */
     public function addAttribute($attribute, $value, $options = [])
     {
+        if (array_key_exists('span', $options)) {
+            $options['spanId'] = $options['span']->spanId();
+        }
         opencensus_trace_add_attribute($attribute, $value, $options);
     }
 
@@ -142,6 +145,9 @@ class ExtensionTracer implements TracerInterface
      */
     public function addAnnotation($description, $options = [])
     {
+        if (array_key_exists('span', $options)) {
+            $options['spanId'] = $options['span']->spanId();
+        }
         opencensus_trace_add_annotation($description, $options);
     }
 
@@ -160,6 +166,9 @@ class ExtensionTracer implements TracerInterface
      */
     public function addLink($traceId, $spanId, $options = [])
     {
+        if (array_key_exists('span', $options)) {
+            $options['spanId'] = $options['span']->spanId();
+        }
         opencensus_trace_add_link($traceId, $spanId, $options);
     }
 
@@ -179,6 +188,9 @@ class ExtensionTracer implements TracerInterface
      */
     public function addMessageEvent($id, $options = [])
     {
+        if (array_key_exists('span', $options)) {
+            $options['spanId'] = $options['span']->spanId();
+        }
         opencensus_trace_add_message_event($id, $options);
     }
 
