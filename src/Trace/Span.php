@@ -26,6 +26,8 @@ namespace OpenCensus\Trace;
  */
 class Span
 {
+    use AttributeTrait;
+
     /**
      * Unique identifier for a trace. All spans from the same Trace share the
      * same `traceId`. 16-byte value encoded as a hex string.
@@ -81,13 +83,6 @@ class Span
     private $endTime;
 
     /**
-     * A set of attributes on the span. An associative array of string => mixed
-     *
-     * @var array
-     */
-    private $attributes;
-
-    /**
      * Stack trace captured at the start of the span. This is in the format of
      * `debug_backtrace`.
      *
@@ -140,7 +135,6 @@ class Span
             $this->setEndTime($options['endTime']);
         }
 
-        $this->attributes = [];
         if (array_key_exists('attributes', $options)) {
             $this->addAttributes($options['attributes']);
         }
@@ -251,16 +245,6 @@ class Span
     }
 
     /**
-     * Retrieve the list of attributes for this span
-     *
-     * @return array
-     */
-    public function attributes()
-    {
-        return $this->attributes;
-    }
-
-    /**
      * Set the status for this span.
      *
      * @param int $code The status code
@@ -299,29 +283,6 @@ class Span
     public function sameProcessAsParentSpan()
     {
         return $this->sameProcessAsParentSpan;
-    }
-
-    /**
-     * Attach attributes to this span.
-     *
-     * @param array $attributes Attributes in the form of $attribute => $value
-     */
-    public function addAttributes(array $attributes)
-    {
-        foreach ($attributes as $attribute => $value) {
-            $this->addAttribute($attribute, $value);
-        }
-    }
-
-    /**
-     * Attach a single attribute to this span.
-     *
-     * @param string $attribute The name of the attribute.
-     * @param mixed $value The value of the attribute. Will be cast to a string
-     */
-    public function addAttribute($attribute, $value)
-    {
-        $this->attributes[$attribute] = (string) $value;
     }
 
     /**

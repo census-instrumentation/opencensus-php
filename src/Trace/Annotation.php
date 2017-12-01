@@ -22,7 +22,38 @@ namespace OpenCensus\Trace;
  */
 class Annotation extends TimeEvent
 {
+    use AttributeTrait;
+
+    /**
+     * @var string A user-supplied message describing the event.
+     */
     private $description;
 
-    private $attributes;
+    /**
+     * Create a new Annotation.
+     *
+     * @param string $description A user-supplied message describing the event.
+     * @param array $options [optional] Configuration options.
+     *
+     *     @type array $attributes Attributes for this annotation.
+     *     @type \DateTimeInterface|int|float $time The time of this event.
+     */
+    public function __construct($description, $options = [])
+    {
+        parent::__construct($options);
+        $this->description = $description;
+        if (array_key_exists('attributes', $options)) {
+            $this->addAttributes($options['attributes']);
+        }
+    }
+
+    /**
+     * Return the description of this annotation.
+     *
+     * @return string
+     */
+    public function description()
+    {
+        return $this->description;
+    }
 }

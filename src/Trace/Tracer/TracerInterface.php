@@ -65,39 +65,44 @@ interface TracerInterface
     /**
      * Add an attribute to the provided Span
      *
-     * @param Span $span
      * @param string $attribute
      * @param string $value
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the attribute to.
      */
-    public function addAttribute(Span $span, $attribute, $value);
+    public function addAttribute($attribute, $value, $options = []);
 
     /**
      * Add an annotation to the provided Span
      *
-     * @param Span $span
      * @param string $description
-     * @param array $options
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the annotation to.
      */
-    public function addAnnotation(Span $span, $description, $options = []);
+    public function addAnnotation($description, $options = []);
 
     /**
      * Add a link to the provided Span
      *
-     * @param Span $span
      * @param string $traceId
      * @param string $spanId
-     * @param array $options
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the link to.
      */
-    public function addLink(Span $span, $traceId, $spanId, $options = []);
+    public function addLink($traceId, $spanId, $options = []);
 
     /**
      * Add an message event to the provided Span
      *
-     * @param Span $span
      * @param string $id
-     * @param array $options
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the message event to.
      */
-    public function addMessageEvent(Span $span, $id, $options = []);
+    public function addMessageEvent($id, $options = []);
 
     /**
      * Returns the current SpanContext
