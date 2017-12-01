@@ -73,11 +73,12 @@ abstract class AbstractTracerTest extends \PHPUnit_Framework_TestCase
     {
         $class = $this->getTracerClass();
         $tracer = new $class();
-        $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
-            $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
-                $tracer->addRootAttribute('foo', 'bar');
-            });
+        $rootSpan = $tracer->startSpan(['name' => 'root']);
+        $scope = $tracer->withSpan($rootSpan);
+        $tracer->inSpan(['name' => 'inner'], function () use ($tracer, $rootSpan) {
+            $tracer->addAttribute($rootSpan, 'foo', 'bar');
         });
+        $scope->close();
 
         $spans = $tracer->spans();
         $this->assertCount(2, $spans);

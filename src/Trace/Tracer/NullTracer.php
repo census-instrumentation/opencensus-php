@@ -129,6 +129,6 @@ class NullTracer implements TracerInterface
      */
     public function spanContext()
     {
-        return new SpanContext();
+        return new SpanContext(null, null, false);
     }
 }
