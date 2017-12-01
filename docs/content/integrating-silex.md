@@ -2,6 +2,9 @@
 title: "Integrating OpenCensus with Silex"
 date: "2017-11-30"
 type: page
+menu:
+  main:
+    parent: "Integrations"
 ---
 
 ## Silex 2.2

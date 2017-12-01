@@ -2,6 +2,9 @@
 title: "Integrating OpenCensus with Symfony"
 date: "2017-11-30"
 type: page
+menu:
+  main:
+    parent: "Integrations"
 ---
 
 ## Symfony 3.3

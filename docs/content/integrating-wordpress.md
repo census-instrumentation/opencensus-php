@@ -2,6 +2,9 @@
 title: "Integrating OpenCensus with WordPress"
 date: "2017-11-30"
 type: page
+menu:
+  main:
+    parent: "Integrations"
 ---
 
 To add OpenCensus to your WordPress installation, ensure that you can use

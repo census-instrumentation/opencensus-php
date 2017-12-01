@@ -2,6 +2,10 @@
 title: "Using the OpenCensus Extension"
 date: "2017-11-30"
 type: page
+menu:
+  main:
+    name: "PECL Extension"
+    weight: -90
 ---
 
 The OpenCensus for PHP extension allows you to "watch" class method and function

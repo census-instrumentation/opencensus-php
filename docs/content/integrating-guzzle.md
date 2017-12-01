@@ -2,6 +2,9 @@
 title: "Integrating OpenCensus with Guzzle"
 date: "2017-11-30"
 type: page
+menu:
+  main:
+    parent: "Integrations"
 ---
 
 Integration with Guzzle using the following methods will:

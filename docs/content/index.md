@@ -2,6 +2,9 @@
 title: "OpenCensus for PHP"
 date: "2017-11-30"
 type: index
+menu:
+  main:
+    weight: -100
 ---
 
 # OpenCensus for PHP
@@ -20,8 +23,6 @@ type: index
    information on [using the extension](using-the-extension).
 
 ## Tracing
-
-
 
 ### Framework Integration
 

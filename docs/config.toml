@@ -8,3 +8,8 @@ pygmentsOptions = "startinline=false"
 
 [params]
   description = "A stats collection and distributed tracing framework"
+
+[[menu.main]]
+  name = "API Documentation"
+  url = "/api"
+  weight = -10

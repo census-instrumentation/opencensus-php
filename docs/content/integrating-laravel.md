@@ -2,6 +2,9 @@
 title: "Integrating OpenCensus with Laravel"
 date: "2017-11-30"
 type: page
+menu:
+  main:
+    parent: "Integrations"
 ---
 
 ## Laravel 5.5
