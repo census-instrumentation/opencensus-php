@@ -78,47 +78,64 @@ class NullTracer implements TracerInterface
     }
 
     /**
-     * Add a attribute to the provided Span
+     * Add an attribute to the provided Span
      *
-     * @param Span $span
      * @param string $attribute
      * @param string $value
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the attribute to.
      */
-    public function addAttribute(Span $span, $attribute, $value)
+    public function addAttribute($attribute, $value, $options = [])
     {
     }
 
     /**
      * Add an annotation to the provided Span
      *
-     * @param Span $span
      * @param string $description
-     * @param array $options
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the annotation to.
+     *      @type array $attributes Attributes for this annotation.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addAnnotation(Span $span, $description, $options = [])
+    public function addAnnotation($description, $options = [])
     {
     }
 
     /**
      * Add a link to the provided Span
      *
-     * @param Span $span
      * @param string $traceId
      * @param string $spanId
-     * @param array $options
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the link to.
+     *      @type string $type The relationship of the current span relative to
+     *            the linked span: child, parent, or unspecified.
+     *      @type array $attributes Attributes for this annotation.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addLink(Span $span, $traceId, $spanId, $options = [])
+    public function addLink($traceId, $spanId, $options = [])
     {
     }
 
     /**
      * Add an message event to the provided Span
      *
-     * @param Span $span
      * @param string $id
-     * @param array $options
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the message event to.
+     *      @type int $uncompressedSize The number of uncompressed bytes sent or
+     *            received.
+     *      @type int $compressedSize The number of compressed bytes sent or
+     *            received. If missing assumed to be the same size as
+     *            uncompressed.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addMessageEvent(Span $span, $id, $options = [])
+    public function addMessageEvent($id, $options = [])
     {
     }
 
@@ -130,5 +147,15 @@ class NullTracer implements TracerInterface
     public function spanContext()
     {
         return new SpanContext(null, null, false);
+    }
+
+    /**
+     * Whether or not this tracer is enabled.
+     *
+     * @return bool
+     */
+    public function enabled()
+    {
+        return false;
     }
 }

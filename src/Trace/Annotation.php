@@ -35,8 +35,8 @@ class Annotation extends TimeEvent
      * @param string $description A user-supplied message describing the event.
      * @param array $options [optional] Configuration options.
      *
-     *     @type array $attributes Attributes for this annotation.
-     *     @type \DateTimeInterface|int|float $time The time of this event.
+     *      @type array $attributes Attributes for this annotation.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
      */
     public function __construct($description, $options = [])
     {

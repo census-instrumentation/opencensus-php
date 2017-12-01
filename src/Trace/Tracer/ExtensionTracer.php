@@ -181,6 +181,16 @@ class ExtensionTracer implements TracerInterface
     }
 
     /**
+     * Whether or not this tracer is enabled.
+     *
+     * @return bool
+     */
+    public function enabled()
+    {
+        return $this->spanContext()->enabled();
+    }
+
+    /**
      * Generate a name for this span. Attempts to generate a name
      * based on the caller's code.
      *
