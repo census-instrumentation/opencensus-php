@@ -63,11 +63,10 @@ class Link
             'type' => self::TYPE_UNSPECIFIED,
             'attributes' => []
         ];
-        parent::__construct($options);
         $this->traceId = $traceId;
         $this->spanId = $spanId;
         $this->type = $options['type'];
-        $this->setAttributes($options['attributes']);
+        $this->addAttributes($options['attributes']);
     }
 
     /**

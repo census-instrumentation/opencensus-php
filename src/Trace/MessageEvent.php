@@ -72,8 +72,8 @@ class MessageEvent extends TimeEvent
     public function __construct($type, $id, $options = [])
     {
         $options += [
-            'uncompressedSize' = null,
-            'compressedSize' = null
+            'uncompressedSize' => null,
+            'compressedSize' => null
         ];
         parent::__construct($options);
         $this->type = $type;

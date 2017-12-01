@@ -19,6 +19,9 @@ namespace OpenCensus\Trace\Tracer;
 
 use OpenCensus\Core\Context;
 use OpenCensus\Core\Scope;
+use OpenCensus\Trace\Annotation;
+use OpenCensus\Trace\Link;
+use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanContext;
 
@@ -148,7 +151,7 @@ class ContextTracer implements TracerInterface
     public function addAnnotation($description, $options = [])
     {
         $span = $this->getSpan($options);
-        $span->addAnnotation($description, $options = []);
+        $span->addTimeEvent(new Annotation($description, $options = []));
     }
 
     /**
@@ -167,12 +170,13 @@ class ContextTracer implements TracerInterface
     public function addLink($traceId, $spanId, $options = [])
     {
         $span = $this->getSpan($options);
-        $span->addLink($traceId, $spanId, $options);
+        $span->addLink(new Link($traceId, $spanId, $options));
     }
 
     /**
      * Add an message event to the provided Span
      *
+     * @param string $type
      * @param string $id
      * @param array $options [optional] Configuration options.
      *
@@ -184,10 +188,10 @@ class ContextTracer implements TracerInterface
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addMessageEvent($id, $options = [])
+    public function addMessageEvent($type, $id, $options = [])
     {
         $span = $this->getSpan($options);
-        $span->addMessageEvent($id, $options);
+        $span->addTimeEvent(new MessageEvent($id, $options));
     }
 
     /**

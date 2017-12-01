@@ -59,16 +59,16 @@ abstract class TimeEvent
      */
     public function setTime($time = null)
     {
-        if (!$when) {
+        if (!$time) {
             list($usec, $sec) = explode(' ', microtime());
             $micro = sprintf("%06d", $usec * 1000000);
-            $when = new \DateTime(date('Y-m-d H:i:s.' . $micro));
-        } elseif (is_numeric($when)) {
+            $time = new \DateTime(date('Y-m-d H:i:s.' . $micro));
+        } elseif (is_numeric($time)) {
             // Expect that this is a timestamp
             $micro = sprintf("%06d", ($when - floor($when)) * 1000000);
-            $when = new \DateTime(date('Y-m-d H:i:s.'. $micro, (int) $when));
+            $time = new \DateTime(date('Y-m-d H:i:s.'. $micro, (int) $when));
         }
-        $when->setTimezone(new \DateTimeZone('UTC'));
-        $this->time = $when;
+        $time->setTimezone(new \DateTimeZone('UTC'));
+        $this->time = $time;
     }
 }

@@ -175,6 +175,7 @@ class ExtensionTracer implements TracerInterface
     /**
      * Add an message event to the provided Span
      *
+     * @param string $type
      * @param string $id
      * @param array $options [optional] Configuration options.
      *
@@ -186,12 +187,12 @@ class ExtensionTracer implements TracerInterface
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addMessageEvent($id, $options = [])
+    public function addMessageEvent($type, $id, $options = [])
     {
         if (array_key_exists('span', $options)) {
             $options['spanId'] = $options['span']->spanId();
         }
-        opencensus_trace_add_message_event($id, $options);
+        opencensus_trace_add_message_event($type, $id, $options);
     }
 
     /**

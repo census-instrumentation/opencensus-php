@@ -103,6 +103,7 @@ interface TracerInterface
     /**
      * Add an message event to the provided Span
      *
+     * @param string $type
      * @param string $id
      * @param array $options [optional] Configuration options.
      *
@@ -114,7 +115,7 @@ interface TracerInterface
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addMessageEvent($id, $options = []);
+    public function addMessageEvent($type, $id, $options = []);
 
     /**
      * Returns the current SpanContext

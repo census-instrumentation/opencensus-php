@@ -124,6 +124,7 @@ class NullTracer implements TracerInterface
     /**
      * Add an message event to the provided Span
      *
+     * @param string $type
      * @param string $id
      * @param array $options [optional] Configuration options.
      *
@@ -135,7 +136,7 @@ class NullTracer implements TracerInterface
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addMessageEvent($id, $options = [])
+    public function addMessageEvent($type, $id, $options = [])
     {
     }
 
