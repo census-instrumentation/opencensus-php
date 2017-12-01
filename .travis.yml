@@ -8,7 +8,9 @@ install:
   - sudo dpkg -i /tmp/hugo.deb
 
 script:
-  - cd docs && hugo
+  - pushd docs
+  - hugo
+  - popd
   - php sami.phar update config/sami.php
   - touch docs/.nojekyll
 
