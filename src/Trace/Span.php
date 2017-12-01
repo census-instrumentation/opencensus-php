@@ -91,6 +91,23 @@ class Span
     private $stackTrace;
 
     /**
+     * A collection of `TimeEvent`s. A `TimeEvent` is a time-stamped annotation
+     * on the span, consisting of either user-supplied key:value pairs, or
+     * details of a message sent/received between Spans
+     *
+     * @var TimeEvent[]
+     */
+    private $timeEvents;
+
+    /**
+     * A collection of links, which are references from this span to a span
+     * in the same or different trace.
+     *
+     * @var Link
+     */
+    private $links;
+
+    /**
      * An optional final status for this span.
      *
      * @var Status
@@ -127,6 +144,15 @@ class Span
      */
     public function __construct($options = [])
     {
+        $options += [
+            'attributes' => [],
+            'timeEvents' => [],
+            'links' => [],
+            'parentSpanId' => null,
+            'status' => null,
+            'sameProcessAsParentSpan' => null
+        ];
+
         if (array_key_exists('startTime', $options)) {
             $this->setStartTime($options['startTime']);
         }
@@ -135,9 +161,9 @@ class Span
             $this->setEndTime($options['endTime']);
         }
 
-        if (array_key_exists('attributes', $options)) {
-            $this->addAttributes($options['attributes']);
-        }
+        $this->addAttributes($options['attributes']);
+        $this->addTimeEvents($options['timeEvents']);
+        $this->addLinks($options['links']);
 
         if (array_key_exists('spanId', $options)) {
             $this->spanId = $options['spanId'];
@@ -157,17 +183,9 @@ class Span
             $this->name = $this->generateSpanName();
         }
 
-        if (array_key_exists('parentSpanId', $options)) {
-            $this->parentSpanId = $options['parentSpanId'];
-        }
-
-        if (array_key_exists('status', $options)) {
-            $this->status = $options['status'];
-        }
-
-        if (array_key_exists('sameProcessAsParentSpan', $options)) {
-            $this->sameProcessAsParentSpan = $options['sameProcessAsParentSpan'];
-        }
+        $this->parentSpanId = $options['parentSpanId'];
+        $this->status = $options['status'];
+        $this->sameProcessAsParentSpan = $options['sameProcessAsParentSpan'];
     }
 
     /**
@@ -242,6 +260,70 @@ class Span
     public function name()
     {
         return $this->name;
+    }
+
+    /**
+     * Add time events to this span.
+     *
+     * @param TimeEvent[] $timeEvents
+     */
+    public function addTimeEvents(array $timeEvents)
+    {
+        foreach ($timeEvents as $timeEvent) {
+            $this->addTimeEvent($timeEvent);
+        }
+    }
+
+    /**
+     * Add a time event to this span.
+     *
+     * @param TimeEvent $timeEvent
+     */
+    public function addTimeEvent(TimeEvent $timeEvent)
+    {
+        $this->timeEvents[] = $timeEvent;
+    }
+
+    /**
+     * Return the time events for this span.
+     *
+     * @return TimeEvent[]
+     */
+    public function timeEvents()
+    {
+        return $this->timeEvents;
+    }
+
+    /**
+     * Add links to this span.
+     *
+     * @param Link[] $links
+     */
+    public function addLinks(array $links)
+    {
+        foreach ($links as $link) {
+            $this->addLink($link);
+        }
+    }
+
+    /**
+     * Add a link to this span.
+     *
+     * @param TimeEvent $timeEvent
+     */
+    public function addLink(Link $link)
+    {
+        $this->links[] = $link;
+    }
+
+    /**
+     * Return the links for this span.
+     *
+     * @return Link[]
+     */
+    public function links()
+    {
+        return $this->links;
     }
 
     /**
