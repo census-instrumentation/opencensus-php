@@ -1,11 +1,19 @@
-# Example Symfony Application (3.3)
+---
+title: "Integrating OpenCensus with Symfony"
+date: "2017-11-30"
+type: page
+menu:
+  main:
+    parent: "Integrations"
+---
 
-## Integrating OpenCensus
+## Symfony 3.3
 
 1. To add OpenCensus to our Symfony application, we will create a `Bundle`
    In `src/AppBundle/OpenCensusBundle.php`:
 
     ```php
+    <?php
     namespace AppBundle;
 
     use OpenCensus\Trace\Exporter\StackdriverExporter;
@@ -47,6 +55,7 @@
    `app/AppKernel.php`:
 
     ```php
+    <?php
     // in the `registerBundles()`
     ...
     $bundles = [

@@ -1,0 +1,17 @@
+<div class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      <a href="{{ .Site.BaseURL }}"><h1>{{ .Site.Title }}</h1></a>
+      <p class="lead">
+        {{.Site.Params.description}}
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      {{ range .Site.Menus.main -}}
+        <li><a href="{{.URL}}"> {{ .Name }} </a></li>
+      {{- end }}
+      <li><a href="https://github.com/census-instrumentation/opencensus-php" class="fork"> Fork on GitHub</a></li>
+    </ul>
+  </div>
+</div>
