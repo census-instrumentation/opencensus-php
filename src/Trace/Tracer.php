@@ -211,4 +211,18 @@ class Tracer
     {
         return self::$instance->withSpan($span);
     }
+
+    /**
+     * Add an attribute to the provided Span
+     *
+     * @param string $attribute
+     * @param string $value
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the attribute to.
+     */
+    public static function addAttribute($attribute, $value, $options = [])
+    {
+        return self::$instance->addAttribute($attribute, $value, $options);
+    }
 }
