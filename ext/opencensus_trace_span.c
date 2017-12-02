@@ -85,6 +85,7 @@
  * }
  */
 
+#include "php_opencensus.h"
 #include "opencensus_trace_span.h"
 
 zend_class_entry* opencensus_trace_span_ce = NULL;
@@ -380,8 +381,37 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
         } else if (strcmp(ZSTR_VAL(k), "name") == 0) {
             span->name = zend_string_copy(Z_STR_P(v));
         } else if (strcmp(ZSTR_VAL(k), "spanId") == 0) {
-			span->span_id = zend_string_copy(Z_STR_P(v));
-		}
+            span->span_id = zend_string_copy(Z_STR_P(v));
+        }
     } ZEND_HASH_FOREACH_END();
+    return SUCCESS;
+}
+
+/* Fill the provided span with the provided data from the internal span representation */
+int opencensus_trace_span_to_zval(opencensus_trace_span_t *trace_span, zval *span TSRMLS_DC)
+{
+    zval attribute;
+    object_init_ex(span, opencensus_trace_span_ce);
+    zend_update_property_str(opencensus_trace_span_ce, span, "spanId", sizeof("spanId") - 1, trace_span->span_id);
+    if (trace_span->parent) {
+        zend_update_property_str(opencensus_trace_span_ce, span, "parentSpanId", sizeof("parentSpanId") - 1, trace_span->parent->span_id);
+    } else if (OPENCENSUS_TRACE_G(trace_parent_span_id)) {
+        zend_update_property_str(opencensus_trace_span_ce, span, "parentSpanId", sizeof("parentSpanId") - 1, OPENCENSUS_TRACE_G(trace_parent_span_id));
+    }
+    zend_update_property_str(opencensus_trace_span_ce, span, "name", sizeof("name") - 1, trace_span->name);
+    zend_update_property_double(opencensus_trace_span_ce, span, "startTime", sizeof("startTime") - 1, trace_span->start);
+    zend_update_property_double(opencensus_trace_span_ce, span, "endTime", sizeof("endTime") - 1, trace_span->stop);
+
+    ZVAL_ARR(&attribute, trace_span->attributes);
+    zend_update_property(opencensus_trace_span_ce, span, "attributes", sizeof("attributes") - 1, &attribute);
+
+    zend_update_property(opencensus_trace_span_ce, span, "stackTrace", sizeof("stackTrace") - 1, &trace_span->stackTrace);
+
+    ZVAL_ARR(&attribute, trace_span->links);
+    zend_update_property(opencensus_trace_span_ce, span, "links", sizeof("links") - 1, &attribute);
+
+    ZVAL_ARR(&attribute, trace_span->time_events);
+    zend_update_property(opencensus_trace_span_ce, span, "timeEvents", sizeof("timeEvents") - 1, &attribute);
+
     return SUCCESS;
 }

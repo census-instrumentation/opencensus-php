@@ -740,28 +740,13 @@ PHP_FUNCTION(opencensus_trace_method)
 PHP_FUNCTION(opencensus_trace_list)
 {
     opencensus_trace_span_t *trace_span;
-    zval attribute, span;
+    zval span;
 
     array_init(return_value);
 
     ZEND_HASH_FOREACH_PTR(OPENCENSUS_TRACE_G(spans), trace_span) {
-        object_init_ex(&span, opencensus_trace_span_ce);
-        zend_update_property_str(opencensus_trace_span_ce, &span, "spanId", sizeof("spanId") - 1, trace_span->span_id);
-        if (trace_span->parent) {
-            zend_update_property_str(opencensus_trace_span_ce, &span, "parentSpanId", sizeof("parentSpanId") - 1, trace_span->parent->span_id);
-        } else if (OPENCENSUS_TRACE_G(trace_parent_span_id)) {
-            zend_update_property_str(opencensus_trace_span_ce, &span, "parentSpanId", sizeof("parentSpanId") - 1, OPENCENSUS_TRACE_G(trace_parent_span_id));
-        }
-        zend_update_property_str(opencensus_trace_span_ce, &span, "name", sizeof("name") - 1, trace_span->name);
-        zend_update_property_double(opencensus_trace_span_ce, &span, "startTime", sizeof("startTime") - 1, trace_span->start);
-        zend_update_property_double(opencensus_trace_span_ce, &span, "endTime", sizeof("endTime") - 1, trace_span->stop);
-
-        ZVAL_ARR(&attribute, trace_span->attributes);
-        zend_update_property(opencensus_trace_span_ce, &span, "attributes", sizeof("attributes") - 1, &attribute);
-
-        zend_update_property(opencensus_trace_span_ce, &span, "stackTrace", sizeof("stackTrace") - 1, &trace_span->stackTrace);
-
-        add_next_index_zval(return_value, &span);
+        opencensus_trace_span_to_zval(trace_span, &span);
+        add_next_index_zval(return_value, &span TSRMLS_CC);
     } ZEND_HASH_FOREACH_END();
 }
 

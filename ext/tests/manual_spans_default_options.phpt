@@ -36,6 +36,14 @@ Array
                 (
                 )
 
+            [links:protected] => Array
+                (
+                )
+
+            [timeEvents:protected] => Array
+                (
+                )
+
         )
 
     [1] => OpenCensus\Trace\Ext\Span Object
@@ -50,6 +58,14 @@ Array
                 )
 
             [stackTrace:protected] => Array
+                (
+                )
+
+            [links:protected] => Array
+                (
+                )
+
+            [timeEvents:protected] => Array
                 (
                 )
 

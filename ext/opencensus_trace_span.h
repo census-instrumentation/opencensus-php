@@ -46,5 +46,6 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
 opencensus_trace_span_t *opencensus_trace_span_alloc();
 void opencensus_trace_span_free(opencensus_trace_span_t *span);
 int opencensus_trace_span_minit(INIT_FUNC_ARGS);
+int opencensus_trace_span_to_zval(opencensus_trace_span_t *span, zval *zv);
 
 #endif /* PHP_OPENCENSUS_TRACE_SPAN_H */
