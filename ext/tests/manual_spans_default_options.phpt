@@ -28,7 +28,6 @@ Array
             [parentSpanId:protected] =>%s
             [startTime:protected] => %d.%d
             [endTime:protected] => %d.%d
-            [kind:protected] => %d
             [attributes:protected] => Array
                 (
                 )
@@ -46,7 +45,6 @@ Array
             [parentSpanId:protected] => %s
             [startTime:protected] => %d.%d
             [endTime:protected] => %d.%d
-            [kind:protected] => %d
             [attributes:protected] => Array
                 (
                 )
