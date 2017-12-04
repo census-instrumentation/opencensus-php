@@ -23,10 +23,37 @@ print_r($span2->links());
 Number of traces: 2
 Array
 (
-    [0] => foo
-    [1] => asdf
+    [0] => OpenCensus\Trace\Ext\Link Object
+        (
+            [traceId:protected] => traceId
+            [spanId:protected] => spanId
+            [options:protected] => Array
+                (
+                )
+
+        )
+
+    [1] => OpenCensus\Trace\Ext\Link Object
+        (
+            [traceId:protected] => traceId
+            [spanId:protected] => spanId
+            [options:protected] => Array
+                (
+                )
+
+        )
+
 )
 Array
 (
-    [0] => abc
+    [0] => OpenCensus\Trace\Ext\Link Object
+        (
+            [traceId:protected] => traceId
+            [spanId:protected] => spanId
+            [options:protected] => Array
+                (
+                )
+
+        )
+
 )

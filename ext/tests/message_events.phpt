@@ -19,14 +19,44 @@ print_r($span->timeEvents());
 $span2 = $traces[1];
 print_r($span2->timeEvents());
 ?>
---EXPECT--
+--EXPECTF--
 Number of traces: 2
 Array
 (
-    [0] => foo
-    [1] => asdf
+    [0] => OpenCensus\Trace\Ext\MessageEvent Object
+        (
+            [type:protected] => TYPE_UNSPECIFIED
+            [id:protected] => some id
+            [time:protected] => %d.%d
+            [options:protected] => Array
+                (
+                )
+
+        )
+
+    [1] => OpenCensus\Trace\Ext\MessageEvent Object
+        (
+            [type:protected] => TYPE_UNSPECIFIED
+            [id:protected] => some id
+            [time:protected] => %d.%d
+            [options:protected] => Array
+                (
+                )
+
+        )
+
 )
 Array
 (
-    [0] => abc
+    [0] => OpenCensus\Trace\Ext\MessageEvent Object
+        (
+            [type:protected] => TYPE_UNSPECIFIED
+            [id:protected] => some id
+            [time:protected] => %d.%d
+            [options:protected] => Array
+                (
+                )
+
+        )
+
 )
