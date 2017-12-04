@@ -260,7 +260,7 @@ class ExtensionTracer implements TracerInterface
         $options = $timeEvent->options();
         $options['time'] = $timeEvent->time();
 
-        switch(get_class($timeEvent)) {
+        switch (get_class($timeEvent)) {
             case 'OpenCensus\Trace\Ext\Annotation':
                 return new Annotation($timeEvent->description(), $options);
                 break;
