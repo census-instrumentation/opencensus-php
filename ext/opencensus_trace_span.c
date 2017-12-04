@@ -18,7 +18,7 @@
  * This is the implementation of the OpenCensus\Trace\Span class. The PHP
  * equivalent is:
  *
- * namespace OpenCensus\Trace;
+ * namespace OpenCensus\Trace\Ext;
  *
  * class Span {
  *   protected $name = "unknown";
@@ -87,6 +87,9 @@
 
 #include "php_opencensus.h"
 #include "opencensus_trace_span.h"
+#include "opencensus_trace_annotation.h"
+#include "opencensus_trace_link.h"
+#include "opencensus_trace_message_event.h"
 
 zend_class_entry* opencensus_trace_span_ce = NULL;
 
@@ -307,42 +310,22 @@ int opencensus_trace_span_minit(INIT_FUNC_ARGS) {
 static void annotation_dtor(zval *zv)
 {
     opencensus_trace_annotation_t *annotation = (opencensus_trace_annotation_t *)Z_PTR_P(zv);
-    if (annotation->description) {
-        zend_string_release(annotation->description);
-    }
-    if (Z_TYPE(annotation->options) != IS_NULL) {
-        ZVAL_PTR_DTOR(&annotation->options);
-    }
+    opencensus_trace_annotation_free(annotation);
     ZVAL_PTR_DTOR(zv);
 }
+
 
 static void link_dtor(zval *zv)
 {
     opencensus_trace_link_t *link = (opencensus_trace_link_t *)Z_PTR_P(zv);
-    if (link->trace_id) {
-        zend_string_release(link->trace_id);
-    }
-    if (link->span_id) {
-        zend_string_release(link->span_id);
-    }
-    if (Z_TYPE(link->options) != IS_NULL) {
-        ZVAL_PTR_DTOR(&link->options);
-    }
+    opencensus_trace_link_free(link);
     ZVAL_PTR_DTOR(zv);
 }
 
 static void message_event_dtor(zval *zv)
 {
     opencensus_trace_message_event_t *message_event = (opencensus_trace_message_event_t *)Z_PTR_P(zv);
-    if (message_event->type) {
-        zend_string_release(message_event->type);
-    }
-    if (message_event->id) {
-        zend_string_release(message_event->id);
-    }
-    if (Z_TYPE(message_event->options) != IS_NULL) {
-        ZVAL_PTR_DTOR(&message_event->options);
-    }
+    opencensus_trace_message_event_free(message_event);
     ZVAL_PTR_DTOR(zv);
 }
 
@@ -418,11 +401,10 @@ int opencensus_trace_span_add_attribute(opencensus_trace_span_t *span, zend_stri
 /* Add an annotation to the trace span struct */
 int opencensus_trace_span_add_annotation(opencensus_trace_span_t *span, zend_string *description, zval *options)
 {
-    opencensus_trace_annotation_t *annotation = emalloc(sizeof(opencensus_trace_annotation_t));
+    opencensus_trace_annotation_t *annotation = opencensus_trace_annotation_alloc();
     annotation->time_event.time = opencensus_now();
-    annotation->time_event.type = OPENCENSUS_TRACE_TIME_EVENT_ANNOTATION;
     annotation->description = zend_string_copy(description);
-    array_init(&annotation->options);
+
     zend_hash_next_index_insert_ptr(span->time_events, annotation);
     return SUCCESS;
 }
@@ -430,10 +412,10 @@ int opencensus_trace_span_add_annotation(opencensus_trace_span_t *span, zend_str
 /* Add a link to the trace span struct */
 int opencensus_trace_span_add_link(opencensus_trace_span_t *span, zend_string *trace_id, zend_string *span_id, zval *options)
 {
-    opencensus_trace_link_t *link = emalloc(sizeof(opencensus_trace_link_t));
+    opencensus_trace_link_t *link = opencensus_trace_link_alloc();
     link->trace_id = zend_string_copy(trace_id);
     link->span_id = zend_string_copy(span_id);
-    array_init(&link->options);
+
     zend_hash_next_index_insert_ptr(span->links, link);
     return FAILURE;
 }
@@ -441,12 +423,11 @@ int opencensus_trace_span_add_link(opencensus_trace_span_t *span, zend_string *t
 /* Add a message event to the trace span struct */
 int opencensus_trace_span_add_message_event(opencensus_trace_span_t *span, zend_string *type, zend_string *id, zval *options)
 {
-    opencensus_trace_message_event_t *message_event = emalloc(sizeof(opencensus_trace_message_event_t));
+    opencensus_trace_message_event_t *message_event = opencensus_trace_message_event_alloc();
     message_event->time_event.time = opencensus_now();
-    message_event->time_event.type = OPENCENSUS_TRACE_TIME_EVENT_MESSAGE_EVENT;
     message_event->type = zend_string_copy(type);
     message_event->id = zend_string_copy(id);
-    array_init(&message_event->options);
+
     zend_hash_next_index_insert_ptr(span->time_events, message_event);
     return SUCCESS;
 }

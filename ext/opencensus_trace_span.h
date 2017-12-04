@@ -21,33 +21,6 @@
 
 extern zend_class_entry* opencensus_trace_span_ce;
 
-typedef struct opencensus_trace_link_t {
-    zend_string *trace_id;
-    zend_string *span_id;
-    zval options;
-} opencensus_trace_link_t;
-
-#define OPENCENSUS_TRACE_TIME_EVENT_ANNOTATION 1
-#define OPENCENSUS_TRACE_TIME_EVENT_MESSAGE_EVENT 2
-
-typedef struct opencensus_trace_time_event_t {
-    double time;
-    int type;
-} opencensus_trace_time_event_t;
-
-typedef struct opencensus_trace_annotation_t {
-    opencensus_trace_time_event_t time_event;
-    zend_string *description;
-    zval options;
-} opencensus_trace_annotation_t;
-
-typedef struct opencensus_trace_message_event_t {
-    opencensus_trace_time_event_t time_event;
-    zend_string *type;
-    zend_string *id;
-    zval options;
-} opencensus_trace_message_event_t;
-
 // TraceSpan struct
 typedef struct opencensus_trace_span_t {
     zend_string *name;
