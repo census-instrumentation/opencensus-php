@@ -333,7 +333,7 @@ static void link_dtor(zval *zv)
 
 static void message_event_dtor(zval *zv)
 {
-    opencensus_trace_add_message_event_t *message_event = (opencensus_trace_add_message_event_t *)Z_PTR_P(zv);
+    opencensus_trace_message_event_t *message_event = (opencensus_trace_message_event_t *)Z_PTR_P(zv);
     if (message_event->type) {
         zend_string_release(message_event->type);
     }
@@ -422,11 +422,7 @@ int opencensus_trace_span_add_annotation(opencensus_trace_span_t *span, zend_str
     annotation->time_event.time = opencensus_now();
     annotation->time_event.type = OPENCENSUS_TRACE_TIME_EVENT_ANNOTATION;
     annotation->description = zend_string_copy(description);
-    if (options == NULL) {
-        ZVAL_NULL(&annotation->options);
-    } else {
-        array_init(&annotation->options);
-    }
+    array_init(&annotation->options);
     zend_hash_next_index_insert_ptr(span->time_events, annotation);
     return SUCCESS;
 }
@@ -434,22 +430,23 @@ int opencensus_trace_span_add_annotation(opencensus_trace_span_t *span, zend_str
 /* Add a link to the trace span struct */
 int opencensus_trace_span_add_link(opencensus_trace_span_t *span, zend_string *trace_id, zend_string *span_id, zval *options)
 {
+    opencensus_trace_link_t *link = emalloc(sizeof(opencensus_trace_link_t));
+    link->trace_id = zend_string_copy(trace_id);
+    link->span_id = zend_string_copy(span_id);
+    array_init(&link->options);
+    zend_hash_next_index_insert_ptr(span->links, link);
     return FAILURE;
 }
 
 /* Add a message event to the trace span struct */
 int opencensus_trace_span_add_message_event(opencensus_trace_span_t *span, zend_string *type, zend_string *id, zval *options)
 {
-    opencensus_trace_add_message_event_t *message_event = emalloc(sizeof(opencensus_trace_add_message_event_t));
+    opencensus_trace_message_event_t *message_event = emalloc(sizeof(opencensus_trace_message_event_t));
     message_event->time_event.time = opencensus_now();
     message_event->time_event.type = OPENCENSUS_TRACE_TIME_EVENT_MESSAGE_EVENT;
     message_event->type = zend_string_copy(type);
     message_event->id = zend_string_copy(id);
-    if (options == NULL) {
-        ZVAL_NULL(&message_event->options);
-    } else {
-        array_init(&message_event->options);
-    }
+    array_init(&message_event->options);
     zend_hash_next_index_insert_ptr(span->time_events, message_event);
     return SUCCESS;
 }
@@ -480,10 +477,72 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
     return SUCCESS;
 }
 
+static int opencensus_trace_annotation_to_zval(opencensus_trace_annotation_t *annotation, zval *zv)
+{
+    array_init(zv);
+    add_assoc_string(zv, "type", "annotation");
+    add_assoc_str(zv, "description", annotation->description);
+    add_assoc_zval(zv, "options", &annotation->options);
+    add_assoc_double(zv, "time", annotation->time_event.time);
+    return SUCCESS;
+}
+
+static int opencensus_trace_message_event_to_zval(opencensus_trace_message_event_t *message_event, zval *zv)
+{
+    array_init(zv);
+    add_assoc_string(zv, "type", "message_event");
+    add_assoc_str(zv, "type", message_event->type);
+    add_assoc_str(zv, "id", message_event->id);
+    add_assoc_zval(zv, "options", &message_event->options);
+    add_assoc_double(zv, "time", message_event->time_event.time);
+    return SUCCESS;
+}
+
+static int opencensus_trace_time_event_to_zval(opencensus_trace_time_event_t *time_event, zval *zv)
+{
+    if (time_event->type == OPENCENSUS_TRACE_TIME_EVENT_ANNOTATION) {
+        return opencensus_trace_annotation_to_zval((opencensus_trace_annotation_t *) time_event, zv);
+    } else if (time_event->type == OPENCENSUS_TRACE_TIME_EVENT_MESSAGE_EVENT) {
+        return opencensus_trace_message_event_to_zval((opencensus_trace_message_event_t *) time_event, zv);
+    } else {
+        ZVAL_NULL(zv);
+    }
+    return SUCCESS;
+}
+
+static int opencensus_trace_link_to_zval(opencensus_trace_link_t *link, zval *zv)
+{
+    array_init(zv);
+    add_assoc_str(zv, "traceId", link->trace_id);
+    add_assoc_str(zv, "spanId", link->span_id);
+    add_assoc_zval(zv, "options", &link->options);
+    return SUCCESS;
+}
+
+static int opencensus_trace_update_time_events(opencensus_trace_span_t *span, zval *return_value)
+{
+    opencensus_trace_time_event_t *event;
+    ZEND_HASH_FOREACH_PTR(span->time_events, event) {
+        zval zv;
+        opencensus_trace_time_event_to_zval(event, &zv);
+        add_next_index_zval(return_value, &zv);
+    } ZEND_HASH_FOREACH_END();
+}
+
+static int opencensus_trace_update_links(opencensus_trace_span_t *span, zval *return_value)
+{
+    opencensus_trace_link_t *link;
+    ZEND_HASH_FOREACH_PTR(span->links, link) {
+        zval zv;
+        opencensus_trace_link_to_zval(link, &zv);
+        add_next_index_zval(return_value, &zv);
+    } ZEND_HASH_FOREACH_END();
+}
+
 /* Fill the provided span with the provided data from the internal span representation */
 int opencensus_trace_span_to_zval(opencensus_trace_span_t *trace_span, zval *span TSRMLS_DC)
 {
-    zval attribute;
+    zval attributes, links, time_events;
     object_init_ex(span, opencensus_trace_span_ce);
     zend_update_property_str(opencensus_trace_span_ce, span, "spanId", sizeof("spanId") - 1, trace_span->span_id);
     if (trace_span->parent) {
@@ -495,16 +554,18 @@ int opencensus_trace_span_to_zval(opencensus_trace_span_t *trace_span, zval *spa
     zend_update_property_double(opencensus_trace_span_ce, span, "startTime", sizeof("startTime") - 1, trace_span->start);
     zend_update_property_double(opencensus_trace_span_ce, span, "endTime", sizeof("endTime") - 1, trace_span->stop);
 
-    ZVAL_ARR(&attribute, trace_span->attributes);
-    zend_update_property(opencensus_trace_span_ce, span, "attributes", sizeof("attributes") - 1, &attribute);
+    ZVAL_ARR(&attributes, trace_span->attributes);
+    zend_update_property(opencensus_trace_span_ce, span, "attributes", sizeof("attributes") - 1, &attributes);
 
     zend_update_property(opencensus_trace_span_ce, span, "stackTrace", sizeof("stackTrace") - 1, &trace_span->stackTrace);
 
-    ZVAL_ARR(&attribute, trace_span->links);
-    zend_update_property(opencensus_trace_span_ce, span, "links", sizeof("links") - 1, &attribute);
+    array_init(&links);
+    opencensus_trace_update_links(trace_span, &links);
+    zend_update_property(opencensus_trace_span_ce, span, "links", sizeof("links") - 1, &links);
 
-    ZVAL_ARR(&attribute, trace_span->time_events);
-    zend_update_property(opencensus_trace_span_ce, span, "timeEvents", sizeof("timeEvents") - 1, &attribute);
+    array_init(&time_events);
+    opencensus_trace_update_time_events(trace_span, &time_events);
+    zend_update_property(opencensus_trace_span_ce, span, "timeEvents", sizeof("timeEvents") - 1, &time_events);
 
     return SUCCESS;
 }

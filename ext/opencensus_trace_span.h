@@ -41,12 +41,12 @@ typedef struct opencensus_trace_annotation_t {
     zval options;
 } opencensus_trace_annotation_t;
 
-typedef struct opencensus_trace_add_message_event_t {
+typedef struct opencensus_trace_message_event_t {
     opencensus_trace_time_event_t time_event;
     zend_string *type;
     zend_string *id;
     zval options;
-} opencensus_trace_add_message_event_t;
+} opencensus_trace_message_event_t;
 
 // TraceSpan struct
 typedef struct opencensus_trace_span_t {
