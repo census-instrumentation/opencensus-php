@@ -153,7 +153,7 @@ static zend_string *span_id_from_options(HashTable *options)
     }
 }
 
-static opencensus_trace_span_t *span_from_options(HashTable *options)
+static opencensus_trace_span_t *span_from_options(zval *options)
 {
     zend_string *span_id = NULL;
     opencensus_trace_span_t *span = NULL;
@@ -162,7 +162,7 @@ static opencensus_trace_span_t *span_from_options(HashTable *options)
         return NULL;
     }
 
-    if (span_id = span_id_from_options(options)) {
+    if (span_id = span_id_from_options(Z_ARR_P(options))) {
         span = (opencensus_trace_span_t *)zend_hash_find_ptr(OPENCENSUS_TRACE_G(spans), span_id);
     }
 
@@ -180,9 +180,9 @@ PHP_FUNCTION(opencensus_trace_add_attribute)
 {
     zend_string *k, *v;
     opencensus_trace_span_t *span;
-    HashTable *options = NULL;
+    zval *options = NULL;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS|h", &k, &v, &options) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS|a", &k, &v, &options) == FAILURE) {
         RETURN_FALSE;
     }
 
@@ -211,11 +211,11 @@ PHP_FUNCTION(opencensus_trace_add_attribute)
  */
 PHP_FUNCTION(opencensus_trace_add_annotation)
 {
-    zend_string *k, *v;
+    zend_string *description;
     opencensus_trace_span_t *span;
-    HashTable *options = NULL;
+    zval *options = NULL;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S|h", &k, &v, &options) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S|a", &description, &options) == FAILURE) {
         RETURN_FALSE;
     }
 
@@ -228,7 +228,7 @@ PHP_FUNCTION(opencensus_trace_add_annotation)
         RETURN_FALSE;
     }
 
-    if (opencensus_trace_span_add_attribute(span, k, v) == SUCCESS) {
+    if (opencensus_trace_span_add_annotation(span, description, options) == SUCCESS) {
         RETURN_TRUE;
     }
 
@@ -245,11 +245,11 @@ PHP_FUNCTION(opencensus_trace_add_annotation)
  */
 PHP_FUNCTION(opencensus_trace_add_link)
 {
-    zend_string *k, *v;
+    zend_string *trace_id, *span_id;
     opencensus_trace_span_t *span;
-    HashTable *options = NULL;
+    zval *options = NULL;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS|h", &k, &v, &options) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS|a", &trace_id, &span_id, &options) == FAILURE) {
         RETURN_FALSE;
     }
 
@@ -262,7 +262,7 @@ PHP_FUNCTION(opencensus_trace_add_link)
         RETURN_FALSE;
     }
 
-    if (opencensus_trace_span_add_attribute(span, k, v) == SUCCESS) {
+    if (opencensus_trace_span_add_link(span, trace_id, span_id, options) == SUCCESS) {
         RETURN_TRUE;
     }
 
@@ -279,11 +279,11 @@ PHP_FUNCTION(opencensus_trace_add_link)
  */
 PHP_FUNCTION(opencensus_trace_add_message_event)
 {
-    zend_string *k, *v;
+    zend_string *type, *id;
     opencensus_trace_span_t *span;
-    HashTable *options = NULL;
+    zval *options = NULL;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS|h", &k, &v, &options) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS|a", &type, &id, &options) == FAILURE) {
         RETURN_FALSE;
     }
 
@@ -296,20 +296,11 @@ PHP_FUNCTION(opencensus_trace_add_message_event)
         RETURN_FALSE;
     }
 
-    if (opencensus_trace_span_add_attribute(span, k, v) == SUCCESS) {
+    if (opencensus_trace_span_add_message_event(span, type, id, options) == SUCCESS) {
         RETURN_TRUE;
     }
 
     RETURN_FALSE;
-}
-
-/* Return the current timestamp as a double */
-static double opencensus_now()
-{
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-
-    return (double) (tv.tv_sec + tv.tv_usec / 1000000.00);
 }
 
 /**

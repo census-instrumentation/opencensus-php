@@ -304,6 +304,60 @@ int opencensus_trace_span_minit(INIT_FUNC_ARGS) {
     return SUCCESS;
 }
 
+static void annotation_dtor(zval *zv)
+{
+    opencensus_trace_annotation_t *annotation = (opencensus_trace_annotation_t *)Z_PTR_P(zv);
+    if (annotation->description) {
+        zend_string_release(annotation->description);
+    }
+    if (Z_TYPE(annotation->options) != IS_NULL) {
+        ZVAL_PTR_DTOR(&annotation->options);
+    }
+    ZVAL_PTR_DTOR(zv);
+}
+
+static void link_dtor(zval *zv)
+{
+    opencensus_trace_link_t *link = (opencensus_trace_link_t *)Z_PTR_P(zv);
+    if (link->trace_id) {
+        zend_string_release(link->trace_id);
+    }
+    if (link->span_id) {
+        zend_string_release(link->span_id);
+    }
+    if (Z_TYPE(link->options) != IS_NULL) {
+        ZVAL_PTR_DTOR(&link->options);
+    }
+    ZVAL_PTR_DTOR(zv);
+}
+
+static void message_event_dtor(zval *zv)
+{
+    opencensus_trace_add_message_event_t *message_event = (opencensus_trace_add_message_event_t *)Z_PTR_P(zv);
+    if (message_event->type) {
+        zend_string_release(message_event->type);
+    }
+    if (message_event->id) {
+        zend_string_release(message_event->id);
+    }
+    if (Z_TYPE(message_event->options) != IS_NULL) {
+        ZVAL_PTR_DTOR(&message_event->options);
+    }
+    ZVAL_PTR_DTOR(zv);
+}
+
+static void time_event_dtor(zval *zv)
+{
+    opencensus_trace_time_event_t *time_event = (opencensus_trace_time_event_t *)Z_PTR_P(zv);
+    if (time_event->type == OPENCENSUS_TRACE_TIME_EVENT_ANNOTATION) {
+        annotation_dtor(zv);
+    } else if (time_event->type == OPENCENSUS_TRACE_TIME_EVENT_MESSAGE_EVENT) {
+        message_event_dtor(zv);
+    } else {
+        ZVAL_PTR_DTOR(zv);
+    }
+}
+
 /**
  * Returns an allocated initialized pointer to a opencensus_trace_span_t struct
  * Note that you will have to call opencensus_trace_span_free yourself when
@@ -321,10 +375,10 @@ opencensus_trace_span_t *opencensus_trace_span_alloc()
     zend_hash_init(span->attributes, 4, NULL, ZVAL_PTR_DTOR, 0);
 
     ALLOC_HASHTABLE(span->time_events);
-    zend_hash_init(span->time_events, 4, NULL, ZVAL_PTR_DTOR, 0);
+    zend_hash_init(span->time_events, 4, NULL, message_event_dtor, 0);
 
     ALLOC_HASHTABLE(span->links);
-    zend_hash_init(span->links, 4, NULL, ZVAL_PTR_DTOR, 0);
+    zend_hash_init(span->links, 4, NULL, link_dtor, 0);
     return span;
 }
 
@@ -359,6 +413,45 @@ int opencensus_trace_span_add_attribute(opencensus_trace_span_t *span, zend_stri
     } else {
         return SUCCESS;
     }
+}
+
+/* Add an annotation to the trace span struct */
+int opencensus_trace_span_add_annotation(opencensus_trace_span_t *span, zend_string *description, zval *options)
+{
+    opencensus_trace_annotation_t *annotation = emalloc(sizeof(opencensus_trace_annotation_t));
+    annotation->time_event.time = opencensus_now();
+    annotation->time_event.type = OPENCENSUS_TRACE_TIME_EVENT_ANNOTATION;
+    annotation->description = zend_string_copy(description);
+    if (options == NULL) {
+        ZVAL_NULL(&annotation->options);
+    } else {
+        array_init(&annotation->options);
+    }
+    zend_hash_next_index_insert_ptr(span->time_events, annotation);
+    return SUCCESS;
+}
+
+/* Add a link to the trace span struct */
+int opencensus_trace_span_add_link(opencensus_trace_span_t *span, zend_string *trace_id, zend_string *span_id, zval *options)
+{
+    return FAILURE;
+}
+
+/* Add a message event to the trace span struct */
+int opencensus_trace_span_add_message_event(opencensus_trace_span_t *span, zend_string *type, zend_string *id, zval *options)
+{
+    opencensus_trace_add_message_event_t *message_event = emalloc(sizeof(opencensus_trace_add_message_event_t));
+    message_event->time_event.time = opencensus_now();
+    message_event->time_event.type = OPENCENSUS_TRACE_TIME_EVENT_MESSAGE_EVENT;
+    message_event->type = zend_string_copy(type);
+    message_event->id = zend_string_copy(id);
+    if (options == NULL) {
+        ZVAL_NULL(&message_event->options);
+    } else {
+        array_init(&message_event->options);
+    }
+    zend_hash_next_index_insert_ptr(span->time_events, message_event);
+    return SUCCESS;
 }
 
 /* Add a single attribute to the provided trace span struct */

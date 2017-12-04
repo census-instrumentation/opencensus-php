@@ -21,6 +21,33 @@
 
 extern zend_class_entry* opencensus_trace_span_ce;
 
+typedef struct opencensus_trace_link_t {
+    zend_string *trace_id;
+    zend_string *span_id;
+    zval options;
+} opencensus_trace_link_t;
+
+#define OPENCENSUS_TRACE_TIME_EVENT_ANNOTATION 1
+#define OPENCENSUS_TRACE_TIME_EVENT_MESSAGE_EVENT 2
+
+typedef struct opencensus_trace_time_event_t {
+    double time;
+    int type;
+} opencensus_trace_time_event_t;
+
+typedef struct opencensus_trace_annotation_t {
+    opencensus_trace_time_event_t time_event;
+    zend_string *description;
+    zval options;
+} opencensus_trace_annotation_t;
+
+typedef struct opencensus_trace_add_message_event_t {
+    opencensus_trace_time_event_t time_event;
+    zend_string *type;
+    zend_string *id;
+    zval options;
+} opencensus_trace_add_message_event_t;
+
 // TraceSpan struct
 typedef struct opencensus_trace_span_t {
     zend_string *name;
@@ -42,6 +69,9 @@ typedef struct opencensus_trace_span_t {
 
 int opencensus_trace_span_add_attribute(opencensus_trace_span_t *span, zend_string *k, zend_string *v);
 int opencensus_trace_span_add_attribute_str(opencensus_trace_span_t *span, char *k, zend_string *v);
+int opencensus_trace_span_add_annotation(opencensus_trace_span_t *span, zend_string *description, zval *options);
+int opencensus_trace_span_add_link(opencensus_trace_span_t *span, zend_string *trace_id, zend_string *span_id, zval *options);
+int opencensus_trace_span_add_message_event(opencensus_trace_span_t *span, zend_string *type, zend_string *id, zval *options);
 int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval *span_options);
 opencensus_trace_span_t *opencensus_trace_span_alloc();
 void opencensus_trace_span_free(opencensus_trace_span_t *span);
