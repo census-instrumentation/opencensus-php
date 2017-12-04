@@ -18,6 +18,9 @@
 namespace OpenCensus\Trace\Tracer;
 
 use OpenCensus\Core\Scope;
+use OpenCensus\Trace\Annotation;
+use OpenCensus\Trace\Link;
+use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
 
@@ -103,17 +106,7 @@ class ExtensionTracer implements TracerInterface
     {
         // each span returned from opencensus_trace_list should be a
         // OpenCensus\Span object
-        return array_map(function ($span) {
-            return new Span([
-                'name' => $span->name(),
-                'spanId' => $span->spanId(),
-                'parentSpanId' => $span->parentSpanId(),
-                'startTime' => $span->startTime(),
-                'endTime' => $span->endTime(),
-                'attributes' => $span->attributes(),
-                'stackTrace' => $span->stackTrace()
-            ]);
-        }, opencensus_trace_list());
+        return array_map([$this, 'mapSpan'], opencensus_trace_list());
     }
 
     /**
@@ -240,5 +233,41 @@ class ExtensionTracer implements TracerInterface
 
         // We couldn't find a suitable backtrace entry - generate a random one
         return uniqid('span');
+    }
+
+    private function mapSpan($span)
+    {
+        return new Span([
+            'name' => $span->name(),
+            'spanId' => $span->spanId(),
+            'parentSpanId' => $span->parentSpanId(),
+            'startTime' => $span->startTime(),
+            'endTime' => $span->endTime(),
+            'attributes' => $span->attributes(),
+            'stackTrace' => $span->stackTrace(),
+            'links' => array_map([$this, 'mapLink'], $span->links()),
+            'timeEvents' => array_map([$this, 'mapTimeEvent'], $span->timeEvents())
+        ]);
+    }
+
+    private function mapLink($link)
+    {
+        return new Link($link->traceId(), $link->spanId(), $link->options());
+    }
+
+    private function mapTimeEvent($timeEvent)
+    {
+        $options = $timeEvent->options();
+        $options['time'] = $timeEvent->time();
+
+        switch(get_class($timeEvent)) {
+            case 'OpenCensus\Trace\Ext\Annotation':
+                return new Annotation($timeEvent->description(), $options);
+                break;
+            case 'OpenCensus\Trace\Ext\MessageEvent':
+                return new MessageEvent($timeEvent->type(), $timeEvent->id(), $options);
+                break;
+        }
+        return null;
     }
 }
