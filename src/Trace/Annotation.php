@@ -18,7 +18,7 @@
 namespace OpenCensus\Trace;
 
 /**
- * A class that represents a Annotation resource.
+ * A class that represents an Annotation resource.
  */
 class Annotation extends TimeEvent
 {

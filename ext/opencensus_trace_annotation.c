@@ -21,6 +21,24 @@
  * namespace OpenCensus\Trace\Ext;
  *
  * class Annotation {
+ *   protected $description;
+ *   protected $time;
+ *   protected $options;
+ *
+ *   public function description()
+ *   {
+ *     return $this->description;
+ *   }
+ *
+ *   public function time()
+ *   {
+ *     return $this->time;
+ *   }
+ *
+ *   public function options()
+ *   {
+ *     return $this->options;
+ *   }
  * }
  */
 

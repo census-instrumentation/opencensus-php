@@ -15,12 +15,36 @@
  */
 
 /*
- * This is the implementation of the OpenCensus\Trace\Ext\Annoation class. The PHP
+ * This is the implementation of the OpenCensus\Trace\Ext\MessageEvent class. The PHP
  * equivalent is:
  *
  * namespace OpenCensus\Trace\Ext;
  *
- * class Annoation {
+ * class MessageEvent {
+ *   protected $type;
+ *   protected $id;
+ *   protected $time;
+ *   protected $options;
+ *
+ *   public function type()
+ *   {
+ *     return $this->type;
+ *   }
+ *
+ *   public function id()
+ *   {
+ *     return $this->id;
+ *   }
+ *
+ *   public function time()
+ *   {
+ *     return $this->time;
+ *   }
+ *
+ *   public function options()
+ *   {
+ *     return $this->options;
+ *   }
  * }
  */
 

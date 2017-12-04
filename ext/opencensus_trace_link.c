@@ -15,12 +15,30 @@
  */
 
 /*
- * This is the implementation of the OpenCensus\Trace\Ext\Annoation class. The PHP
+ * This is the implementation of the OpenCensus\Trace\Ext\Link class. The PHP
  * equivalent is:
  *
  * namespace OpenCensus\Trace\Ext;
  *
- * class Annoation {
+ * class Link {
+ *   protected $traceId;
+ *   protected $spanId;
+ *   protected $options;
+ *
+ *   public function traceId()
+ *   {
+ *     return $this->traceId;
+ *   }
+ *
+ *   public function spanId()
+ *   {
+ *     return $this->spanId;
+ *   }
+ *
+ *   public function options()
+ *   {
+ *     return $this->options;
+ *   }
  * }
  */
 
