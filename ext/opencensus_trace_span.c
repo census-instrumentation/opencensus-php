@@ -458,17 +458,6 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
     return SUCCESS;
 }
 
-static int opencensus_trace_message_event_to_zval(opencensus_trace_message_event_t *message_event, zval *zv)
-{
-    array_init(zv);
-    add_assoc_string(zv, "type", "message_event");
-    add_assoc_str(zv, "type", message_event->type);
-    add_assoc_str(zv, "id", message_event->id);
-    add_assoc_zval(zv, "options", &message_event->options);
-    add_assoc_double(zv, "time", message_event->time_event.time);
-    return SUCCESS;
-}
-
 static int opencensus_trace_time_event_to_zval(opencensus_trace_time_event_t *time_event, zval *zv)
 {
     if (time_event->type == OPENCENSUS_TRACE_TIME_EVENT_ANNOTATION) {
@@ -478,15 +467,6 @@ static int opencensus_trace_time_event_to_zval(opencensus_trace_time_event_t *ti
     } else {
         ZVAL_NULL(zv);
     }
-    return SUCCESS;
-}
-
-static int opencensus_trace_link_to_zval(opencensus_trace_link_t *link, zval *zv)
-{
-    array_init(zv);
-    add_assoc_str(zv, "traceId", link->trace_id);
-    add_assoc_str(zv, "spanId", link->span_id);
-    add_assoc_zval(zv, "options", &link->options);
     return SUCCESS;
 }
 

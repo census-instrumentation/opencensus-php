@@ -131,10 +131,9 @@ void opencensus_trace_annotation_free(opencensus_trace_annotation_t *annotation)
 
 int opencensus_trace_annotation_to_zval(opencensus_trace_annotation_t *annotation, zval *zv)
 {
-    array_init(zv);
-    add_assoc_string(zv, "type", "annotation");
-    add_assoc_str(zv, "description", annotation->description);
-    add_assoc_zval(zv, "options", &annotation->options);
-    add_assoc_double(zv, "time", annotation->time_event.time);
+    object_init_ex(zv, opencensus_trace_annotation_ce);
+    zend_update_property_str(opencensus_trace_annotation_ce, zv, "description", sizeof("description") - 1, annotation->description);
+    zend_update_property_double(opencensus_trace_annotation_ce, zv, "time", sizeof("time") - 1, annotation->time_event.time);
+    zend_update_property(opencensus_trace_annotation_ce, zv, "options", sizeof("options") - 1, &annotation->options);
     return SUCCESS;
 }
