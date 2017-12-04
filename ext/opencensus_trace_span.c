@@ -458,16 +458,6 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
     return SUCCESS;
 }
 
-static int opencensus_trace_annotation_to_zval(opencensus_trace_annotation_t *annotation, zval *zv)
-{
-    array_init(zv);
-    add_assoc_string(zv, "type", "annotation");
-    add_assoc_str(zv, "description", annotation->description);
-    add_assoc_zval(zv, "options", &annotation->options);
-    add_assoc_double(zv, "time", annotation->time_event.time);
-    return SUCCESS;
-}
-
 static int opencensus_trace_message_event_to_zval(opencensus_trace_message_event_t *message_event, zval *zv)
 {
     array_init(zv);

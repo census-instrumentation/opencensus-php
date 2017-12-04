@@ -30,5 +30,7 @@ typedef struct opencensus_trace_annotation_t {
 
 opencensus_trace_annotation_t *opencensus_trace_annotation_alloc();
 void opencensus_trace_annotation_free(opencensus_trace_annotation_t *annotation);
+int opencensus_trace_annotation_minit(INIT_FUNC_ARGS);
+int opencensus_trace_annotation_to_zval(opencensus_trace_annotation_t *annotation, zval *zv);
 
 #endif /* PHP_OPENCENSUS_TRACE_ANNOTATION_H */

@@ -27,5 +27,7 @@ typedef struct opencensus_trace_link_t {
 
 opencensus_trace_link_t *opencensus_trace_link_alloc();
 void opencensus_trace_link_free(opencensus_trace_link_t *link);
+int opencensus_trace_link_minit(INIT_FUNC_ARGS);
+int opencensus_trace_link_to_zval(opencensus_trace_link_t *link, zval *zv);
 
 #endif /* PHP_OPENCENSUS_TRACE_LINK_H */

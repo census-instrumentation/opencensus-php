@@ -31,5 +31,7 @@ typedef struct opencensus_trace_message_event_t {
 
 opencensus_trace_message_event_t *opencensus_trace_message_event_alloc();
 void opencensus_trace_message_event_free(opencensus_trace_message_event_t *message_event);
+int opencensus_trace_message_event_minit(INIT_FUNC_ARGS);
+int opencensus_trace_message_event_to_zval(opencensus_trace_message_event_t *message_event, zval *zv);
 
 #endif /* PHP_OPENCENSUS_TRACE_MESSAGE_EVENT_H */

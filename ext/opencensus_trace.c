@@ -18,6 +18,7 @@
 #include "opencensus_trace.h"
 #include "opencensus_trace_span.h"
 #include "opencensus_trace_context.h"
+#include "opencensus_trace_annotation.h"
 #include "Zend/zend_compile.h"
 #include "Zend/zend_closures.h"
 #include "zend_extensions.h"
@@ -770,6 +771,9 @@ PHP_MINIT_FUNCTION(opencensus)
 
     opencensus_trace_span_minit(INIT_FUNC_ARGS_PASSTHRU);
     opencensus_trace_context_minit(INIT_FUNC_ARGS_PASSTHRU);
+    opencensus_trace_annotation_minit(INIT_FUNC_ARGS_PASSTHRU);
+    opencensus_trace_link_minit(INIT_FUNC_ARGS_PASSTHRU);
+    opencensus_trace_message_event_minit(INIT_FUNC_ARGS_PASSTHRU);
 
     return SUCCESS;
 }

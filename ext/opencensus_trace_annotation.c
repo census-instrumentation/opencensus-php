@@ -15,12 +15,12 @@
  */
 
 /*
- * This is the implementation of the OpenCensus\Trace\Ext\Annoation class. The PHP
+ * This is the implementation of the OpenCensus\Trace\Ext\Annotation class. The PHP
  * equivalent is:
  *
  * namespace OpenCensus\Trace\Ext;
  *
- * class Annoation {
+ * class Annotation {
  * }
  */
 
@@ -28,6 +28,80 @@
 #include "opencensus_trace_annotation.h"
 
 zend_class_entry* opencensus_trace_annotation_ce = NULL;
+
+/**
+ * Fetch the annotation description
+ *
+ * @return string
+ */
+static PHP_METHOD(OpenCensusTraceAnnotation, description) {
+    zval *val, rv;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    val = zend_read_property(opencensus_trace_annotation_ce, getThis(), "description", sizeof("description") - 1, 1, &rv);
+
+    RETURN_ZVAL(val, 1, 0);
+}
+
+/**
+ * Fetch the annotation time
+ *
+ * @return float
+ */
+static PHP_METHOD(OpenCensusTraceAnnotation, time) {
+    zval *val, rv;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    val = zend_read_property(opencensus_trace_annotation_ce, getThis(), "time", sizeof("time") - 1, 1, &rv);
+
+    RETURN_ZVAL(val, 1, 0);
+}
+
+/**
+ * Fetch the annotation options
+ *
+ * @return float
+ */
+static PHP_METHOD(OpenCensusTraceAnnotation, options) {
+    zval *val, rv;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    val = zend_read_property(opencensus_trace_annotation_ce, getThis(), "options", sizeof("options") - 1, 1, &rv);
+
+    RETURN_ZVAL(val, 1, 0);
+}
+
+/* Declare method entries for the OpenCensus\Trace\Ext\Annotation class */
+static zend_function_entry opencensus_trace_annotation_methods[] = {
+    PHP_ME(OpenCensusTraceAnnotation, description, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceAnnotation, time, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceAnnotation, options, NULL, ZEND_ACC_PUBLIC)
+    PHP_FE_END
+};
+
+/* Module init handler for registering the OpenCensus\Trace\Ext\Annotation class */
+int opencensus_trace_annotation_minit(INIT_FUNC_ARGS)
+{
+    zend_class_entry ce;
+
+    INIT_CLASS_ENTRY(ce, "OpenCensus\\Trace\\Ext\\Annotation", opencensus_trace_annotation_methods);
+    opencensus_trace_annotation_ce = zend_register_internal_class(&ce);
+
+    zend_declare_property_null(opencensus_trace_annotation_ce, "description", sizeof("description") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(opencensus_trace_annotation_ce, "time", sizeof("time") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(opencensus_trace_annotation_ce, "options", sizeof("options") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+
+    return SUCCESS;
+}
 
 /**
  * Returns an allocated initialized pointer to a opencensus_trace_annotation_t
@@ -53,4 +127,14 @@ void opencensus_trace_annotation_free(opencensus_trace_annotation_t *annotation)
     if (Z_TYPE(annotation->options) != IS_NULL) {
         ZVAL_PTR_DTOR(&annotation->options);
     }
+}
+
+int opencensus_trace_annotation_to_zval(opencensus_trace_annotation_t *annotation, zval *zv)
+{
+    array_init(zv);
+    add_assoc_string(zv, "type", "annotation");
+    add_assoc_str(zv, "description", annotation->description);
+    add_assoc_zval(zv, "options", &annotation->options);
+    add_assoc_double(zv, "time", annotation->time_event.time);
+    return SUCCESS;
 }

@@ -30,6 +30,80 @@
 zend_class_entry* opencensus_trace_link_ce = NULL;
 
 /**
+ * Fetch the link traceId
+ *
+ * @return string
+ */
+static PHP_METHOD(OpenCensusTraceLink, traceId) {
+    zval *val, rv;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    val = zend_read_property(opencensus_trace_link_ce, getThis(), "traceId", sizeof("traceId") - 1, 1, &rv);
+
+    RETURN_ZVAL(val, 1, 0);
+}
+
+/**
+ * Fetch the link spanId
+ *
+ * @return string
+ */
+static PHP_METHOD(OpenCensusTraceLink, spanId) {
+    zval *val, rv;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    val = zend_read_property(opencensus_trace_link_ce, getThis(), "spanId", sizeof("spanId") - 1, 1, &rv);
+
+    RETURN_ZVAL(val, 1, 0);
+}
+
+/**
+ * Fetch the link options
+ *
+ * @return float
+ */
+static PHP_METHOD(OpenCensusTraceLink, options) {
+    zval *val, rv;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    val = zend_read_property(opencensus_trace_link_ce, getThis(), "options", sizeof("options") - 1, 1, &rv);
+
+    RETURN_ZVAL(val, 1, 0);
+}
+
+/* Declare method entries for the OpenCensus\Trace\Ext\Link class */
+static zend_function_entry opencensus_trace_link_methods[] = {
+    PHP_ME(OpenCensusTraceLink, traceId, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceLink, spanId, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceLink, options, NULL, ZEND_ACC_PUBLIC)
+    PHP_FE_END
+};
+
+/* Module init handler for registering the OpenCensus\Trace\Ext\Link class */
+int opencensus_trace_link_minit(INIT_FUNC_ARGS)
+{
+    zend_class_entry ce;
+
+    INIT_CLASS_ENTRY(ce, "OpenCensus\\Trace\\Ext\\Link", opencensus_trace_link_methods);
+    opencensus_trace_link_ce = zend_register_internal_class(&ce);
+
+    zend_declare_property_null(opencensus_trace_link_ce, "traceId", sizeof("traceId") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(opencensus_trace_link_ce, "spanId", sizeof("spanId") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(opencensus_trace_link_ce, "options", sizeof("options") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+
+    return SUCCESS;
+}
+
+/**
  * Returns an allocated initialized pointer to a opencensus_trace_link_t
  * struct.
  *

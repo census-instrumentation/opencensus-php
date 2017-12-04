@@ -30,6 +30,99 @@
 zend_class_entry* opencensus_trace_message_event_ce = NULL;
 
 /**
+ * Fetch the message_event type
+ *
+ * @return string
+ */
+static PHP_METHOD(OpenCensusTraceMessageEvent, type) {
+    zval *val, rv;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    val = zend_read_property(opencensus_trace_message_event_ce, getThis(), "type", sizeof("type") - 1, 1, &rv);
+
+    RETURN_ZVAL(val, 1, 0);
+}
+
+/**
+ * Fetch the message_event id
+ *
+ * @return string
+ */
+static PHP_METHOD(OpenCensusTraceMessageEvent, id) {
+    zval *val, rv;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    val = zend_read_property(opencensus_trace_message_event_ce, getThis(), "id", sizeof("id") - 1, 1, &rv);
+
+    RETURN_ZVAL(val, 1, 0);
+}
+
+/**
+ * Fetch the message_event time
+ *
+ * @return float
+ */
+static PHP_METHOD(OpenCensusTraceMessageEvent, time) {
+    zval *val, rv;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    val = zend_read_property(opencensus_trace_message_event_ce, getThis(), "time", sizeof("time") - 1, 1, &rv);
+
+    RETURN_ZVAL(val, 1, 0);
+}
+
+/**
+ * Fetch the message_event options
+ *
+ * @return float
+ */
+static PHP_METHOD(OpenCensusTraceMessageEvent, options) {
+    zval *val, rv;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    val = zend_read_property(opencensus_trace_message_event_ce, getThis(), "options", sizeof("options") - 1, 1, &rv);
+
+    RETURN_ZVAL(val, 1, 0);
+}
+
+/* Declare method entries for the OpenCensus\Trace\Ext\MessageEvent class */
+static zend_function_entry opencensus_trace_message_event_methods[] = {
+    PHP_ME(OpenCensusTraceMessageEvent, type, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceMessageEvent, id, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceMessageEvent, time, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceMessageEvent, options, NULL, ZEND_ACC_PUBLIC)
+    PHP_FE_END
+};
+
+/* Module init handler for registering the OpenCensus\Trace\Ext\MessageEvent class */
+int opencensus_trace_message_event_minit(INIT_FUNC_ARGS)
+{
+    zend_class_entry ce;
+
+    INIT_CLASS_ENTRY(ce, "OpenCensus\\Trace\\Ext\\MessageEvent", opencensus_trace_message_event_methods);
+    opencensus_trace_message_event_ce = zend_register_internal_class(&ce);
+
+    zend_declare_property_null(opencensus_trace_message_event_ce, "type", sizeof("type") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(opencensus_trace_message_event_ce, "id", sizeof("id") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(opencensus_trace_message_event_ce, "time", sizeof("time") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(opencensus_trace_message_event_ce, "options", sizeof("options") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+
+    return SUCCESS;
+}
+
+/**
  * Returns an allocated initialized pointer to a opencensus_trace_message_event_t
  * struct.
  *
