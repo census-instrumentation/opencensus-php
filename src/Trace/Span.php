@@ -309,7 +309,7 @@ class Span
     /**
      * Add a link to this span.
      *
-     * @param TimeEvent $timeEvent
+     * @param Link $link
      */
     public function addLink(Link $link)
     {

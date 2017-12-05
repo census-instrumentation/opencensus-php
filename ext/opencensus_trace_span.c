@@ -203,7 +203,7 @@ static PHP_METHOD(OpenCensusTraceSpan, links) {
 }
 
 /**
- * Fetch the attributes for the span
+ * Fetch the time events for the span
  *
  * @return array
  */
