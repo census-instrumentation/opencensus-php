@@ -42,7 +42,7 @@ class TracerTest extends \PHPUnit_Framework_TestCase
         ]);
         $tracer = $rt->tracer();
 
-        $this->assertFalse($tracer->enabled());
+        $this->assertFalse($tracer->spanContext()->enabled());
         $this->assertInstanceOf(NullTracer::class, $tracer);
     }
 
@@ -53,6 +53,6 @@ class TracerTest extends \PHPUnit_Framework_TestCase
         ]);
         $tracer = $rt->tracer();
 
-        $this->assertTrue($tracer->enabled());
+        $this->assertTrue($tracer->spanContext()->enabled());
     }
 }

@@ -21,19 +21,15 @@ namespace OpenCensus\Trace\Ext;
  * This is the equivalent PHP class created by the opencensus C extension
  */
 class Span {
-    const SPAN_KIND_UNKNOWN = 0;
-    const SPAN_KIND_CLIENT = 1;
-    const SPAN_KIND_SERVER = 2;
-    const SPAN_KIND_PRODUCER = 3;
-    const SPAN_KIND_CONSUMER = 4;
-
     protected $name = "unknown";
     protected $spanId;
     protected $parentSpanId;
     protected $startTime;
     protected $endTime;
     protected $attributes;
-    protected $kind;
+    protected $stackTrace;
+    protected $links;
+    protected $timeEvents;
 
     public function __construct(array $spanOptions)
     {
@@ -72,8 +68,18 @@ class Span {
         return $this->attributes;
     }
 
-    public function kind()
+    public function stackTrace()
     {
-        return $this->kind;
+        return $this->stackTrace;
+    }
+
+    public function links()
+    {
+        return $this->links;
+    }
+
+    public function timeEvents()
+    {
+        return $this->timeEvents;
     }
 }

@@ -56,6 +56,15 @@ ZEND_END_MODULE_GLOBALS(opencensus)
 
 extern ZEND_DECLARE_MODULE_GLOBALS(opencensus)
 
+/* Return the current timestamp as a double */
+static double opencensus_now()
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+
+    return (double) (tv.tv_sec + tv.tv_usec / 1000000.00);
+}
+
 #ifdef ZTS
 #define        OPENCENSUS_TRACE_G(v)        TSRMG(opencensus_globals_id, zend_opencensus_globals *, v)
 #else

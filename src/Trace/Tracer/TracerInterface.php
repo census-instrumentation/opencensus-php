@@ -63,27 +63,59 @@ interface TracerInterface
     public function spans();
 
     /**
-     * Add a attribute to the current Span
+     * Add an attribute to the provided Span
      *
      * @param string $attribute
      * @param string $value
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the attribute to.
      */
-    public function addAttribute($attribute, $value);
+    public function addAttribute($attribute, $value, $options = []);
 
     /**
-     * Add a attribute to the primary Span
+     * Add an annotation to the provided Span
      *
-     * @param string $attribute
-     * @param string $value
+     * @param string $description
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the annotation to.
+     *      @type array $attributes Attributes for this annotation.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addRootAttribute($attribute, $value);
+    public function addAnnotation($description, $options = []);
 
     /**
-     * Whether or not this tracer is enabled.
+     * Add a link to the provided Span
      *
-     * @return bool
+     * @param string $traceId
+     * @param string $spanId
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the link to.
+     *      @type string $type The relationship of the current span relative to
+     *            the linked span: child, parent, or unspecified.
+     *      @type array $attributes Attributes for this annotation.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function enabled();
+    public function addLink($traceId, $spanId, $options = []);
+
+    /**
+     * Add an message event to the provided Span
+     *
+     * @param string $type
+     * @param string $id
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the message event to.
+     *      @type int $uncompressedSize The number of uncompressed bytes sent or
+     *            received.
+     *      @type int $compressedSize The number of compressed bytes sent or
+     *            received. If missing assumed to be the same size as
+     *            uncompressed.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
+     */
+    public function addMessageEvent($type, $id, $options = []);
 
     /**
      * Returns the current SpanContext
@@ -91,4 +123,11 @@ interface TracerInterface
      * @return SpanContext
      */
     public function spanContext();
+
+    /**
+     * Whether or not this tracer is enabled.
+     *
+     * @return bool
+     */
+    public function enabled();
 }

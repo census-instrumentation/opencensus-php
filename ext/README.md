@@ -248,20 +248,60 @@ function opencensus_trace_set_context($traceId, $parentSpanId = null);
 
 ```php
 /**
- * Add a attribute to the current span
+ * Add an attribute to a span.
  *
  * @param string $key
  * @param string $value
+ * @param array $options
+ *
+ *      @type int $spanId The id of the span to which to add the attribute.
+ *            Defaults to the current span.
  */
-function opencensus_trace_add_attribute($key, $value);
+function opencensus_trace_add_attribute($key, $value, $options = []);
+```
 
+### Add an annotation to a span.
+
+```php
 /**
- * Add a attribute to the root current span
+ * Add an annotation to a span
+ * @param string $description
+ * @param array $options
  *
- * @param string $key
- * @param string $value
+ *      @type int $spanId The id of the span to which to add the attribute.
+ *            Defaults to the current span.
  */
-function opencensus_trace_add_root_attribute($key, $value);
+function opencensus_trace_add_annotation($description, $options = []);
+```
+
+### Add a link to a span.
+
+```php
+/**
+ * Add a link to a span
+ * @param string $traceId
+ * @param string $spanId
+ * @param array $options
+ *
+ *      @type int $spanId The id of the span to which to add the link.
+ *            Defaults to the current span.
+ */
+function opencensus_trace_add_link($traceId, $spanId, $options = []);
+```
+
+### Add a message event to a span.
+
+```php
+/**
+ * Add a message to a span
+ * @param string $type
+ * @param string $id
+ * @param array $options
+ *
+ *      @type int $spanId The id of the span to which to add the attribute.
+ *            Defaults to the current span.
+ */
+function opencensus_trace_add_message_event($type, $id, $options = []);
 ```
 
 ## Versioning

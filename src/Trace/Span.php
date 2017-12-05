@@ -26,6 +26,8 @@ namespace OpenCensus\Trace;
  */
 class Span
 {
+    use AttributeTrait;
+
     /**
      * Unique identifier for a trace. All spans from the same Trace share the
      * same `traceId`. 16-byte value encoded as a hex string.
@@ -81,19 +83,29 @@ class Span
     private $endTime;
 
     /**
-     * A set of attributes on the span. An associative array of string => mixed
-     *
-     * @var array
-     */
-    private $attributes;
-
-    /**
      * Stack trace captured at the start of the span. This is in the format of
      * `debug_backtrace`.
      *
      * @var array
      */
     private $stackTrace;
+
+    /**
+     * A collection of `TimeEvent`s. A `TimeEvent` is a time-stamped annotation
+     * on the span, consisting of either user-supplied key:value pairs, or
+     * details of a message sent/received between Spans
+     *
+     * @var TimeEvent[]
+     */
+    private $timeEvents;
+
+    /**
+     * A collection of links, which are references from this span to a span
+     * in the same or different trace.
+     *
+     * @var Link
+     */
+    private $links;
 
     /**
      * An optional final status for this span.
@@ -132,6 +144,15 @@ class Span
      */
     public function __construct($options = [])
     {
+        $options += [
+            'attributes' => [],
+            'timeEvents' => [],
+            'links' => [],
+            'parentSpanId' => null,
+            'status' => null,
+            'sameProcessAsParentSpan' => null
+        ];
+
         if (array_key_exists('startTime', $options)) {
             $this->setStartTime($options['startTime']);
         }
@@ -140,10 +161,9 @@ class Span
             $this->setEndTime($options['endTime']);
         }
 
-        $this->attributes = [];
-        if (array_key_exists('attributes', $options)) {
-            $this->addAttributes($options['attributes']);
-        }
+        $this->addAttributes($options['attributes']);
+        $this->addTimeEvents($options['timeEvents']);
+        $this->addLinks($options['links']);
 
         if (array_key_exists('spanId', $options)) {
             $this->spanId = $options['spanId'];
@@ -163,17 +183,9 @@ class Span
             $this->name = $this->generateSpanName();
         }
 
-        if (array_key_exists('parentSpanId', $options)) {
-            $this->parentSpanId = $options['parentSpanId'];
-        }
-
-        if (array_key_exists('status', $options)) {
-            $this->status = $options['status'];
-        }
-
-        if (array_key_exists('sameProcessAsParentSpan', $options)) {
-            $this->sameProcessAsParentSpan = $options['sameProcessAsParentSpan'];
-        }
+        $this->parentSpanId = $options['parentSpanId'];
+        $this->status = $options['status'];
+        $this->sameProcessAsParentSpan = $options['sameProcessAsParentSpan'];
     }
 
     /**
@@ -251,13 +263,67 @@ class Span
     }
 
     /**
-     * Retrieve the list of attributes for this span
+     * Add time events to this span.
      *
-     * @return array
+     * @param TimeEvent[] $timeEvents
      */
-    public function attributes()
+    public function addTimeEvents(array $timeEvents)
     {
-        return $this->attributes;
+        foreach ($timeEvents as $timeEvent) {
+            $this->addTimeEvent($timeEvent);
+        }
+    }
+
+    /**
+     * Add a time event to this span.
+     *
+     * @param TimeEvent $timeEvent
+     */
+    public function addTimeEvent(TimeEvent $timeEvent)
+    {
+        $this->timeEvents[] = $timeEvent;
+    }
+
+    /**
+     * Return the time events for this span.
+     *
+     * @return TimeEvent[]
+     */
+    public function timeEvents()
+    {
+        return $this->timeEvents;
+    }
+
+    /**
+     * Add links to this span.
+     *
+     * @param Link[] $links
+     */
+    public function addLinks(array $links)
+    {
+        foreach ($links as $link) {
+            $this->addLink($link);
+        }
+    }
+
+    /**
+     * Add a link to this span.
+     *
+     * @param Link $link
+     */
+    public function addLink(Link $link)
+    {
+        $this->links[] = $link;
+    }
+
+    /**
+     * Return the links for this span.
+     *
+     * @return Link[]
+     */
+    public function links()
+    {
+        return $this->links;
     }
 
     /**
@@ -299,29 +365,6 @@ class Span
     public function sameProcessAsParentSpan()
     {
         return $this->sameProcessAsParentSpan;
-    }
-
-    /**
-     * Attach attributes to this span.
-     *
-     * @param array $attributes Attributes in the form of $attribute => $value
-     */
-    public function addAttributes(array $attributes)
-    {
-        foreach ($attributes as $attribute => $value) {
-            $this->addAttribute($attribute, $value);
-        }
-    }
-
-    /**
-     * Attach a single attribute to this span.
-     *
-     * @param string $attribute The name of the attribute.
-     * @param mixed $value The value of the attribute. Will be cast to a string
-     */
-    public function addAttribute($attribute, $value)
-    {
-        $this->attributes[$attribute] = (string) $value;
     }
 
     /**

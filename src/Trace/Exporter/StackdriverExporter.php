@@ -261,6 +261,7 @@ class StackdriverExporter implements ExporterInterface
     private function addCommonAttributes(&$tracer, $headers = null)
     {
         $headers = $headers ?: $_SERVER;
+        $rootSpan = $tracer->spans()[0];
 
         $attributeMap = [
             self::HTTP_URL => ['REQUEST_URI'],
@@ -276,11 +277,11 @@ class StackdriverExporter implements ExporterInterface
         ];
         foreach ($attributeMap as $attributeKey => $headerKeys) {
             if ($val = $this->detectKey($headerKeys, $headers)) {
-                $tracer->addRootAttribute($attributeKey, $val);
+                $tracer->addAttribute($attributeKey, $val, ['span' => $rootSpan]);
             }
         }
-        $tracer->addRootAttribute(self::PID, '' . getmypid());
-        $tracer->addRootAttribute(self::AGENT, 'opencensus-php ' . self::VERSION);
+        $tracer->addAttribute(self::PID, '' . getmypid(), ['span' => $rootSpan]);
+        $tracer->addAttribute(self::AGENT, 'opencensus-php ' . self::VERSION, ['span' => $rootSpan]);
     }
 
     private function detectKey(array $keys, array $array)

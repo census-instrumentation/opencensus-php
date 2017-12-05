@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Tracer;
 
+use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanContext;
 
@@ -73,11 +74,12 @@ abstract class AbstractTracerTest extends \PHPUnit_Framework_TestCase
     {
         $class = $this->getTracerClass();
         $tracer = new $class();
-        $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
-            $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
-                $tracer->addRootAttribute('foo', 'bar');
-            });
+        $rootSpan = $tracer->startSpan(['name' => 'root']);
+        $scope = $tracer->withSpan($rootSpan);
+        $tracer->inSpan(['name' => 'inner'], function () use ($tracer, $rootSpan) {
+            $tracer->addAttribute('foo', 'bar', ['span' => $rootSpan]);
         });
+        $scope->close();
 
         $spans = $tracer->spans();
         $this->assertCount(2, $spans);
@@ -123,6 +125,121 @@ abstract class AbstractTracerTest extends \PHPUnit_Framework_TestCase
         $scope->close();
 
         $this->assertEquivalentTimestamps($span->startTime(), $tracer->spans()[0]->startTime());
+    }
+
+    public function testAddsAnnotations()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
+            $tracer->addAnnotation('some root annotation', ['attributes' => ['foo' => 'bar']]);
+            $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
+                $tracer->addAnnotation('some inner annotation');
+            });
+        });
+
+        $spans = $tracer->spans();
+        $rootSpan = $spans[0];
+        $this->assertCount(1, $rootSpan->timeEvents());
+        $innerSpan = $spans[1];
+        $this->assertCount(1, $rootSpan->timeEvents());
+    }
+
+    public function testAddsAnnotationToRootSpan()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $rootSpan = $tracer->startSpan(['name' => 'root']);
+        $scope = $tracer->withSpan($rootSpan);
+        $tracer->inSpan(['name' => 'inner'], function () use ($tracer, $rootSpan) {
+            $tracer->addAnnotation('some root annotation', [
+                'attributes' => ['foo' => 'bar'],
+                'span' => $rootSpan
+            ]);
+        });
+        $scope->close();
+
+        $spans = $tracer->spans();
+        $this->assertCount(2, $spans);
+        $span = $spans[0];
+        $this->assertEquals('root', $span->name());
+        $this->assertCount(1, $span->timeEvents());
+    }
+
+    public function testAddsLinks()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
+            $tracer->addLink('traceid', 'spanid', ['attributes' => ['foo' => 'bar']]);
+            $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
+                $tracer->addLink('traceid', 'spanid');
+            });
+        });
+
+        $spans = $tracer->spans();
+        $rootSpan = $spans[0];
+        $this->assertCount(1, $rootSpan->links());
+        $innerSpan = $spans[1];
+        $this->assertCount(1, $rootSpan->links());
+    }
+
+    public function testAddsLinkToRootSpan()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $rootSpan = $tracer->startSpan(['name' => 'root']);
+        $scope = $tracer->withSpan($rootSpan);
+        $tracer->inSpan(['name' => 'inner'], function () use ($tracer, $rootSpan) {
+            $tracer->addLink('traceid', 'spanid', [
+                'span' => $rootSpan
+            ]);
+        });
+        $scope->close();
+
+        $spans = $tracer->spans();
+        $this->assertCount(2, $spans);
+        $span = $spans[0];
+        $this->assertEquals('root', $span->name());
+        $this->assertCount(1, $span->links());
+    }
+
+    public function testAddMessageEvents()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
+            $tracer->addMessageEvent(MessageEvent::TYPE_SENT, 'id1', ['uncompressedSize' => 1234, 'compressedSize' => 1000]);
+            $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
+                $tracer->addMessageEvent(MessageEvent::TYPE_RECEIVED, 'id2');
+            });
+        });
+
+        $spans = $tracer->spans();
+        $rootSpan = $spans[0];
+        $this->assertCount(1, $rootSpan->timeEvents());
+        $innerSpan = $spans[1];
+        $this->assertCount(1, $rootSpan->timeEvents());
+    }
+
+    public function testAddsMessageEventToRootSpan()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $rootSpan = $tracer->startSpan(['name' => 'root']);
+        $scope = $tracer->withSpan($rootSpan);
+        $tracer->inSpan(['name' => 'inner'], function () use ($tracer, $rootSpan) {
+            $tracer->addMessageEvent(MessageEvent::TYPE_RECEIVED, 'id2', [
+                'span' => $rootSpan
+            ]);
+        });
+        $scope->close();
+
+        $spans = $tracer->spans();
+        $this->assertCount(2, $spans);
+        $span = $spans[0];
+        $this->assertEquals('root', $span->name());
+        $this->assertCount(1, $span->timeEvents());
     }
 
     private function assertEquivalentTimestamps($expected, $value)

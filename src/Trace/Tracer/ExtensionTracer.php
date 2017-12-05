@@ -18,6 +18,9 @@
 namespace OpenCensus\Trace\Tracer;
 
 use OpenCensus\Core\Scope;
+use OpenCensus\Trace\Annotation;
+use OpenCensus\Trace\Link;
+use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
 
@@ -103,49 +106,86 @@ class ExtensionTracer implements TracerInterface
     {
         // each span returned from opencensus_trace_list should be a
         // OpenCensus\Span object
-        return array_map(function ($span) {
-            return new Span([
-                'name' => $span->name(),
-                'spanId' => $span->spanId(),
-                'parentSpanId' => $span->parentSpanId(),
-                'startTime' => $span->startTime(),
-                'endTime' => $span->endTime(),
-                'attributes' => $span->attributes(),
-                'stackTrace' => $span->stackTrace()
-            ]);
-        }, opencensus_trace_list());
+        return array_map([$this, 'mapSpan'], opencensus_trace_list());
     }
 
     /**
-     * Add a attribute to the current Span
+     * Add an attribute to the provided Span
      *
      * @param string $attribute
      * @param string $value
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the attribute to.
      */
-    public function addAttribute($attribute, $value)
+    public function addAttribute($attribute, $value, $options = [])
     {
-        opencensus_trace_add_attribute($attribute, $value);
+        if (array_key_exists('span', $options)) {
+            $options['spanId'] = $options['span']->spanId();
+        }
+        opencensus_trace_add_attribute($attribute, $value, $options);
     }
 
     /**
-     * Add a attribute to the primary Span
+     * Add an annotation to the provided Span
      *
-     * @param string $attribute
-     * @param string $value
+     * @param string $description
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the annotation to.
+     *      @type array $attributes Attributes for this annotation.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addRootAttribute($attribute, $value)
+    public function addAnnotation($description, $options = [])
     {
-        opencensus_trace_add_root_attribute($attribute, $value);
+        if (array_key_exists('span', $options)) {
+            $options['spanId'] = $options['span']->spanId();
+        }
+        opencensus_trace_add_annotation($description, $options);
     }
 
     /**
-     * Whether or not this tracer is enabled.
+     * Add a link to the provided Span
      *
-     * @return bool
+     * @param string $traceId
+     * @param string $spanId
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the link to.
+     *      @type string $type The relationship of the current span relative to
+     *            the linked span: child, parent, or unspecified.
+     *      @type array $attributes Attributes for this annotation.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function enabled()
+    public function addLink($traceId, $spanId, $options = [])
     {
-        return true;
+        if (array_key_exists('span', $options)) {
+            $options['spanId'] = $options['span']->spanId();
+        }
+        opencensus_trace_add_link($traceId, $spanId, $options);
+    }
+
+    /**
+     * Add an message event to the provided Span
+     *
+     * @param string $type
+     * @param string $id
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the message event to.
+     *      @type int $uncompressedSize The number of uncompressed bytes sent or
+     *            received.
+     *      @type int $compressedSize The number of compressed bytes sent or
+     *            received. If missing assumed to be the same size as
+     *            uncompressed.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
+     */
+    public function addMessageEvent($type, $id, $options = [])
+    {
+        if (array_key_exists('span', $options)) {
+            $options['spanId'] = $options['span']->spanId();
+        }
+        opencensus_trace_add_message_event($type, $id, $options);
     }
 
     /**
@@ -161,6 +201,16 @@ class ExtensionTracer implements TracerInterface
             $context->spanId(),
             true
         );
+    }
+
+    /**
+     * Whether or not this tracer is enabled.
+     *
+     * @return bool
+     */
+    public function enabled()
+    {
+        return $this->spanContext()->enabled();
     }
 
     /**
@@ -183,5 +233,41 @@ class ExtensionTracer implements TracerInterface
 
         // We couldn't find a suitable backtrace entry - generate a random one
         return uniqid('span');
+    }
+
+    private function mapSpan($span)
+    {
+        return new Span([
+            'name' => $span->name(),
+            'spanId' => $span->spanId(),
+            'parentSpanId' => $span->parentSpanId(),
+            'startTime' => $span->startTime(),
+            'endTime' => $span->endTime(),
+            'attributes' => $span->attributes(),
+            'stackTrace' => $span->stackTrace(),
+            'links' => array_map([$this, 'mapLink'], $span->links()),
+            'timeEvents' => array_map([$this, 'mapTimeEvent'], $span->timeEvents())
+        ]);
+    }
+
+    private function mapLink($link)
+    {
+        return new Link($link->traceId(), $link->spanId(), $link->options());
+    }
+
+    private function mapTimeEvent($timeEvent)
+    {
+        $options = $timeEvent->options();
+        $options['time'] = $timeEvent->time();
+
+        switch (get_class($timeEvent)) {
+            case 'OpenCensus\Trace\Ext\Annotation':
+                return new Annotation($timeEvent->description(), $options);
+                break;
+            case 'OpenCensus\Trace\Ext\MessageEvent':
+                return new MessageEvent($timeEvent->type(), $timeEvent->id(), $options);
+                break;
+        }
+        return null;
     }
 }

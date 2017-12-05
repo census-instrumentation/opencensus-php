@@ -18,22 +18,18 @@
  * This is the implementation of the OpenCensus\Trace\Span class. The PHP
  * equivalent is:
  *
- * namespace OpenCensus\Trace;
+ * namespace OpenCensus\Trace\Ext;
  *
  * class Span {
- *   const SPAN_KIND_UNKNOWN = 0;
- *   const SPAN_KIND_CLIENT = 1;
- *   const SPAN_KIND_SERVER = 2;
- *   const SPAN_KIND_PRODUCER = 3;
- *   const SPAN_KIND_CONSUMER = 4;
- *
  *   protected $name = "unknown";
  *   protected $spanId;
  *   protected $parentSpanId;
  *   protected $startTime;
  *   protected $endTime;
  *   protected $attributes;
- *   protected $kind;
+ *   protected $stackTrace;
+ *   protected $links;
+ *   protected $timeEvents;
  *
  *   public function __construct(array $spanOptions)
  *   {
@@ -72,14 +68,28 @@
  *     return $this->attributes;
  *   }
  *
- *   public function kind()
+ *   public function stackTrace()
  *   {
- *     return $this->kind;
- *    }
+ *     return $this->stackTrace;
+ *   }
+ *
+ *   public function links()
+ *   {
+ *     return $this->links;
+ *   }
+ *
+ *   public function timeEvents()
+ *   {
+ *     return $this->timeEvents;
+ *   }
  * }
  */
 
+#include "php_opencensus.h"
 #include "opencensus_trace_span.h"
+#include "opencensus_trace_annotation.h"
+#include "opencensus_trace_link.h"
+#include "opencensus_trace_message_event.h"
 
 zend_class_entry* opencensus_trace_span_ce = NULL;
 
@@ -176,6 +186,40 @@ static PHP_METHOD(OpenCensusTraceSpan, attributes) {
 }
 
 /**
+ * Fetch the links for the span
+ *
+ * @return array
+ */
+static PHP_METHOD(OpenCensusTraceSpan, links) {
+    zval *val, rv;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    val = zend_read_property(opencensus_trace_span_ce, getThis(), "links", sizeof("links") - 1, 1, &rv);
+
+    RETURN_ZVAL(val, 1, 0);
+}
+
+/**
+ * Fetch the time events for the span
+ *
+ * @return array
+ */
+static PHP_METHOD(OpenCensusTraceSpan, timeEvents) {
+    zval *val, rv;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    val = zend_read_property(opencensus_trace_span_ce, getThis(), "timeEvents", sizeof("timeEvents") - 1, 1, &rv);
+
+    RETURN_ZVAL(val, 1, 0);
+}
+
+/**
  * Fetch the start time
  *
  * @return float
@@ -226,23 +270,6 @@ static PHP_METHOD(OpenCensusTraceSpan, stackTrace) {
     RETURN_ZVAL(val, 1, 0);
 }
 
-/**
- * Fetch the span kind
- *
- * @return int
- */
-static PHP_METHOD(OpenCensusTraceSpan, kind) {
-    zval *val, rv;
-
-    if (zend_parse_parameters_none() == FAILURE) {
-        return;
-    }
-
-    val = zend_read_property(opencensus_trace_span_ce, getThis(), "kind", sizeof("kind") - 1, 1, &rv);
-
-    RETURN_ZVAL(val, 1, 0);
-}
-
 /* Declare method entries for the OpenCensus\Trace\Span class */
 static zend_function_entry opencensus_trace_span_methods[] = {
     PHP_ME(OpenCensusTraceSpan, __construct, arginfo_OpenCensusTraceSpan_construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -253,11 +280,10 @@ static zend_function_entry opencensus_trace_span_methods[] = {
     PHP_ME(OpenCensusTraceSpan, startTime, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(OpenCensusTraceSpan, endTime, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(OpenCensusTraceSpan, stackTrace, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, kind, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, links, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, timeEvents, NULL, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
-
-#define REGISTER_TRACE_SPAN_CONSTANT(id) zend_declare_class_constant_long(opencensus_trace_span_ce, "SPAN_" #id, sizeof("SPAN_" #id) - 1, OPENCENSUS_TRACE_SPAN_##id);
 
 /* Module init handler for registering the OpenCensus\Trace\Span class */
 int opencensus_trace_span_minit(INIT_FUNC_ARGS) {
@@ -273,17 +299,46 @@ int opencensus_trace_span_minit(INIT_FUNC_ARGS) {
     zend_declare_property_null(opencensus_trace_span_ce, "parentSpanId", sizeof("parentSpanId") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
     zend_declare_property_null(opencensus_trace_span_ce, "startTime", sizeof("startTime") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
     zend_declare_property_null(opencensus_trace_span_ce, "endTime", sizeof("endTime") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_span_ce, "kind", sizeof("kind") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
     zend_declare_property_null(opencensus_trace_span_ce, "attributes", sizeof("attributes") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
     zend_declare_property_null(opencensus_trace_span_ce, "stackTrace", sizeof("stackTrace") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-
-    REGISTER_TRACE_SPAN_CONSTANT(KIND_UNKNOWN);
-    REGISTER_TRACE_SPAN_CONSTANT(KIND_CLIENT);
-    REGISTER_TRACE_SPAN_CONSTANT(KIND_SERVER);
-    REGISTER_TRACE_SPAN_CONSTANT(KIND_PRODUCER);
-    REGISTER_TRACE_SPAN_CONSTANT(KIND_CONSUMER);
+    zend_declare_property_null(opencensus_trace_span_ce, "links", sizeof("links") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(opencensus_trace_span_ce, "timeEvents", sizeof("timeEvents") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
 
     return SUCCESS;
+}
+
+static void annotation_dtor(zval *zv)
+{
+    opencensus_trace_annotation_t *annotation = (opencensus_trace_annotation_t *)Z_PTR_P(zv);
+    opencensus_trace_annotation_free(annotation);
+    ZVAL_PTR_DTOR(zv);
+}
+
+
+static void link_dtor(zval *zv)
+{
+    opencensus_trace_link_t *link = (opencensus_trace_link_t *)Z_PTR_P(zv);
+    opencensus_trace_link_free(link);
+    ZVAL_PTR_DTOR(zv);
+}
+
+static void message_event_dtor(zval *zv)
+{
+    opencensus_trace_message_event_t *message_event = (opencensus_trace_message_event_t *)Z_PTR_P(zv);
+    opencensus_trace_message_event_free(message_event);
+    ZVAL_PTR_DTOR(zv);
+}
+
+static void time_event_dtor(zval *zv)
+{
+    opencensus_trace_time_event_t *time_event = (opencensus_trace_time_event_t *)Z_PTR_P(zv);
+    if (time_event->type == OPENCENSUS_TRACE_TIME_EVENT_ANNOTATION) {
+        annotation_dtor(zv);
+    } else if (time_event->type == OPENCENSUS_TRACE_TIME_EVENT_MESSAGE_EVENT) {
+        message_event_dtor(zv);
+    } else {
+        ZVAL_PTR_DTOR(zv);
+    }
 }
 
 /**
@@ -301,6 +356,12 @@ opencensus_trace_span_t *opencensus_trace_span_alloc()
     span->stop = 0;
     ALLOC_HASHTABLE(span->attributes);
     zend_hash_init(span->attributes, 4, NULL, ZVAL_PTR_DTOR, 0);
+
+    ALLOC_HASHTABLE(span->time_events);
+    zend_hash_init(span->time_events, 4, NULL, message_event_dtor, 0);
+
+    ALLOC_HASHTABLE(span->links);
+    zend_hash_init(span->links, 4, NULL, link_dtor, 0);
     return span;
 }
 
@@ -312,6 +373,8 @@ opencensus_trace_span_t *opencensus_trace_span_alloc()
 void opencensus_trace_span_free(opencensus_trace_span_t *span)
 {
     /* clear any allocated attributes */
+    FREE_HASHTABLE(span->links);
+    FREE_HASHTABLE(span->time_events);
     FREE_HASHTABLE(span->attributes);
     if (span->name) {
         zend_string_release(span->name);
@@ -335,6 +398,40 @@ int opencensus_trace_span_add_attribute(opencensus_trace_span_t *span, zend_stri
     }
 }
 
+/* Add an annotation to the trace span struct */
+int opencensus_trace_span_add_annotation(opencensus_trace_span_t *span, zend_string *description, zval *options)
+{
+    opencensus_trace_annotation_t *annotation = opencensus_trace_annotation_alloc();
+    annotation->time_event.time = opencensus_now();
+    annotation->description = zend_string_copy(description);
+
+    zend_hash_next_index_insert_ptr(span->time_events, annotation);
+    return SUCCESS;
+}
+
+/* Add a link to the trace span struct */
+int opencensus_trace_span_add_link(opencensus_trace_span_t *span, zend_string *trace_id, zend_string *span_id, zval *options)
+{
+    opencensus_trace_link_t *link = opencensus_trace_link_alloc();
+    link->trace_id = zend_string_copy(trace_id);
+    link->span_id = zend_string_copy(span_id);
+
+    zend_hash_next_index_insert_ptr(span->links, link);
+    return FAILURE;
+}
+
+/* Add a message event to the trace span struct */
+int opencensus_trace_span_add_message_event(opencensus_trace_span_t *span, zend_string *type, zend_string *id, zval *options)
+{
+    opencensus_trace_message_event_t *message_event = opencensus_trace_message_event_alloc();
+    message_event->time_event.time = opencensus_now();
+    message_event->type = zend_string_copy(type);
+    message_event->id = zend_string_copy(id);
+
+    zend_hash_next_index_insert_ptr(span->time_events, message_event);
+    return SUCCESS;
+}
+
 /* Add a single attribute to the provided trace span struct */
 int opencensus_trace_span_add_attribute_str(opencensus_trace_span_t *span, char *k, zend_string *v)
 {
@@ -354,11 +451,72 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
             span->start = Z_DVAL_P(v);
         } else if (strcmp(ZSTR_VAL(k), "name") == 0) {
             span->name = zend_string_copy(Z_STR_P(v));
-        } else if (strcmp(ZSTR_VAL(k), "kind") == 0) {
-            span->kind = Z_LVAL_P(v);
         } else if (strcmp(ZSTR_VAL(k), "spanId") == 0) {
-			span->span_id = zend_string_copy(Z_STR_P(v));
-		}
+            span->span_id = zend_string_copy(Z_STR_P(v));
+        }
     } ZEND_HASH_FOREACH_END();
+    return SUCCESS;
+}
+
+static int opencensus_trace_time_event_to_zval(opencensus_trace_time_event_t *time_event, zval *zv)
+{
+    if (time_event->type == OPENCENSUS_TRACE_TIME_EVENT_ANNOTATION) {
+        return opencensus_trace_annotation_to_zval((opencensus_trace_annotation_t *) time_event, zv);
+    } else if (time_event->type == OPENCENSUS_TRACE_TIME_EVENT_MESSAGE_EVENT) {
+        return opencensus_trace_message_event_to_zval((opencensus_trace_message_event_t *) time_event, zv);
+    } else {
+        ZVAL_NULL(zv);
+    }
+    return SUCCESS;
+}
+
+static int opencensus_trace_update_time_events(opencensus_trace_span_t *span, zval *return_value)
+{
+    opencensus_trace_time_event_t *event;
+    ZEND_HASH_FOREACH_PTR(span->time_events, event) {
+        zval zv;
+        opencensus_trace_time_event_to_zval(event, &zv);
+        add_next_index_zval(return_value, &zv);
+    } ZEND_HASH_FOREACH_END();
+}
+
+static int opencensus_trace_update_links(opencensus_trace_span_t *span, zval *return_value)
+{
+    opencensus_trace_link_t *link;
+    ZEND_HASH_FOREACH_PTR(span->links, link) {
+        zval zv;
+        opencensus_trace_link_to_zval(link, &zv);
+        add_next_index_zval(return_value, &zv);
+    } ZEND_HASH_FOREACH_END();
+}
+
+/* Fill the provided span with the provided data from the internal span representation */
+int opencensus_trace_span_to_zval(opencensus_trace_span_t *trace_span, zval *span TSRMLS_DC)
+{
+    zval attributes, links, time_events;
+    object_init_ex(span, opencensus_trace_span_ce);
+    zend_update_property_str(opencensus_trace_span_ce, span, "spanId", sizeof("spanId") - 1, trace_span->span_id);
+    if (trace_span->parent) {
+        zend_update_property_str(opencensus_trace_span_ce, span, "parentSpanId", sizeof("parentSpanId") - 1, trace_span->parent->span_id);
+    } else if (OPENCENSUS_TRACE_G(trace_parent_span_id)) {
+        zend_update_property_str(opencensus_trace_span_ce, span, "parentSpanId", sizeof("parentSpanId") - 1, OPENCENSUS_TRACE_G(trace_parent_span_id));
+    }
+    zend_update_property_str(opencensus_trace_span_ce, span, "name", sizeof("name") - 1, trace_span->name);
+    zend_update_property_double(opencensus_trace_span_ce, span, "startTime", sizeof("startTime") - 1, trace_span->start);
+    zend_update_property_double(opencensus_trace_span_ce, span, "endTime", sizeof("endTime") - 1, trace_span->stop);
+
+    ZVAL_ARR(&attributes, trace_span->attributes);
+    zend_update_property(opencensus_trace_span_ce, span, "attributes", sizeof("attributes") - 1, &attributes);
+
+    zend_update_property(opencensus_trace_span_ce, span, "stackTrace", sizeof("stackTrace") - 1, &trace_span->stackTrace);
+
+    array_init(&links);
+    opencensus_trace_update_links(trace_span, &links);
+    zend_update_property(opencensus_trace_span_ce, span, "links", sizeof("links") - 1, &links);
+
+    array_init(&time_events);
+    opencensus_trace_update_time_events(trace_span, &time_events);
+    zend_update_property(opencensus_trace_span_ce, span, "timeEvents", sizeof("timeEvents") - 1, &time_events);
+
     return SUCCESS;
 }
