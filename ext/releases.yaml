@@ -28,3 +28,13 @@ releases:
     notes: |-
       - Adds php_info() section (#42)
       - Span ids are captured as hex strings (#44)
+
+  - date: '2017-12-07'
+    time: 13:38:00
+    version: 0.1.0
+    stability: alpha
+    notes: |-
+      First alpha release.
+      - Refactored internal data structures to match OpenCensus models
+      - Supports creating detached spans.
+      - Add support for annotations, message events, and links.
