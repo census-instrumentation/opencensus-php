@@ -7,10 +7,6 @@ menu:
     weight: -100
 ---
 
-# OpenCensus for PHP
-
-[API Documentation][api-docs]
-
 ## Installation
 
 1. Install the `opencensus/opencensus` package using [composer][composer]:
