@@ -21,12 +21,6 @@
 
 extern zend_class_entry* opencensus_trace_span_ce;
 
-#define OPENCENSUS_TRACE_SPAN_KIND_UNKNOWN 0
-#define OPENCENSUS_TRACE_SPAN_KIND_CLIENT 1
-#define OPENCENSUS_TRACE_SPAN_KIND_SERVER 2
-#define OPENCENSUS_TRACE_SPAN_KIND_PRODUCER 3
-#define OPENCENSUS_TRACE_SPAN_KIND_CONSUMER 4
-
 // TraceSpan struct
 typedef struct opencensus_trace_span_t {
     zend_string *name;
@@ -35,17 +29,26 @@ typedef struct opencensus_trace_span_t {
     double stop;
     struct opencensus_trace_span_t *parent;
     zval stackTrace;
-    zend_long kind;
 
     // zend_string* => zval*
     HashTable *attributes;
+
+    // list of time events
+    HashTable *time_events;
+
+    // list of links
+    HashTable *links;
 } opencensus_trace_span_t;
 
 int opencensus_trace_span_add_attribute(opencensus_trace_span_t *span, zend_string *k, zend_string *v);
 int opencensus_trace_span_add_attribute_str(opencensus_trace_span_t *span, char *k, zend_string *v);
+int opencensus_trace_span_add_annotation(opencensus_trace_span_t *span, zend_string *description, zval *options);
+int opencensus_trace_span_add_link(opencensus_trace_span_t *span, zend_string *trace_id, zend_string *span_id, zval *options);
+int opencensus_trace_span_add_message_event(opencensus_trace_span_t *span, zend_string *type, zend_string *id, zval *options);
 int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval *span_options);
 opencensus_trace_span_t *opencensus_trace_span_alloc();
 void opencensus_trace_span_free(opencensus_trace_span_t *span);
 int opencensus_trace_span_minit(INIT_FUNC_ARGS);
+int opencensus_trace_span_to_zval(opencensus_trace_span_t *span, zval *zv);
 
 #endif /* PHP_OPENCENSUS_TRACE_SPAN_H */

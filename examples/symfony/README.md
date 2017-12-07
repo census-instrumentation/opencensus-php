@@ -1,4 +1,4 @@
-# Example Symfony Application (5.5)
+# Example Symfony Application (3.3)
 
 ## Integrating OpenCensus
 

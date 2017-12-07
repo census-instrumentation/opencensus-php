@@ -36,7 +36,7 @@ $iterator = Finder::create()
 
 $sami = new Sami($iterator, [
     // 'versions'  => $versions,
-    'build_dir' => __DIR__ . '/../docs',
+    'build_dir' => __DIR__ . '/../docs/public/api',
     'title' => 'OpenCensus PHP API'
 ]);
 

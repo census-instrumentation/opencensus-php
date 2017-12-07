@@ -3,10 +3,10 @@ OpenCensus Trace: Test setting attributes
 --FILE--
 <?php
 
-opencensus_trace_begin('root', []);
+opencensus_trace_begin('root', ['spanId' => '1234']);
 opencensus_trace_add_attribute('foo', 'bar');
 opencensus_trace_begin('inner', []);
-opencensus_trace_add_root_attribute('asdf', 'qwer');
+opencensus_trace_add_attribute('asdf', 'qwer', ['spanId' => '1234']);
 opencensus_trace_add_attribute('abc', 'def');
 opencensus_trace_finish();
 opencensus_trace_finish();

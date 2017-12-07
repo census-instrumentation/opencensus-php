@@ -187,6 +187,20 @@ class RequestHandler
         return $this->tracer->withSpan($span);
     }
 
+    /**
+     * Add an attribute to the provided Span
+     *
+     * @param string $attribute
+     * @param string $value
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the attribute to.
+     */
+    public function addAttribute($attribute, $value, $options = [])
+    {
+        $this->tracer->addAttribute($attribute, $value, $options);
+    }
+
     private function startTimeFromHeaders(array $headers)
     {
         if (array_key_exists('REQUEST_TIME_FLOAT', $headers)) {
