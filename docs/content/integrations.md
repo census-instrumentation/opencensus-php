@@ -9,11 +9,11 @@ menu:
 
 ## Frameworks
 
-* [Laravel](/integrating-laravel)
-* [Silex](/integrating-silex)
-* [Symfony](/integrating-symfony)
-* [Wordpress](/integrating-wordpress)
+* [Laravel](integrating-laravel)
+* [Silex](integrating-silex)
+* [Symfony](integrating-symfony)
+* [Wordpress](integrating-wordpress)
 
 ## Tools
 
-* [Guzzle](/integrating-guzzle)
+* [Guzzle](integrating-guzzle)
