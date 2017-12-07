@@ -16,7 +16,7 @@ calls in order to automatically collect nested spans (timing data).
 You can install the `opencensus` extension from [PECL](https://pecl.php.net):
 
 ```bash
-$ pecl instal opencensus-alpha
+$ pecl install opencensus-alpha
 ```
 
 Enable the extension in your `php.ini`:
