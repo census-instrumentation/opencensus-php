@@ -533,8 +533,14 @@ static void opencensus_trace_clear(int reset TSRMLS_DC)
     }
 
     OPENCENSUS_TRACE_G(current_span) = NULL;
-    OPENCENSUS_TRACE_G(trace_id) = NULL;
-    OPENCENSUS_TRACE_G(trace_parent_span_id) = 0;
+    if (OPENCENSUS_TRACE_G(trace_id)) {
+        zend_string_release(OPENCENSUS_TRACE_G(trace_id));
+        OPENCENSUS_TRACE_G(trace_id) = NULL;
+    }
+    if (OPENCENSUS_TRACE_G(trace_parent_span_id)) {
+        zend_string_release(OPENCENSUS_TRACE_G(trace_parent_span_id));
+        OPENCENSUS_TRACE_G(trace_parent_span_id) = NULL;
+    }
 }
 
 /**
@@ -556,13 +562,15 @@ PHP_FUNCTION(opencensus_trace_clear)
  */
 PHP_FUNCTION(opencensus_trace_set_context)
 {
-    zend_string *trace_id, *parent_span_id;
+    zend_string *trace_id = NULL, *parent_span_id = NULL;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S|S", &trace_id, &parent_span_id) == FAILURE) {
         RETURN_FALSE;
     }
 
     OPENCENSUS_TRACE_G(trace_id) = zend_string_copy(trace_id);
-    OPENCENSUS_TRACE_G(trace_parent_span_id) = zend_string_copy(parent_span_id);
+    if (parent_span_id) {
+        OPENCENSUS_TRACE_G(trace_parent_span_id) = zend_string_copy(parent_span_id);
+    }
 
     RETURN_TRUE;
 }
@@ -805,7 +813,7 @@ PHP_RINIT_FUNCTION(opencensus)
 
     OPENCENSUS_TRACE_G(current_span) = NULL;
     OPENCENSUS_TRACE_G(trace_id) = NULL;
-    OPENCENSUS_TRACE_G(trace_parent_span_id) = 0;
+    OPENCENSUS_TRACE_G(trace_parent_span_id) = NULL;
 
     return SUCCESS;
 }

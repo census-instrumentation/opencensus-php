@@ -358,7 +358,7 @@ opencensus_trace_span_t *opencensus_trace_span_alloc()
     zend_hash_init(span->attributes, 4, NULL, ZVAL_PTR_DTOR, 0);
 
     ALLOC_HASHTABLE(span->time_events);
-    zend_hash_init(span->time_events, 4, NULL, message_event_dtor, 0);
+    zend_hash_init(span->time_events, 4, NULL, time_event_dtor, 0);
 
     ALLOC_HASHTABLE(span->links);
     zend_hash_init(span->links, 4, NULL, link_dtor, 0);
@@ -373,8 +373,11 @@ opencensus_trace_span_t *opencensus_trace_span_alloc()
 void opencensus_trace_span_free(opencensus_trace_span_t *span)
 {
     /* clear any allocated attributes */
+    zend_hash_destroy(span->links);
     FREE_HASHTABLE(span->links);
+    zend_hash_destroy(span->time_events);
     FREE_HASHTABLE(span->time_events);
+    zend_hash_destroy(span->attributes);
     FREE_HASHTABLE(span->attributes);
     if (span->name) {
         zend_string_release(span->name);
