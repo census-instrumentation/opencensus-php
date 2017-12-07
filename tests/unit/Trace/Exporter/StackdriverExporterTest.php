@@ -26,7 +26,7 @@ use OpenCensus\Trace\Tracer\ContextTracer;
 use OpenCensus\Trace\Span as OpenCensusSpan;
 use Prophecy\Argument;
 use Google\Cloud\Trace\Trace;
-use Google\Cloud\Trace\TraceSpan;
+use Google\Cloud\Trace\Span;
 use Google\Cloud\Trace\TraceClient;
 
 /**
@@ -55,11 +55,11 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(3, $spans);
         foreach ($spans as $span) {
-            $this->assertInstanceOf(TraceSpan::class, $span);
+            $this->assertInstanceOf(Span::class, $span);
             $this->assertInternalType('string', $span->name());
-            $this->assertInternalType('int', $span->spanId());
-            $this->assertRegExp('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z/', $span->info()['startTime']);
-            $this->assertRegExp('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z/', $span->info()['endTime']);
+            $this->assertInternalType('string', $span->spanId());
+            $this->assertRegExp('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z/', $span->jsonSerialize()['startTime']);
+            $this->assertRegExp('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z/', $span->jsonSerialize()['endTime']);
         }
     }
 
@@ -80,23 +80,6 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
             'Reporting the Trace data failed: error_log test'
         );
         $this->assertFalse($reporter->report($tracer));
-    }
-
-    public function testHandlesKind()
-    {
-        $tracer = new ContextTracer(new SpanContext('testtraceid'));
-        $tracer->inSpan(['name' => 'main'], function () use ($tracer) {
-            $tracer->inSpan(['name' => 'span1'], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span2'], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span3'], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span4'], 'usleep', [1]);
-        });
-
-        $reporter = new StackdriverExporter(['client' => $this->client->reveal()]);
-        $spans = $reporter->convertSpans($tracer);
-
-        $this->assertCount(5, $spans);
-        $this->assertEquals(TraceSpan::SPAN_KIND_UNSPECIFIED, $spans[0]->info()['kind']);
     }
 
     /**
@@ -131,7 +114,7 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testStacktraceAttribute()
+    public function testStacktrace()
     {
         $stackTrace = [
             [
@@ -148,20 +131,7 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
         $reporter = new StackdriverExporter(['client' => $this->client->reveal()]);
         $spans = $reporter->convertSpans($tracer);
 
-        $attributes = $spans[0]->info()['labels'];
-        $this->assertArrayHasKey('/stacktrace', $attributes);
-
-        $expected = [
-            'stack_frame' => [
-                [
-                    'file_name' => '/path/to/file.php',
-                    'line_number' => 1234,
-                    'method_name' => 'asdf',
-                    'class_name' => 'Foo'
-                ]
-            ]
-        ];
-        $data = json_decode($attributes['/stacktrace'], true);
-        $this->assertEquals($expected, $data);
+        $data = $spans[0]->jsonSerialize();
+        $this->assertArrayHasKey('stackTrace', $data);
     }
 }
