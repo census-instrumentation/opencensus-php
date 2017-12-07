@@ -20,7 +20,7 @@ This extension has been built and tested on the following PHP versions:
 
 * 7.0.x
 * 7.1.x
-* 7.2.0 (alpha3)
+* 7.2.x
 
 ## Installation
 
