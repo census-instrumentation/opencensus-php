@@ -407,12 +407,9 @@ static opencensus_trace_span_t *opencensus_trace_begin(zend_string *function_nam
     }
 
     OPENCENSUS_TRACE_G(current_span) = span;
-    zval ptr;
-    ZVAL_PTR(&ptr, span);
 
     /* add the span to the list of spans */
-    // printf("inserting span with span id: %s\n", ZSTR_VAL(span->span_id));
-    zend_hash_add(OPENCENSUS_TRACE_G(spans), span->span_id, &ptr);
+    zend_hash_add_ptr(OPENCENSUS_TRACE_G(spans), span->span_id, span);
 
     return span;
 }

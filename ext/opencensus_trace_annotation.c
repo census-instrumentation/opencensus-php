@@ -145,6 +145,7 @@ void opencensus_trace_annotation_free(opencensus_trace_annotation_t *annotation)
     if (Z_TYPE(annotation->options) != IS_NULL) {
         ZVAL_PTR_DTOR(&annotation->options);
     }
+    efree(annotation);
 }
 
 int opencensus_trace_annotation_to_zval(opencensus_trace_annotation_t *annotation, zval *zv)
