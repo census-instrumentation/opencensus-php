@@ -317,11 +317,11 @@ static int opencensus_trace_call_user_function_callback(zend_execute_data *execu
         ZVAL_NULL(&args[0]);
     } else {
         has_scope = 1;
-        ZVAL_ZVAL(&args[0], getThis(), 0, 1);
+        ZVAL_COPY(&args[0], getThis());
     }
 
     for (i = 0; i < num_args; i++) {
-        ZVAL_ZVAL(&args[i + has_scope], EX_VAR_NUM(i), 0, 1);
+        ZVAL_COPY(&args[i + has_scope], EX_VAR_NUM(i));
     }
 
     if (call_user_function_ex(EG(function_table), NULL, callback, callback_result, num_args + has_scope, args, 0, NULL) != SUCCESS) {
@@ -537,6 +537,7 @@ static void opencensus_trace_clear(int reset TSRMLS_DC)
         zend_string_release(OPENCENSUS_TRACE_G(trace_id));
         OPENCENSUS_TRACE_G(trace_id) = NULL;
     }
+
     if (OPENCENSUS_TRACE_G(trace_parent_span_id)) {
         zend_string_release(OPENCENSUS_TRACE_G(trace_parent_span_id));
         OPENCENSUS_TRACE_G(trace_parent_span_id) = NULL;
@@ -678,7 +679,7 @@ void opencensus_trace_execute_internal(INTERNAL_FUNCTION_PARAMETERS)
 PHP_FUNCTION(opencensus_trace_function)
 {
     zend_string *function_name;
-    zval *handler = NULL, *copy;
+    zval *handler = NULL;
     zval h;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S|z", &function_name, &handler) == FAILURE) {
@@ -688,9 +689,11 @@ PHP_FUNCTION(opencensus_trace_function)
     if (handler == NULL) {
         ZVAL_LONG(&h, 1);
         handler = &h;
+    } else {
+        ZVAL_COPY(&h, handler);
     }
 
-    zend_hash_update(OPENCENSUS_TRACE_G(user_traced_functions), function_name, handler);
+    zend_hash_update(OPENCENSUS_TRACE_G(user_traced_functions), function_name, &h);
     RETURN_TRUE;
 }
 
@@ -705,7 +708,7 @@ PHP_FUNCTION(opencensus_trace_function)
 PHP_FUNCTION(opencensus_trace_method)
 {
     zend_string *class_name, *function_name, *key;
-    zval *handler = NULL, *copy;
+    zval *handler = NULL;
     zval h;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS|z", &class_name, &function_name, &handler) == FAILURE) {
@@ -715,10 +718,12 @@ PHP_FUNCTION(opencensus_trace_method)
     if (handler == NULL) {
         ZVAL_LONG(&h, 1);
         handler = &h;
+    } else {
+        ZVAL_COPY(&h, handler);
     }
 
     key = opencensus_trace_generate_class_name(class_name, function_name);
-    zend_hash_update(OPENCENSUS_TRACE_G(user_traced_functions), key, handler);
+    zend_hash_update(OPENCENSUS_TRACE_G(user_traced_functions), key, &h);
     zend_string_release(key);
 
     RETURN_FALSE;
