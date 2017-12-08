@@ -313,9 +313,7 @@ static int opencensus_trace_call_user_function_callback(zend_execute_data *execu
     int i, num_args = EX_NUM_ARGS(), has_scope = 0;
     zval *args = emalloc((num_args + 1) * sizeof(zval));
 
-    if (getThis() == NULL) {
-        ZVAL_NULL(&args[0]);
-    } else {
+    if (getThis() != NULL) {
         has_scope = 1;
         ZVAL_COPY(&args[0], getThis());
     }
@@ -325,8 +323,14 @@ static int opencensus_trace_call_user_function_callback(zend_execute_data *execu
     }
 
     if (call_user_function_ex(EG(function_table), NULL, callback, callback_result, num_args + has_scope, args, 0, NULL) != SUCCESS) {
+        for (i = 0; i < num_args + has_scope; i++) {
+            ZVAL_DESTRUCTOR(&args[i]);
+        }
         efree(args);
         return FAILURE;
+    }
+    for (i = 0; i < num_args + has_scope; i++) {
+        ZVAL_DESTRUCTOR(&args[i]);
     }
     efree(args);
 
