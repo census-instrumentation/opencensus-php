@@ -335,6 +335,8 @@ static int opencensus_trace_call_user_function_callback(zend_execute_data *execu
     efree(args);
 
     if (EG(exception) != NULL) {
+        php_error_docref(NULL, E_WARNING, "Exception in trace callback");
+        zend_clear_exception();
         return FAILURE;
     }
 
