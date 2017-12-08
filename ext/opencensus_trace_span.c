@@ -397,7 +397,6 @@ void opencensus_trace_span_free(opencensus_trace_span_t *span)
         zend_string_release(span->span_id);
     }
 
-    zend_hash_destroy(Z_ARRVAL(span->stackTrace));
     ZVAL_DESTRUCTOR(&span->stackTrace);
 
     /* free the trace span */
@@ -470,6 +469,9 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
         } else if (strcmp(ZSTR_VAL(k), "startTime") == 0) {
             span->start = Z_DVAL_P(v);
         } else if (strcmp(ZSTR_VAL(k), "name") == 0) {
+            if (span->name) {
+                zend_string_release(span->name);
+            }
             span->name = zend_string_copy(Z_STR_P(v));
         } else if (strcmp(ZSTR_VAL(k), "spanId") == 0) {
             if (span->span_id) {
