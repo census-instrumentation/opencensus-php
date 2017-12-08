@@ -57,15 +57,15 @@ ZEND_END_ARG_INFO();
  * @param array $contextOptions
  */
 static PHP_METHOD(OpenCensusTraceContext, __construct) {
-    zval *zval_context_options, *v;
+    zval *v;
     ulong idx;
     zend_string *k;
+    HashTable *context_options;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &zval_context_options) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "h", &context_options) == FAILURE) {
         return;
     }
 
-    zend_array *context_options = Z_ARR_P(zval_context_options);
     ZEND_HASH_FOREACH_KEY_VAL(context_options, idx, k, v) {
         zend_update_property(opencensus_trace_context_ce, getThis(), ZSTR_VAL(k), strlen(ZSTR_VAL(k)), v);
     } ZEND_HASH_FOREACH_END();
