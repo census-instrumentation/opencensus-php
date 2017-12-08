@@ -117,6 +117,16 @@ static PHP_METHOD(OpenCensusTraceSpan, __construct) {
     } ZEND_HASH_FOREACH_END();
 }
 
+static PHP_METHOD(OpenCensusTraceSpan, __destruct) {
+    zval val, *zv;
+    zv = zend_read_property(opencensus_trace_span_ce, getThis(), "attributes", sizeof("attributes") - 1, 0, &val TSRMLS_CC);
+    ZVAL_DESTRUCTOR(zv);
+    zv = zend_read_property(opencensus_trace_span_ce, getThis(), "links", sizeof("links") - 1, 0, &val TSRMLS_CC);
+    ZVAL_DESTRUCTOR(zv);
+    zv = zend_read_property(opencensus_trace_span_ce, getThis(), "timeEvents", sizeof("timeEvents") - 1, 0, &val TSRMLS_CC);
+    ZVAL_DESTRUCTOR(zv);
+}
+
 /**
  * Fetch the span name
  *
@@ -273,6 +283,7 @@ static PHP_METHOD(OpenCensusTraceSpan, stackTrace) {
 /* Declare method entries for the OpenCensus\Trace\Span class */
 static zend_function_entry opencensus_trace_span_methods[] = {
     PHP_ME(OpenCensusTraceSpan, __construct, arginfo_OpenCensusTraceSpan_construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+    PHP_ME(OpenCensusTraceSpan, __destruct, NULL, ZEND_ACC_PUBLIC | ZEND_ACC_DTOR)
     PHP_ME(OpenCensusTraceSpan, name, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(OpenCensusTraceSpan, spanId, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(OpenCensusTraceSpan, parentSpanId, NULL, ZEND_ACC_PUBLIC)
@@ -382,6 +393,12 @@ void opencensus_trace_span_free(opencensus_trace_span_t *span)
     if (span->name) {
         zend_string_release(span->name);
     }
+    if (span->span_id) {
+        zend_string_release(span->span_id);
+    }
+
+    zend_hash_destroy(Z_ARRVAL(span->stackTrace));
+    ZVAL_DESTRUCTOR(&span->stackTrace);
 
     /* free the trace span */
     efree(span);
@@ -394,7 +411,7 @@ int opencensus_trace_span_add_attribute(opencensus_trace_span_t *span, zend_stri
     zval zv;
     ZVAL_STRING(&zv, ZSTR_VAL(v));
 
-    if (zend_hash_update(span->attributes, zend_string_copy(k), &zv) == NULL) {
+    if (zend_hash_update(span->attributes, k, &zv) == NULL) {
         return FAILURE;
     } else {
         return SUCCESS;
@@ -455,6 +472,9 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
         } else if (strcmp(ZSTR_VAL(k), "name") == 0) {
             span->name = zend_string_copy(Z_STR_P(v));
         } else if (strcmp(ZSTR_VAL(k), "spanId") == 0) {
+            if (span->span_id) {
+                zend_string_release(span->span_id);
+            }
             span->span_id = zend_string_copy(Z_STR_P(v));
         }
     } ZEND_HASH_FOREACH_END();

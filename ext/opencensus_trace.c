@@ -353,7 +353,7 @@ static int opencensus_trace_call_user_function_callback(zend_execute_data *execu
  */
 static void opencensus_trace_execute_callback(opencensus_trace_span_t *span, zend_execute_data *execute_data, zval *span_options TSRMLS_DC)
 {
-    zend_string *callback_name;
+    zend_string *callback_name = NULL;
     if (zend_is_callable(span_options, 0, &callback_name)) {
         zval callback_result;
         if (opencensus_trace_call_user_function_callback(execute_data, span, span_options, &callback_result TSRMLS_CC) == SUCCESS) {
@@ -363,6 +363,7 @@ static void opencensus_trace_execute_callback(opencensus_trace_span_t *span, zen
     } else if (Z_TYPE_P(span_options) == IS_ARRAY) {
         opencensus_trace_span_apply_span_options(span, span_options);
     }
+    zend_string_release(callback_name);
 }
 
 /**
@@ -388,14 +389,14 @@ static zend_string *generate_span_id()
  * Start a new trace span. Inherit the parent span id from the current trace
  * context
  */
-static opencensus_trace_span_t *opencensus_trace_begin(zend_string *function_name, zend_execute_data *execute_data, zend_string *span_id TSRMLS_DC)
+static opencensus_trace_span_t *opencensus_trace_begin(zend_string *name, zend_execute_data *execute_data, zend_string *span_id TSRMLS_DC)
 {
     opencensus_trace_span_t *span = opencensus_trace_span_alloc();
 
     zend_fetch_debug_backtrace(&span->stackTrace, 1, DEBUG_BACKTRACE_IGNORE_ARGS, 0);
 
     span->start = opencensus_now();
-    span->name = zend_string_copy(function_name);
+    span->name = zend_string_copy(name);
     if (span_id) {
         span->span_id = zend_string_copy(span_id);
     } else {
@@ -731,11 +732,11 @@ PHP_FUNCTION(opencensus_trace_method)
 PHP_FUNCTION(opencensus_trace_list)
 {
     opencensus_trace_span_t *trace_span;
-    zval span;
 
     array_init(return_value);
 
     ZEND_HASH_FOREACH_PTR(OPENCENSUS_TRACE_G(spans), trace_span) {
+        zval span;
         opencensus_trace_span_to_zval(trace_span, &span);
         add_next_index_zval(return_value, &span TSRMLS_CC);
     } ZEND_HASH_FOREACH_END();
