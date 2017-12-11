@@ -24,8 +24,4 @@ $foo = new Foo();
 $foo->bar($bar);
 ?>
 --EXPECTF--
-Fatal error: Uncaught Error: Call to undefined method Bar::bar() in %s
-Stack trace:
-#%d %s
-#%d %s
-  thrown in %s on line %d
+Warning: main(): Exception in trace callback in %s on line %d

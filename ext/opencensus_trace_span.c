@@ -117,6 +117,16 @@ static PHP_METHOD(OpenCensusTraceSpan, __construct) {
     } ZEND_HASH_FOREACH_END();
 }
 
+static PHP_METHOD(OpenCensusTraceSpan, __destruct) {
+    zval val, *zv;
+    zv = zend_read_property(opencensus_trace_span_ce, getThis(), "attributes", sizeof("attributes") - 1, 0, &val TSRMLS_CC);
+    ZVAL_DESTRUCTOR(zv);
+    zv = zend_read_property(opencensus_trace_span_ce, getThis(), "links", sizeof("links") - 1, 0, &val TSRMLS_CC);
+    ZVAL_DESTRUCTOR(zv);
+    zv = zend_read_property(opencensus_trace_span_ce, getThis(), "timeEvents", sizeof("timeEvents") - 1, 0, &val TSRMLS_CC);
+    ZVAL_DESTRUCTOR(zv);
+}
+
 /**
  * Fetch the span name
  *
@@ -273,6 +283,7 @@ static PHP_METHOD(OpenCensusTraceSpan, stackTrace) {
 /* Declare method entries for the OpenCensus\Trace\Span class */
 static zend_function_entry opencensus_trace_span_methods[] = {
     PHP_ME(OpenCensusTraceSpan, __construct, arginfo_OpenCensusTraceSpan_construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+    PHP_ME(OpenCensusTraceSpan, __destruct, NULL, ZEND_ACC_PUBLIC | ZEND_ACC_DTOR)
     PHP_ME(OpenCensusTraceSpan, name, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(OpenCensusTraceSpan, spanId, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(OpenCensusTraceSpan, parentSpanId, NULL, ZEND_ACC_PUBLIC)
@@ -351,14 +362,14 @@ opencensus_trace_span_t *opencensus_trace_span_alloc()
     opencensus_trace_span_t *span = emalloc(sizeof(opencensus_trace_span_t));
     span->name = NULL;
     span->parent = NULL;
-    span->span_id = 0;
+    span->span_id = NULL;
     span->start = 0;
     span->stop = 0;
     ALLOC_HASHTABLE(span->attributes);
     zend_hash_init(span->attributes, 4, NULL, ZVAL_PTR_DTOR, 0);
 
     ALLOC_HASHTABLE(span->time_events);
-    zend_hash_init(span->time_events, 4, NULL, message_event_dtor, 0);
+    zend_hash_init(span->time_events, 4, NULL, time_event_dtor, 0);
 
     ALLOC_HASHTABLE(span->links);
     zend_hash_init(span->links, 4, NULL, link_dtor, 0);
@@ -373,12 +384,20 @@ opencensus_trace_span_t *opencensus_trace_span_alloc()
 void opencensus_trace_span_free(opencensus_trace_span_t *span)
 {
     /* clear any allocated attributes */
+    zend_hash_destroy(span->links);
     FREE_HASHTABLE(span->links);
+    zend_hash_destroy(span->time_events);
     FREE_HASHTABLE(span->time_events);
+    zend_hash_destroy(span->attributes);
     FREE_HASHTABLE(span->attributes);
     if (span->name) {
         zend_string_release(span->name);
     }
+    if (span->span_id) {
+        zend_string_release(span->span_id);
+    }
+
+    ZVAL_DESTRUCTOR(&span->stackTrace);
 
     /* free the trace span */
     efree(span);
@@ -391,7 +410,7 @@ int opencensus_trace_span_add_attribute(opencensus_trace_span_t *span, zend_stri
     zval zv;
     ZVAL_STRING(&zv, ZSTR_VAL(v));
 
-    if (zend_hash_update(span->attributes, zend_string_copy(k), &zv) == NULL) {
+    if (zend_hash_update(span->attributes, k, &zv) == NULL) {
         return FAILURE;
     } else {
         return SUCCESS;
@@ -450,8 +469,14 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
         } else if (strcmp(ZSTR_VAL(k), "startTime") == 0) {
             span->start = Z_DVAL_P(v);
         } else if (strcmp(ZSTR_VAL(k), "name") == 0) {
+            if (span->name) {
+                zend_string_release(span->name);
+            }
             span->name = zend_string_copy(Z_STR_P(v));
         } else if (strcmp(ZSTR_VAL(k), "spanId") == 0) {
+            if (span->span_id) {
+                zend_string_release(span->span_id);
+            }
             span->span_id = zend_string_copy(Z_STR_P(v));
         }
     } ZEND_HASH_FOREACH_END();
@@ -505,7 +530,8 @@ int opencensus_trace_span_to_zval(opencensus_trace_span_t *trace_span, zval *spa
     zend_update_property_double(opencensus_trace_span_ce, span, "startTime", sizeof("startTime") - 1, trace_span->start);
     zend_update_property_double(opencensus_trace_span_ce, span, "endTime", sizeof("endTime") - 1, trace_span->stop);
 
-    ZVAL_ARR(&attributes, trace_span->attributes);
+    array_init(&attributes);
+    zend_hash_copy(Z_ARRVAL(attributes), trace_span->attributes, NULL);
     zend_update_property(opencensus_trace_span_ce, span, "attributes", sizeof("attributes") - 1, &attributes);
 
     zend_update_property(opencensus_trace_span_ce, span, "stackTrace", sizeof("stackTrace") - 1, &trace_span->stackTrace);

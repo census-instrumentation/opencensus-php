@@ -172,8 +172,9 @@ void opencensus_trace_message_event_free(opencensus_trace_message_event_t *messa
         zend_string_release(message_event->id);
     }
     if (Z_TYPE(message_event->options) != IS_NULL) {
-        ZVAL_PTR_DTOR(&message_event->options);
+        ZVAL_DESTRUCTOR(&message_event->options);
     }
+    efree(message_event);
 }
 
 int opencensus_trace_message_event_to_zval(opencensus_trace_message_event_t *message_event, zval *zv)
