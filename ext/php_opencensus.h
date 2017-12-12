@@ -24,6 +24,12 @@
 #include "php.h"
 #include "opencensus_trace.h"
 
+#ifdef _WIN32
+#include "win32/time.h"
+#else
+#include <sys/time.h>
+#endif
+
 #define PHP_OPENCENSUS_VERSION "0.1.0"
 #define PHP_OPENCENSUS_EXTNAME "opencensus"
 
