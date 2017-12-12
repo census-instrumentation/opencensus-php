@@ -12,31 +12,40 @@ This extension allows you to easily gather latency and other metadata by watchin
   <email>chingor@google.com</email>
   <active>yes</active>
  </lead>
- <date>2017-10-20</date>
- <time>13:11:00</time>
+ <date>2017-12-12</date>
+ <time>09:34:00</time>
  <version>
-  <release>0.0.4</release>
-  <api>0.0.4</api>
+  <release>0.1.0</release>
+  <api>0.1.0</api>
  </version>
  <stability>
-  <release>devel</release>
-  <api>devel</api>
+  <release>alpha</release>
+  <api>alpha</api>
  </stability>
  <license>Apache 2.0</license>
  <notes>
-- Adds php_info() section (#42)
-- Span ids are captured as hex strings (#44)
+First alpha release.
+- Refactored internal data structures to match OpenCensus models
+- Supports creating detached spans.
+- Add support for annotations, message events, and links.
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <file baseinstalldir="/" name="config.m4" role="src" />
    <file baseinstalldir="/" name="config.w32" role="src" />
    <file baseinstalldir="/" name="opencensus_trace.c" role="src" />
+   <file baseinstalldir="/" name="opencensus_trace_annotation.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_context.c" role="src" />
+   <file baseinstalldir="/" name="opencensus_trace_link.c" role="src" />
+   <file baseinstalldir="/" name="opencensus_trace_message_event.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_span.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace.h" role="src" />
+   <file baseinstalldir="/" name="opencensus_trace_annotation.h" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_context.h" role="src" />
+   <file baseinstalldir="/" name="opencensus_trace_link.h" role="src" />
+   <file baseinstalldir="/" name="opencensus_trace_message_event.h" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_span.h" role="src" />
+   <file baseinstalldir="/" name="opencensus_trace_time_event.h" role="src" />
    <file baseinstalldir="/" name="php_opencensus.h" role="src" />
 
    <file name="README.md" role="doc" />
@@ -44,6 +53,7 @@ This extension allows you to easily gather latency and other metadata by watchin
 
    <dir name="tests">
     <file name="common.php" role="test" />
+    <file name="annotations.phpt" role="test" />
     <file name="backtrace_test.phpt" role="test" />
     <file name="basic_class_function.phpt" role="test" />
     <file name="basic_context.phpt" role="test" />
@@ -52,8 +62,8 @@ This extension allows you to easily gather latency and other metadata by watchin
     <file name="clear_traces.phpt" role="test" />
     <file name="closure_exeception.phpt" role="test" />
     <file name="closure_exeception2.phpt" role="test" />
-    <file name="constants_test.phpt" role="test" />
     <file name="context_class.phpt" role="test" />
+    <file name="context_span_id.phpt" role="test" />
     <file name="function_callback.phpt" role="test" />
     <file name="function_callback_arguments.phpt" role="test" />
     <file name="function_callback_array.phpt" role="test" />
@@ -63,29 +73,28 @@ This extension allows you to easily gather latency and other metadata by watchin
     <file name="function_callback_string.phpt" role="test" />
     <file name="function_callback_wrong_return.phpt" role="test" />
     <file name="function_custom.phpt" role="test" />
-    <file name="function_kind_default.phpt" role="test" />
-    <file name="function_kind_specified.phpt" role="test" />
     <file name="inherit_context.phpt" role="test" />
-    <file name="attributes.phpt" role="test" />
+    <file name="labels.phpt" role="test" />
+    <file name="links.phpt" role="test" />
     <file name="manual_spans.phpt" role="test" />
     <file name="manual_spans_default_options.phpt" role="test" />
     <file name="many_spans_test.phpt" role="test" />
+    <file name="message_events.phpt" role="test" />
     <file name="method_callback.phpt" role="test" />
     <file name="method_callback_arguments.phpt" role="test" />
     <file name="method_callback_array.phpt" role="test" />
     <file name="method_callback_scope.phpt" role="test" />
     <file name="method_callback_string.phpt" role="test" />
     <file name="method_custom.phpt" role="test" />
-    <file name="method_kind_default.phpt" role="test" />
-    <file name="method_kind_specified.phpt" role="test" />
     <file name="module_callback_static_string.phpt" role="test" />
     <file name="nested_spans.phpt" role="test" />
-    <file name="non-string-attributes-function-callback.phpt" role="test" />
-    <file name="non-string-attributes-function.phpt" role="test" />
-    <file name="non-string-attributes-method-callback.phpt" role="test" />
-    <file name="non-string-attributes-method.phpt" role="test" />
-    <file name="non-string-attributes.phpt" role="test" />
+    <file name="non-string-labels-function-callback.phpt" role="test" />
+    <file name="non-string-labels-function.phpt" role="test" />
+    <file name="non-string-labels-method-callback.phpt" role="test" />
+    <file name="non-string-labels-method.phpt" role="test" />
+    <file name="non-string-labels.phpt" role="test" />
     <file name="span_class.phpt" role="test" />
+    <file name="span_specify_id.phpt" role="test" />
     <file name="static_method_callback_scope.phpt" role="test" />
     <file name="static_method_test.phpt" role="test" />
     <file name="trace_context.phpt" role="test" />
@@ -166,6 +175,24 @@ First dev release
    <notes>
 - Adds php_info() section (#42)
 - Span ids are captured as hex strings (#44)
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>0.1.0</release>
+    <api>0.1.0</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2017-12-12</date>
+   <license>Apache 2.0</license>
+   <notes>
+First alpha release.
+- Refactored internal data structures to match OpenCensus models
+- Supports creating detached spans.
+- Add support for annotations, message events, and links.
    </notes>
   </release>
  </changelog>

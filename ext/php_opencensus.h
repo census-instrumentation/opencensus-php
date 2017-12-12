@@ -30,7 +30,7 @@
 #include <sys/time.h>
 #endif
 
-#define PHP_OPENCENSUS_VERSION "0.0.4"
+#define PHP_OPENCENSUS_VERSION "0.1.0"
 #define PHP_OPENCENSUS_EXTNAME "opencensus"
 
 #define PHP_OPENCENSUS_MAKE_STD_ZVAL(pzv) \
