@@ -12,8 +12,8 @@ This extension allows you to easily gather latency and other metadata by watchin
   <email>chingor@google.com</email>
   <active>yes</active>
  </lead>
- <date>2017-12-07</date>
- <time>13:38:00</time>
+ <date>2017-12-12</date>
+ <time>09:34:00</time>
  <version>
   <release>0.1.0</release>
   <api>0.1.0</api>
@@ -186,7 +186,7 @@ First dev release
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2017-12-07</date>
+   <date>2017-12-12</date>
    <license>Apache 2.0</license>
    <notes>
 First alpha release.
