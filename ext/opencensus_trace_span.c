@@ -503,6 +503,7 @@ static int opencensus_trace_update_time_events(opencensus_trace_span_t *span, zv
         opencensus_trace_time_event_to_zval(event, &zv);
         add_next_index_zval(return_value, &zv);
     } ZEND_HASH_FOREACH_END();
+	return SUCCESS;
 }
 
 static int opencensus_trace_update_links(opencensus_trace_span_t *span, zval *return_value)
@@ -513,6 +514,7 @@ static int opencensus_trace_update_links(opencensus_trace_span_t *span, zval *re
         opencensus_trace_link_to_zval(link, &zv);
         add_next_index_zval(return_value, &zv);
     } ZEND_HASH_FOREACH_END();
+	return SUCCESS;
 }
 
 /* Fill the provided span with the provided data from the internal span representation */

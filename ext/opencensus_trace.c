@@ -19,19 +19,18 @@
 #include "opencensus_trace_span.h"
 #include "opencensus_trace_context.h"
 #include "opencensus_trace_annotation.h"
+#include "opencensus_trace_link.h"
+#include "opencensus_trace_message_event.h"
+#include "Zend/zend_builtin_functions.h"
 #include "Zend/zend_compile.h"
 #include "Zend/zend_closures.h"
+#include "Zend/zend_exceptions.h"
 #include "zend_extensions.h"
 #include "standard/php_math.h"
+#include "ext/standard/info.h"
 
 #if PHP_VERSION_ID < 70100
 #include "standard/php_rand.h"
-#endif
-
-#ifdef _WIN32
-#include "win32/time.h"
-#else
-#include <sys/time.h>
 #endif
 
 /**

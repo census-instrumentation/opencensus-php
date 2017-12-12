@@ -58,7 +58,6 @@ ZEND_END_ARG_INFO();
  */
 static PHP_METHOD(OpenCensusTraceContext, __construct) {
     zval *v;
-    ulong idx;
     zend_string *k;
     HashTable *context_options;
 
@@ -66,7 +65,7 @@ static PHP_METHOD(OpenCensusTraceContext, __construct) {
         return;
     }
 
-    ZEND_HASH_FOREACH_KEY_VAL(context_options, idx, k, v) {
+    ZEND_HASH_FOREACH_STR_KEY_VAL(context_options, k, v) {
         zend_update_property(opencensus_trace_context_ce, getThis(), ZSTR_VAL(k), strlen(ZSTR_VAL(k)), v);
     } ZEND_HASH_FOREACH_END();
 }
