@@ -127,7 +127,7 @@ and requests with a higher priority.
 **Alpha**: Libraries defined at an Alpha quality level are still a
 work-in-progress and are more likely to get backwards-incompatible updates.
 
-**Current Status:** Pre-Alpha
+**Current Status:** Alpha
 
 
 ## Contributing
@@ -152,14 +152,14 @@ This is not an official Google product.
 [api-docs]: http://opencensus.io/opencensus-php/
 [composer]: https://getcomposer.org/
 [pecl]: https://pecl.php.net/
-[never-sampler]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Sampler/NeverSampleSampler.html
-[always-sampler]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Sampler/NeverSampleSampler.html
-[qps-sampler]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Sampler/NeverSampleSampler.html
-[probability-sampler]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Sampler/NeverSampleSampler.html
-[echo-exporter]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Exporter/EchoExporter.html
-[file-exporter]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Exporter/FileExporter.html
-[stackdriver-exporter]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Exporter/StackdriverExporter.html
-[logger-exporter]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Exporter/LoggerExporter.html
-[null-exporter]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Exporter/NullExporter.html
-[zipkin-exporter]: http://opencensus.io/opencensus-php/OpenCensus/Trace/Exporter/ZipkinExporter.html
+[never-sampler]: http://opencensus.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[always-sampler]: http://opencensus.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[qps-sampler]: http://opencensus.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[probability-sampler]: http://opencensus.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[echo-exporter]: http://opencensus.io/opencensus-php/api/OpenCensus/Trace/Exporter/EchoExporter.html
+[file-exporter]: http://opencensus.io/opencensus-php/api/OpenCensus/Trace/Exporter/FileExporter.html
+[stackdriver-exporter]: http://opencensus.io/opencensus-php/api/OpenCensus/Trace/Exporter/StackdriverExporter.html
+[logger-exporter]: http://opencensus.io/opencensus-php/api/OpenCensus/Trace/Exporter/LoggerExporter.html
+[null-exporter]: http://opencensus.io/opencensus-php/api/OpenCensus/Trace/Exporter/NullExporter.html
+[zipkin-exporter]: http://opencensus.io/opencensus-php/api/OpenCensus/Trace/Exporter/ZipkinExporter.html
 [semver]: http://semver.org/
