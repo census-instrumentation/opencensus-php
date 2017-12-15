@@ -79,3 +79,34 @@ use OpenCensus\Trace\Exporter\StackdriverExporter;
 
 Tracer::start(new StackdriverExporter(['async' => true]));
 ```
+
+## Configuration
+
+### Sampler
+
+If you configure a sampler, you can no longer specify sampler configuration as
+an array -- you can only provide a `SamplerInterface` instance.
+
+In Stackdriver Trace:
+
+```php
+<?php
+
+RequestTracer::start($reporter, [
+  'sampler' => [
+    'type' => 'random',
+    'rate' => 0.2
+  ]
+]);
+```
+
+In OpenCensus:
+
+```php
+<?php
+use OpenCensus\Trace\Sampler\ProbabilitySampler;
+
+Tracer::start($reporter, [
+  'sampler' => new ProbabilitySampler(0.2)
+]);
+```
