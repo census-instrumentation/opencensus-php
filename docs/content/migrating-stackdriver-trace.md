@@ -73,6 +73,7 @@ RequestTracer::start($reporter);
 In OpenCensus:
 
 ```php
+<?php
 use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Exporter\StackdriverExporter;
 
