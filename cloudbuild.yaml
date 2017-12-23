@@ -1,17 +1,29 @@
 # This cloudbuild.yaml is used to test the php extension against multiple versions of php
 steps:
   - name: gcr.io/cloud-builders/docker
-    args: ['build', '--build-arg', 'BASE_IMAGE=gcr.io/google-appengine/php71', '.']
+    args: ['build', '--build-arg', 'BASE_IMAGE=php:7.1', '.']
     waitFor: ['-']
-    id: php71
+    id: php71-nts
   - name: gcr.io/cloud-builders/docker
-    args: ['build', '--build-arg', 'BASE_IMAGE=gcr.io/google-appengine/php70', '.']
+    args: ['build', '--build-arg', 'BASE_IMAGE=php:7.1-zts', '.']
     waitFor: ['-']
-    id: php70
+    id: php71-zts
   - name: gcr.io/cloud-builders/docker
-    args: ['build', '--build-arg', 'BASE_IMAGE=gcr.io/google-appengine/php72', '.']
+    args: ['build', '--build-arg', 'BASE_IMAGE=php:7.0', '.']
     waitFor: ['-']
-    id: php72
+    id: php70-nts
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '--build-arg', 'BASE_IMAGE=php:7.0-zts', '.']
+    waitFor: ['-']
+    id: php70-zts
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '--build-arg', 'BASE_IMAGE=php:7.2', '.']
+    waitFor: ['-']
+    id: php72-nts
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '--build-arg', 'BASE_IMAGE=php:7.2-zts', '.']
+    waitFor: ['-']
+    id: php72-zts
   - name: gcr.io/cloud-builders/docker
     args: ['build', '--build-arg', 'BASE_IMAGE=gcr.io/php-stackdriver/php71-32bit', '.']
     waitFor: ['-']

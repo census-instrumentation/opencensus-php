@@ -23,7 +23,9 @@ RUN mkdir -p /build && \
         gcc \
         libc-dev \
         make \
-        autoconf
+        autoconf \
+        git \
+        unzip
 
 COPY . /build/
 
@@ -41,7 +43,14 @@ RUN phpize && \
 
 WORKDIR /build
 
-RUN composer install && \
+RUN EXPECTED_SIGNATURE=$(curl -f https://composer.github.io/installer.sig) && \
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    ACTUAL_SIGNATURE=$(php -r "echo (hash_file('SHA384', 'composer-setup.php'));") && \
+    test $EXPECTED_SIGNATURE = $ACTUAL_SIGNATURE && \
+    php composer-setup.php && \
+    php -r "unlink('composer-setup.php');"
+
+RUN php composer.phar install && \
     vendor/bin/phpcs --standard=./phpcs-ruleset.xml && \
     vendor/bin/phpunit && \
     php -d extension=opencensus.so vendor/bin/phpunit
