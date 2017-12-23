@@ -38,3 +38,10 @@ releases:
       - Refactored internal data structures to match OpenCensus models
       - Supports creating detached spans.
       - Add support for annotations, message events, and links.
+
+  - date: '2017-12-22'
+    time: 16:55:00
+    version: 0.1.1
+    stability: alpha
+    notes: |-
+      Fix segfault when specifying attributes in a callback (#93)
