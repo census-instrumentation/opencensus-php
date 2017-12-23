@@ -17,11 +17,11 @@ steps:
     waitFor: ['-']
     id: php70-zts
   - name: gcr.io/cloud-builders/docker
-    args: ['build', '--build-arg', 'BASE_IMAGE=php:7.2-rc', '.']
+    args: ['build', '--build-arg', 'BASE_IMAGE=php:7.2', '.']
     waitFor: ['-']
     id: php72-nts
   - name: gcr.io/cloud-builders/docker
-    args: ['build', '--build-arg', 'BASE_IMAGE=php:7.2-rc-zts', '.']
+    args: ['build', '--build-arg', 'BASE_IMAGE=php:7.2-zts', '.']
     waitFor: ['-']
     id: php72-zts
   - name: gcr.io/cloud-builders/docker
