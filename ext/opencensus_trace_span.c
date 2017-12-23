@@ -533,7 +533,7 @@ int opencensus_trace_span_to_zval(opencensus_trace_span_t *trace_span, zval *spa
     zend_update_property_double(opencensus_trace_span_ce, span, "endTime", sizeof("endTime") - 1, trace_span->stop);
 
     array_init(&attributes);
-    zend_hash_copy(Z_ARRVAL(attributes), trace_span->attributes, NULL);
+    zend_hash_copy(Z_ARRVAL(attributes), trace_span->attributes, zval_add_ref);
     zend_update_property(opencensus_trace_span_ce, span, "attributes", sizeof("attributes") - 1, &attributes);
 
     zend_update_property(opencensus_trace_span_ce, span, "stackTrace", sizeof("stackTrace") - 1, &trace_span->stackTrace);
