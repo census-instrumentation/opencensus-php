@@ -12,11 +12,11 @@ This extension allows you to easily gather latency and other metadata by watchin
   <email>chingor@google.com</email>
   <active>yes</active>
  </lead>
- <date>2017-12-12</date>
- <time>09:34:00</time>
+ <date>2017-12-22</date>
+ <time>16:55:00</time>
  <version>
-  <release>0.1.0</release>
-  <api>0.1.0</api>
+  <release>0.1.1</release>
+  <api>0.1.1</api>
  </version>
  <stability>
   <release>alpha</release>
@@ -24,10 +24,7 @@ This extension allows you to easily gather latency and other metadata by watchin
  </stability>
  <license>Apache 2.0</license>
  <notes>
-First alpha release.
-- Refactored internal data structures to match OpenCensus models
-- Supports creating detached spans.
-- Add support for annotations, message events, and links.
+Fix segfault when specifying attributes in a callback (#93)
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -66,6 +63,7 @@ First alpha release.
     <file name="context_span_id.phpt" role="test" />
     <file name="function_callback.phpt" role="test" />
     <file name="function_callback_arguments.phpt" role="test" />
+    <file name="function_callback_arguments_gc.phpt" role="test" />
     <file name="function_callback_array.phpt" role="test" />
     <file name="function_callback_callable_wrong_return.phpt" role="test" />
     <file name="function_callback_extra_arguments.phpt" role="test" />
@@ -193,6 +191,21 @@ First alpha release.
 - Refactored internal data structures to match OpenCensus models
 - Supports creating detached spans.
 - Add support for annotations, message events, and links.
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>0.1.1</release>
+    <api>0.1.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2017-12-22</date>
+   <license>Apache 2.0</license>
+   <notes>
+Fix segfault when specifying attributes in a callback (#93)
    </notes>
   </release>
  </changelog>
