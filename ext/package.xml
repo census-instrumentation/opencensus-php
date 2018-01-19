@@ -64,7 +64,6 @@ Fix potential variable naming collision (#97)
     <file name="context_span_id.phpt" role="test" />
     <file name="function_callback.phpt" role="test" />
     <file name="function_callback_arguments.phpt" role="test" />
-    <file name="function_callback_arguments_gc.phpt" role="test" />
     <file name="function_callback_array.phpt" role="test" />
     <file name="function_callback_callable_wrong_return.phpt" role="test" />
     <file name="function_callback_extra_arguments.phpt" role="test" />
