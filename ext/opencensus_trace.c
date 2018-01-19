@@ -37,8 +37,8 @@
  * True globals for storing the original zend_execute_ex and
  * zend_execute_internal function pointers
  */
-void (*original_zend_execute_ex) (zend_execute_data *execute_data);
-void (*original_zend_execute_internal) (zend_execute_data *execute_data, zval *return_value);
+static void (*opencensus_original_zend_execute_ex) (zend_execute_data *execute_data);
+static void (*opencensus_original_zend_execute_internal) (zend_execute_data *execute_data, zval *return_value);
 
 ZEND_DECLARE_MODULE_GLOBALS(opencensus)
 
@@ -607,7 +607,7 @@ PHP_FUNCTION(opencensus_trace_context)
 /**
  * This method replaces the internal zend_execute_ex method used to dispatch
  * calls to user space code. The original zend_execute_ex method is moved to
- * original_zend_execute_ex
+ * opencensus_original_zend_execute_ex
  */
 void opencensus_trace_execute_ex (zend_execute_data *execute_data TSRMLS_DC) {
     zend_string *function_name = opencensus_trace_add_scope_name(
@@ -622,15 +622,15 @@ void opencensus_trace_execute_ex (zend_execute_data *execute_data TSRMLS_DC) {
 
         if (trace_handler != NULL) {
             span = opencensus_trace_begin(function_name, execute_data, NULL TSRMLS_CC);
-            original_zend_execute_ex(execute_data TSRMLS_CC);
+            opencensus_original_zend_execute_ex(execute_data TSRMLS_CC);
             opencensus_trace_execute_callback(span, execute_data, trace_handler TSRMLS_CC);
             opencensus_trace_finish();
         } else {
-            original_zend_execute_ex(execute_data TSRMLS_CC);
+            opencensus_original_zend_execute_ex(execute_data TSRMLS_CC);
         }
         zend_string_release(function_name);
     } else {
-        original_zend_execute_ex(execute_data TSRMLS_CC);
+        opencensus_original_zend_execute_ex(execute_data TSRMLS_CC);
     }
 }
 
@@ -639,8 +639,8 @@ void opencensus_trace_execute_ex (zend_execute_data *execute_data TSRMLS_DC) {
  */
 static void resume_execute_internal(INTERNAL_FUNCTION_PARAMETERS)
 {
-    if (original_zend_execute_internal) {
-        original_zend_execute_internal(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+    if (opencensus_original_zend_execute_internal) {
+        opencensus_original_zend_execute_internal(INTERNAL_FUNCTION_PARAM_PASSTHRU);
     } else {
         execute_data->func->internal_function.handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
     }
@@ -649,7 +649,7 @@ static void resume_execute_internal(INTERNAL_FUNCTION_PARAMETERS)
 /**
  * This method replaces the internal zend_execute_internal method used to
  * dispatch calls to internal code. The original zend_execute_internal method
- * is moved to original_zend_execute_internal
+ * is moved to opencensus_original_zend_execute_internal
  */
 void opencensus_trace_execute_internal(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -777,10 +777,10 @@ PHP_MINIT_FUNCTION(opencensus)
      * Save original zend execute functions and use our own to instrument
      * function calls
      */
-    original_zend_execute_ex = zend_execute_ex;
+    opencensus_original_zend_execute_ex = zend_execute_ex;
     zend_execute_ex = opencensus_trace_execute_ex;
 
-    original_zend_execute_internal = zend_execute_internal;
+    opencensus_original_zend_execute_internal = zend_execute_internal;
     zend_execute_internal = opencensus_trace_execute_internal;
 
     opencensus_trace_span_minit(INIT_FUNC_ARGS_PASSTHRU);
@@ -798,8 +798,8 @@ PHP_MINIT_FUNCTION(opencensus)
 PHP_MSHUTDOWN_FUNCTION(opencensus)
 {
     /* Put the original zend execute function back */
-    zend_execute_ex = original_zend_execute_ex;
-    zend_execute_internal = original_zend_execute_internal;
+    zend_execute_ex = opencensus_original_zend_execute_ex;
+    zend_execute_internal = opencensus_original_zend_execute_internal;
 
     return SUCCESS;
 }
