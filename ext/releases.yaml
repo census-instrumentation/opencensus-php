@@ -45,3 +45,10 @@ releases:
     stability: alpha
     notes: |-
       Fix segfault when specifying attributes in a callback (#93)
+
+  - date: '2018-01-19'
+    time: 09:52:00
+    version: 0.1.2
+    stability: alpha
+    notes: |-
+      Fix potential variable naming collision (#97)
