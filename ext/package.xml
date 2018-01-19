@@ -12,11 +12,11 @@ This extension allows you to easily gather latency and other metadata by watchin
   <email>chingor@google.com</email>
   <active>yes</active>
  </lead>
- <date>2017-12-22</date>
- <time>16:55:00</time>
+ <date>2018-01-19</date>
+ <time>09:52:00</time>
  <version>
-  <release>0.1.1</release>
-  <api>0.1.1</api>
+  <release>0.1.2</release>
+  <api>0.1.2</api>
  </version>
  <stability>
   <release>alpha</release>
@@ -24,7 +24,7 @@ This extension allows you to easily gather latency and other metadata by watchin
  </stability>
  <license>Apache 2.0</license>
  <notes>
-Fix segfault when specifying attributes in a callback (#93)
+Fix potential variable naming collision (#97)
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -56,6 +56,7 @@ Fix segfault when specifying attributes in a callback (#93)
     <file name="basic_context.phpt" role="test" />
     <file name="basic_function.phpt" role="test" />
     <file name="basic_method.phpt" role="test" />
+    <file name="bug_001.phpt" role="test" />
     <file name="clear_traces.phpt" role="test" />
     <file name="closure_exeception.phpt" role="test" />
     <file name="closure_exeception2.phpt" role="test" />
@@ -63,7 +64,6 @@ Fix segfault when specifying attributes in a callback (#93)
     <file name="context_span_id.phpt" role="test" />
     <file name="function_callback.phpt" role="test" />
     <file name="function_callback_arguments.phpt" role="test" />
-    <file name="function_callback_arguments_gc.phpt" role="test" />
     <file name="function_callback_array.phpt" role="test" />
     <file name="function_callback_callable_wrong_return.phpt" role="test" />
     <file name="function_callback_extra_arguments.phpt" role="test" />
@@ -206,6 +206,21 @@ First alpha release.
    <license>Apache 2.0</license>
    <notes>
 Fix segfault when specifying attributes in a callback (#93)
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>0.1.2</release>
+    <api>0.1.2</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2018-01-19</date>
+   <license>Apache 2.0</license>
+   <notes>
+Fix potential variable naming collision (#97)
    </notes>
   </release>
  </changelog>
