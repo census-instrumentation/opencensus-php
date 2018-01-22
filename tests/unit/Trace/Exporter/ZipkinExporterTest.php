@@ -66,7 +66,10 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
             $this->assertInternalType('int', $span['timestamp']);
             $this->assertInternalType('int', $span['duration']);
 
-            $this->assertInternalType('array', $span['tags']);
+            // make sure we have a JSON object, even when there is no tags
+            $this->assertStringStartsWith('{', \json_encode($span['tags']));
+            $this->assertStringEndsWith('}', \json_encode($span['tags']));
+
             foreach ($span['tags'] as $key => $value) {
                 $this->assertInternalType('string', $key);
                 $this->assertInternalType('string', $value);
