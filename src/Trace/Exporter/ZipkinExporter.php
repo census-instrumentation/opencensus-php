@@ -140,6 +140,12 @@ class ZipkinExporter implements ExporterInterface
                 ? str_pad($span->parentSpanId(), 16, '0', STR_PAD_LEFT)
                 : null;
 
+            $attributes = $span->attributes();
+            if (empty($attributes)) {
+                // force json_encode to render an empty object ("{}") instead of an empty array ("[]")
+                $attributes = new \stdClass();
+            }
+
             $zipkinSpan = [
                 'traceId' => $traceId,
                 'name' => $span->name(),
@@ -150,7 +156,7 @@ class ZipkinExporter implements ExporterInterface
                 'debug' => $isDebug,
                 'shared' => $isShared,
                 'localEndpoint' => $localEndpoint,
-                'tags' => $span->attributes()
+                'tags' => $attributes
             ];
 
             $zipkinSpans[] = $zipkinSpan;
