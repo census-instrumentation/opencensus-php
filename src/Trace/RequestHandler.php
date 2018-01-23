@@ -69,6 +69,7 @@ class RequestHandler
      *      for the other available options.
      *
      *      @type array $headers Optional array of headers to use in place of $_SERVER
+     *      @type bool $skipReporting If true, skips registering of onExit handler.
      * }
      */
     public function __construct(
