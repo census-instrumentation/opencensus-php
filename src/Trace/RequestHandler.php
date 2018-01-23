@@ -111,7 +111,9 @@ class RequestHandler
         $this->rootSpan = $this->tracer->startSpan($spanOptions);
         $this->scope = $this->tracer->withSpan($this->rootSpan);
 
-        register_shutdown_function([$this, 'onExit']);
+        if (!array_key_exists('skipReporting', $options) || !$options['skipReporting']) {
+            register_shutdown_function([$this, 'onExit']);
+        }
     }
 
     /**

@@ -85,8 +85,8 @@ class EventSubscriber implements SubscriberInterface
     public function onBefore(BeforeEvent $event)
     {
         $request = $event->getRequest();
-        if ($context = Tracer::context()) {
-            $request->setHeader($this->propagator->key(), $this->propagator->formatter->serialize($context));
+        if ($context = Tracer::spanContext()) {
+            $request->setHeader($this->propagator->key(), $this->propagator->formatter()->serialize($context));
         }
         $span = Tracer::startSpan([
             'name' => 'GuzzleHttp::request',

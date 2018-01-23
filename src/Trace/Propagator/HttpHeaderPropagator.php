@@ -97,6 +97,6 @@ class HttpHeaderPropagator implements PropagatorInterface
      */
     public function key()
     {
-        return $this->header();
+        return $this->header;
     }
 }

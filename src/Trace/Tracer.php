@@ -225,4 +225,14 @@ class Tracer
     {
         return self::$instance->addAttribute($attribute, $value, $options);
     }
+
+    /**
+     * Returns the current span context.
+     *
+     * @return SpanContext
+     */
+    public static function spanContext()
+    {
+        return self::$instance->tracer()->spanContext();
+    }
 }

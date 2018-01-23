@@ -50,7 +50,10 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
         $rt = new RequestHandler(
             $this->reporter->reveal(),
             $this->sampler->reveal(),
-            new HttpHeaderPropagator()
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
         );
         $rt->inSpan(['name' => 'inner'], function () {});
         $rt->onExit();
@@ -74,7 +77,8 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
             [
                 'headers' => [
                     'HTTP_X_CLOUD_TRACE_CONTEXT' => '12345678901234567890123456789012/5555;o=1'
-                ]
+                ],
+                'skipReporting' => true
             ]
         );
         $span = $rt->tracer()->spans()[0];
@@ -92,7 +96,8 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
             [
                 'headers' => [
                     'HTTP_X_CLOUD_TRACE_CONTEXT' => '12345678901234567890123456789012;o=1'
-                ]
+                ],
+                'skipReporting' => true
             ]
         );
         $tracer = $rt->tracer();
@@ -109,7 +114,8 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
             [
                 'headers' => [
                     'HTTP_X_CLOUD_TRACE_CONTEXT' => '12345678901234567890123456789012;o=0'
-                ]
+                ],
+                'skipReporting' => true
             ]
         );
         $tracer = $rt->tracer();

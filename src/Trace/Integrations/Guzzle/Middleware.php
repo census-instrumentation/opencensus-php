@@ -41,8 +41,6 @@ use Psr\Http\Message\RequestInterface;
  */
 class Middleware
 {
-    const DEFAULT_HEADER_NAME = 'X-Cloud-Trace-Context';
-
     /**
      * @var PropagatorInterface
      */
@@ -69,7 +67,7 @@ class Middleware
     public function __invoke(callable $handler)
     {
         return function (RequestInterface $request, $options) use ($handler) {
-            if ($context = Tracer::context()) {
+            if ($context = Tracer::spanContext()) {
                 $request = $request->withHeader(
                     $this->propagator->key(),
                     $this->propagator->formatter()->serialize($context)

@@ -38,7 +38,8 @@ class TracerTest extends \PHPUnit_Framework_TestCase
     public function testForceDisabled()
     {
         $rt = Tracer::start($this->reporter->reveal(), [
-            'sampler' => new NeverSampleSampler()
+            'sampler' => new NeverSampleSampler(),
+            'skipReporting' => true
         ]);
         $tracer = $rt->tracer();
 
@@ -49,7 +50,8 @@ class TracerTest extends \PHPUnit_Framework_TestCase
     public function testForceEnabled()
     {
         $rt = Tracer::start($this->reporter->reveal(), [
-            'sampler' => new AlwaysSampleSampler()
+            'sampler' => new AlwaysSampleSampler(),
+            'skipReporting' => true
         ]);
         $tracer = $rt->tracer();
 
