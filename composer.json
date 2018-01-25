@@ -22,7 +22,8 @@
         "squizlabs/php_codesniffer": "2.*",
         "google/cloud-trace": "^0.4",
         "twig/twig": "~2.0",
-        "symfony/yaml": "~3.3"
+        "symfony/yaml": "~3.3",
+        "guzzlehttp/guzzle": "~5.3"
     },
     "conflict": {
         "ext-opencensus": "< 0.1.0"

@@ -69,6 +69,7 @@ class RequestHandler
      *      for the other available options.
      *
      *      @type array $headers Optional array of headers to use in place of $_SERVER
+     *      @type bool $skipReporting If true, skips registering of onExit handler.
      * }
      */
     public function __construct(
@@ -111,7 +112,9 @@ class RequestHandler
         $this->rootSpan = $this->tracer->startSpan($spanOptions);
         $this->scope = $this->tracer->withSpan($this->rootSpan);
 
-        register_shutdown_function([$this, 'onExit']);
+        if (!array_key_exists('skipReporting', $options) || !$options['skipReporting']) {
+            register_shutdown_function([$this, 'onExit']);
+        }
     }
 
     /**
