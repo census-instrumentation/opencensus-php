@@ -73,7 +73,7 @@ class StackdriverExporter implements ExporterInterface
     const VERSION = '0.1.0';
 
     // These are Stackdriver Trace's common attributes
-    const AGENT = '/agent';
+    const AGENT = 'g.co/agent';
     const COMPONENT = '/component';
     const ERROR_MESSAGE = '/error/message';
     const ERROR_NAME = '/error/name';
@@ -255,7 +255,7 @@ class StackdriverExporter implements ExporterInterface
             }
         }
         $tracer->addAttribute(self::PID, '' . getmypid(), ['span' => $rootSpan]);
-        $tracer->addAttribute(self::AGENT, 'opencensus-php ' . self::VERSION, ['span' => $rootSpan]);
+        $tracer->addAttribute(self::AGENT, 'opencensus-php [' . self::VERSION . ']', ['span' => $rootSpan]);
     }
 
     private function detectKey(array $keys, array $array)
