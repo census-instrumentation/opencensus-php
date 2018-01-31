@@ -236,7 +236,11 @@ class StackdriverExporter implements ExporterInterface
     private function addCommonAttributes(&$tracer, $headers = null)
     {
         $headers = $headers ?: $_SERVER;
-        $rootSpan = $tracer->spans()[0];
+        $spans = $tracer->spans();
+        if (empty($spans)) {
+            return;
+        }
+        $rootSpan = $spans[0];
 
         $attributeMap = [
             self::HTTP_URL => ['REQUEST_URI'],
