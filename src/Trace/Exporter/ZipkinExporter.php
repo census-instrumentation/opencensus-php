@@ -115,7 +115,6 @@ class ZipkinExporter implements ExporterInterface
     {
         $headers = $headers ?: $_SERVER;
         $spans = $tracer->spans();
-        $rootSpan = $spans[0];
         $traceId = $tracer->spanContext()->traceId();
 
         // True is a request to store this span even if it overrides sampling policy.
@@ -123,7 +122,7 @@ class ZipkinExporter implements ExporterInterface
         $isDebug = array_key_exists('HTTP_X_B3_FLAGS', $headers) && $headers['HTTP_X_B3_FLAGS'] == '1';
 
         // True if we are contributing to a span started by another tracer (ex on a different host).
-        $isShared = $rootSpan && $rootSpan->parentSpanId() != null;
+        $isShared = !empty($spans) && $spans[0]->parentSpanId() != null;
 
         $localEndpoint = [
             'serviceName' => $this->name,

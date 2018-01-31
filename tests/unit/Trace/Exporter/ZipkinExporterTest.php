@@ -127,4 +127,13 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $spans);
         $this->assertTrue($spans[0]['shared']);
     }
+
+    public function testEmptyTrace()
+    {
+        $spanContext = new SpanContext('testtraceid', 12345);
+        $tracer = new ContextTracer($spanContext);
+        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
+        $spans = $reporter->convertSpans($tracer);
+        $this->assertEmpty($spans);
+    }
 }

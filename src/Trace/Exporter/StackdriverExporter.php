@@ -156,14 +156,15 @@ class StackdriverExporter implements ExporterInterface
     public function report(TracerInterface $tracer)
     {
         $this->processSpans($tracer);
-        $trace = self::$client->trace(
-            $tracer->spanContext()->traceId()
-        );
-        $spans = $this->convertSpans($tracer, $trace);
+        $spans = $this->convertSpans($tracer);
 
         if (empty($spans)) {
             return false;
         }
+
+        $trace = self::$client->trace(
+            $tracer->spanContext()->traceId()
+        );
 
         // build a Trace object and assign Spans
         $trace->setSpans($spans);
@@ -235,7 +236,11 @@ class StackdriverExporter implements ExporterInterface
     private function addCommonAttributes(&$tracer, $headers = null)
     {
         $headers = $headers ?: $_SERVER;
-        $rootSpan = $tracer->spans()[0];
+        $spans = $tracer->spans();
+        if (empty($spans)) {
+            return;
+        }
+        $rootSpan = $spans[0];
 
         $attributeMap = [
             self::HTTP_URL => ['REQUEST_URI'],
