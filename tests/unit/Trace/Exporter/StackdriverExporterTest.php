@@ -134,4 +134,12 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
         $data = $spans[0]->jsonSerialize();
         $this->assertArrayHasKey('stackTrace', $data);
     }
+
+    public function testEmptyTrace()
+    {
+        $tracer = new ContextTracer(new SpanContext('testtraceid'));
+
+        $reporter = new StackdriverExporter(['client' => $this->client->reveal()]);
+        $this->assertFalse($reporter->report($tracer));
+    }
 }
