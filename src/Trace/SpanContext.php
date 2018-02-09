@@ -28,7 +28,7 @@ use OpenCensus\Core\Context;
  * ```
  * use OpenCensus\Trace\Tracer;
  *
- * $context = Tracer::context();
+ * $context = Tracer::spanContext();
  * echo $context; // output the header format for using the current context in a remote call
  * ```
  */
