@@ -76,8 +76,13 @@ class HttpHeaderPropagator implements PropagatorInterface
     public function inject(SpanContext $context, $container)
     {
         $header = str_replace('_', '-', preg_replace('/^HTTP_/', '', $this->header));
-        $container[$header] = $this->formatter->serialize($context);
-        return $container;
+        $value = $this->formatter->serialize($context);
+        if (!headers_sent()) {
+            header("$header: $value");
+        }
+        return [
+            $header => $value
+        ];
     }
 
     /**
