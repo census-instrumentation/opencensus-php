@@ -29,7 +29,7 @@ use OpenCensus\Trace\Span;
  * use OpenCensus\Trace\Exporter\ZipkinExporter;
  * use OpenCensus\Trace\Tracer;
  *
- * $exporter = new ZipkinExporter('my_app', 'localhost', 9411);
+ * $exporter = new ZipkinExporter('my_app', '127.0.0.1', 9411);
  * Tracer::begin($exporter);
  * ```
  */
@@ -59,7 +59,7 @@ class ZipkinExporter implements ExporterInterface
      * Create a new ZipkinExporter
      *
      * @param string $name The name of this application
-     * @param string $host The hostname of the Zipkin server
+     * @param string $host The ip address of the Zipkin server
      * @param int $port The port of the Zipkin server
      * @param string $endpoint (optional) The path for the span reporting endpoint. **Defaults to** `/api/v2/spans`
      */
