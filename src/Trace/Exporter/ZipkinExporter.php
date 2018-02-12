@@ -61,7 +61,10 @@ class ZipkinExporter implements ExporterInterface
      * @param string $name The name of this application
      * @param string $host The hostname of the Zipkin server
      * @param int $port The port of the Zipkin server
-     * @param string $endpoint (optional) The path for the span reporting endpoint. **Defaults to** `/api/v2/spans`
+     * @param string $endpoint (optional) The path for the span reporting
+     *        endpoint. **Defaults to** `/api/v2/spans`
+     * @param array $server (optoinal) The server array to search for the
+     *        SERVER_PORT. **Defaults to** $_SERVER
      */
     public function __construct($name, $host, $port, $endpoint = '/api/v2/spans', $server = null)
     {
