@@ -136,4 +136,45 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
         $spans = $reporter->convertSpans($tracer);
         $this->assertEmpty($spans);
     }
+
+    public function testSkipsIpv4()
+    {
+        $spanContext = new SpanContext('testtraceid', 12345);
+        $tracer = new ContextTracer($spanContext);
+        $tracer->inSpan(['name' => 'main'], function () {});
+
+        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
+        $spans = $reporter->convertSpans($tracer);
+        $endpoint = $spans[0]['localEndpoint'];
+        $this->assertArrayNotHasKey('ipv4', $endpoint);
+        $this->assertArrayNotHasKey('ipv6', $endpoint);
+    }
+
+    public function testSetsIpv4()
+    {
+        $spanContext = new SpanContext('testtraceid', 12345);
+        $tracer = new ContextTracer($spanContext);
+        $tracer->inSpan(['name' => 'main'], function () {});
+
+        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
+        $reporter->setLocalIpv4('1.2.3.4');
+        $spans = $reporter->convertSpans($tracer);
+        $endpoint = $spans[0]['localEndpoint'];
+        $this->assertArrayHasKey('ipv4', $endpoint);
+        $this->assertEquals('1.2.3.4', $endpoint['ipv4']);
+    }
+
+    public function testSetsIpv6()
+    {
+        $spanContext = new SpanContext('testtraceid', 12345);
+        $tracer = new ContextTracer($spanContext);
+        $tracer->inSpan(['name' => 'main'], function () {});
+
+        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
+        $reporter->setLocalIpv6('2001:db8:85a3::8a2e:370:7334');
+        $spans = $reporter->convertSpans($tracer);
+        $endpoint = $spans[0]['localEndpoint'];
+        $this->assertArrayHasKey('ipv6', $endpoint);
+        $this->assertEquals('2001:db8:85a3::8a2e:370:7334', $endpoint['ipv6']);
+    }
 }
