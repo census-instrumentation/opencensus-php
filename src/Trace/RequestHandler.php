@@ -121,14 +121,6 @@ class RequestHandler
     public function onExit()
     {
         $responseCode = http_response_code();
-        if ($responseCode == 301 || $responseCode == 302) {
-            foreach (headers_list() as $header) {
-                if (substr($header, 0, 9) == 'Location:') {
-                    $this->rootSpan->addAttribute(self::HTTP_REDIRECTED_URL, substr($header, 10));
-                    break;
-                }
-            }
-        }
         $this->rootSpan->setStatus($responseCode, "HTTP status code: $responseCode");
 
         $this->scope->close();

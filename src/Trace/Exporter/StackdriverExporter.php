@@ -259,6 +259,16 @@ class StackdriverExporter implements ExporterInterface
                 $tracer->addAttribute($attributeKey, $val, ['span' => $rootSpan]);
             }
         }
+
+        $responseCode = http_response_code();
+        if ($responseCode == 301 || $responseCode == 302) {
+            foreach (headers_list() as $header) {
+                if (substr($header, 0, 9) == 'Location:') {
+                    $this->rootSpan->addAttribute(self::HTTP_REDIRECTED_URL, substr($header, 10));
+                    break;
+                }
+            }
+        }
         $tracer->addAttribute(self::PID, '' . getmypid(), ['span' => $rootSpan]);
         $tracer->addAttribute(self::AGENT, 'opencensus-php [' . self::VERSION . ']', ['span' => $rootSpan]);
     }
