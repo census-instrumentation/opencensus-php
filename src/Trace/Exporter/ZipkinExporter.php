@@ -38,11 +38,6 @@ class ZipkinExporter implements ExporterInterface
     /**
      * @var string
      */
-    private $name;
-
-    /**
-     * @var string
-     */
     private $host;
 
     /**
@@ -56,19 +51,55 @@ class ZipkinExporter implements ExporterInterface
     private $url;
 
     /**
+     * @var array
+     */
+    private $localEndpoint;
+
+    /**
      * Create a new ZipkinExporter
      *
      * @param string $name The name of this application
      * @param string $host The hostname of the Zipkin server
      * @param int $port The port of the Zipkin server
-     * @param string $endpoint (optional) The path for the span reporting endpoint. **Defaults to** `/api/v2/spans`
+     * @param string $endpoint (optional) The path for the span reporting
+     *        endpoint. **Defaults to** `/api/v2/spans`
+     * @param array $server (optoinal) The server array to search for the
+     *        SERVER_PORT. **Defaults to** $_SERVER
      */
-    public function __construct($name, $host, $port, $endpoint = '/api/v2/spans')
+    public function __construct($name, $host, $port, $endpoint = '/api/v2/spans', $server = null)
     {
-        $this->name = $name;
+        $server = $server ?: $_SERVER;
         $this->host = $host;
         $this->port = $port;
         $this->url = "http://${host}:${port}${endpoint}";
+        $this->localEndpoint = [
+            'serviceName' => $name
+        ];
+        if (array_key_exists('SERVER_PORT', $server)) {
+            $this->localEndpoint['port'] = $server['SERVER_PORT'];
+        }
+    }
+
+    /**
+     * Set the localEndpoint ipv4 value for all reported spans. Note that this
+     * is optional because the reverse DNS lookup can be slow.
+     *
+     * @param string $ipv4 IPv4 address
+     */
+    public function setLocalIpv4($ipv4)
+    {
+        $this->localEndpoint['ipv4'] = $ipv4;
+    }
+
+    /**
+     * Set the localEndpoint ipv6 value for all reported spans. Note that this
+     * is optional because the reverse DNS lookup can be slow.
+     *
+     * @param string $ipv6 IPv6 address
+     */
+    public function setLocalIpv6($ipv6)
+    {
+        $this->localEndpoint['ipv6'] = $ipv6;
     }
 
     /**
@@ -124,12 +155,6 @@ class ZipkinExporter implements ExporterInterface
         // True if we are contributing to a span started by another tracer (ex on a different host).
         $isShared = !empty($spans) && $spans[0]->parentSpanId() != null;
 
-        $localEndpoint = [
-            'serviceName' => $this->name,
-            'ipv4' => $this->host,
-            'port' => $this->port
-        ];
-
         $zipkinSpans = [];
         foreach ($spans as $span) {
             $startTime = (int)((float) $span->startTime()->format('U.u') * 1000 * 1000);
@@ -154,7 +179,7 @@ class ZipkinExporter implements ExporterInterface
                 'duration' => $endTime - $startTime,
                 'debug' => $isDebug,
                 'shared' => $isShared,
-                'localEndpoint' => $localEndpoint,
+                'localEndpoint' => $this->localEndpoint,
                 'tags' => $attributes
             ];
 
