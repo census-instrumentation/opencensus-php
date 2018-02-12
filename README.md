@@ -15,13 +15,16 @@ PHP related utilities and supporting software needed by Census.
 1. Install the `opencensus/opencensus` package using [composer][composer]:
 
     ```bash
-    $ composer require opencensus/opencensus
+    $ composer require opencensus/opencensus:~0.2
     ```
+
+    **IMPORTANT: Please ensure your version is >= 0.2.0**. There is a potential security
+    vulnerability in < 0.2.0.
 
 1. [Optional]: Install the `opencensus` extension from [PECL][pecl]:
 
     ```bash
-    $ pecl install opencensus-devel
+    $ pecl install opencensus-alpha
     ```
    Enable the extension in your `php.ini`:
 
