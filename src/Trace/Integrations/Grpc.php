@@ -113,7 +113,8 @@ class Grpc implements IntegrationInterface
      */
     public static function updateMetadata($metadata, $jwtAuthUri)
     {
-        if ($context = Tracer::spanContext()) {
+        $context = Tracer::spanContext();
+        if ($context->enabled()) {
             $propagator = new GrpcMetadataPropagator();
             $metadata += [
                 $propagator->key() => [$propagator->formatter()->serialize($context)]
