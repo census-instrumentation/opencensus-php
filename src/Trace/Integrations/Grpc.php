@@ -116,7 +116,7 @@ class Grpc implements IntegrationInterface
         if ($context = Tracer::spanContext()) {
             $propagator = new GrpcMetadataPropagator();
             $metadata += [
-                $propagator->key() => $propagator->formatter()->serialize($context)
+                $propagator->key() => [$propagator->formatter()->serialize($context)]
             ];
         }
         return $metadata;
