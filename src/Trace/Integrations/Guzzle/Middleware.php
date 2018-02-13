@@ -67,7 +67,8 @@ class Middleware
     public function __invoke(callable $handler)
     {
         return function (RequestInterface $request, $options) use ($handler) {
-            if ($context = Tracer::spanContext()) {
+            $context = Tracer::spanContext();
+            if ($context->enabled()) {
                 $request = $request->withHeader(
                     $this->propagator->key(),
                     $this->propagator->formatter()->serialize($context)

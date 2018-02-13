@@ -161,6 +161,9 @@ class Tracer
      */
     public static function inSpan(array $spanOptions, callable $callable, array $arguments = [])
     {
+        if (!isset(self::$instance)) {
+            return call_user_func_array($callable, $arguments);
+        }
         return self::$instance->inSpan($spanOptions, $callable, $arguments);
     }
 
@@ -186,6 +189,9 @@ class Tracer
      */
     public static function startSpan(array $spanOptions = [])
     {
+        if (!isset(self::$instance)) {
+            return new Span();
+        }
         return self::$instance->startSpan($spanOptions);
     }
 
@@ -195,8 +201,8 @@ class Tracer
      *
      * Example:
      * ```
-     * $span = RequestTracer::startSpan(['name' => 'expensive-operation']);
-     * $scope = RequestTracer::withSpan($span);
+     * $span = Tracer::startSpan(['name' => 'expensive-operation']);
+     * $scope = Tracer::withSpan($span);
      * try {
      *     // do something expensive
      * } finally {
@@ -209,6 +215,10 @@ class Tracer
      */
     public static function withSpan(Span $span)
     {
+        if (!isset(self::$instance)) {
+            return new Scope(function () {
+            });
+        }
         return self::$instance->withSpan($span);
     }
 
@@ -223,6 +233,9 @@ class Tracer
      */
     public static function addAttribute($attribute, $value, $options = [])
     {
+        if (!isset(self::$instance)) {
+            return;
+        }
         return self::$instance->addAttribute($attribute, $value, $options);
     }
 
@@ -233,6 +246,9 @@ class Tracer
      */
     public static function spanContext()
     {
+        if (!isset(self::$instance)) {
+            return new SpanContext(null, null, false);
+        }
         return self::$instance->tracer()->spanContext();
     }
 }

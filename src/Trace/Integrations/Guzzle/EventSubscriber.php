@@ -85,7 +85,8 @@ class EventSubscriber implements SubscriberInterface
     public function onBefore(BeforeEvent $event)
     {
         $request = $event->getRequest();
-        if ($context = Tracer::spanContext()) {
+        $context = Tracer::spanContext();
+        if ($context->enabled()) {
             $request->setHeader($this->propagator->key(), $this->propagator->formatter()->serialize($context));
         }
         $span = Tracer::startSpan([
