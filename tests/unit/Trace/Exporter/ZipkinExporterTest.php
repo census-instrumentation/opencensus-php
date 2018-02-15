@@ -177,4 +177,17 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('ipv6', $endpoint);
         $this->assertEquals('2001:db8:85a3::8a2e:370:7334', $endpoint['ipv6']);
     }
+
+    public function testSetsLocalEndpointPort()
+    {
+        $spanContext = new SpanContext('testtraceid', 12345);
+        $tracer = new ContextTracer($spanContext);
+        $tracer->inSpan(['name' => 'main'], function () {});
+
+        $reporter = new ZipkinExporter('myapp', 'localhost', 9411, '/api/v2/spans', ['SERVER_PORT' => "80"]);
+        $spans = $reporter->convertSpans($tracer);
+        $endpoint = $spans[0]['localEndpoint'];
+        $this->assertArrayHasKey('port', $endpoint);
+        $this->assertEquals(80, $endpoint['port']);
+    }
 }

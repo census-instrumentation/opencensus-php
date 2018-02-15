@@ -76,7 +76,7 @@ class ZipkinExporter implements ExporterInterface
             'serviceName' => $name
         ];
         if (array_key_exists('SERVER_PORT', $server)) {
-            $this->localEndpoint['port'] = $server['SERVER_PORT'];
+            $this->localEndpoint['port'] = intval($server['SERVER_PORT']);
         }
     }
 
