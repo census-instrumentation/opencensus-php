@@ -88,7 +88,7 @@ class Span
      *
      * @var array
      */
-    private $stackTrace;
+    private $stackTrace = [];
 
     /**
      * A collection of `TimeEvent`s. A `TimeEvent` is a time-stamped annotation
@@ -97,15 +97,15 @@ class Span
      *
      * @var TimeEvent[]
      */
-    private $timeEvents;
+    private $timeEvents = [];
 
     /**
      * A collection of links, which are references from this span to a span
      * in the same or different trace.
      *
-     * @var Link
+     * @var Link[]
      */
-    private $links;
+    private $links = [];
 
     /**
      * An optional final status for this span.
