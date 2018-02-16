@@ -43,6 +43,8 @@ class FileExporterTest extends \PHPUnit_Framework_TestCase
 
     public function testLogsTrace()
     {
+        $this->tracer->spanContext()->willReturn(new SpanContext());
+
         $spans = [
             new Span([
                 'name' => 'span',
