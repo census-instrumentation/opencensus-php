@@ -1,4 +1,4 @@
-baseURL = "http://opencensus.io/opencensus-php/"
+baseURL = "https://census-instrumentation.github.io/opencensus-php/"
 languageCode = "en-us"
 title = "OpenCensus for PHP"
 theme = "hyde"
