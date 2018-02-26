@@ -9,6 +9,7 @@ PHP related utilities and supporting software needed by Census.
 ![PHP-Version](https://img.shields.io/packagist/php-v/opencensus/opencensus.svg)
 
 * [API Documentation][api-docs]
+* [Integration Documentation][integration-docs]
 
 ## Installation & basic usage
 
@@ -152,7 +153,8 @@ Apache 2.0 - See [LICENSE](LICENSE) for more information.
 This is not an official Google product.
 
 [census-org]: https://github.com/census-instrumentation
-[api-docs]: http://opencensus.io/opencensus-php/
+[api-docs]: https://census-instrumentation.github.io/opencensus-php/api
+[integration-docs]: https://census-instrumentation.github.io/opencensus-php
 [composer]: https://getcomposer.org/
 [pecl]: https://pecl.php.net/
 [never-sampler]: http://opencensus.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
