@@ -28,10 +28,7 @@
 #include "zend_extensions.h"
 #include "standard/php_math.h"
 #include "ext/standard/info.h"
-
-#if PHP_VERSION_ID < 70100
 #include "standard/php_rand.h"
-#endif
 
 /**
  * True globals for storing the original zend_execute_ex and
