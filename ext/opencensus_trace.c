@@ -143,11 +143,12 @@ static zend_string *span_id_from_options(HashTable *options)
         return NULL;
     }
 
-    if (val = zend_hash_str_find(options, "spanId", strlen("spanId"))) {
-        return Z_STR_P(val);
-    } else {
+    val = zend_hash_str_find(options, "spanId", strlen("spanId"));
+    if (val == NULL) {
         return NULL;
     }
+
+    return Z_STR_P(val);
 }
 
 static opencensus_trace_span_t *span_from_options(zval *options)
@@ -159,7 +160,8 @@ static opencensus_trace_span_t *span_from_options(zval *options)
         return NULL;
     }
 
-    if (span_id = span_id_from_options(Z_ARR_P(options))) {
+    span_id = span_id_from_options(Z_ARR_P(options));
+    if (span_id != NULL) {
         span = (opencensus_trace_span_t *)zend_hash_find_ptr(OPENCENSUS_TRACE_G(spans), span_id);
     }
 
