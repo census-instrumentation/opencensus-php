@@ -364,7 +364,6 @@ static void opencensus_trace_execute_callback(opencensus_trace_span_t *span, zen
             opencensus_trace_span_apply_span_options(span, &callback_result);
         }
         ZVAL_DESTRUCTOR(&callback_result);
-        zend_string_release(callback_name);
     } else if (Z_TYPE_P(span_options) == IS_ARRAY) {
         opencensus_trace_span_apply_span_options(span, span_options);
     }
