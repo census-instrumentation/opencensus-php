@@ -44,6 +44,7 @@
 
 #include "php_opencensus.h"
 #include "opencensus_trace_annotation.h"
+#include "Zend/zend_alloc.h"
 
 zend_class_entry* opencensus_trace_annotation_ce = NULL;
 
