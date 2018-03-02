@@ -50,6 +50,7 @@
 
 #include "php_opencensus.h"
 #include "opencensus_trace_message_event.h"
+#include "Zend/zend_alloc.h"
 
 zend_class_entry* opencensus_trace_message_event_ce = NULL;
 

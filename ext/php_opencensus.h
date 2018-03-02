@@ -33,10 +33,6 @@
 #define PHP_OPENCENSUS_VERSION "0.1.2"
 #define PHP_OPENCENSUS_EXTNAME "opencensus"
 
-#define PHP_OPENCENSUS_MAKE_STD_ZVAL(pzv) \
-  pzv = (zval *)emalloc(sizeof(zval));
-#define PHP_OPENCENSUS_FREE_STD_ZVAL(pzv) efree(pzv);
-
 PHP_FUNCTION(opencensus_version);
 
 extern zend_module_entry opencensus_module_entry;
