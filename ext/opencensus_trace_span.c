@@ -95,7 +95,7 @@
 zend_class_entry* opencensus_trace_span_ce = NULL;
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_OpenCensusTraceSpan_construct, 0, 0, 1)
-	ZEND_ARG_ARRAY_INFO(0, spanOptions, 0)
+    ZEND_ARG_ARRAY_INFO(0, spanOptions, 0)
 ZEND_END_ARG_INFO();
 
 /**
@@ -468,7 +468,14 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
         if (strcmp(ZSTR_VAL(k), "attributes") == 0) {
             zend_hash_merge(span->attributes, Z_ARRVAL_P(v), zval_add_ref, 0);
         } else if (strcmp(ZSTR_VAL(k), "startTime") == 0) {
-            span->start = Z_DVAL_P(v);
+            switch (Z_TYPE_P(v)) {
+                case IS_DOUBLE:
+                    span->start = Z_DVAL_P(v);
+                    break;
+                case IS_LONG:
+                    span->start = (double) Z_LVAL_P(v);
+                    break;
+            }
         } else if (strcmp(ZSTR_VAL(k), "name") == 0) {
             if (span->name) {
                 zend_string_release(span->name);
@@ -504,7 +511,7 @@ static int opencensus_trace_update_time_events(opencensus_trace_span_t *span, zv
         opencensus_trace_time_event_to_zval(event, &zv);
         add_next_index_zval(return_value, &zv);
     } ZEND_HASH_FOREACH_END();
-	return SUCCESS;
+    return SUCCESS;
 }
 
 static int opencensus_trace_update_links(opencensus_trace_span_t *span, zval *return_value)
@@ -515,7 +522,7 @@ static int opencensus_trace_update_links(opencensus_trace_span_t *span, zval *re
         opencensus_trace_link_to_zval(link, &zv);
         add_next_index_zval(return_value, &zv);
     } ZEND_HASH_FOREACH_END();
-	return SUCCESS;
+    return SUCCESS;
 }
 
 /* Fill the provided span with the provided data from the internal span representation */
