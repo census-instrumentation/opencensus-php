@@ -1,5 +1,5 @@
 --TEST--
-OpenCensus Trace: Bug 131: Providing null start time defaults to a current time
+OpenCensus Trace: Bug 131: Providing integer start time should work
 --FILE--
 <?php
 
