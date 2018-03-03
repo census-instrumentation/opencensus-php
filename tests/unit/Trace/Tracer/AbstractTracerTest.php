@@ -242,6 +242,22 @@ abstract class AbstractTracerTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $span->timeEvents());
     }
 
+    public function testInSpanSetsDefaultStartTime()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $tracer->inSpan(['name' => 'foo'], function () {
+            // do nothing
+        });
+
+        $spans = $tracer->spans();
+        $this->assertCount(1, $spans);
+        $span = $spans[0];
+
+        // #131 - Span should be initialized with current time, not the epoch.
+        $this->assertNotEquals(0, $span->startTime()->getTimestamp());
+    }
+
     private function assertEquivalentTimestamps($expected, $value)
     {
         $this->assertEquals((float)($expected->format('U.u')), (float)($expected->format('U.u')), '', 0.000001);
