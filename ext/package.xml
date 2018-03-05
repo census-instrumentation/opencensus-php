@@ -12,11 +12,11 @@ This extension allows you to easily gather latency and other metadata by watchin
   <email>chingor@google.com</email>
   <active>yes</active>
  </lead>
- <date>2018-03-02</date>
- <time>14:08:00</time>
+ <date>2018-03-05</date>
+ <time>12:31:00</time>
  <version>
-  <release>0.1.3</release>
-  <api>0.1.3</api>
+  <release>0.1.4</release>
+  <api>0.1.4</api>
  </version>
  <stability>
   <release>alpha</release>
@@ -24,7 +24,7 @@ This extension allows you to easily gather latency and other metadata by watchin
  </stability>
  <license>Apache 2.0</license>
  <notes>
-Fix segfault on OSX (#129)
+Fix handling startTime when passed to opencensus_trace_begin (#135)
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -72,6 +72,7 @@ Fix segfault on OSX (#129)
     <file name="function_callback_wrong_return.phpt" role="test" />
     <file name="function_custom.phpt" role="test" />
     <file name="inherit_context.phpt" role="test" />
+    <file name="int_start_time.phpt" role="test" />
     <file name="labels.phpt" role="test" />
     <file name="links.phpt" role="test" />
     <file name="manual_spans.phpt" role="test" />
@@ -91,6 +92,7 @@ Fix segfault on OSX (#129)
     <file name="non-string-labels-method-callback.phpt" role="test" />
     <file name="non-string-labels-method.phpt" role="test" />
     <file name="non-string-labels.phpt" role="test" />
+    <file name="null_start_time.phpt" role="test" />
     <file name="span_class.phpt" role="test" />
     <file name="span_specify_id.phpt" role="test" />
     <file name="static_method_callback_scope.phpt" role="test" />
@@ -236,6 +238,21 @@ Fix potential variable naming collision (#97)
    <license>Apache 2.0</license>
    <notes>
 Fix segfault on OSX (#129)
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>0.1.4</release>
+    <api>0.1.4</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2018-03-05</date>
+   <license>Apache 2.0</license>
+   <notes>
+Fix handling startTime when passed to opencensus_trace_begin (#135)
    </notes>
   </release>
  </changelog>
