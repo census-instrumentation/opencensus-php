@@ -59,3 +59,10 @@ releases:
     stability: alpha
     notes: |-
       Fix segfault on OSX (#129)
+
+  - date: '2018-03-05'
+    time: 12:31:00
+    version: 0.1.4
+    stability: alpha
+    notes: |-
+      Fix handling startTime when passed to opencensus_trace_begin (#135)
