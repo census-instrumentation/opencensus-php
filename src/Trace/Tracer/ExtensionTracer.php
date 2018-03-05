@@ -83,7 +83,7 @@ class ExtensionTracer implements TracerInterface
     {
         $startTime = $span->startTime()
             ? (float)($span->startTime()->format('U.u'))
-            : null;
+            : microtime(true);
         $info = [
             'spanId' => $span->spanId(),
             'parentSpanId' => $span->parentSpanId(),
