@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Trace\Exporter;
 
+use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Tracer\TracerInterface;
 use OpenCensus\Trace\Span;
 
@@ -35,6 +36,9 @@ use OpenCensus\Trace\Span;
  */
 class ZipkinExporter implements ExporterInterface
 {
+    const KIND_SERVER = 'SERVER';
+    const KIND_CLIENT = 'CLIENT';
+
     /**
      * @var string
      */
@@ -153,7 +157,7 @@ class ZipkinExporter implements ExporterInterface
         $isDebug = array_key_exists('HTTP_X_B3_FLAGS', $headers) && $headers['HTTP_X_B3_FLAGS'] == '1';
 
         // True if we are contributing to a span started by another tracer (ex on a different host).
-        $isShared = !empty($spans) && $spans[0]->parentSpanId() != null;
+        $isShared = !empty($spans) && $spans[0]->parentSpanId() !== null;
 
         $zipkinSpans = [];
         foreach ($spans as $span) {
@@ -180,12 +184,46 @@ class ZipkinExporter implements ExporterInterface
                 'debug' => $isDebug,
                 'shared' => $isShared,
                 'localEndpoint' => $this->localEndpoint,
-                'tags' => $attributes
+                'tags' => $attributes,
             ];
+
+            if (null !== ($kind = $this->spanKind($span))) {
+                $zipkinSpan['kind'] = $kind;
+            }
 
             $zipkinSpans[] = $zipkinSpan;
         }
 
         return $zipkinSpans;
+    }
+
+    private function spanKind(Span $span)
+    {
+        if (strpos($span->name(), 'Sent.') === 0) {
+            return self::KIND_CLIENT;
+        }
+
+        if (strpos($span->name(), 'Recv.') === 0) {
+            return self::KIND_SERVER;
+        }
+
+        if (count($span->timeEvents()) > 0) {
+            foreach ($span->timeEvents() as $event) {
+                if (!($event instanceof MessageEvent)) {
+                    continue;
+                }
+
+                switch ($event->type()) {
+                    case MessageEvent::TYPE_SENT:
+                        return self::KIND_CLIENT;
+                        break;
+                    case MessageEvent::TYPE_RECEIVED:
+                        return self::KIND_SERVER;
+                        break;
+                }
+            }
+        }
+
+        return null;
     }
 }
