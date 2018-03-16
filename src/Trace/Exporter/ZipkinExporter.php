@@ -207,7 +207,7 @@ class ZipkinExporter implements ExporterInterface
             return self::KIND_SERVER;
         }
 
-        if (count($span->timeEvents()) > 0) {
+        if ($span->timeEvents())) {
             foreach ($span->timeEvents() as $event) {
                 if (!($event instanceof MessageEvent)) {
                     continue;
