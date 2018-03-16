@@ -19,6 +19,7 @@ namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
 use OpenCensus\Core\Context;
 use OpenCensus\Trace\Exporter\ZipkinExporter;
+use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer\TracerInterface;
@@ -79,25 +80,32 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testSpanKind()
+    /**
+     * @dataProvider spanOptionsForKind
+     */
+    public function testSpanKind($spanOpts, $kind)
     {
         $tracer = new ContextTracer(new SpanContext('testtraceid'));
-        $tracer->inSpan(['name' => 'main'], function () use ($tracer) {
-            $tracer->inSpan(['name' => 'span1'], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span2'], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span3'], 'usleep', [1]);
-            $tracer->inSpan(['name' => 'span4'], 'usleep', [1]);
+        $tracer->inSpan(['name' => 'main'], function () use ($tracer, $spanOpts) {
+            $tracer->inSpan($spanOpts, 'usleep', [1]);
         });
 
         $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
         $spans = $reporter->convertSpans($tracer);
 
-        $annotationValue = function ($annotation) {
-            return $annotation['value'];
-        };
-
-        $this->assertCount(5, $spans);
+        $this->assertCount(2, $spans);
         $this->assertFalse(array_key_exists('kind', $spans[0]));
+        $this->assertEquals($kind, $spans[1]['kind']);
+    }
+
+    public function spanOptionsForKind()
+    {
+        return [
+            [['name' => 'Recv.Span1'], 'SERVER'],
+            [['name' => 'Sent.Span2'], 'CLIENT'],
+            [['name' => 'span3', 'timeEvents' => [new MessageEvent(MessageEvent::TYPE_RECEIVED, '')]], 'SERVER'],
+            [['name' => 'span4', 'timeEvents' => [new MessageEvent(MessageEvent::TYPE_SENT, '')]], 'CLIENT'],
+        ];
     }
 
     public function testSpanDebug()
