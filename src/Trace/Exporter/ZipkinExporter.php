@@ -30,7 +30,7 @@ use OpenCensus\Trace\Span;
  * use OpenCensus\Trace\Exporter\ZipkinExporter;
  * use OpenCensus\Trace\Tracer;
  *
- * $exporter = new ZipkinExporter('my_app', 'localhost', 9411);
+ * $exporter = new ZipkinExporter('my_app');
  * Tracer::begin($exporter);
  * ```
  */
@@ -38,21 +38,12 @@ class ZipkinExporter implements ExporterInterface
 {
     const KIND_SERVER = 'SERVER';
     const KIND_CLIENT = 'CLIENT';
+    const DEFAULT_ENDPOINT = 'http://localhost:9411/api/v2/spans';
 
     /**
      * @var string
      */
-    private $host;
-
-    /**
-     * @var int
-     */
-    private $port;
-
-    /**
-     * @var string
-     */
-    private $url;
+    private $endpointUrl;
 
     /**
      * @var array
@@ -63,19 +54,15 @@ class ZipkinExporter implements ExporterInterface
      * Create a new ZipkinExporter
      *
      * @param string $name The name of this application
-     * @param string $host The hostname of the Zipkin server
-     * @param int $port The port of the Zipkin server
-     * @param string $endpoint (optional) The path for the span reporting
-     *        endpoint. **Defaults to** `/api/v2/spans`
-     * @param array $server (optoinal) The server array to search for the
+     * @param string $endpointUrl (optional) The url for the span reporting
+     *        endpoint. **Defaults to** `http://localhost:9411/api/v2/spans`
+     * @param array $server (optional) The server array to search for the
      *        SERVER_PORT. **Defaults to** $_SERVER
      */
-    public function __construct($name, $host, $port, $endpoint = '/api/v2/spans', $server = null)
+    public function __construct($name, $endpointUrl = null, array $server = null)
     {
         $server = $server ?: $_SERVER;
-        $this->host = $host;
-        $this->port = $port;
-        $this->url = "http://${host}:${port}${endpoint}";
+        $this->endpointUrl = ($endpointUrl === null) ? self::DEFAULT_ENDPOINT : $endpointUrl;
         $this->localEndpoint = [
             'serviceName' => $name
         ];
@@ -131,7 +118,7 @@ class ZipkinExporter implements ExporterInterface
             ];
 
             $context = stream_context_create($contextOptions);
-            file_get_contents($this->url, false, $context);
+            file_get_contents($this->endpointUrl, false, $context);
         } catch (\Exception $e) {
             return false;
         }

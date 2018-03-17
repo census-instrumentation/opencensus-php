@@ -55,7 +55,7 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
         $this->tracer->spanContext()->willReturn(new SpanContext());
         $this->tracer->spans()->willReturn($spans);
 
-        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
+        $reporter = new ZipkinExporter('myapp');
 
         $data = $reporter->convertSpans($this->tracer->reveal());
 
@@ -90,7 +90,7 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
             $tracer->inSpan($spanOpts, 'usleep', [1]);
         });
 
-        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
+        $reporter = new ZipkinExporter('myapp');
         $spans = $reporter->convertSpans($tracer);
 
         $this->assertCount(2, $spans);
@@ -114,7 +114,7 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
         $tracer = new ContextTracer($spanContext);
         $tracer->inSpan(['name' => 'main'], function () {});
 
-        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
+        $reporter = new ZipkinExporter('myapp');
         $spans = $reporter->convertSpans($tracer, [
             'HTTP_X_B3_FLAGS' => '1'
         ]);
@@ -129,7 +129,7 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
         $tracer = new ContextTracer($spanContext);
         $tracer->inSpan(['name' => 'main'], function () {});
 
-        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
+        $reporter = new ZipkinExporter('myapp');
         $spans = $reporter->convertSpans($tracer);
 
         $this->assertCount(1, $spans);
@@ -140,7 +140,7 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
     {
         $spanContext = new SpanContext('testtraceid', 12345);
         $tracer = new ContextTracer($spanContext);
-        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
+        $reporter = new ZipkinExporter('myapp');
         $spans = $reporter->convertSpans($tracer);
         $this->assertEmpty($spans);
     }
@@ -151,7 +151,7 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
         $tracer = new ContextTracer($spanContext);
         $tracer->inSpan(['name' => 'main'], function () {});
 
-        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
+        $reporter = new ZipkinExporter('myapp');
         $spans = $reporter->convertSpans($tracer);
         $endpoint = $spans[0]['localEndpoint'];
         $this->assertArrayNotHasKey('ipv4', $endpoint);
@@ -164,7 +164,7 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
         $tracer = new ContextTracer($spanContext);
         $tracer->inSpan(['name' => 'main'], function () {});
 
-        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
+        $reporter = new ZipkinExporter('myapp');
         $reporter->setLocalIpv4('1.2.3.4');
         $spans = $reporter->convertSpans($tracer);
         $endpoint = $spans[0]['localEndpoint'];
@@ -178,7 +178,7 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
         $tracer = new ContextTracer($spanContext);
         $tracer->inSpan(['name' => 'main'], function () {});
 
-        $reporter = new ZipkinExporter('myapp', 'localhost', 9411);
+        $reporter = new ZipkinExporter('myapp');
         $reporter->setLocalIpv6('2001:db8:85a3::8a2e:370:7334');
         $spans = $reporter->convertSpans($tracer);
         $endpoint = $spans[0]['localEndpoint'];
@@ -192,7 +192,7 @@ class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
         $tracer = new ContextTracer($spanContext);
         $tracer->inSpan(['name' => 'main'], function () {});
 
-        $reporter = new ZipkinExporter('myapp', 'localhost', 9411, '/api/v2/spans', ['SERVER_PORT' => "80"]);
+        $reporter = new ZipkinExporter('myapp', null, ['SERVER_PORT' => "80"]);
         $spans = $reporter->convertSpans($tracer);
         $endpoint = $spans[0]['localEndpoint'];
         $this->assertArrayHasKey('port', $endpoint);
