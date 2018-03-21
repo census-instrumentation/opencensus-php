@@ -258,8 +258,72 @@ abstract class AbstractTracerTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEquals(0, $span->startTime()->getTimestamp());
     }
 
+    public function testStackTraceShouldBeSet()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $tracer->inSpan(['name' => 'foo'], function () {
+            // do nothing
+        });
+
+        $spans = $tracer->spans();
+        $this->assertCount(1, $spans);
+        $span = $spans[0];
+
+        $this->assertInternalType('array', $span->stackTrace());
+        $this->assertNotEmpty($span->stackTrace());
+    }
+
+    public function testAttributesShouldBeSet()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $tracer->inSpan(['name' => 'foo'], function () {
+            // do nothing
+        });
+
+        $spans = $tracer->spans();
+        $this->assertCount(1, $spans);
+        $span = $spans[0];
+
+        $this->assertInternalType('array', $span->attributes());
+        $this->assertEmpty($span->attributes());
+    }
+
+    public function testLinksShouldBeSet()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $tracer->inSpan(['name' => 'foo'], function () {
+            // do nothing
+        });
+
+        $spans = $tracer->spans();
+        $this->assertCount(1, $spans);
+        $span = $spans[0];
+
+        $this->assertInternalType('array', $span->links());
+        $this->assertEmpty($span->links());
+    }
+
+    public function testTimeEventsShouldBeSet()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $tracer->inSpan(['name' => 'foo'], function () {
+            // do nothing
+        });
+
+        $spans = $tracer->spans();
+        $this->assertCount(1, $spans);
+        $span = $spans[0];
+
+        $this->assertInternalType('array', $span->timeEvents());
+        $this->assertEmpty($span->timeEvents());
+    }
+
     private function assertEquivalentTimestamps($expected, $value)
     {
-        $this->assertEquals((float)($expected->format('U.u')), (float)($expected->format('U.u')), '', 0.000001);
+        $this->assertEquals((float)($expected->format('U.u')), (float)($value->format('U.u')), '', 0.000001);
     }
 }
