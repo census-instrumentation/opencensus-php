@@ -192,6 +192,10 @@ static PHP_METHOD(OpenCensusTraceSpan, attributes) {
     }
 
     val = zend_read_property(opencensus_trace_span_ce, getThis(), "attributes", sizeof("attributes") - 1, 1, &rv);
+    if (ZVAL_IS_NULL(val)) {
+        array_init(return_value);
+        return;
+    }
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -209,6 +213,10 @@ static PHP_METHOD(OpenCensusTraceSpan, links) {
     }
 
     val = zend_read_property(opencensus_trace_span_ce, getThis(), "links", sizeof("links") - 1, 1, &rv);
+    if (ZVAL_IS_NULL(val)) {
+        array_init(return_value);
+        return;
+    }
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -226,6 +234,10 @@ static PHP_METHOD(OpenCensusTraceSpan, timeEvents) {
     }
 
     val = zend_read_property(opencensus_trace_span_ce, getThis(), "timeEvents", sizeof("timeEvents") - 1, 1, &rv);
+    if (ZVAL_IS_NULL(val)) {
+        array_init(return_value);
+        return;
+    }
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -277,6 +289,10 @@ static PHP_METHOD(OpenCensusTraceSpan, stackTrace) {
     }
 
     val = zend_read_property(opencensus_trace_span_ce, getThis(), "stackTrace", sizeof("stackTrace") - 1, 1, &rv);
+    if (ZVAL_IS_NULL(val)) {
+        array_init(return_value);
+        return;
+    }
 
     RETURN_ZVAL(val, 1, 0);
 }
