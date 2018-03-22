@@ -124,7 +124,7 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
             ]
         ], function () {});
 
-        $exporter = new StackdriverExporter();
+        $exporter = new StackdriverExporter(['client' => $this->client->reveal()]);
         $spans = $exporter->convertSpans($tracer);
         $this->assertCount(1, $spans);
         $span = $spans[0];
