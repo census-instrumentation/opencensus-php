@@ -37,11 +37,11 @@ class RequestHandler
 {
     const DEFAULT_ROOT_SPAN_NAME = 'main';
     const ATTRIBUTE_MAP = [
-        'http.host' => ['HTTP_HOST', 'SERVER_NAME'],
-        'http.port' => ['SERVER_PORT'],
-        'http.method' => ['REQUEST_METHOD'],
-        'http.path' => ['REQUEST_URI'],
-        'http.user_agent' => ['HTTP_USER_AGENT']
+        Span::ATTRIBUTE_HOST => ['HTTP_HOST', 'SERVER_NAME'],
+        Span::ATTRIBUTE_PORT => ['SERVER_PORT'],
+        Span::ATTRIBUTE_METHOD => ['REQUEST_METHOD'],
+        Span::ATTRIBUTE_PATH => ['REQUEST_URI'],
+        Span::ATTRIBUTE_USER_AGENT => ['HTTP_USER_AGENT']
     ];
 
     /**
@@ -207,6 +207,9 @@ class RequestHandler
     {
         $responseCode = http_response_code();
         $this->rootSpan->setStatus($responseCode, "HTTP status code: $responseCode");
+        $this->tracer->addAttribute(Span::ATTRIBUTE_STATUS_CODE, $responseCode, [
+            'spanId' => $this->rootSpan->spanId()
+        ]);
         foreach (self::ATTRIBUTE_MAP as $attributeKey => $headerKeys) {
             if ($val = $this->detectKey($headerKeys, $headers)) {
                 $this->tracer->addAttribute($attributeKey, $val, [

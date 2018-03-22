@@ -28,6 +28,13 @@ class Span
 {
     use AttributeTrait;
 
+    const ATTRIBUTE_HOST = 'http.host';
+    const ATTRIBUTE_PORT = 'http.port';
+    const ATTRIBUTE_METHOD = 'http.method';
+    const ATTRIBUTE_PATH = 'http.path';
+    const ATTRIBUTE_USER_AGENT = 'http.user_agent';
+    const ATTRIBUTE_STATUS_CODE = 'http.status_code';
+
     /**
      * Unique identifier for a trace. All spans from the same Trace share the
      * same `traceId`. 16-byte value encoded as a hex string.

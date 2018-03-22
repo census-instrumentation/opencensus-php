@@ -23,6 +23,7 @@ use Google\Cloud\Trace\TraceClient;
 use Google\Cloud\Trace\Span;
 use Google\Cloud\Trace\Trace;
 use OpenCensus\Trace\Tracer\TracerInterface;
+use OpenCensus\Trace\Span as OCSpan;
 
 /**
  * This implementation of the ExporterInterface use the BatchRunner to provide
@@ -71,13 +72,12 @@ use OpenCensus\Trace\Tracer\TracerInterface;
 class StackdriverExporter implements ExporterInterface
 {
     const ATTRIBUTE_MAP = [
-        'http.host'         => '/http/host',
-        'http.method'       => '/http/method',
-        'http.path'         => '/http/path',
-        'http.port'         => '/http/port',
-        'http.route'        => '/http/route',
-        'http.user_agent'   => '/http/user_agent',
-        'http.status_code'  => '/http/status_code'
+        OCSpan::ATTRIBUTE_HOST => '/http/host',
+        OCSpan::ATTRIBUTE_PORT => '/http/port',
+        OCSpan::ATTRIBUTE_METHOD => '/http/method',
+        OCSpan::ATTRIBUTE_PATH => '/http/path',
+        OCSpan::ATTRIBUTE_USER_AGENT => '/http/user_agent',
+        OCSpan::ATTRIBUTE_STATUS_CODE => '/http/status_code'
     ];
 
     use BatchTrait;
