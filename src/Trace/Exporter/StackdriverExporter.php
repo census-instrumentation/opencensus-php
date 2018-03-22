@@ -75,7 +75,7 @@ class StackdriverExporter implements ExporterInterface
         OCSpan::ATTRIBUTE_HOST => '/http/host',
         OCSpan::ATTRIBUTE_PORT => '/http/port',
         OCSpan::ATTRIBUTE_METHOD => '/http/method',
-        OCSpan::ATTRIBUTE_PATH => '/http/path',
+        OCSpan::ATTRIBUTE_PATH => '/http/url',
         OCSpan::ATTRIBUTE_USER_AGENT => '/http/user_agent',
         OCSpan::ATTRIBUTE_STATUS_CODE => '/http/status_code'
     ];

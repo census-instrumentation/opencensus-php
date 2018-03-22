@@ -110,4 +110,38 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
         $reporter = new StackdriverExporter(['client' => $this->client->reveal()]);
         $this->assertFalse($reporter->report($tracer));
     }
+
+    /**
+     * @dataProvider attributesToTest
+     */
+    public function testMapsAttributes($key, $value, $expectedAttributeKey, $expectedAttributeValue)
+    {
+        $tracer = new ContextTracer(new SpanContext('testtraceid'));
+        $tracer->inSpan([
+            'name' => 'span',
+            'attributes' => [
+                $key => $value
+            ]
+        ], function () {});
+
+        $exporter = new StackdriverExporter();
+        $spans = $exporter->convertSpans($tracer);
+        $this->assertCount(1, $spans);
+        $span = $spans[0];
+
+        $attributes = $span->jsonSerialize()['attributes'];
+        $this->assertArrayHasKey($expectedAttributeKey, $attributes);
+        $this->assertEquals($expectedAttributeValue, $attributes[$expectedAttributeKey]);
+    }
+
+    public function attributesToTest()
+    {
+        return [
+            ['http.host', 'foo.example.com', '/http/host', 'foo.example.com'],
+            ['http.port', '80', '/http/port', '80'],
+            ['http.path', '/foobar', '/http/url', '/foobar'],
+            ['http.method', 'PUT', '/http/method', 'PUT'],
+            ['http.user_agent', 'user agent', '/http/user_agent', 'user agent']
+        ];
+    }
 }
