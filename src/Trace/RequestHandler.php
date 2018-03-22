@@ -36,6 +36,13 @@ use OpenCensus\Trace\Propagator\PropagatorInterface;
 class RequestHandler
 {
     const DEFAULT_ROOT_SPAN_NAME = 'main';
+    const ATTRIBUTE_MAP = [
+        'http.host' => ['HTTP_HOST', 'SERVER_NAME'],
+        'http.port' => ['SERVER_PORT'],
+        'http.method' => ['REQUEST_METHOD'],
+        'http.path' => ['REQUEST_URI'],
+        'http.user_agent' => ['HTTP_USER_AGENT']
+    ];
 
     /**
      * @var ExporterInterface The reported to use at the end of the request
@@ -56,6 +63,11 @@ class RequestHandler
      * @var Scope
      */
     private $scope;
+
+    /**
+     * @var array Replacement $_SERVER variables
+     */
+    private $headers;
 
     /**
      * Create a new RequestHandler.
@@ -79,11 +91,11 @@ class RequestHandler
         array $options = []
     ) {
         $this->reporter = $reporter;
-        $headers = array_key_exists('headers', $options)
+        $this->headers = array_key_exists('headers', $options)
             ? $options['headers']
             : $_SERVER;
 
-        $spanContext = $propagator->extract($headers);
+        $spanContext = $propagator->extract($this->headers);
 
         // If the context force disables tracing, don't consult the $sampler.
         if ($spanContext->enabled() !== false) {
@@ -101,8 +113,8 @@ class RequestHandler
             : new NullTracer();
 
         $spanOptions = $options + [
-            'startTime' => $this->startTimeFromHeaders($headers),
-            'name' => $this->nameFromHeaders($headers),
+            'startTime' => $this->startTimeFromHeaders($this->headers),
+            'name' => $this->nameFromHeaders($this->headers),
             'attributes' => []
         ];
         $this->rootSpan = $this->tracer->startSpan($spanOptions);
@@ -120,8 +132,7 @@ class RequestHandler
      */
     public function onExit()
     {
-        $responseCode = http_response_code();
-        $this->rootSpan->setStatus($responseCode, "HTTP status code: $responseCode");
+        $this->addCommonRequestAttributes($this->headers);
 
         $this->scope->close();
         $this->reporter->report($this->tracer);
@@ -192,6 +203,19 @@ class RequestHandler
         $this->tracer->addAttribute($attribute, $value, $options);
     }
 
+    public function addCommonRequestAttributes(array $headers)
+    {
+        $responseCode = http_response_code();
+        $this->rootSpan->setStatus($responseCode, "HTTP status code: $responseCode");
+        foreach (self::ATTRIBUTE_MAP as $attributeKey => $headerKeys) {
+            if ($val = $this->detectKey($headerKeys, $headers)) {
+                $this->tracer->addAttribute($attributeKey, $val, [
+                    'spanId' => $this->rootSpan->spanId()
+                ]);
+            }
+        }
+    }
+
     private function startTimeFromHeaders(array $headers)
     {
         if (array_key_exists('REQUEST_TIME_FLOAT', $headers)) {
@@ -209,5 +233,15 @@ class RequestHandler
             return $headers['REQUEST_URI'];
         }
         return self::DEFAULT_ROOT_SPAN_NAME;
+    }
+
+    private function detectKey(array $keys, array $array)
+    {
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $array)) {
+                return $array[$key];
+            }
+        }
+        return null;
     }
 }

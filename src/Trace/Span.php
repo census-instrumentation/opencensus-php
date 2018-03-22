@@ -145,6 +145,7 @@ class Span
     public function __construct($options = [])
     {
         $options += [
+            'traceId' => null,
             'attributes' => [],
             'timeEvents' => [],
             'links' => [],
@@ -152,6 +153,8 @@ class Span
             'status' => null,
             'sameProcessAsParentSpan' => null
         ];
+
+        $this->traceId = $options['traceId'];
 
         if (array_key_exists('startTime', $options)) {
             $this->setStartTime($options['startTime']);
@@ -186,6 +189,16 @@ class Span
         $this->parentSpanId = $options['parentSpanId'];
         $this->status = $options['status'];
         $this->sameProcessAsParentSpan = $options['sameProcessAsParentSpan'];
+    }
+
+    /**
+     * Retrive the trace id for this span.
+     *
+     * @return string
+     */
+    public function traceId()
+    {
+        return $this->traceId;
     }
 
     /**

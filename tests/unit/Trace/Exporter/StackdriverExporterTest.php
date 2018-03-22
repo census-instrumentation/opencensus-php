@@ -82,38 +82,6 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($reporter->report($tracer));
     }
 
-    /**
-     * @dataProvider attributeHeaders
-     */
-    public function testParsesDefaultAttributes($headerKey, $headerValue, $expectedAttributeKey, $expectedAttributeValue)
-    {
-        $tracer = new ContextTracer(new SpanContext('testtraceid'));
-        $tracer->inSpan(['name' => 'main'], function () {});
-
-        $reporter = new StackdriverExporter(['client' => $this->client->reveal()]);
-        $reporter->processSpans($tracer, [$headerKey => $headerValue]);
-        $spans = $tracer->spans();
-        $attributes = $spans[0]->attributes();
-        $this->assertArrayHasKey($expectedAttributeKey, $attributes);
-        $this->assertEquals($expectedAttributeValue, $attributes[$expectedAttributeKey]);
-    }
-
-    public function attributeHeaders()
-    {
-        return [
-            ['REQUEST_URI', '/foobar', '/http/url', '/foobar'],
-            ['REQUEST_METHOD', 'PUT', '/http/method', 'PUT'],
-            ['SERVER_PROTOCOL', 'https', '/http/client_protocol', 'https'],
-            ['HTTP_HOST', 'foo.example.com', '/http/host', 'foo.example.com'],
-            ['SERVER_NAME', 'foo.example.com', '/http/host', 'foo.example.com'],
-            ['GAE_SERVICE', 'test-app', 'g.co/gae/app/module', 'test-app'],
-            ['GAE_VERSION', 't12345', 'g.co/gae/app/module_version', 't12345'],
-            ['HTTP_X_APPENGINE_CITY', 'kirkland', '/http/client_city', 'kirkland'],
-            ['HTTP_X_APPENGINE_REGION', 'wa', '/http/client_region', 'wa'],
-            ['HTTP_X_APPENGINE_COUNTRY', 'US', '/http/client_country', 'US']
-        ];
-    }
-
     public function testStacktrace()
     {
         $stackTrace = [
