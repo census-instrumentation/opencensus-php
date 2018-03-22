@@ -168,9 +168,10 @@ class StackdriverExporter implements ExporterInterface
     /**
      * Convert spans into Zipkin's expected JSON output format.
      *
+     * @access private
+     *
      * @param TracerInterface $tracer
-     * @param Trace $trace
-     * @return array Representation of the collected trace spans ready for serialization
+     * @return Span[] Representation of the collected trace spans ready for serialization
      */
     public function convertSpans(TracerInterface $tracer)
     {

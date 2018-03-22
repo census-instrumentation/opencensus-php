@@ -28,10 +28,12 @@ class Span
 {
     use AttributeTrait;
 
+    // See https://github.com/census-instrumentation/opencensus-specs/blob/master/trace/HTTP.md#attributes
     const ATTRIBUTE_HOST = 'http.host';
     const ATTRIBUTE_PORT = 'http.port';
     const ATTRIBUTE_METHOD = 'http.method';
     const ATTRIBUTE_PATH = 'http.path';
+    const ATTRIBUTE_ROUTE = 'http.route';
     const ATTRIBUTE_USER_AGENT = 'http.user_agent';
     const ATTRIBUTE_STATUS_CODE = 'http.status_code';
 
