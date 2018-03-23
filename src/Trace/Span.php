@@ -234,6 +234,11 @@ class Span
         return $this->spanId;
     }
 
+    public function traceId()
+    {
+        return $this->traceId;
+    }
+
     /**
      * Return a read-only version of this span.
      *

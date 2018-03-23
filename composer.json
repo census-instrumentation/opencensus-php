@@ -23,7 +23,8 @@
         "google/cloud-trace": "^0.4",
         "twig/twig": "~2.0",
         "symfony/yaml": "~3.3",
-        "guzzlehttp/guzzle": "~5.3"
+        "guzzlehttp/guzzle": "~5.3",
+        "apache/thrift": "*"
     },
     "conflict": {
         "ext-opencensus": "< 0.1.0"
