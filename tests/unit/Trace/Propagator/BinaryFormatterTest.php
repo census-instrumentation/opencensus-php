@@ -19,11 +19,12 @@ namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Propagator\BinaryFormatter;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class BinaryFormatterTest extends \PHPUnit_Framework_TestCase
+class BinaryFormatterTest extends TestCase
 {
     /**
      * @dataProvider traceMetadata
@@ -49,7 +50,7 @@ class BinaryFormatterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \PHPUnit_Framework_Error_Warning
+     * @expectedException \PHPUnit\Framework\Error\Warning
      */
     public function testDeserializeBadData()
     {

@@ -25,11 +25,12 @@ use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer\TracerInterface;
 use OpenCensus\Trace\Tracer\ContextTracer;
 use Prophecy\Argument;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class ZipkinExporterTest extends \PHPUnit_Framework_TestCase
+class ZipkinExporterTest extends TestCase
 {
     private $tracer;
 

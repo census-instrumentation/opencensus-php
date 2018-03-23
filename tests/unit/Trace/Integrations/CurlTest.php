@@ -18,11 +18,12 @@
 namespace OpenCensus\Tests\Unit\Trace\Integrations;
 
 use OpenCensus\Trace\Integrations\Curl;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class CurlTest extends \PHPUnit_Framework_TestCase
+class CurlTest extends TestCase
 {
     public function testLoadUrlFromResource()
     {

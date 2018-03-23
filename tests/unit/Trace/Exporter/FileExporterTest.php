@@ -21,11 +21,12 @@ use OpenCensus\Trace\Exporter\FileExporter;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer\TracerInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class FileExporterTest extends \PHPUnit_Framework_TestCase
+class FileExporterTest extends TestCase
 {
     private $tracer;
     private $filename;

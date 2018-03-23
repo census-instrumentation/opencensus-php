@@ -18,11 +18,12 @@
 namespace OpenCensus\Tests\Unit\Core;
 
 use OpenCensus\Core\Scope;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group core
  */
-class ScopeTest extends \PHPUnit_Framework_TestCase
+class ScopeTest extends TestCase
 {
     private $data;
 

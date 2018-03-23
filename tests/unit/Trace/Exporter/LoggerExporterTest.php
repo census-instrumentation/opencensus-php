@@ -25,11 +25,12 @@ use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer\TracerInterface;
 use Prophecy\Argument;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class LoggerExporterTest extends \PHPUnit_Framework_TestCase
+class LoggerExporterTest extends TestCase
 {
     private $tracer;
     private $logger;

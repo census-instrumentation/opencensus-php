@@ -22,11 +22,12 @@ use OpenCensus\Trace\Sampler\AlwaysSampleSampler;
 use OpenCensus\Trace\Sampler\NeverSampleSampler;
 use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Tracer\NullTracer;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class TracerTest extends \PHPUnit_Framework_TestCase
+class TracerTest extends TestCase
 {
     private $reporter;
 

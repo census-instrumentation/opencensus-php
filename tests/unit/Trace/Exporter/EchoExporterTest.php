@@ -21,11 +21,12 @@ use OpenCensus\Trace\Exporter\EchoExporter;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer\TracerInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class EchoExporterTest extends \PHPUnit_Framework_TestCase
+class EchoExporterTest extends TestCase
 {
     private $tracer;
 

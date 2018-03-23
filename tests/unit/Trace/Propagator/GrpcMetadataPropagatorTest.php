@@ -20,11 +20,12 @@ namespace OpenCensus\Tests\Unit\Trace\Propagator;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Propagator\BinaryFormatter;
 use OpenCensus\Trace\Propagator\GrpcMetadataPropagator;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class GrpcMetadataPropagatorTest extends \PHPUnit_Framework_TestCase
+class GrpcMetadataPropagatorTest extends TestCase
 {
     /**
      * @dataProvider traceMetadata

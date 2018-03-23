@@ -18,11 +18,12 @@
 namespace OpenCensus\Tests\Unit\Trace\Sampler;
 
 use OpenCensus\Trace\Sampler\ProbabilitySampler;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class ProbabilitySamplerTest extends \PHPUnit_Framework_TestCase
+class ProbabilitySamplerTest extends TestCase
 {
     /**
      * @dataProvider invalidRates

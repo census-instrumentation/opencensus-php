@@ -18,11 +18,12 @@
 namespace OpenCensus\Tests\Unit\Trace\Integrations;
 
 use OpenCensus\Trace\Integrations\Memcache;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class MemcacheTest extends \PHPUnit_Framework_TestCase
+class MemcacheTest extends TestCase
 {
     public function testHandleAttributeString()
     {

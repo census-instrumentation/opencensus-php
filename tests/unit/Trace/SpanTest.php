@@ -19,11 +19,12 @@ namespace OpenCensus\Tests\Unit\Trace;
 
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Status;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class SpanTest extends \PHPUnit_Framework_TestCase
+class SpanTest extends TestCase
 {
     const EXPECTED_TIMESTAMP_FORMAT = '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z$/';
 

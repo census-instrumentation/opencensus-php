@@ -20,11 +20,12 @@ namespace OpenCensus\Tests\Unit\Trace\Propagator;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Propagator\CloudTraceFormatter;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class HttpHeaderPropagatorTest extends \PHPUnit_Framework_TestCase
+class HttpHeaderPropagatorTest extends TestCase
 {
     /**
      * @dataProvider traceMetadata

@@ -19,11 +19,12 @@ namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Propagator\TraceContextFormatter;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class TraceContextFormatterTest extends \PHPUnit_Framework_TestCase
+class TraceContextFormatterTest extends TestCase
 {
     /**
      * @dataProvider traceHeaders
