@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2017 OpenCensus Authors
+ * Copyright 2018 OpenCensus Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,87 +18,103 @@
 namespace OpenCensus\Trace\Exporter;
 
 require_once 'Jaeger/Types.php';
-require_once 'Jaeger/ZipkinCollector.php';
+require_once 'Jaeger/Agent/Agent.php';
 
 use OpenCensus\Trace\Tracer\TracerInterface;
 use OpenCensus\Trace\Span as OCSpan;
-use Jaeger\Thrift\Agent\Zipkin\Annotation;
-use Jaeger\Thrift\Agent\Zipkin\Endpoint;
-use Jaeger\Thrift\Agent\Zipkin\Span;
-use Jaeger\Thrift\Agent\Zipkin\ZipkinCollectorClient;
+
+use Jaeger\Thrift\Agent\AgentClient;
+use Jaeger\Thrift\Batch;
+use Jaeger\Thrift\Process;
+use Jaeger\Thrift\Span;
+use Jaeger\Thrift\Tag;
+use Jaeger\Thrift\TagType;
+
 use Thrift\Protocol\TCompactProtocol;
 use Thrift\Transport\TMemoryBuffer;
 
 /**
- * This implementation of the ExporterInterface talks to a Jaeger backend using
- * Thrift over UDP.
+ * This implementation of the ExporterInterface talks to a Jaeger Agent backend
+ * using Thrift (Compact Protocol) over UDP.
  */
 class JaegerExporter implements ExporterInterface
 {
-    private $host;
-    private $port;
-    private $client;
-    private $data;
-    private $localEndpoint;
+    /**
+     * @var string
+     */
+    protected $host;
 
-    public function __construct($name, array $options = [])
+    /**
+     * @var int
+     */
+    protected $port;
+
+    /**
+     * @var Process
+     */
+    protected $process;
+
+    /**
+     * Create a new Jaeger Exporter.
+     *
+     * @param string $serviceName Name of the traced process/service
+     * @param array $options [optional] {
+     *     @type string $host The ip address of the Jaeger service. **Defaults
+     *           to** '127.0.0.1'.
+     *     @type int $port The UDP port of the Jaeger service. **Defaults to*
+     *           6831.
+     *     @type array $tags Associative array of key => value
+     * }
+     */
+    public function __construct($serviceName, array $options = [])
     {
         $options += [
             'host' => '127.0.0.1',
-            'port' => 6831
-        ]
-        $server = array_key_exists('server', $options) ? $server : $_SERVER;
+            'port' => 6831,
+            'tags' => []
+        ];
         $this->host = $options['host'];
         $this->port = (int) $options['port'];
-        $this->localEndpoint = new Endpoint([
-            'service_name' => $name
+        $this->process = new Process([
+            'serviceName' => $serviceName,
+            'tags' => $this->convertTags($options['tags'])
         ]);
-        if (array_key_exists('SERVER_PORT', $server)) {
-            $this->localEndpoint->port = intval($server['SERVER_PORT']);
-        }
     }
 
     /**
-     * Set the localEndpoint ipv4 value for all reported spans. Note that this
-     * is optional because the reverse DNS lookup can be slow.
+     * Report the provided Trace to a backend.
      *
-     * @param string $ipv4 IPv4 address
+     * @param  TracerInterface $tracer
+     * @return bool
      */
-    public function setLocalIpv4($ipv4)
-    {
-        $this->localEndpoint->ipv4 = $ipv4;
-    }
-
-    /**
-     * Set the localEndpoint ipv6 value for all reported spans. Note that this
-     * is optional because the reverse DNS lookup can be slow.
-     *
-     * @param string $ipv6 IPv6 address
-     */
-    public function setLocalIpv6($ipv6)
-    {
-        $this->localEndpoint->ipv6 = $ipv6;
-    }
-
     public function report(TracerInterface $tracer)
     {
-        $spans = array_map([$this, 'convertSpan'], $tracer->spans());
-        var_dump($spans);
+        $spans = $tracer->spans();
+        if (empty($spans)) {
+            return false;
+        }
+
+        $spans = array_map([$this, 'convertSpan'], $spans);
 
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
         if ($socket === null) {
             return false;
         }
 
+        // Thrift doesn't provide a UDP protocol, so write into a buffer and
+        // then manually send the data over UDP via a socket.
+        $buffer = new TMemoryBuffer();
+        $protocol = new TCompactProtocol($buffer);
+        $client = new AgentClient(null, $protocol);
+        $batch = new Batch([
+            'process' => $this->process,
+            'spans' => $spans
+        ]);
+
+        $client->emitBatch($batch);
+        $data = $buffer->getBuffer();
+
         try {
-            $buffer = new TMemoryBuffer();
-            $protocol = new TCompactProtocol($buffer);
-            $client = new ZipkinCollectorClient(null, $protocol);
-            $client->send_submitZipkinBatch($spans);
-
-            $data = $buffer->getBuffer();
-            var_dump($data);
-
             socket_sendto($socket, $data, strlen($data), 0, $this->host, $this->port);
             return true;
         } finally {
@@ -116,20 +132,40 @@ class JaegerExporter implements ExporterInterface
         $traceId = hexdec($span->traceId());
 
         return new Span([
-            'trace_id' => $traceId,
-            'name' => $span->name(),
-            'id' => $spanId,
-            'parent_id' => $parentSpanId,
-            'timestamp' => $startTime,
+            'traceIdLow' => $traceId,
+            'traceIdHigh' => $traceId,
+            'spanId' => $spanId,
+            'parentSpanId' => $parentSpanId,
+            'operationName' => $span->name(),
+            'references' => $this->convertReferences($span->links()),
+            'flags' => 0,
+            'startTime' => $startTime,
             'duration' => $endTime - $startTime,
-            'annotations' => [
-                new Annotation([
-                    'timestamp' => $startTime,
-                    'host' => $this->localEndpoint,
-                    'value' => 'span start'
-                ])
-            ],
-            'binary_annotations' => []
+            'tags' => $this->convertTags($span->attributes()),
+            'logs' => $this->convertLogs($span->timeEvents())
         ]);
+    }
+
+    private function convertTags(array $attributes)
+    {
+        $tags = [];
+        foreach ($attributes as $key => $value) {
+            $tags[] = new Tag([
+                'key' => (string) $key,
+                'vType' => TagType::STRING,
+                'vStr' => (string) $value
+            ]);
+        }
+        return $tags;
+    }
+
+    private function convertLogs(array $timeEvents)
+    {
+        return [];
+    }
+
+    private function convertReferences(array $links)
+    {
+        return [];
     }
 }
