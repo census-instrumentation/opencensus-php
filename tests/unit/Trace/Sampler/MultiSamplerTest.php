@@ -19,11 +19,12 @@ namespace OpenCensus\Tests\Unit\Trace\Sampler;
 
 use OpenCensus\Trace\Sampler\MultiSampler;
 use OpenCensus\Trace\Sampler\SamplerInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class MultiSamplerTest extends \PHPUnit_Framework_TestCase
+class MultiSamplerTest extends TestCase
 {
     public function testNoSamplers()
     {

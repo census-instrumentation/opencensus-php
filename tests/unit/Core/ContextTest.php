@@ -18,11 +18,12 @@
 namespace OpenCensus\Tests\Unit\Core;
 
 use OpenCensus\Core\Context;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group core
  */
-class ContextTest extends \PHPUnit_Framework_TestCase
+class ContextTest extends TestCase
 {
     public function setUp()
     {
@@ -59,14 +60,16 @@ class ContextTest extends \PHPUnit_Framework_TestCase
 
     public function testRestoringCurrentContext()
     {
+        $initialContext = Context::current();
         $context = new Context(['foo' => 'bar']);
         $prevContext = $context->attach();
 
         Context::current()->detach($prevContext);
+        $this->assertEquals($initialContext, Context::current());
     }
 
     /**
-     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedException \PHPUnit\Framework\Error\Warning
      */
     public function testRestoringCurrentContextRequiresSameObject()
     {

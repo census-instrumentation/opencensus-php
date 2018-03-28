@@ -28,11 +28,12 @@ use Prophecy\Argument;
 use Google\Cloud\Trace\Trace;
 use Google\Cloud\Trace\Span;
 use Google\Cloud\Trace\TraceClient;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
+class StackdriverExporterTest extends TestCase
 {
     private $client;
 

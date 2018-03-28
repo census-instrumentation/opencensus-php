@@ -20,11 +20,12 @@ namespace OpenCensus\Tests\Unit\Trace\Tracer;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanContext;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-abstract class AbstractTracerTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractTracerTest extends TestCase
 {
     abstract protected function getTracerClass();
 

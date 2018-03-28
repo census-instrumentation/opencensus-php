@@ -18,11 +18,12 @@
 namespace OpenCensus\Tests\Unit\Trace\Integrations;
 
 use OpenCensus\Trace\Integrations\PDO;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class PDOTest extends \PHPUnit_Framework_TestCase
+class PDOTest extends TestCase
 {
     public function testHandleQuery()
     {

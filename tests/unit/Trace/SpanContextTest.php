@@ -18,11 +18,12 @@
 namespace OpenCensus\Tests\Unit\Trace;
 
 use OpenCensus\Trace\SpanContext;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class SpanContextTest extends \PHPUnit_Framework_TestCase
+class SpanContextTest extends TestCase
 {
     public function testGeneratesDefaultTraceId()
     {

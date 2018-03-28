@@ -24,11 +24,12 @@ use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Sampler\SamplerInterface;
 use OpenCensus\Trace\Tracer\NullTracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class RequestHandlerTest extends \PHPUnit_Framework_TestCase
+class RequestHandlerTest extends TestCase
 {
     private $reporter;
 

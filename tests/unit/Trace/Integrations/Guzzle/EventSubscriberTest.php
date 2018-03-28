@@ -26,11 +26,12 @@ use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Integrations\Guzzle\EventSubscriber;
 use Prophecy\Argument;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class EventSubscriberTest extends \PHPUnit_Framework_TestCase
+class EventSubscriberTest extends TestCase
 {
     private $exporter;
 
