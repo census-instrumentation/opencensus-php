@@ -118,7 +118,7 @@ class StackdriverExporterTest extends TestCase
 
     public function testEmptyTrace()
     {
-        $exporter = new StackdriverExporter();
+        $exporter = new StackdriverExporter(['client' => $this->client->reveal()]);
         $this->assertFalse($exporter->export([]));
     }
 
@@ -143,7 +143,7 @@ class StackdriverExporterTest extends TestCase
         $span->setStartTime();
         $span->setEndTime();
 
-        $exporter = new StackdriverExporter();
+        $exporter = new StackdriverExporter(['client' => $this->client->reveal()]);
         $spans = $exporter->convertSpans([$span->spanData()]);
         $this->assertCount(1, $spans);
         $span = $spans[0];
