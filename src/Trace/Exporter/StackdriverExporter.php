@@ -166,7 +166,7 @@ class StackdriverExporter implements ExporterInterface
     }
 
     /**
-     * Convert spans into Zipkin's expected JSON output format.
+     * Convert spans into Stackdriver's expected JSON output format.
      *
      * @access private
      *
