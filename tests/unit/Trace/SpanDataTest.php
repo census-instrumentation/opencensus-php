@@ -22,11 +22,12 @@ use OpenCensus\Trace\Link;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\SpanData;
 use OpenCensus\Trace\Status;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group trace
  */
-class SpanDataTest extends \PHPUnit_Framework_TestCase
+class SpanDataTest extends TestCase
 {
     public function testDefaults()
     {
