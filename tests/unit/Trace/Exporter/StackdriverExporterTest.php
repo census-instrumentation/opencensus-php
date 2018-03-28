@@ -109,7 +109,7 @@ class StackdriverExporterTest extends TestCase
         $span->setStartTime();
         $span->setEndTime();
 
-        $exporter = new StackdriverExporter();
+        $exporter = new StackdriverExporter(['client' => $this->client->reveal()]);
         $spans = $exporter->convertSpans([$span->spanData()]);
 
         $data = $spans[0]->jsonSerialize();
