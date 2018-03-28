@@ -82,38 +82,6 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($reporter->report($tracer));
     }
 
-    /**
-     * @dataProvider attributeHeaders
-     */
-    public function testParsesDefaultAttributes($headerKey, $headerValue, $expectedAttributeKey, $expectedAttributeValue)
-    {
-        $tracer = new ContextTracer(new SpanContext('testtraceid'));
-        $tracer->inSpan(['name' => 'main'], function () {});
-
-        $reporter = new StackdriverExporter(['client' => $this->client->reveal()]);
-        $reporter->processSpans($tracer, [$headerKey => $headerValue]);
-        $spans = $tracer->spans();
-        $attributes = $spans[0]->attributes();
-        $this->assertArrayHasKey($expectedAttributeKey, $attributes);
-        $this->assertEquals($expectedAttributeValue, $attributes[$expectedAttributeKey]);
-    }
-
-    public function attributeHeaders()
-    {
-        return [
-            ['REQUEST_URI', '/foobar', '/http/url', '/foobar'],
-            ['REQUEST_METHOD', 'PUT', '/http/method', 'PUT'],
-            ['SERVER_PROTOCOL', 'https', '/http/client_protocol', 'https'],
-            ['HTTP_HOST', 'foo.example.com', '/http/host', 'foo.example.com'],
-            ['SERVER_NAME', 'foo.example.com', '/http/host', 'foo.example.com'],
-            ['GAE_SERVICE', 'test-app', 'g.co/gae/app/module', 'test-app'],
-            ['GAE_VERSION', 't12345', 'g.co/gae/app/module_version', 't12345'],
-            ['HTTP_X_APPENGINE_CITY', 'kirkland', '/http/client_city', 'kirkland'],
-            ['HTTP_X_APPENGINE_REGION', 'wa', '/http/client_region', 'wa'],
-            ['HTTP_X_APPENGINE_COUNTRY', 'US', '/http/client_country', 'US']
-        ];
-    }
-
     public function testStacktrace()
     {
         $stackTrace = [
@@ -141,5 +109,39 @@ class StackdriverExporterTest extends \PHPUnit_Framework_TestCase
 
         $reporter = new StackdriverExporter(['client' => $this->client->reveal()]);
         $this->assertFalse($reporter->report($tracer));
+    }
+
+    /**
+     * @dataProvider attributesToTest
+     */
+    public function testMapsAttributes($key, $value, $expectedAttributeKey, $expectedAttributeValue)
+    {
+        $tracer = new ContextTracer(new SpanContext('testtraceid'));
+        $tracer->inSpan([
+            'name' => 'span',
+            'attributes' => [
+                $key => $value
+            ]
+        ], function () {});
+
+        $exporter = new StackdriverExporter(['client' => $this->client->reveal()]);
+        $spans = $exporter->convertSpans($tracer);
+        $this->assertCount(1, $spans);
+        $span = $spans[0];
+
+        $attributes = $span->jsonSerialize()['attributes'];
+        $this->assertArrayHasKey($expectedAttributeKey, $attributes);
+        $this->assertEquals($expectedAttributeValue, $attributes[$expectedAttributeKey]);
+    }
+
+    public function attributesToTest()
+    {
+        return [
+            ['http.host', 'foo.example.com', '/http/host', 'foo.example.com'],
+            ['http.port', '80', '/http/port', '80'],
+            ['http.path', '/foobar', '/http/url', '/foobar'],
+            ['http.method', 'PUT', '/http/method', 'PUT'],
+            ['http.user_agent', 'user agent', '/http/user_agent', 'user agent']
+        ];
     }
 }

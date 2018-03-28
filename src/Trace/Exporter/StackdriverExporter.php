@@ -23,6 +23,7 @@ use Google\Cloud\Trace\TraceClient;
 use Google\Cloud\Trace\Span;
 use Google\Cloud\Trace\Trace;
 use OpenCensus\Trace\Tracer\TracerInterface;
+use OpenCensus\Trace\Span as OCSpan;
 
 /**
  * This implementation of the ExporterInterface use the BatchRunner to provide
@@ -70,30 +71,14 @@ use OpenCensus\Trace\Tracer\TracerInterface;
  */
 class StackdriverExporter implements ExporterInterface
 {
-    const VERSION = '0.1.0';
-
-    // These are Stackdriver Trace's common attributes
-    const AGENT = 'g.co/agent';
-    const COMPONENT = '/component';
-    const ERROR_MESSAGE = '/error/message';
-    const ERROR_NAME = '/error/name';
-    const HTTP_CLIENT_CITY = '/http/client_city';
-    const HTTP_CLIENT_COUNTRY = '/http/client_country';
-    const HTTP_CLIENT_PROTOCOL = '/http/client_protocol';
-    const HTTP_CLIENT_REGION = '/http/client_region';
-    const HTTP_HOST = '/http/host';
-    const HTTP_METHOD = '/http/method';
-    const HTTP_REDIRECTED_URL = '/http/redirected_url';
-    const HTTP_STATUS_CODE = '/http/status_code';
-    const HTTP_URL = '/http/url';
-    const HTTP_USER_AGENT = '/http/user_agent';
-    const PID = '/pid';
-    const TID = '/tid';
-
-    const GAE_APPLICATION_ERROR = 'g.co/gae/application_error';
-    const GAE_APP_MODULE = 'g.co/gae/app/module';
-    const GAE_APP_MODULE_VERSION = 'g.co/gae/app/module_version';
-    const GAE_APP_VERSION = 'g.co/gae/app/version';
+    const ATTRIBUTE_MAP = [
+        OCSpan::ATTRIBUTE_HOST => '/http/host',
+        OCSpan::ATTRIBUTE_PORT => '/http/port',
+        OCSpan::ATTRIBUTE_METHOD => '/http/method',
+        OCSpan::ATTRIBUTE_PATH => '/http/url',
+        OCSpan::ATTRIBUTE_USER_AGENT => '/http/user_agent',
+        OCSpan::ATTRIBUTE_STATUS_CODE => '/http/status_code'
+    ];
 
     use BatchTrait;
 
@@ -155,7 +140,6 @@ class StackdriverExporter implements ExporterInterface
      */
     public function report(TracerInterface $tracer)
     {
-        $this->processSpans($tracer);
         $spans = $this->convertSpans($tracer);
 
         if (empty($spans)) {
@@ -182,40 +166,43 @@ class StackdriverExporter implements ExporterInterface
     }
 
     /**
-     * Perform any pre-conversion modification to the spans
+     * Convert spans into Stackdriver's expected JSON output format.
+     *
+     * @access private
      *
      * @param TracerInterface $tracer
-     * @param array $headers [optional] Array of headers to read from instead of $_SERVER
-     */
-    public function processSpans(TracerInterface $tracer, $headers = null)
-    {
-        // detect common attributes
-        $this->addCommonAttributes($tracer, $headers);
-    }
-
-    /**
-     * Convert spans into Zipkin's expected JSON output format.
-     *
-     * @param TracerInterface $tracer
-     * @param Trace $trace
-     * @return array Representation of the collected trace spans ready for serialization
+     * @return Span[] Representation of the collected trace spans ready for serialization
      */
     public function convertSpans(TracerInterface $tracer)
     {
-        $traceId = $tracer->spanContext()->traceId();
-
         // transform OpenCensus Spans to Google\Cloud\Trace\Spans
-        return array_map(function ($span) use ($traceId) {
-            return new Span($traceId, [
-                'name' => $span->name(),
-                'startTime' => $span->startTime(),
-                'endTime' => $span->endTime(),
-                'spanId' => $span->spanId(),
-                'parentSpanId' => $span->parentSpanId(),
-                'attributes' => $span->attributes(),
-                'stackTrace' => $span->stackTrace()
-            ]);
-        }, $tracer->spans());
+        return array_map([$this, 'mapSpan'], $tracer->spans());
+    }
+
+    private function mapSpan($span)
+    {
+        return new Span($span->traceId(), [
+            'name' => $span->name(),
+            'startTime' => $span->startTime(),
+            'endTime' => $span->endTime(),
+            'spanId' => $span->spanId(),
+            'parentSpanId' => $span->parentSpanId(),
+            'attributes' => $this->mapAttributes($span->attributes()),
+            'stackTrace' => $span->stackTrace()
+        ]);
+    }
+
+    private function mapAttributes(array $attributes)
+    {
+        $newAttributes = [];
+        foreach ($attributes as $key => $value) {
+            if (array_key_exists($key, self::ATTRIBUTE_MAP)) {
+                $newAttributes[self::ATTRIBUTE_MAP[$key]] = $value;
+            } else {
+                $newAttributes[$key] = $value;
+            }
+        }
+        return $newAttributes;
     }
 
     /**
@@ -231,55 +218,5 @@ class StackdriverExporter implements ExporterInterface
         }
 
         return [self::$client, $this->batchMethod];
-    }
-
-    private function addCommonAttributes(&$tracer, $headers = null)
-    {
-        $headers = $headers ?: $_SERVER;
-        $spans = $tracer->spans();
-        if (empty($spans)) {
-            return;
-        }
-        $rootSpan = $spans[0];
-
-        $attributeMap = [
-            self::HTTP_URL => ['REQUEST_URI'],
-            self::HTTP_METHOD => ['REQUEST_METHOD'],
-            self::HTTP_CLIENT_PROTOCOL => ['SERVER_PROTOCOL'],
-            self::HTTP_USER_AGENT => ['HTTP_USER_AGENT'],
-            self::HTTP_HOST => ['HTTP_HOST', 'SERVER_NAME'],
-            self::GAE_APP_MODULE => ['GAE_SERVICE'],
-            self::GAE_APP_MODULE_VERSION => ['GAE_VERSION'],
-            self::HTTP_CLIENT_CITY => ['HTTP_X_APPENGINE_CITY'],
-            self::HTTP_CLIENT_REGION => ['HTTP_X_APPENGINE_REGION'],
-            self::HTTP_CLIENT_COUNTRY => ['HTTP_X_APPENGINE_COUNTRY']
-        ];
-        foreach ($attributeMap as $attributeKey => $headerKeys) {
-            if ($val = $this->detectKey($headerKeys, $headers)) {
-                $tracer->addAttribute($attributeKey, $val, ['span' => $rootSpan]);
-            }
-        }
-
-        $responseCode = http_response_code();
-        if ($responseCode == 301 || $responseCode == 302) {
-            foreach (headers_list() as $header) {
-                if (substr($header, 0, 9) == 'Location:') {
-                    $this->rootSpan->addAttribute(self::HTTP_REDIRECTED_URL, substr($header, 10));
-                    break;
-                }
-            }
-        }
-        $tracer->addAttribute(self::PID, '' . getmypid(), ['span' => $rootSpan]);
-        $tracer->addAttribute(self::AGENT, 'opencensus-php [' . self::VERSION . ']', ['span' => $rootSpan]);
-    }
-
-    private function detectKey(array $keys, array $array)
-    {
-        foreach ($keys as $key) {
-            if (array_key_exists($key, $array)) {
-                return $array[$key];
-            }
-        }
-        return null;
     }
 }

@@ -28,6 +28,15 @@ class Span
 {
     use AttributeTrait;
 
+    // See https://github.com/census-instrumentation/opencensus-specs/blob/master/trace/HTTP.md#attributes
+    const ATTRIBUTE_HOST = 'http.host';
+    const ATTRIBUTE_PORT = 'http.port';
+    const ATTRIBUTE_METHOD = 'http.method';
+    const ATTRIBUTE_PATH = 'http.path';
+    const ATTRIBUTE_ROUTE = 'http.route';
+    const ATTRIBUTE_USER_AGENT = 'http.user_agent';
+    const ATTRIBUTE_STATUS_CODE = 'http.status_code';
+
     /**
      * Unique identifier for a trace. All spans from the same Trace share the
      * same `traceId`. 16-byte value encoded as a hex string.
@@ -145,6 +154,7 @@ class Span
     public function __construct($options = [])
     {
         $options += [
+            'traceId' => null,
             'attributes' => [],
             'timeEvents' => [],
             'links' => [],
@@ -152,6 +162,8 @@ class Span
             'status' => null,
             'sameProcessAsParentSpan' => null
         ];
+
+        $this->traceId = $options['traceId'];
 
         if (array_key_exists('startTime', $options)) {
             $this->setStartTime($options['startTime']);
@@ -186,6 +198,16 @@ class Span
         $this->parentSpanId = $options['parentSpanId'];
         $this->status = $options['status'];
         $this->sameProcessAsParentSpan = $options['sameProcessAsParentSpan'];
+    }
+
+    /**
+     * Retrive the trace id for this span.
+     *
+     * @return string
+     */
+    public function traceId()
+    {
+        return $this->traceId;
     }
 
     /**

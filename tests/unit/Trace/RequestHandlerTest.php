@@ -124,4 +124,39 @@ class RequestHandlerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(NullTracer::class, $tracer);
     }
 
+    /**
+     * @dataProvider attributeHeaders
+     */
+    public function testParsesAttributesFromHeaders($headerKey, $headerValue, $expectedAttributeKey, $expectedAttributeValue)
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->reporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'headers' => [
+                    $headerKey => $headerValue
+                ],
+                'skipReporting' => true
+            ]
+        );
+        $rt->onExit();
+        $spans = $rt->tracer()->spans();
+        $attributes = $spans[0]->attributes();
+        $this->assertArrayHasKey($expectedAttributeKey, $attributes);
+        $this->assertEquals($expectedAttributeValue, $attributes[$expectedAttributeKey]);
+    }
+
+    public function attributeHeaders()
+    {
+        return [
+            ['REQUEST_URI', '/foobar', 'http.path', '/foobar'],
+            ['REQUEST_METHOD', 'PUT', 'http.method', 'PUT'],
+            ['HTTP_HOST', 'foo.example.com', 'http.host', 'foo.example.com'],
+            ['SERVER_NAME', 'foo.example.com', 'http.host', 'foo.example.com'],
+            ['SERVER_PORT', '80', 'http.port', '80'],
+            ['HTTP_USER_AGENT', 'some user-agent', 'http.user_agent', 'some user-agent']
+        ];
+    }
 }
