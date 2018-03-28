@@ -87,6 +87,7 @@ The provided samplers are:
 | ----- | ----------- |
 | [NeverSampleSampler][never-sampler] | Never trace any requests |
 | [AlwaysSampleSampler][always-sampler] | Trace all requests |
+| [MultiSampler][multi-sampler] | Check multiple samplers |
 | [QpsSampler][qps-sampler] | Trace X requests per second. Requires a PSR-6 cache implementation |
 | [ProbabilitySampler][probability-sampler] | Trace X percent of requests. |
 
@@ -159,6 +160,7 @@ This is not an official Google product.
 [pecl]: https://pecl.php.net/
 [never-sampler]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
 [always-sampler]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[multi-sampler]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Sampler/MultiSampler.html
 [qps-sampler]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
 [probability-sampler]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
 [echo-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/EchoExporter.html
