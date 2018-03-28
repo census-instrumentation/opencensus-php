@@ -30,6 +30,8 @@ echo "Span startTime is: '{$span->startTime()}'\n";
 $test = gettype($span->endTime()) == 'double';
 echo "Span endTime is a double: $test\n";
 
+echo "Span kind is: " . $span->kind() . PHP_EOL;
+
 print_r($span->attributes());
 
 $span = $traces[1];
@@ -45,6 +47,8 @@ echo "Span startTime is a double: $test\n";
 $test = gettype($span->endTime()) == 'double';
 echo "Span endTime is a double: $test\n";
 
+echo "Span kind is: " . $span->kind() . PHP_EOL;
+
 print_r($span->attributes());
 ?>
 --EXPECT--
@@ -54,6 +58,7 @@ Span name is: '/'
 Span startTime is a double: 1
 Span startTime is: '0.1'
 Span endTime is a double: 1
+Span kind is: SPAN_KIND_UNSPECIFIED
 Array
 (
     [asdf] => qwer
@@ -62,6 +67,7 @@ Span id is a string
 Span name is: 'inner-1'
 Span startTime is a double: 1
 Span endTime is a double: 1
+Span kind is: SPAN_KIND_UNSPECIFIED
 Array
 (
     [foo] => bar

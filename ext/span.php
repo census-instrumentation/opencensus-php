@@ -30,6 +30,7 @@ class Span {
     protected $stackTrace;
     protected $links;
     protected $timeEvents;
+    protected $kind;
 
     public function __construct(array $spanOptions)
     {
@@ -81,5 +82,10 @@ class Span {
     public function timeEvents()
     {
         return $this->timeEvents;
+    }
+
+    public function kind()
+    {
+        return $this->kind;
     }
 }

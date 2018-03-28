@@ -20,6 +20,7 @@ namespace OpenCensus\Tests\Unit\Trace;
 use OpenCensus\Trace\Annotation;
 use OpenCensus\Trace\Link;
 use OpenCensus\Trace\MessageEvent;
+use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanData;
 use OpenCensus\Trace\Status;
 use PHPUnit\Framework\TestCase;
@@ -39,6 +40,7 @@ class SpanDataTest extends TestCase
         $this->assertEquals('bbb', $spanData->spanId());
         $this->assertEquals($startTime, $spanData->startTime());
         $this->assertEquals($endTime, $spanData->endTime());
+        $this->assertEquals(Span::KIND_UNSPECIFIED, $spanData->kind());
     }
 
     /**
@@ -64,7 +66,8 @@ class SpanDataTest extends TestCase
             ],
             ['links', [new Link('traceId', 'spanId')]],
             ['status', new Status(200, 'OK')],
-            ['stackTrace', debug_backtrace()]
+            ['stackTrace', debug_backtrace()],
+            ['kind', Span::KIND_SERVER]
         ];
     }
 }

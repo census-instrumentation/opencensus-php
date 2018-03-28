@@ -44,6 +44,7 @@ Array
                 (
                 )
 
+            [kind:protected] => SPAN_KIND_UNSPECIFIED
         )
 
     [1] => OpenCensus\Trace\Ext\Span Object
@@ -69,6 +70,7 @@ Array
                 (
                 )
 
+            [kind:protected] => SPAN_KIND_UNSPECIFIED
         )
 
 )

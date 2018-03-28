@@ -329,6 +329,36 @@ abstract class AbstractTracerTest extends TestCase
         $this->assertEmpty($spanData->timeEvents());
     }
 
+    public function testDefaultSpanKind()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $tracer->inSpan(['name' => 'foo'], function () {
+            // do nothing
+        });
+
+        $spans = $tracer->spans();
+        $this->assertCount(1, $spans);
+        $spanData = $spans[0]->spanData();
+
+        $this->assertEquals(Span::KIND_UNSPECIFIED, $spanData->kind());
+    }
+
+    public function testSetSpanKind()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $tracer->inSpan(['name' => 'foo', 'kind' => Span::KIND_SERVER], function () {
+            // do nothing
+        });
+
+        $spans = $tracer->spans();
+        $this->assertCount(1, $spans);
+        $spanData = $spans[0]->spanData();
+
+        $this->assertEquals(Span::KIND_SERVER, $spanData->kind());
+    }
+
     private function assertEquivalentTimestamps($expected, $value)
     {
         $this->assertEquals((float)($expected->format('U.u')), (float)($value->format('U.u')), '', 0.000001);

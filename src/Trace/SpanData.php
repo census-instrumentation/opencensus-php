@@ -128,6 +128,15 @@ class SpanData
     private $sameProcessAsParentSpan;
 
     /**
+     * Distinguishes between spans generated in a particular context. For
+     * example, two spans with the same name may be distinguished using `CLIENT`
+     * and `SERVER` to identify queueing latency associated with the span.
+     *
+     * @var string
+     */
+    private $kind;
+
+    /**
      * Instantiate a new SpanData instance.
      *
      * @param string $name The name of the span.
@@ -147,6 +156,7 @@ class SpanData
      *      @type Status $status The final status for this span.
      *      @type bool $sameProcessAsParentSpan True when the parentSpanId
      *            belongs to the same process as the current span.
+     *      @type string $kind The span's type.
      */
     public function __construct(
         $name,
@@ -163,7 +173,8 @@ class SpanData
             'links' => [],
             'status' => null,
             'sameProcessAsParentSpan' => null,
-            'stackTrace' => []
+            'stackTrace' => [],
+            'kind' => Span::KIND_UNSPECIFIED
         ];
 
         $this->name = $name;
@@ -179,6 +190,7 @@ class SpanData
         $this->links = $options['links'];
         $this->status = $options['status'];
         $this->sameProcessAsParentSpan = $options['sameProcessAsParentSpan'];
+        $this->kind = $options['kind'];
     }
 
     /**
@@ -299,5 +311,15 @@ class SpanData
     public function sameProcessAsParentSpan()
     {
         return $this->sameProcessAsParentSpan;
+    }
+
+    /**
+     * Returns the span kind.
+     *
+     * @return string
+     */
+    public function kind()
+    {
+        return $this->kind;
     }
 }

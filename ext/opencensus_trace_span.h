@@ -21,10 +21,13 @@
 
 extern zend_class_entry* opencensus_trace_span_ce;
 
+#define OPENCENSUS_TRACE_SPAN_KIND_UNSPECIFIED "SPAN_KIND_UNSPECIFIED"
+
 // TraceSpan struct
 typedef struct opencensus_trace_span_t {
     zend_string *name;
     zend_string *span_id;
+    zend_string *kind;
     double start;
     double stop;
     struct opencensus_trace_span_t *parent;
