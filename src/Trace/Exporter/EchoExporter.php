@@ -37,7 +37,7 @@ class EchoExporter implements ExporterInterface
     /**
      * Report the provided Trace to a backend.
      *
-     * @param  TracerInterface $tracer
+     * @param SpanData[] $spans
      * @return bool
      */
     public function export(array $spans)
