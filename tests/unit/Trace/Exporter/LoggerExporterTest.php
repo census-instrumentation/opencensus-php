@@ -21,9 +21,7 @@ require_once __DIR__ . '/mock_error_log.php';
 
 use Psr\Log\LoggerInterface;
 use OpenCensus\Trace\Exporter\LoggerExporter;
-use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
-use OpenCensus\Trace\Tracer\TracerInterface;
 use Prophecy\Argument;
 use PHPUnit\Framework\TestCase;
 
@@ -38,45 +36,38 @@ class LoggerExporterTest extends TestCase
     public function setUp()
     {
         $this->logger = $this->prophesize(LoggerInterface::class);
-        $this->tracer = $this->prophesize(TracerInterface::class);
     }
 
     public function testReportWithAnExceptionErrorLog()
     {
-        $spans = [
-            new Span([
-                'name' => 'span',
-                'startTime' => microtime(true),
-                'endTime' => microtime(true) + 10
-            ])
-        ];
+        $span = new Span([
+            'name' => 'span',
+            'startTime' => microtime(true),
+            'endTime' => microtime(true) + 10
+        ]);
 
-        $this->tracer->spans()->willReturn($spans);
         $this->logger->log('some-level', Argument::type('string'))->willThrow(
             new \Exception('error_log test')
         );
 
-        $reporter = new LoggerExporter($this->logger->reveal(), 'some-level');
+        $exporter = new LoggerExporter($this->logger->reveal(), 'some-level');
         $this->expectOutputString(
             'Reporting the Trace data failed: error_log test'
         );
-        $this->assertFalse($reporter->report($this->tracer->reveal()));
+        $this->assertFalse($exporter->export([$span->spanData()]));
     }
 
     public function testLogsTrace()
     {
-        $spans = [
-            new Span([
-                'name' => 'span',
-                'startTime' => microtime(true),
-                'endTime' => microtime(true) + 10
-            ])
-        ];
-        $this->tracer->spans()->willReturn($spans);
+        $span = new Span([
+            'name' => 'span',
+            'startTime' => microtime(true),
+            'endTime' => microtime(true) + 10
+        ]);
 
         $this->logger->log('some-level', Argument::type('string'))->shouldBeCalled();
 
-        $reporter = new LoggerExporter($this->logger->reveal(), 'some-level');
-        $this->assertTrue($reporter->report($this->tracer->reveal()));
+        $exporter = new LoggerExporter($this->logger->reveal(), 'some-level');
+        $this->assertTrue($exporter->export([$span->spanData]));
     }
 }

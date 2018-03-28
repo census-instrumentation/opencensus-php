@@ -201,26 +201,6 @@ class Span
     }
 
     /**
-     * Retrive the trace id for this span.
-     *
-     * @return string
-     */
-    public function traceId()
-    {
-        return $this->traceId;
-    }
-
-    /**
-     * Retrieve the start time for this span.
-     *
-     * @return \DateTimeInterface
-     */
-    public function startTime()
-    {
-        return $this->startTime;
-    }
-
-    /**
      * Set the start time for this span.
      *
      * @param  \DateTimeInterface|int|float $when [optional] The start time of
@@ -230,16 +210,6 @@ class Span
     public function setStartTime($when = null)
     {
         $this->startTime = $this->formatDate($when);
-    }
-
-    /**
-     * Retrieve the end time for this span.
-     *
-     * @return \DateTimeInterface
-     */
-    public function endTime()
-    {
-        return $this->endTime;
     }
 
     /**
@@ -265,23 +235,28 @@ class Span
     }
 
     /**
-     * Retrieve the ID of this span's parent if it exists.
+     * Return a read-only version of this span.
      *
-     * @return string
+     * @return SpanData
      */
-    public function parentSpanId()
+    public function spanData()
     {
-        return $this->parentSpanId;
-    }
-
-    /**
-     * Retrieve the name of this span.
-     *
-     * @return string
-     */
-    public function name()
-    {
-        return $this->name;
+        return new SpanData(
+            $this->name,
+            $this->traceId,
+            $this->spanId,
+            $this->startTime,
+            $this->endTime,
+            [
+                'parentSpanId' => $this->parentSpanId,
+                'attributes' => $this->attributes,
+                'timeEvents' => $this->timeEvents,
+                'links' => $this->links,
+                'status' => $this->status,
+                'sameProcessAsParentSpan' => $this->sameProcessAsParentSpan,
+                'stackTrace' => $this->stackTrace
+            ]
+        );
     }
 
     /**
@@ -307,16 +282,6 @@ class Span
     }
 
     /**
-     * Return the time events for this span.
-     *
-     * @return TimeEvent[]
-     */
-    public function timeEvents()
-    {
-        return $this->timeEvents;
-    }
-
-    /**
      * Add links to this span.
      *
      * @param Link[] $links
@@ -339,16 +304,6 @@ class Span
     }
 
     /**
-     * Return the links for this span.
-     *
-     * @return Link[]
-     */
-    public function links()
-    {
-        return $this->links;
-    }
-
-    /**
      * Set the status for this span.
      *
      * @param int $code The status code
@@ -357,36 +312,6 @@ class Span
     public function setStatus($code, $message)
     {
         $this->status = new Status($code, $message);
-    }
-
-    /**
-     * Retrieve the final status for this span.
-     *
-     * @return Status
-     */
-    public function status()
-    {
-        return $this->status;
-    }
-
-    /**
-     * Retrieve the stackTrace at the moment this span was created
-     *
-     * @return array
-     */
-    public function stackTrace()
-    {
-        return $this->stackTrace;
-    }
-
-    /**
-     * Whether or not this span is in the same process as its parent.
-     *
-     * @return bool
-     */
-    public function sameProcessAsParentSpan()
-    {
-        return $this->sameProcessAsParentSpan;
     }
 
     /**
@@ -448,7 +373,7 @@ class Span
     private function generateSpanName()
     {
         // Try to find the first stacktrace class entry that doesn't start with OpenCensus\Trace
-        foreach ($this->stackTrace() as $st) {
+        foreach ($this->stackTrace as $st) {
             $st += ['line' => null];
             if (!array_key_exists('class', $st)) {
                 return implode('/', array_filter(['app', basename($st['file']), $st['function'], $st['line']]));

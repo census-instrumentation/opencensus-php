@@ -42,21 +42,12 @@ class SpanTest extends TestCase
         $this->assertEquals('1234', $span->spanId());
     }
 
-    public function testReadsAttributes()
-    {
-        $span = new Span(['attributes' => ['foo' => 'bar']]);
-
-        $attributes = $span->attributes();
-        $this->assertArrayHasKey('foo', $attributes);
-        $this->assertEquals('bar', $attributes['foo']);
-    }
-
     public function testCanAddAttribute()
     {
         $span = new Span();
         $span->addAttribute('foo', 'bar');
 
-        $attributes = $span->attributes();
+        $attributes = $span->spanData()->attributes();
         $this->assertArrayHasKey('foo', $attributes);
         $this->assertEquals('bar', $attributes['foo']);
     }
@@ -65,28 +56,28 @@ class SpanTest extends TestCase
     {
         $span = new Span();
 
-        $this->assertEmpty($span->attributes());
+        $this->assertEmpty($span->spanData()->attributes());
     }
 
     public function testEmptyAttributes()
     {
         $span = new Span(['attributes' => []]);
 
-        $this->assertEquals([], $span->attributes());
+        $this->assertEmpty($span->spanData()->attributes());
     }
 
     public function testGeneratesDefaultSpanName()
     {
         $span = new Span();
 
-        $this->assertStringStartsWith('app', $span->name());
+        $this->assertStringStartsWith('app', $span->spanData()->name());
     }
 
     public function testReadsName()
     {
         $span = new Span(['name' => 'myspan']);
 
-        $this->assertEquals('myspan', $span->name());
+        $this->assertEquals('myspan', $span->spanData()->name());
     }
 
     public function testStartFormat()
@@ -94,7 +85,7 @@ class SpanTest extends TestCase
         $span = new Span();
         $span->setStartTime();
 
-        $this->assertInstanceOf(\DateTimeInterface::class, $span->startTime());
+        $this->assertInstanceOf(\DateTimeInterface::class, $span->spanData()->startTime());
     }
 
     public function testFinishFormat()
@@ -102,16 +93,17 @@ class SpanTest extends TestCase
         $span = new Span();
         $span->setEndTime();
 
-        $this->assertInstanceOf(\DateTimeInterface::class, $span->endTime());
+        $this->assertInstanceOf(\DateTimeInterface::class, $span->spanData()->endTime());
     }
 
     public function testGeneratesBacktrace()
     {
         $span = new Span();
 
-        $this->assertInternalType('array', $span->stackTrace());
-        $this->assertTrue(count($span->stackTrace()) > 0);
-        $stackframe = $span->stackTrace()[0];
+        $stackTrace = $span->spanData()->stackTrace();
+        $this->assertInternalType('array', $stackTrace);
+        $this->assertNotEmpty($stackTrace);
+        $stackframe = $stackTrace[0];
         $this->assertEquals('testGeneratesBacktrace', $stackframe['function']);
         $this->assertEquals(self::class, $stackframe['class']);
     }
@@ -130,8 +122,9 @@ class SpanTest extends TestCase
             'stackTrace' => $stackTrace
         ]);
 
-        $this->assertCount(1, $span->stackTrace());
-        $stackframe = $span->stackTrace()[0];
+        $stackTrace = $span->spanData()->stackTrace();
+        $this->assertCount(1, $stackTrace);
+        $stackframe = $stackTrace[0];
         $this->assertEquals('asdf', $stackframe['function']);
         $this->assertEquals('Foo', $stackframe['class']);
     }
@@ -140,7 +133,7 @@ class SpanTest extends TestCase
     {
         $span = new Span();
 
-        $this->assertNull($span->status());
+        $this->assertNull($span->spanData()->status());
     }
 
     public function testConstructingWithStatus()
@@ -148,16 +141,20 @@ class SpanTest extends TestCase
         $status = new Status(200, 'OK');
         $span = new Span(['status' => $status]);
 
-        $this->assertInstanceOf(Status::class, $span->status());
-        $this->assertEquals($status, $span->status());
+        $status = $span->spanData()->status();
+        $this->assertInstanceOf(Status::class, $status);
+        $this->assertEquals($status, $status);
     }
 
     public function testSettingStatus()
     {
-        $span = new Span();
+        $span = new Span([
+            'startTime' => 0,
+            'endTime' => 0
+        ]);
         $span->setStatus(500, 'A server error occurred');
 
-        $status = $span->status();
+        $status = $span->spanData()->status();
         $this->assertInstanceOf(Status::class, $status);
         $this->assertEquals(500, $status->code());
         $this->assertEquals('A server error occurred', $status->message());
@@ -168,8 +165,14 @@ class SpanTest extends TestCase
      */
     public function testCanFormatTimestamps($field, $timestamp, $expected)
     {
-        $span = new Span([$field => $timestamp]);
-        $date = call_user_func([$span, $field]);
+        $data = [$field => $timestamp];
+        $data += [
+            'startTime' => 0,
+            'endTime' => 0
+        ];
+        $span = new Span($data);
+        $spanData = $span->spanData();
+        $date = call_user_func([$spanData, $field]);
         $this->assertInstanceOf(\DateTimeInterface::class, $date);
         $this->assertEquals($expected, $date->format('Y-m-d\TH:i:s.u000\Z'));
     }

@@ -45,8 +45,7 @@ class MiddlewareTest extends TestCase
 
     public function testAddsSpanContextHeader()
     {
-        $this->exporter->report(Argument::that(function ($tracer) {
-            $spans = $tracer->spans();
+        $this->exporter->export(Argument::that(function ($spans) {
             return count($spans) == 3 && $spans[2]->name() == 'GuzzleHttp::request';
         }))->shouldBeCalled();
 

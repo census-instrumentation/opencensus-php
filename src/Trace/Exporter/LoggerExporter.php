@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Trace\Exporter;
 
-use OpenCensus\Trace\Tracer\TracerInterface;
+use OpenCensus\Trace\SpanData;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -65,13 +65,13 @@ class LoggerExporter implements ExporterInterface
     /**
      * Report the provided Trace to a backend.
      *
-     * @param  TracerInterface $tracer
+     * @param SpanData[] $spans
      * @return bool
      */
-    public function report(TracerInterface $tracer)
+    public function export(array $spans)
     {
         try {
-            $this->logger->log($this->level, json_encode($tracer->spans()));
+            $this->logger->log($this->level, json_encode($spans));
         } catch (\Exception $e) {
             error_log('Reporting the Trace data failed: ' . $e->getMessage());
             return false;

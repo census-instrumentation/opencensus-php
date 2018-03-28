@@ -81,17 +81,18 @@ class ExtensionTracer implements TracerInterface
      */
     public function withSpan(Span $span)
     {
-        $startTime = $span->startTime()
-            ? (float)($span->startTime()->format('U.u'))
+        $spanData = $span->spanData();
+        $startTime = $spanData->startTime()
+            ? (float)($spanData->startTime()->format('U.u'))
             : microtime(true);
         $info = [
-            'spanId' => $span->spanId(),
-            'parentSpanId' => $span->parentSpanId(),
+            'spanId' => $spanData->spanId(),
+            'parentSpanId' => $spanData->parentSpanId(),
             'startTime' => $startTime,
-            'attributes' => $span->attributes(),
-            'stackTrace' => $span->stackTrace()
+            'attributes' => $spanData->attributes(),
+            'stackTrace' => $spanData->stackTrace()
         ];
-        opencensus_trace_begin($span->name(), $info);
+        opencensus_trace_begin($spanData->name(), $info);
         return new Scope(function () {
             opencensus_trace_finish();
         });

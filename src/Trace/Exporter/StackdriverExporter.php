@@ -22,8 +22,8 @@ use Google\Cloud\Core\Batch\BatchTrait;
 use Google\Cloud\Trace\TraceClient;
 use Google\Cloud\Trace\Span;
 use Google\Cloud\Trace\Trace;
-use OpenCensus\Trace\Tracer\TracerInterface;
 use OpenCensus\Trace\Span as OCSpan;
+use OpenCensus\Trace\SpanData;
 
 /**
  * This implementation of the ExporterInterface use the BatchRunner to provide
@@ -135,19 +135,20 @@ class StackdriverExporter implements ExporterInterface
     /**
      * Report the provided Trace to a backend.
      *
-     * @param  TracerInterface $tracer
+     * @param SpanData[] $spans
      * @return bool
      */
-    public function report(TracerInterface $tracer)
+    public function export(array $spans)
     {
-        $spans = $this->convertSpans($tracer);
+        $spans = $this->convertSpans($spans);
 
         if (empty($spans)) {
             return false;
         }
 
+        // Pull the traceId from the first span
         $trace = self::$client->trace(
-            $tracer->spanContext()->traceId()
+            $spans[0]->traceId()
         );
 
         // build a Trace object and assign Spans
@@ -170,16 +171,16 @@ class StackdriverExporter implements ExporterInterface
      *
      * @access private
      *
-     * @param TracerInterface $tracer
+     * @param SpanData[] $spans
      * @return Span[] Representation of the collected trace spans ready for serialization
      */
-    public function convertSpans(TracerInterface $tracer)
+    public function convertSpans(array $spans)
     {
         // transform OpenCensus Spans to Google\Cloud\Trace\Spans
-        return array_map([$this, 'mapSpan'], $tracer->spans());
+        return array_map([$this, 'mapSpan'], $spans);
     }
 
-    private function mapSpan($span)
+    private function mapSpan(SpanData $span)
     {
         return new Span($span->traceId(), [
             'name' => $span->name(),

@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Trace\Exporter;
 
-use OpenCensus\Trace\Tracer\TracerInterface;
+use OpenCensus\Trace\SpanData;
 
 /**
  * This implementation of the ExporterInterface uses `print_r` to output
@@ -37,12 +37,12 @@ class EchoExporter implements ExporterInterface
     /**
      * Report the provided Trace to a backend.
      *
-     * @param  TracerInterface $tracer
+     * @param SpanData[] $spans
      * @return bool
      */
-    public function report(TracerInterface $tracer)
+    public function export(array $spans)
     {
-        print_r($tracer->spans());
+        print_r($spans);
         return true;
     }
 }
