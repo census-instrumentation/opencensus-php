@@ -123,7 +123,13 @@ class JaegerExporter implements ExporterInterface
         return false;
     }
 
-    private function convertSpan(OCSpan $span)
+    /**
+     * Convert an OpenCensus Span to its Jaeger Thrift representation.
+     *
+     * @param OCSpan $span The span to convert.
+     * @return Span The Jaeger Thrift Span representation.
+     */
+    public function convertSpan(OCSpan $span)
     {
         $startTime = (int)((float) $span->startTime()->format('U.u') * 1000 * 1000);
         $endTime = (int)((float) $span->endTime()->format('U.u') * 1000 * 1000);

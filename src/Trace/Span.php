@@ -225,6 +225,14 @@ class Span
     }
 
     /**
+     * Returns the trace ID of this span.
+     */
+    public function traceId()
+    {
+        return $this->traceId;
+    }
+
+    /**
      * Retrieve the ID of this span.
      *
      * @return string
@@ -232,11 +240,6 @@ class Span
     public function spanId()
     {
         return $this->spanId;
-    }
-
-    public function traceId()
-    {
-        return $this->traceId;
     }
 
     /**
