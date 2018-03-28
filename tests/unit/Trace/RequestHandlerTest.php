@@ -31,7 +31,7 @@ use PHPUnit\Framework\TestCase;
  */
 class RequestHandlerTest extends TestCase
 {
-    private $reporter;
+    private $exporter;
 
     private $sampler;
 
@@ -40,7 +40,7 @@ class RequestHandlerTest extends TestCase
         if (extension_loaded('opencensus')) {
             opencensus_trace_clear();
         }
-        $this->reporter = $this->prophesize(ExporterInterface::class);
+        $this->exporter = $this->prophesize(ExporterInterface::class);
         $this->sampler = $this->prophesize(SamplerInterface::class);
     }
 
@@ -49,7 +49,7 @@ class RequestHandlerTest extends TestCase
         $this->sampler->shouldSample()->willReturn(true);
 
         $rt = new RequestHandler(
-            $this->reporter->reveal(),
+            $this->exporter->reveal(),
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -74,7 +74,7 @@ class RequestHandlerTest extends TestCase
     public function testCanParseParentContext()
     {
         $rt = new RequestHandler(
-            $this->reporter->reveal(),
+            $this->exporter->reveal(),
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -93,7 +93,7 @@ class RequestHandlerTest extends TestCase
     public function testForceEnabledContextHeader()
     {
         $rt = new RequestHandler(
-            $this->reporter->reveal(),
+            $this->exporter->reveal(),
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -111,7 +111,7 @@ class RequestHandlerTest extends TestCase
     public function testForceDisabledContextHeader()
     {
         $rt = new RequestHandler(
-            $this->reporter->reveal(),
+            $this->exporter->reveal(),
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [

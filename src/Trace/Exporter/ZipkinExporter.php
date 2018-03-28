@@ -18,8 +18,7 @@
 namespace OpenCensus\Trace\Exporter;
 
 use OpenCensus\Trace\MessageEvent;
-use OpenCensus\Trace\Tracer\TracerInterface;
-use OpenCensus\Trace\Span;
+use OpenCensus\Trace\SpanData;
 
 /**
  * This implementation of the ExporterInterface appends a json
@@ -96,12 +95,12 @@ class ZipkinExporter implements ExporterInterface
     /**
      * Report the provided Trace to a backend.
      *
-     * @param  TracerInterface $tracer
+     * @param SpanData[] $spans
      * @return bool
      */
-    public function report(TracerInterface $tracer)
+    public function export(array $spans)
     {
-        $spans = $this->convertSpans($tracer);
+        $spans = $this->convertSpans($spans);
 
         if (empty($spans)) {
             return false;
@@ -129,15 +128,13 @@ class ZipkinExporter implements ExporterInterface
      * Convert spans into Zipkin's expected JSON output format. See
      * <a href="http://zipkin.io/zipkin-api/#/default/post_spans">output format definition</a>.
      *
-     * @param TracerInterface $tracer
+     * @param SpanData[] $spans
      * @param array $headers [optional] HTTP headers to parse. **Defaults to** $_SERVER
      * @return array Representation of the collected trace spans ready for serialization
      */
-    public function convertSpans(TracerInterface $tracer, $headers = null)
+    public function convertSpans(array $spans, $headers = null)
     {
         $headers = $headers ?: $_SERVER;
-        $spans = $tracer->spans();
-        $traceId = $tracer->spanContext()->traceId();
 
         // True is a request to store this span even if it overrides sampling policy.
         // This is true when the X-B3-Flags header has a value of 1.
@@ -154,6 +151,7 @@ class ZipkinExporter implements ExporterInterface
             $parentSpanId = $span->parentSpanId()
                 ? str_pad($span->parentSpanId(), 16, '0', STR_PAD_LEFT)
                 : null;
+            $traceId = str_pad($span->traceId(), 32, '0', STR_PAD_LEFT);
 
             $attributes = $span->attributes();
             if (empty($attributes)) {
@@ -184,7 +182,7 @@ class ZipkinExporter implements ExporterInterface
         return $zipkinSpans;
     }
 
-    private function spanKind(Span $span)
+    private function spanKind(SpanData $span)
     {
         if (strpos($span->name(), 'Sent.') === 0) {
             return self::KIND_CLIENT;

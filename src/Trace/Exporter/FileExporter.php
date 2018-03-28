@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Trace\Exporter;
 
-use OpenCensus\Trace\Span;
+use OpenCensus\Trace\SpanData;
 use OpenCensus\Trace\Tracer\TracerInterface;
 
 /**
@@ -51,30 +51,28 @@ class FileExporter implements ExporterInterface
     }
 
     /**
-     * Report the provided Trace to a backend.
+     * Report the provided SpanData to a file in json format.
      *
-     * @param  TracerInterface $tracer
+     * @param SpanData[] $spans
      * @return bool
      */
-    public function report(TracerInterface $tracer)
+    public function export(array $spans)
     {
-        $spans = $this->convertSpans($tracer);
+        $spans = $this->convertSpans($spans);
         return file_put_contents($this->filename, json_encode($spans) . PHP_EOL, FILE_APPEND) !== false;
     }
 
     /**
      * Convert spans into array ready for serialization.
      *
-     * @param TracerInterface $tracer
+     * @param SpanData[] $spans
      * @return array Representation of the collected trace spans ready for serialization
      */
-    private function convertSpans(TracerInterface $tracer)
+    private function convertSpans(array $spans)
     {
-        $traceId = $tracer->spanContext()->traceId();
-
-        return array_map(function (Span $span) use ($traceId) {
+        return array_map(function (SpanData $span) use ($traceId) {
             return [
-                'traceId' => $traceId,
+                'traceId' => $span->traceId(),
                 'name' => $span->name(),
                 'spanId' => $span->spanId(),
                 'parentSpanId' => $span->parentSpanId(),
@@ -87,6 +85,6 @@ class FileExporter implements ExporterInterface
                 'links' => $span->links(),
                 'sameProcessAsParentSpan' => $span->sameProcessAsParentSpan(),
             ];
-        }, $tracer->spans());
+        }, $spans);
     }
 }

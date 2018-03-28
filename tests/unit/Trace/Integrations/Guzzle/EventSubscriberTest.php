@@ -47,9 +47,8 @@ class EventSubscriberTest extends TestCase
 
     public function testAddsSpanContextHeader()
     {
-        $this->exporter->report(Argument::that(function ($tracer) {
-            $spans = $tracer->spans();
-            return count($spans) == 3 && $spans[2]->spanData()->name() == 'GuzzleHttp::request';
+        $this->exporter->export(Argument::that(function ($spans) {
+            return count($spans) == 3 && $spans[2]->name() == 'GuzzleHttp::request';
         }))->shouldBeCalled();
 
         $rt = Tracer::start($this->exporter->reveal(), [

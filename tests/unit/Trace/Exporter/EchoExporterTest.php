@@ -18,9 +18,7 @@
 namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
 use OpenCensus\Trace\Exporter\EchoExporter;
-use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
-use OpenCensus\Trace\Tracer\TracerInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -28,28 +26,17 @@ use PHPUnit\Framework\TestCase;
  */
 class EchoExporterTest extends TestCase
 {
-    private $tracer;
-
-    public function setUp()
-    {
-        $this->tracer = $this->prophesize(TracerInterface::class);
-    }
-
     public function testLogsTrace()
     {
-        $spans = [
-            new Span([
-                'name' => 'span',
-                'startTime' => microtime(true),
-                'endTime' => microtime(true) + 10
-            ])
-        ];
-
-        $this->tracer->spans()->willReturn($spans);
+        $span = new Span([
+            'name' => 'span',
+            'startTime' => microtime(true),
+            'endTime' => microtime(true) + 10
+        ]);
 
         ob_start();
-        $reporter = new EchoExporter();
-        $this->assertTrue($reporter->report($this->tracer->reveal()));
+        $exporter = new EchoExporter();
+        $this->assertTrue($exporter->export([$span->spanData()]));
         $output = ob_get_contents();
         ob_end_clean();
         $this->assertGreaterThan(0, strlen($output));

@@ -17,14 +17,10 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
-use OpenCensus\Core\Context;
 use OpenCensus\Trace\Exporter\ZipkinExporter;
 use OpenCensus\Trace\MessageEvent;
-use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
-use OpenCensus\Trace\Tracer\TracerInterface;
-use OpenCensus\Trace\Tracer\ContextTracer;
-use Prophecy\Argument;
+use OpenCensus\Trace\SpanData;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -32,12 +28,24 @@ use PHPUnit\Framework\TestCase;
  */
 class ZipkinExporterTest extends TestCase
 {
-    private $tracer;
+    /**
+     * @var SpanData[]
+     */
+    private $spans;
 
     public function setUp()
     {
-        $this->tracer = $this->prophesize(TracerInterface::class);
-        Context::reset();
+        parent::setUp();
+        $this->spans = array_map(function ($span) {
+            return $span->spanData();
+        }, [
+            new Span([
+                'traceId' => 'aaa',
+                'name' => 'span',
+                'startTime' => microtime(true),
+                'endTime' => microtime(true) + 10
+            ])
+        ]);
     }
 
     /**
@@ -45,20 +53,8 @@ class ZipkinExporterTest extends TestCase
      */
     public function testFormatsTrace()
     {
-        $spans = [
-            new Span([
-                'name' => 'span',
-                'startTime' => microtime(true),
-                'endTime' => microtime(true) + 10
-            ])
-        ];
-
-        $this->tracer->spanContext()->willReturn(new SpanContext());
-        $this->tracer->spans()->willReturn($spans);
-
-        $reporter = new ZipkinExporter('myapp');
-
-        $data = $reporter->convertSpans($this->tracer->reveal());
+        $exporter = new ZipkinExporter('myapp');
+        $data = $exporter->convertSpans($this->spans);
 
         $this->assertInternalType('array', $data);
         foreach ($data as $span) {
@@ -86,17 +82,13 @@ class ZipkinExporterTest extends TestCase
      */
     public function testSpanKind($spanOpts, $kind)
     {
-        $tracer = new ContextTracer(new SpanContext('testtraceid'));
-        $tracer->inSpan(['name' => 'main'], function () use ($tracer, $spanOpts) {
-            $tracer->inSpan($spanOpts, 'usleep', [1]);
-        });
+        $span = new Span($spanOpts);
+        $span->setStartTime();
+        $span->setEndTime();
+        $exporter = new ZipkinExporter('myapp');
+        $spans = $exporter->convertSpans([$span->spanData()]);
 
-        $reporter = new ZipkinExporter('myapp');
-        $spans = $reporter->convertSpans($tracer);
-
-        $this->assertCount(2, $spans);
-        $this->assertFalse(array_key_exists('kind', $spans[0]));
-        $this->assertEquals($kind, $spans[1]['kind']);
+        $this->assertEquals($kind, $spans[0]['kind']);
     }
 
     public function spanOptionsForKind()
@@ -111,12 +103,8 @@ class ZipkinExporterTest extends TestCase
 
     public function testSpanDebug()
     {
-        $spanContext = new SpanContext('testtraceid');
-        $tracer = new ContextTracer($spanContext);
-        $tracer->inSpan(['name' => 'main'], function () {});
-
-        $reporter = new ZipkinExporter('myapp');
-        $spans = $reporter->convertSpans($tracer, [
+        $exporter = new ZipkinExporter('myapp');
+        $spans = $exporter->convertSpans($this->spans, [
             'HTTP_X_B3_FLAGS' => '1'
         ]);
 
@@ -126,12 +114,12 @@ class ZipkinExporterTest extends TestCase
 
     public function testSpanShared()
     {
-        $spanContext = new SpanContext('testtraceid', 12345);
-        $tracer = new ContextTracer($spanContext);
-        $tracer->inSpan(['name' => 'main'], function () {});
+        $span = new Span(['parentSpanId' => 'abc']);
+        $span->setStartTime();
+        $span->setEndTime();
 
-        $reporter = new ZipkinExporter('myapp');
-        $spans = $reporter->convertSpans($tracer);
+        $exporter = new ZipkinExporter('myapp');
+        $spans = $exporter->convertSpans([$span->spanData()]);
 
         $this->assertCount(1, $spans);
         $this->assertTrue($spans[0]['shared']);
@@ -139,21 +127,16 @@ class ZipkinExporterTest extends TestCase
 
     public function testEmptyTrace()
     {
-        $spanContext = new SpanContext('testtraceid', 12345);
-        $tracer = new ContextTracer($spanContext);
-        $reporter = new ZipkinExporter('myapp');
-        $spans = $reporter->convertSpans($tracer);
+        $exporter = new ZipkinExporter('myapp');
+        $spans = $exporter->convertSpans([]);
         $this->assertEmpty($spans);
     }
 
     public function testSkipsIpv4()
     {
-        $spanContext = new SpanContext('testtraceid', 12345);
-        $tracer = new ContextTracer($spanContext);
-        $tracer->inSpan(['name' => 'main'], function () {});
+        $exporter = new ZipkinExporter('myapp');
+        $spans = $exporter->convertSpans($this->spans);
 
-        $reporter = new ZipkinExporter('myapp');
-        $spans = $reporter->convertSpans($tracer);
         $endpoint = $spans[0]['localEndpoint'];
         $this->assertArrayNotHasKey('ipv4', $endpoint);
         $this->assertArrayNotHasKey('ipv6', $endpoint);
@@ -161,13 +144,10 @@ class ZipkinExporterTest extends TestCase
 
     public function testSetsIpv4()
     {
-        $spanContext = new SpanContext('testtraceid', 12345);
-        $tracer = new ContextTracer($spanContext);
-        $tracer->inSpan(['name' => 'main'], function () {});
+        $exporter = new ZipkinExporter('myapp');
+        $exporter->setLocalIpv4('1.2.3.4');
+        $spans = $exporter->convertSpans($this->spans);
 
-        $reporter = new ZipkinExporter('myapp');
-        $reporter->setLocalIpv4('1.2.3.4');
-        $spans = $reporter->convertSpans($tracer);
         $endpoint = $spans[0]['localEndpoint'];
         $this->assertArrayHasKey('ipv4', $endpoint);
         $this->assertEquals('1.2.3.4', $endpoint['ipv4']);
@@ -175,13 +155,10 @@ class ZipkinExporterTest extends TestCase
 
     public function testSetsIpv6()
     {
-        $spanContext = new SpanContext('testtraceid', 12345);
-        $tracer = new ContextTracer($spanContext);
-        $tracer->inSpan(['name' => 'main'], function () {});
+        $exporter = new ZipkinExporter('myapp');
+        $exporter->setLocalIpv6('2001:db8:85a3::8a2e:370:7334');
+        $spans = $exporter->convertSpans($this->spans);
 
-        $reporter = new ZipkinExporter('myapp');
-        $reporter->setLocalIpv6('2001:db8:85a3::8a2e:370:7334');
-        $spans = $reporter->convertSpans($tracer);
         $endpoint = $spans[0]['localEndpoint'];
         $this->assertArrayHasKey('ipv6', $endpoint);
         $this->assertEquals('2001:db8:85a3::8a2e:370:7334', $endpoint['ipv6']);
@@ -189,12 +166,9 @@ class ZipkinExporterTest extends TestCase
 
     public function testSetsLocalEndpointPort()
     {
-        $spanContext = new SpanContext('testtraceid', 12345);
-        $tracer = new ContextTracer($spanContext);
-        $tracer->inSpan(['name' => 'main'], function () {});
+        $exporter = new ZipkinExporter('myapp', null, ['SERVER_PORT' => "80"]);
+        $spans = $exporter->convertSpans($this->spans);
 
-        $reporter = new ZipkinExporter('myapp', null, ['SERVER_PORT' => "80"]);
-        $spans = $reporter->convertSpans($tracer);
         $endpoint = $spans[0]['localEndpoint'];
         $this->assertArrayHasKey('port', $endpoint);
         $this->assertEquals(80, $endpoint['port']);

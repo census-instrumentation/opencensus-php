@@ -47,7 +47,7 @@ class RequestHandler
     /**
      * @var ExporterInterface The reported to use at the end of the request
      */
-    private $reporter;
+    private $exporter;
 
     /**
      * @var TracerInterface The tracer to use for this request
@@ -72,7 +72,7 @@ class RequestHandler
     /**
      * Create a new RequestHandler.
      *
-     * @param ExporterInterface $reporter How to report the trace at the end of the request
+     * @param ExporterInterface $exporter How to report the trace at the end of the request
      * @param SamplerInterface $sampler Which sampler to use for sampling requests
      * @param PropagatorInterface $propagator SpanContext propagator
      * @param array $options [optional] {
@@ -85,12 +85,12 @@ class RequestHandler
      * }
      */
     public function __construct(
-        ExporterInterface $reporter,
+        ExporterInterface $exporter,
         SamplerInterface $sampler,
         PropagatorInterface $propagator,
         array $options = []
     ) {
-        $this->reporter = $reporter;
+        $this->exporter = $exporter;
         $this->headers = array_key_exists('headers', $options)
             ? $options['headers']
             : $_SERVER;
@@ -135,7 +135,12 @@ class RequestHandler
         $this->addCommonRequestAttributes($this->headers);
 
         $this->scope->close();
-        $this->reporter->report($this->tracer);
+
+        // Fetch the SpanData of all the collected Spans
+        $spans = array_map(function (Span $span) {
+            return $span->spanData();
+        }, $this->tracer->spans());
+        $this->exporter->export($spans);
     }
 
     /**

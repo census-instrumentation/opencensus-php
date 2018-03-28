@@ -69,7 +69,7 @@ class ContextTest extends TestCase
     }
 
     /**
-     * @expectedException \PHPUnit\Framework\Error\Warning
+     * @expectedException PHPUnit\Framework\Error\Warning
      */
     public function testRestoringCurrentContextRequiresSameObject()
     {

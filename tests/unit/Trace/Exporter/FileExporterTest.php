@@ -18,9 +18,7 @@
 namespace OpenCensus\Tests\Unit\Trace\Exporter;
 
 use OpenCensus\Trace\Exporter\FileExporter;
-use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
-use OpenCensus\Trace\Tracer\TracerInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -34,7 +32,6 @@ class FileExporterTest extends TestCase
     public function setUp()
     {
         $this->filename = tempnam(sys_get_temp_dir(), 'traces');
-        $this->tracer = $this->prophesize(TracerInterface::class);
     }
 
     public function tearDown()
@@ -44,19 +41,14 @@ class FileExporterTest extends TestCase
 
     public function testLogsTrace()
     {
-        $this->tracer->spanContext()->willReturn(new SpanContext());
+        $span = new Span([
+            'name' => 'span',
+            'startTime' => microtime(true),
+            'endTime' => microtime(true) + 10
+        ]);
 
-        $spans = [
-            new Span([
-                'name' => 'span',
-                'startTime' => microtime(true),
-                'endTime' => microtime(true) + 10
-            ])
-        ];
-        $this->tracer->spans()->willReturn($spans);
-
-        $reporter = new FileExporter($this->filename);
-        $this->assertTrue($reporter->report($this->tracer->reveal()));
+        $exporter = new FileExporter($this->filename);
+        $this->assertTrue($exporter->export([$span->spanData()]));
         $this->assertGreaterThan(0, strlen(@file_get_contents($this->filename)));
     }
 }

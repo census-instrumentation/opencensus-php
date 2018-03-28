@@ -36,10 +36,10 @@ class NullExporter implements ExporterInterface
     /**
      * Does nothing.
      *
-     * @param  TracerInterface $tracer
+     * @param SpanData[] $spans
      * @return bool
      */
-    public function report(TracerInterface $tracer)
+    public function export(array $spans)
     {
         return true;
     }

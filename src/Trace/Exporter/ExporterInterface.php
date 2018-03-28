@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Trace\Exporter;
 
-use OpenCensus\Trace\Tracer\TracerInterface;
+use OpenCensus\Trace\SpanData;
 
 /**
  * The ExporterInterface allows you to swap out the Trace reporting mechanism
@@ -25,10 +25,10 @@ use OpenCensus\Trace\Tracer\TracerInterface;
 interface ExporterInterface
 {
     /**
-     * Report the provided Trace to a backend.
+     * Export the provided SpanData to a backend.
      *
-     * @param  TracerInterface $tracer
+     * @param SpanData[] $spans
      * @return bool
      */
-    public function report(TracerInterface $tracer);
+    public function export(array $spans);
 }
