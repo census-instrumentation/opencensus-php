@@ -62,11 +62,13 @@ class RequestHandlerTest extends TestCase
         $this->assertCount(2, $spans);
         foreach ($spans as $span) {
             $this->assertInstanceOf(Span::class, $span);
-            $this->assertNotEmpty($span->endTime());
+            $this->assertNotEmpty($span->spanData()->endTime());
         }
-        $this->assertEquals('main', $spans[0]->name());
-        $this->assertEquals('inner', $spans[1]->name());
-        $this->assertEquals($spans[0]->spanId(), $spans[1]->parentSpanId());
+        $spanData1 = $spans[0]->spanData();
+        $spanData2 = $spans[1]->spanData();
+        $this->assertEquals('main', $spanData1->name());
+        $this->assertEquals('inner', $spanData2->name());
+        $this->assertEquals($spanData1->spanId(), $spanData2->parentSpanId());
     }
 
     public function testCanParseParentContext()
@@ -83,7 +85,7 @@ class RequestHandlerTest extends TestCase
             ]
         );
         $span = $rt->tracer()->spans()[0];
-        $this->assertEquals('15b3', $span->parentSpanId());
+        $this->assertEquals('15b3', $span->spanData()->parentSpanId());
         $context = $rt->tracer()->spanContext();
         $this->assertEquals('12345678901234567890123456789012', $context->traceId());
     }
@@ -123,41 +125,5 @@ class RequestHandlerTest extends TestCase
 
         $this->assertFalse($tracer->enabled());
         $this->assertInstanceOf(NullTracer::class, $tracer);
-    }
-
-    /**
-     * @dataProvider attributeHeaders
-     */
-    public function testParsesAttributesFromHeaders($headerKey, $headerValue, $expectedAttributeKey, $expectedAttributeValue)
-    {
-        $this->sampler->shouldSample()->willReturn(true);
-        $rt = new RequestHandler(
-            $this->reporter->reveal(),
-            $this->sampler->reveal(),
-            new HttpHeaderPropagator(),
-            [
-                'headers' => [
-                    $headerKey => $headerValue
-                ],
-                'skipReporting' => true
-            ]
-        );
-        $rt->onExit();
-        $spans = $rt->tracer()->spans();
-        $attributes = $spans[0]->attributes();
-        $this->assertArrayHasKey($expectedAttributeKey, $attributes);
-        $this->assertEquals($expectedAttributeValue, $attributes[$expectedAttributeKey]);
-    }
-
-    public function attributeHeaders()
-    {
-        return [
-            ['REQUEST_URI', '/foobar', 'http.path', '/foobar'],
-            ['REQUEST_METHOD', 'PUT', 'http.method', 'PUT'],
-            ['HTTP_HOST', 'foo.example.com', 'http.host', 'foo.example.com'],
-            ['SERVER_NAME', 'foo.example.com', 'http.host', 'foo.example.com'],
-            ['SERVER_PORT', '80', 'http.port', '80'],
-            ['HTTP_USER_AGENT', 'some user-agent', 'http.user_agent', 'some user-agent']
-        ];
     }
 }

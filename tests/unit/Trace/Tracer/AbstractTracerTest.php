@@ -47,9 +47,9 @@ abstract class AbstractTracerTest extends TestCase
 
         $spans = $tracer->spans();
         $this->assertCount(1, $spans);
-        $span = $spans[0];
-        $this->assertEquals('test', $span->name());
-        $this->assertEquals($parentSpanId, $span->parentSpanId());
+        $spanData = $spans[0]->spanData();
+        $this->assertEquals('test', $spanData->name());
+        $this->assertEquals($parentSpanId, $spanData->parentSpanId());
     }
 
     public function testAddsAttributesToCurrentSpan()
@@ -64,9 +64,9 @@ abstract class AbstractTracerTest extends TestCase
 
         $spans = $tracer->spans();
         $this->assertCount(2, $spans);
-        $span = $spans[1];
-        $this->assertEquals('inner', $span->name());
-        $attributes = $span->attributes();
+        $spanData = $spans[1]->spanData();
+        $this->assertEquals('inner', $spanData->name());
+        $attributes = $spanData->attributes();
         $this->assertArrayHasKey('foo', $attributes);
         $this->assertEquals('bar', $attributes['foo']);
     }
@@ -84,9 +84,9 @@ abstract class AbstractTracerTest extends TestCase
 
         $spans = $tracer->spans();
         $this->assertCount(2, $spans);
-        $span = $spans[0];
-        $this->assertEquals('root', $span->name());
-        $attributes = $span->attributes();
+        $spanData = $spans[0]->spanData();
+        $this->assertEquals('root', $spanData->name());
+        $attributes = $spanData->attributes();
         $this->assertArrayHasKey('foo', $attributes);
         $this->assertEquals('bar', $attributes['foo']);
     }
@@ -96,8 +96,8 @@ abstract class AbstractTracerTest extends TestCase
         $class = $this->getTracerClass();
         $tracer = new $class();
         $tracer->inSpan(['name' => 'test'], function () {});
-        $span = $tracer->spans()[0];
-        $stackframe = $span->stackTrace()[0];
+        $spanData = $tracer->spans()[0]->spanData();;
+        $stackframe = $spanData->stackTrace()[0];
         $this->assertEquals('testPersistsBacktrace', $stackframe['function']);
         $this->assertEquals(self::class, $stackframe['class']);
     }
@@ -125,7 +125,10 @@ abstract class AbstractTracerTest extends TestCase
         usleep(100);
         $scope->close();
 
-        $this->assertEquivalentTimestamps($span->startTime(), $tracer->spans()[0]->startTime());
+        $this->assertEquivalentTimestamps(
+            $span->spanData()->startTime(),
+            $tracer->spans()[0]->spanData()->startTime()
+        );
     }
 
     public function testAddsAnnotations()
@@ -140,10 +143,10 @@ abstract class AbstractTracerTest extends TestCase
         });
 
         $spans = $tracer->spans();
-        $rootSpan = $spans[0];
-        $this->assertCount(1, $rootSpan->timeEvents());
-        $innerSpan = $spans[1];
-        $this->assertCount(1, $rootSpan->timeEvents());
+        $rootSpanData = $spans[0]->spanData();
+        $this->assertCount(1, $rootSpanData->timeEvents());
+        $innerSpanData = $spans[1]->spanData();
+        $this->assertCount(1, $innerSpanData->timeEvents());
     }
 
     public function testAddsAnnotationToRootSpan()
@@ -162,9 +165,10 @@ abstract class AbstractTracerTest extends TestCase
 
         $spans = $tracer->spans();
         $this->assertCount(2, $spans);
-        $span = $spans[0];
-        $this->assertEquals('root', $span->name());
-        $this->assertCount(1, $span->timeEvents());
+
+        $spanData = $spans[0]->spanData();
+        $this->assertEquals('root', $spanData->name());
+        $this->assertCount(1, $spanData->timeEvents());
     }
 
     public function testAddsLinks()
@@ -179,10 +183,10 @@ abstract class AbstractTracerTest extends TestCase
         });
 
         $spans = $tracer->spans();
-        $rootSpan = $spans[0];
-        $this->assertCount(1, $rootSpan->links());
-        $innerSpan = $spans[1];
-        $this->assertCount(1, $rootSpan->links());
+        $rootSpanData = $spans[0]->spanData();
+        $this->assertCount(1, $rootSpanData->links());
+        $innerSpanData = $spans[1]->spanData();
+        $this->assertCount(1, $innerSpanData->links());
     }
 
     public function testAddsLinkToRootSpan()
@@ -200,9 +204,10 @@ abstract class AbstractTracerTest extends TestCase
 
         $spans = $tracer->spans();
         $this->assertCount(2, $spans);
-        $span = $spans[0];
-        $this->assertEquals('root', $span->name());
-        $this->assertCount(1, $span->links());
+        $spanData = $spans[0]->spanData();
+
+        $this->assertEquals('root', $spanData->name());
+        $this->assertCount(1, $spanData->links());
     }
 
     public function testAddMessageEvents()
@@ -217,10 +222,10 @@ abstract class AbstractTracerTest extends TestCase
         });
 
         $spans = $tracer->spans();
-        $rootSpan = $spans[0];
-        $this->assertCount(1, $rootSpan->timeEvents());
-        $innerSpan = $spans[1];
-        $this->assertCount(1, $rootSpan->timeEvents());
+        $rootSpanData = $spans[0]->spanData();
+        $this->assertCount(1, $rootSpanData->timeEvents());
+        $innerSpanData = $spans[1]->spanData();
+        $this->assertCount(1, $innerSpanData->timeEvents());
     }
 
     public function testAddsMessageEventToRootSpan()
@@ -238,9 +243,10 @@ abstract class AbstractTracerTest extends TestCase
 
         $spans = $tracer->spans();
         $this->assertCount(2, $spans);
-        $span = $spans[0];
-        $this->assertEquals('root', $span->name());
-        $this->assertCount(1, $span->timeEvents());
+        $spanData = $spans[0]->spanData();
+
+        $this->assertEquals('root', $spanData->name());
+        $this->assertCount(1, $spanData->timeEvents());
     }
 
     public function testInSpanSetsDefaultStartTime()
@@ -253,10 +259,10 @@ abstract class AbstractTracerTest extends TestCase
 
         $spans = $tracer->spans();
         $this->assertCount(1, $spans);
-        $span = $spans[0];
+        $spanData = $spans[0]->spanData();
 
         // #131 - Span should be initialized with current time, not the epoch.
-        $this->assertNotEquals(0, $span->startTime()->getTimestamp());
+        $this->assertNotEquals(0, $spanData->startTime()->getTimestamp());
     }
 
     public function testStackTraceShouldBeSet()
@@ -269,10 +275,10 @@ abstract class AbstractTracerTest extends TestCase
 
         $spans = $tracer->spans();
         $this->assertCount(1, $spans);
-        $span = $spans[0];
+        $spanData = $spans[0]->spanData();
 
-        $this->assertInternalType('array', $span->stackTrace());
-        $this->assertNotEmpty($span->stackTrace());
+        $this->assertInternalType('array', $spanData->stackTrace());
+        $this->assertNotEmpty($spanData->stackTrace());
     }
 
     public function testAttributesShouldBeSet()
@@ -285,10 +291,10 @@ abstract class AbstractTracerTest extends TestCase
 
         $spans = $tracer->spans();
         $this->assertCount(1, $spans);
-        $span = $spans[0];
+        $spanData = $spans[0]->spanData();
 
-        $this->assertInternalType('array', $span->attributes());
-        $this->assertEmpty($span->attributes());
+        $this->assertInternalType('array', $spanData->attributes());
+        $this->assertEmpty($spanData->attributes());
     }
 
     public function testLinksShouldBeSet()
@@ -301,10 +307,10 @@ abstract class AbstractTracerTest extends TestCase
 
         $spans = $tracer->spans();
         $this->assertCount(1, $spans);
-        $span = $spans[0];
+        $spanData = $spans[0]->spanData();
 
-        $this->assertInternalType('array', $span->links());
-        $this->assertEmpty($span->links());
+        $this->assertInternalType('array', $spanData->links());
+        $this->assertEmpty($spanData->links());
     }
 
     public function testTimeEventsShouldBeSet()
@@ -317,10 +323,10 @@ abstract class AbstractTracerTest extends TestCase
 
         $spans = $tracer->spans();
         $this->assertCount(1, $spans);
-        $span = $spans[0];
+        $spanData = $spans[0]->spanData();
 
-        $this->assertInternalType('array', $span->timeEvents());
-        $this->assertEmpty($span->timeEvents());
+        $this->assertInternalType('array', $spanData->timeEvents());
+        $this->assertEmpty($spanData->timeEvents());
     }
 
     private function assertEquivalentTimestamps($expected, $value)
