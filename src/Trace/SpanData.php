@@ -318,8 +318,11 @@ class SpanData
     public function stackTraceHashId()
     {
         if (!isset($this->stackTraceHashId)) {
-            // take the lower 16 digits of the md5 and convert to an int
-            $this->stackTraceHashId = hexdec(substr(md5(serialize($this->stackTrace)), -16));
+            // take the lower 16 (8 for 32-bit PHP) digits of the md5 and
+            // convert to an int
+            $digits = PHP_INT_SIZE * -2;
+            $md5 = md5(serialize($this->stackTrace));
+            $this->stackTraceHashId = hexdec(substr($md5, $digits));
         }
         return $this->stackTraceHashId;
     }
