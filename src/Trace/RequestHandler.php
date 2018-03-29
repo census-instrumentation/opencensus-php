@@ -115,7 +115,8 @@ class RequestHandler
         $spanOptions = $options + [
             'startTime' => $this->startTimeFromHeaders($this->headers),
             'name' => $this->nameFromHeaders($this->headers),
-            'attributes' => []
+            'attributes' => [],
+            'kind' => Span::KIND_SERVER
         ];
         $this->rootSpan = $this->tracer->startSpan($spanOptions);
         $this->scope = $this->tracer->withSpan($this->rootSpan);

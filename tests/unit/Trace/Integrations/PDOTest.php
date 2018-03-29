@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Integrations;
 
+use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Integrations\PDO;
 use PHPUnit\Framework\TestCase;
 
@@ -34,7 +35,8 @@ class PDOTest extends TestCase
         $expected = [
             'attributes' => [
                 'query' => 'select * from users'
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
 
         $this->assertEquals($expected, $spanOptions);
@@ -47,7 +49,8 @@ class PDOTest extends TestCase
         $expected = [
             'attributes' => [
                 'dsn' => 'mysql:host=localhost;dbname=testdb'
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
 
         $this->assertEquals($expected, $spanOptions);

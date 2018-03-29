@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace\Integrations;
 
+use OpenCensus\Trace\Span;
+
 /**
  * This class handles instrumenting mysql requests using the opencensus extension.
  *
@@ -42,14 +44,16 @@ class Mysql implements IntegrationInterface
         // mixed mysqli_query ( mysqli $link , string $query [, int $resultmode = MYSQLI_STORE_RESULT ] )
         opencensus_trace_function('mysqli_query', function ($mysqli, $query) {
             return [
-                'attributes' => ['query' => $query]
+                'attributes' => ['query' => $query],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
         // mysqli_stmt mysqli_prepare ( mysqli $link , string $query )
         opencensus_trace_function('mysqli_prepare', function ($mysqli, $query) {
             return [
-                'attributes' => ['query' => $query]
+                'attributes' => ['query' => $query],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
@@ -59,10 +63,11 @@ class Mysql implements IntegrationInterface
                 return [
                     'attributes' => [
                         'name' => func_get_arg(2)
-                    ]
+                    ],
+                    'kind' => Span::KIND_CLIENT
                 ];
             } else {
-                return [];
+                return ['kind' => Span::KIND_CLIENT];
             }
         });
 
@@ -74,24 +79,29 @@ class Mysql implements IntegrationInterface
         //      [, string $socket = ini_get("mysqli.default_socket") ]]]]]] )
         opencensus_trace_function('mysqli_connect', function ($host) {
             return [
-                'attributes' => ['host' => $host]
+                'attributes' => ['host' => $host],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
         // bool mysqli_stmt_execute ( mysqli_stmt $stmt )
-        opencensus_trace_function('mysqli_stmt_execute');
+        opencensus_trace_function('mysqli_stmt_execute', function () {
+            return ['kind' => Span::KIND_CLIENT];
+        });
 
         // mixed mysqli::query ( string $query [, int $resultmode = MYSQLI_STORE_RESULT ] )
         opencensus_trace_method('mysqli', 'query', function ($mysqli, $query) {
             return [
-                'attributes' => ['query' => $query]
+                'attributes' => ['query' => $query],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
         // mysqli_stmt mysqli::prepare ( string $query )
         opencensus_trace_method('mysqli', 'prepare', function ($mysqli, $query) {
             return [
-                'attributes' => ['query' => $query]
+                'attributes' => ['query' => $query],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
@@ -101,10 +111,11 @@ class Mysql implements IntegrationInterface
                 return [
                     'attributes' => [
                         'name' => func_get_arg(1)
-                    ]
+                    ],
+                    'kind' => Span::KIND_CLIENT
                 ];
             } else {
-                return [];
+                return ['kind' => Span::KIND_CLIENT];
             }
         });
 
@@ -116,11 +127,14 @@ class Mysql implements IntegrationInterface
         //      [, string $socket = ini_get("mysqli.default_socket") ]]]]]] )
         opencensus_trace_method('mysqli', '__construct', function ($mysqli, $host) {
             return [
-                'attributes' => ['host' => $host]
+                'attributes' => ['host' => $host],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
         // bool mysqli_stmt::execute ( void )
-        opencensus_trace_method('mysqli_stmt', 'execute');
+        opencensus_trace_method('mysqli_stmt', 'execute', function () {
+            return ['kind' => Span::KIND_CLIENT];
+        });
     }
 }

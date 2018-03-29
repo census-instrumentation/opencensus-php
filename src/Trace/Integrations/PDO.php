@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace\Integrations;
 
+use OpenCensus\Trace\Span;
+
 /**
  * This class handles instrumenting PDO requests using the opencensus extension.
  *
@@ -69,7 +71,8 @@ class PDO implements IntegrationInterface
     public static function handleQuery($pdo, $query)
     {
         return [
-            'attributes' => ['query' => $query]
+            'attributes' => ['query' => $query],
+            'kind' => Span::KIND_CLIENT
         ];
     }
 
@@ -84,7 +87,8 @@ class PDO implements IntegrationInterface
     public static function handleConnect($pdo, $dsn)
     {
         return [
-            'attributes' => ['dsn' => $dsn]
+            'attributes' => ['dsn' => $dsn],
+            'kind' => Span::KIND_CLIENT
         ];
     }
 
@@ -98,7 +102,8 @@ class PDO implements IntegrationInterface
     public static function handleStatementExecute($statement)
     {
         return [
-            'attributes' => ['query' => $statement->queryString]
+            'attributes' => ['query' => $statement->queryString],
+            'kind' => Span::KIND_CLIENT
         ];
     }
 }

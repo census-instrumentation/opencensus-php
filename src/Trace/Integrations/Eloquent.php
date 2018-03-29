@@ -19,6 +19,7 @@ namespace OpenCensus\Trace\Integrations;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use OpenCensus\Trace\Span;
 
 /**
  * This class handles instrumenting the Eloquent ORM queries using the opencensus extension.
@@ -48,7 +49,8 @@ class Eloquent implements IntegrationInterface
                 'name' => 'eloquent/get',
                 'attributes' => [
                     'query' => $builder->toBase()->toSql()
-                ]
+                ],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
@@ -58,7 +60,8 @@ class Eloquent implements IntegrationInterface
                 'name' => 'eloquent/insert',
                 'attributes' => [
                     'query' => $query->toBase()->toSql()
-                ]
+                ],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
@@ -68,7 +71,8 @@ class Eloquent implements IntegrationInterface
                 'name' => 'eloquent/update',
                 'attributes' => [
                     'query' => $query->toBase()->toSql()
-                ]
+                ],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
@@ -78,7 +82,8 @@ class Eloquent implements IntegrationInterface
                 'name' => 'eloquent/delete',
                 'attributes' => [
                     'query' => $query->toBase()->toSql()
-                ]
+                ],
+                'kind' => Span::KIND_CLIENT
             ];
         });
     }

@@ -18,6 +18,7 @@
 namespace OpenCensus\Trace\Integrations;
 
 use Doctrine\ORM\Version;
+use OpenCensus\Trace\Span;
 
 /**
  * This class handles instrumenting the Doctrine ORM queries using the opencensus extension.
@@ -52,7 +53,8 @@ class Doctrine implements IntegrationInterface
         opencensus_trace_method($persisterClass, 'load', function ($bep) {
             return [
                 'name' => 'doctrine/load',
-                'attributes' => ['entity' => $bep->getClassMetadata()->name]
+                'attributes' => ['entity' => $bep->getClassMetadata()->name],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
@@ -60,7 +62,8 @@ class Doctrine implements IntegrationInterface
         opencensus_trace_method($persisterClass, 'loadAll', function ($bep) {
             return [
                 'name' => 'doctrine/loadAll',
-                'attributes' => ['entity' => $bep->getClassMetadata()->name]
+                'attributes' => ['entity' => $bep->getClassMetadata()->name],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
@@ -68,7 +71,8 @@ class Doctrine implements IntegrationInterface
         opencensus_trace_method(PDOConnection::class, 'exec', function ($scope, $query) {
             return [
                 'name' => 'doctrine/exec',
-                'attributes' => ['query' => $query]
+                'attributes' => ['query' => $query],
+                'kind' => Span::KIND_CLIENT
             ];
         });
     }

@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace\Integrations;
 
+use OpenCensus\Trace\Span;
+
 /**
  * This class handles instrumenting memcache requests using the opencensus extension.
  *
@@ -130,7 +132,8 @@ class Memcached implements IntegrationInterface
     {
         $key = is_array($keyOrKeys) ? implode(",", $keyOrKeys) : $keyOrKeys;
         return [
-            'attributes' => ['key' => $key]
+            'attributes' => ['key' => $key],
+            'kind' => Span::KIND_CLIENT
         ];
     }
 
@@ -150,7 +153,8 @@ class Memcached implements IntegrationInterface
             'attributes' => [
                 'serverKey' => $serverKey,
                 'key' => $key
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
     }
 
@@ -170,7 +174,8 @@ class Memcached implements IntegrationInterface
             'attributes' => [
                 'casToken' => $casToken,
                 'key' => $key
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
     }
 
@@ -192,7 +197,8 @@ class Memcached implements IntegrationInterface
                 'casToken' => $casToken,
                 'serverKey' => $serverKey,
                 'key' => $key
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
     }
 
@@ -207,7 +213,8 @@ class Memcached implements IntegrationInterface
     public static function handleSetMulti($memcached, $items)
     {
         return [
-            'attributes' => ['key' => implode(',', array_keys($items))]
+            'attributes' => ['key' => implode(',', array_keys($items))],
+            'kind' => Span::KIND_CLIENT
         ];
     }
 
@@ -226,7 +233,8 @@ class Memcached implements IntegrationInterface
             'attributes' => [
                 'serverKey' => $serverKey,
                 'key' => implode(',', array_keys($items))
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
     }
 }

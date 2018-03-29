@@ -18,6 +18,7 @@
 namespace OpenCensus\Tests\Unit\Trace\Integrations;
 
 use OpenCensus\Trace\Integrations\Curl;
+use OpenCensus\Trace\Span;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -33,7 +34,8 @@ class CurlTest extends TestCase
         $expected = [
             'attributes' => [
                 'uri' => 'https://www.google.com'
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
 
         $this->assertEquals($expected, $spanOptions);
