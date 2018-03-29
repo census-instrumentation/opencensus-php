@@ -18,6 +18,7 @@
 namespace OpenCensus\Trace\Integrations\Guzzle;
 
 use OpenCensus\Core\Scope;
+use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 use OpenCensus\Trace\Propagator\PropagatorInterface;
@@ -94,7 +95,8 @@ class EventSubscriber implements SubscriberInterface
             'attributes' => [
                 'method' => $request->getMethod(),
                 'uri' => $request->getUrl()
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ]);
         $this->scope = Tracer::withSpan($span);
     }

@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Trace\Integrations\Guzzle;
 
+use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 use OpenCensus\Trace\Propagator\PropagatorInterface;
@@ -79,7 +80,8 @@ class Middleware
                 'attributes' => [
                     'method' => $request->getMethod(),
                     'uri' => (string)$request->getUri()
-                ]
+                ],
+                'kind' => Span::KIND_CLIENT
             ], $handler, [$request, $options]);
         };
     }

@@ -37,6 +37,10 @@ class Span
     const ATTRIBUTE_USER_AGENT = 'http.user_agent';
     const ATTRIBUTE_STATUS_CODE = 'http.status_code';
 
+    const KIND_UNSPECIFIED = 'SPAN_KIND_UNSPECIFIED';
+    const KIND_SERVER = 'SERVER';
+    const KIND_CLIENT = 'CLIENT';
+
     /**
      * Unique identifier for a trace. All spans from the same Trace share the
      * same `traceId`. 16-byte value encoded as a hex string.
@@ -133,6 +137,15 @@ class Span
     private $sameProcessAsParentSpan;
 
     /**
+     * Distinguishes between spans generated in a particular context. For
+     * example, two spans with the same name may be distinguished using `CLIENT`
+     * and `SERVER` to identify queueing latency associated with the span.
+     *
+     * @var string
+     */
+    private $kind;
+
+    /**
      * Instantiate a new Span instance.
      *
      * @param array $options [optional] Configuration options.
@@ -150,6 +163,7 @@ class Span
      *      @type Status $status The final status for this span.
      *      @type bool $sameProcessAsParentSpan True when the parentSpanId
      *            belongs to the same process as the current span.
+     *      @type string $kind The span's type.
      */
     public function __construct($options = [])
     {
@@ -160,7 +174,8 @@ class Span
             'links' => [],
             'parentSpanId' => null,
             'status' => null,
-            'sameProcessAsParentSpan' => null
+            'sameProcessAsParentSpan' => null,
+            'kind' => self::KIND_UNSPECIFIED
         ];
 
         $this->traceId = $options['traceId'];
@@ -198,6 +213,7 @@ class Span
         $this->parentSpanId = $options['parentSpanId'];
         $this->status = $options['status'];
         $this->sameProcessAsParentSpan = $options['sameProcessAsParentSpan'];
+        $this->kind = $options['kind'];
     }
 
     /**
@@ -254,7 +270,8 @@ class Span
                 'links' => $this->links,
                 'status' => $this->status,
                 'sameProcessAsParentSpan' => $this->sameProcessAsParentSpan,
-                'stackTrace' => $this->stackTrace
+                'stackTrace' => $this->stackTrace,
+                'kind' => $this->kind
             ]
         );
     }

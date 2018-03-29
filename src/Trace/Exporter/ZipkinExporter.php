@@ -18,6 +18,7 @@
 namespace OpenCensus\Trace\Exporter;
 
 use OpenCensus\Trace\MessageEvent;
+use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanData;
 
 /**
@@ -38,6 +39,11 @@ class ZipkinExporter implements ExporterInterface
     const KIND_SERVER = 'SERVER';
     const KIND_CLIENT = 'CLIENT';
     const DEFAULT_ENDPOINT = 'http://localhost:9411/api/v2/spans';
+    const KIND_MAP = [
+        Span::KIND_UNSPECIFIED => null,
+        Span::KIND_SERVER => self::KIND_SERVER,
+        Span::KIND_CLIENT => self::KIND_CLIENT
+    ];
 
     /**
      * @var string
@@ -184,6 +190,11 @@ class ZipkinExporter implements ExporterInterface
 
     private function spanKind(SpanData $span)
     {
+        $kind = self::KIND_MAP[$span->kind()];
+        if ($kind !== null) {
+            return $kind;
+        }
+
         if (strpos($span->name(), 'Sent.') === 0) {
             return self::KIND_CLIENT;
         }

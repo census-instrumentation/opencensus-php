@@ -98,6 +98,9 @@ class ZipkinExporterTest extends TestCase
             [['name' => 'Sent.Span2'], 'CLIENT'],
             [['name' => 'span3', 'timeEvents' => [new MessageEvent(MessageEvent::TYPE_RECEIVED, '')]], 'SERVER'],
             [['name' => 'span4', 'timeEvents' => [new MessageEvent(MessageEvent::TYPE_SENT, '')]], 'CLIENT'],
+            [['kind' => Span::KIND_SERVER], 'SERVER'],
+            [['kind' => Span::KIND_CLIENT], 'CLIENT'],
+            [['kind' => Span::KIND_UNSPECIFIED], null]
         ];
     }
 

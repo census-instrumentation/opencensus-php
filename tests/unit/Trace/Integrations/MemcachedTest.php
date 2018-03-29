@@ -18,6 +18,7 @@
 namespace OpenCensus\Tests\Unit\Trace\Integrations;
 
 use OpenCensus\Trace\Integrations\Memcached;
+use OpenCensus\Trace\Span;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -34,7 +35,8 @@ class MemcachedTest extends TestCase
         $expected = [
             'attributes' => [
                 'key' => 'mykey'
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
 
         $this->assertEquals($expected, $spanOptions);
@@ -52,7 +54,8 @@ class MemcachedTest extends TestCase
         $expected = [
             'attributes' => [
                 'key' => 'key1,key2'
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
 
         $this->assertEquals($expected, $spanOptions);
@@ -69,7 +72,8 @@ class MemcachedTest extends TestCase
             'attributes' => [
                 'serverKey' => 'server1',
                 'key' => 'mykey'
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
 
         $this->assertEquals($expected, $spanOptions);
@@ -89,7 +93,8 @@ class MemcachedTest extends TestCase
             'attributes' => [
                 'serverKey' => 'server1',
                 'key' => 'key1,key2'
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
 
         $this->assertEquals($expected, $spanOptions);
@@ -106,7 +111,8 @@ class MemcachedTest extends TestCase
             'attributes' => [
                 'casToken' => 'token1',
                 'key' => 'key1'
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
 
         $this->assertEquals($expected, $spanOptions);
@@ -125,7 +131,8 @@ class MemcachedTest extends TestCase
                 'casToken' => 'token1',
                 'serverKey' => 'server1',
                 'key' => 'key1'
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
 
         $this->assertEquals($expected, $spanOptions);
@@ -143,7 +150,8 @@ class MemcachedTest extends TestCase
         $expected = [
             'attributes' => [
                 'key' => 'foo,asdf'
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
 
         $this->assertEquals($expected, $spanOptions);
@@ -163,7 +171,8 @@ class MemcachedTest extends TestCase
             'attributes' => [
                 'serverKey' => 'server1',
                 'key' => 'foo,asdf'
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
 
         $this->assertEquals($expected, $spanOptions);

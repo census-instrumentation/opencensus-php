@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace\Integrations;
 
+use OpenCensus\Trace\Span;
+
 /**
  * This class handles instrumenting memcache requests using the opencensus extension.
  *
@@ -79,7 +81,8 @@ class Memcache implements IntegrationInterface
     {
         $key = is_array($keyOrKeys) ? implode(",", $keyOrKeys) : $keyOrKeys;
         return [
-            'attributes' => ['key' => $key]
+            'attributes' => ['key' => $key],
+            'kind' => Span::KIND_CLIENT
         ];
     }
 
@@ -96,7 +99,8 @@ class Memcache implements IntegrationInterface
         return [
             'attributes' => [
                 'host' => $host
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
     }
 }

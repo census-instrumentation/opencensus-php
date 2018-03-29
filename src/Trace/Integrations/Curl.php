@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace\Integrations;
 
+use OpenCensus\Trace\Span;
+
 /**
  * This class handles instrumenting curl requests using the opencensus extension.
  *
@@ -56,7 +58,8 @@ class Curl implements IntegrationInterface
         return [
             'attributes' => [
                 'uri' => curl_getinfo($resource, CURLINFO_EFFECTIVE_URL)
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
     }
 }

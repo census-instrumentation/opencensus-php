@@ -18,6 +18,7 @@
 namespace OpenCensus\Trace\Integrations;
 
 use Grpc\BaseStub;
+use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Propagator\GrpcMetadataPropagator;
 
@@ -51,7 +52,8 @@ class Grpc implements IntegrationInterface
                 'attributes' => [
                     'host' => $stub->getTarget(),
                     'uri' => $method
-                ]
+                ],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
@@ -63,7 +65,8 @@ class Grpc implements IntegrationInterface
                 'attributes' => [
                     'host' => $stub->getTarget(),
                     'uri' => $method
-                ]
+                ],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
@@ -75,7 +78,8 @@ class Grpc implements IntegrationInterface
                 'attributes' => [
                     'host' => $stub->getTarget(),
                     'uri' => $method
-                ]
+                ],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
@@ -86,7 +90,8 @@ class Grpc implements IntegrationInterface
                 'attributes' => [
                     'host' => $stub->getTarget(),
                     'uri' => $method
-                ]
+                ],
+                'kind' => Span::KIND_CLIENT
             ];
         });
     }

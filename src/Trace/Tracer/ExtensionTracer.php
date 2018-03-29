@@ -90,7 +90,8 @@ class ExtensionTracer implements TracerInterface
             'parentSpanId' => $spanData->parentSpanId(),
             'startTime' => $startTime,
             'attributes' => $spanData->attributes(),
-            'stackTrace' => $spanData->stackTrace()
+            'stackTrace' => $spanData->stackTrace(),
+            'kind' => $spanData->kind()
         ];
         opencensus_trace_begin($spanData->name(), $info);
         return new Scope(function () {
@@ -247,8 +248,17 @@ class ExtensionTracer implements TracerInterface
             'attributes' => $span->attributes(),
             'stackTrace' => $span->stackTrace(),
             'links' => array_map([$this, 'mapLink'], $span->links()),
-            'timeEvents' => array_map([$this, 'mapTimeEvent'], $span->timeEvents())
+            'timeEvents' => array_map([$this, 'mapTimeEvent'], $span->timeEvents()),
+            'kind' => $this->getKind($span)
         ]);
+    }
+
+    private function getKind($span)
+    {
+        if (method_exists($span, 'kind')) {
+            return $span->kind();
+        }
+        return Span::KIND_UNSPECIFIED;
     }
 
     private function mapLink($link)

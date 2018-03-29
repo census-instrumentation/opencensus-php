@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace\Integrations;
 
+use OpenCensus\Trace\Span;
+
 /**
  * This class handles instrumenting postgres requests using the opencensus extension.
  *
@@ -45,7 +47,8 @@ class Postgres implements IntegrationInterface
                 ? func_get_arg(1)
                 : func_get_arg(0);
             return [
-                'attributes' => ['query' => $query]
+                'attributes' => ['query' => $query],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
@@ -55,7 +58,8 @@ class Postgres implements IntegrationInterface
                 ? func_get_arg(1)
                 : func_get_arg(0);
             return [
-                'attributes' => ['query' => $query]
+                'attributes' => ['query' => $query],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
@@ -65,7 +69,8 @@ class Postgres implements IntegrationInterface
                 ? func_get_arg(1)
                 : func_get_arg(0);
             return [
-                'attributes' => ['statement' => $statementName]
+                'attributes' => ['statement' => $statementName],
+                'kind' => Span::KIND_CLIENT
             ];
         });
     }

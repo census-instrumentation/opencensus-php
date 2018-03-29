@@ -19,6 +19,7 @@ namespace OpenCensus\Trace\Integrations;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use OpenCensus\Trace\Span;
 
 /**
  * This class handles instrumenting Guzzle http synchronous requests using the opencensus extension.
@@ -68,7 +69,8 @@ class Guzzle implements IntegrationInterface
                 'attributes' => [
                     'method' => $request->getMethod(),
                     'uri' => $request->getUrl()
-                ]
+                ],
+                'kind' => Span::KIND_CLIENT
             ];
         });
     }
@@ -84,7 +86,8 @@ class Guzzle implements IntegrationInterface
                 'attributes' => [
                     'method' => $request->getMethod(),
                     'uri' => (string)$request->getUri()
-                ]
+                ],
+                'kind' => Span::KIND_CLIENT
             ];
         });
 
@@ -94,7 +97,8 @@ class Guzzle implements IntegrationInterface
                 'attributes' => [
                     'method' => $method,
                     'uri' => $uri
-                ]
+                ],
+                'kind' => Span::KIND_CLIENT
             ];
         });
     }

@@ -18,6 +18,7 @@
 namespace OpenCensus\Tests\Unit\Trace\Integrations;
 
 use OpenCensus\Trace\Integrations\Memcache;
+use OpenCensus\Trace\Span;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -34,7 +35,8 @@ class MemcacheTest extends TestCase
         $expected = [
             'attributes' => [
                 'key' => 'mykey'
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
 
         $this->assertEquals($expected, $spanOptions);
@@ -52,7 +54,8 @@ class MemcacheTest extends TestCase
         $expected = [
             'attributes' => [
                 'key' => 'key1,key2'
-            ]
+            ],
+            'kind' => Span::KIND_CLIENT
         ];
 
         $this->assertEquals($expected, $spanOptions);
