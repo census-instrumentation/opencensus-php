@@ -38,7 +38,7 @@ RUN phpize && \
     ./configure --enable-opencensus && \
     make clean && \
     make && \
-    make test && \
+    make test || ((find . -name '*.diff' | xargs cat) && false) && \
     make install
 
 WORKDIR /build
