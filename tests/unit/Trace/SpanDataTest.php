@@ -70,4 +70,23 @@ class SpanDataTest extends TestCase
             ['kind', Span::KIND_SERVER]
         ];
     }
+
+    public function testStackTraceHashIdIsRepeatable()
+    {
+        $stackTrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        $startTime = new \DateTime();
+        $endTime = new \DateTime();
+        $spanData = new SpanData('span-name', 'aaa', 'bbb', $startTime, $endTime, [
+            'stackTrace' => $stackTrace
+        ]);
+
+        $spanData2 = new SpanData('span-name2', 'aaa', 'bbb', $startTime, $endTime, [
+            'stackTrace' => $stackTrace
+        ]);
+
+        $hashId = $spanData->stackTraceHashId();
+        $this->assertInternalType('int', $hashId);
+        $this->assertNotEquals(0, $hashId);
+        $this->assertEquals($hashId, $spanData2->stackTraceHashId());
+    }
 }
