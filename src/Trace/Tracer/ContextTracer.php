@@ -60,7 +60,9 @@ class ContextTracer implements TracerInterface
      */
     public function inSpan(array $spanOptions, callable $callable, array $arguments = [])
     {
-        $span = $this->startSpan($spanOptions);
+        $span = $this->startSpan($spanOptions + [
+            'sameProcessAsParentSpan' => !empty($this->spans)
+        ]);
         $scope = $this->withSpan($span);
         try {
             return call_user_func_array($callable, $arguments);

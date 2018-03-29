@@ -45,6 +45,7 @@ Array
                 )
 
             [kind:protected] => SPAN_KIND_UNSPECIFIED
+            [sameProcessAsParentSpan:protected] => 1
         )
 
     [1] => OpenCensus\Trace\Ext\Span Object
@@ -71,6 +72,7 @@ Array
                 )
 
             [kind:protected] => SPAN_KIND_UNSPECIFIED
+            [sameProcessAsParentSpan:protected] => 1
         )
 
 )
