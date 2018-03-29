@@ -443,6 +443,9 @@ void opencensus_trace_span_free(opencensus_trace_span_t *span)
     if (span->span_id) {
         zend_string_release(span->span_id);
     }
+    if (span->kind) {
+        zend_string_release(span->kind);
+    }
 
     ZVAL_DESTRUCTOR(&span->stackTrace);
 
