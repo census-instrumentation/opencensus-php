@@ -23,7 +23,7 @@ require_once 'Jaeger/Agent/Agent.php';
 use OpenCensus\Trace\Annotation;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Tracer\TracerInterface;
-use OpenCensus\Trace\Span as OCSpan;
+use OpenCensus\Trace\SpanData;
 use OpenCensus\Trace\TimeEvent;
 
 use Jaeger\Thrift\Agent\AgentClient;
@@ -88,12 +88,11 @@ class JaegerExporter implements ExporterInterface
     /**
      * Report the provided Trace to a backend.
      *
-     * @param  TracerInterface $tracer
+     * @param SpanData $spans
      * @return bool
      */
-    public function report(TracerInterface $tracer)
+    public function export(array $spans)
     {
-        $spans = $tracer->spans();
         if (empty($spans)) {
             return false;
         }
@@ -139,20 +138,20 @@ class JaegerExporter implements ExporterInterface
      *
      * @access private
      *
-     * @param OCSpan $span The span to convert.
+     * @param SpanData $span The span to convert.
      * @return Span The Jaeger Thrift Span representation.
      */
-    public function convertSpan(OCSpan $span)
+    public function convertSpan(SpanData $span)
     {
         $startTime = $this->convertTimestamp($span->startTime());
         $endTime = $this->convertTimestamp($span->endTime());
         $spanId = hexdec($span->spanId());
         $parentSpanId = hexdec($span->parentSpanId());
-        $traceId = hexdec($span->traceId());
+        list($highTraceId, $lowTraceId) = $this->convertTraceId($span->traceId());
 
         return new Span([
-            'traceIdLow' => $traceId,
-            'traceIdHigh' => $traceId,
+            'traceIdLow' => $lowTraceId,
+            'traceIdHigh' => $highTraceId,
             'spanId' => $spanId,
             'parentSpanId' => $parentSpanId,
             'operationName' => $span->name(),
@@ -194,7 +193,7 @@ class JaegerExporter implements ExporterInterface
     {
         return new Log([
             'timestamp' => $this->convertTimestamp($annotation->time()),
-            'tags' => $this->convertTags($annotation->attributes() + [
+            'fields' => $this->convertTags($annotation->attributes() + [
                 'description' => $annotation->description()
             ])
         ]);
@@ -204,7 +203,7 @@ class JaegerExporter implements ExporterInterface
     {
         return new Log([
             'timestamp' => $this->convertTimestamp($messageEvent->time()),
-            'tags' => $this->convertTags([
+            'fields' => $this->convertTags([
                 'type' => $messageEvent->type(),
                 'id' => $messageEvent->id(),
                 'uncompressedSize' => $messageEvent->uncompressedSize(),
@@ -219,5 +218,27 @@ class JaegerExporter implements ExporterInterface
     private function convertTimestamp(\DateTimeInterface $dateTime)
     {
         return (int)((float) $dateTime->format('U.u') * 1000 * 1000);
+    }
+
+    /**
+     * Split the provided hexId into 2 64-bit integers (16 hex chars each).
+     * Returns array of 2 int values.
+     */
+    private function convertTraceId($hexId)
+    {
+        return array_slice(
+            array_map(
+                'hexdec',
+                str_split(
+                    substr(
+                        str_pad($hexId, 32, "0", STR_PAD_LEFT),
+                        -32
+                    ),
+                    16
+                )
+            ),
+            0,
+            2
+        );
     }
 }
