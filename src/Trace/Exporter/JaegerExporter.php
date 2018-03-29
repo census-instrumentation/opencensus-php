@@ -20,11 +20,15 @@ namespace OpenCensus\Trace\Exporter;
 require_once 'Jaeger/Types.php';
 require_once 'Jaeger/Agent/Agent.php';
 
+use OpenCensus\Trace\Annotation;
+use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Tracer\TracerInterface;
 use OpenCensus\Trace\Span as OCSpan;
+use OpenCensus\Trace\TimeEvent;
 
 use Jaeger\Thrift\Agent\AgentClient;
 use Jaeger\Thrift\Batch;
+use Jaeger\Thrift\Log;
 use Jaeger\Thrift\Process;
 use Jaeger\Thrift\Span;
 use Jaeger\Thrift\Tag;
@@ -115,8 +119,15 @@ class JaegerExporter implements ExporterInterface
         $data = $buffer->getBuffer();
 
         try {
-            socket_sendto($socket, $data, strlen($data), 0, $this->host, $this->port);
-            return true;
+            $dataSize = strlen($data);
+            return socket_sendto(
+                $socket,
+                $data,
+                $dataSize,
+                0,
+                $this->host,
+                $this->port
+            ) === $dataSize;
         } finally {
             socket_close($socket);
         }
@@ -126,13 +137,15 @@ class JaegerExporter implements ExporterInterface
     /**
      * Convert an OpenCensus Span to its Jaeger Thrift representation.
      *
+     * @access private
+     *
      * @param OCSpan $span The span to convert.
      * @return Span The Jaeger Thrift Span representation.
      */
     public function convertSpan(OCSpan $span)
     {
-        $startTime = (int)((float) $span->startTime()->format('U.u') * 1000 * 1000);
-        $endTime = (int)((float) $span->endTime()->format('U.u') * 1000 * 1000);
+        $startTime = $this->convertTimestamp($span->startTime());
+        $endTime = $this->convertTimestamp($span->endTime());
         $spanId = hexdec($span->spanId());
         $parentSpanId = hexdec($span->parentSpanId());
         $traceId = hexdec($span->traceId());
@@ -143,7 +156,7 @@ class JaegerExporter implements ExporterInterface
             'spanId' => $spanId,
             'parentSpanId' => $parentSpanId,
             'operationName' => $span->name(),
-            'references' => $this->convertReferences($span->links()),
+            'references' => [], // for now, links cannot describe references
             'flags' => 0,
             'startTime' => $startTime,
             'duration' => $endTime - $startTime,
@@ -167,11 +180,44 @@ class JaegerExporter implements ExporterInterface
 
     private function convertLogs(array $timeEvents)
     {
-        return [];
+        return array_map(function (TimeEvent $timeEvent) {
+            if ($timeEvent instanceof Annotation) {
+                return $this->convertAnnotation($timeEvent);
+            } elseif ($timeEvent instanceof MessageEvent) {
+                return $this->convertMessageEvent($timeEvent);
+            } else {
+            }
+        }, $timeEvents);
     }
 
-    private function convertReferences(array $links)
+    private function convertAnnotation(Annotation $annotation)
     {
-        return [];
+        return new Log([
+            'timestamp' => $this->convertTimestamp($annotation->time()),
+            'tags' => $this->convertTags($annotation->attributes() + [
+                'description' => $annotation->description()
+            ])
+        ]);
+    }
+
+    private function convertMessageEvent(MessageEvent $messageEvent)
+    {
+        return new Log([
+            'timestamp' => $this->convertTimestamp($messageEvent->time()),
+            'tags' => $this->convertTags([
+                'type' => $messageEvent->type(),
+                'id' => $messageEvent->id(),
+                'uncompressedSize' => $messageEvent->uncompressedSize(),
+                'compressedSize' => $messageEvent->compressedSize()
+            ])
+        ]);
+    }
+
+    /**
+     * Return the given timestamp as an int in milliseconds.
+     */
+    private function convertTimestamp(\DateTimeInterface $dateTime)
+    {
+        return (int)((float) $dateTime->format('U.u') * 1000 * 1000);
     }
 }
