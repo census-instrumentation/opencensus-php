@@ -66,3 +66,11 @@ releases:
     stability: alpha
     notes: |-
       Fix handling startTime when passed to opencensus_trace_begin (#135)
+
+  - date: '2018-04-02'
+    time: 12:19.00
+    version: 0.2.0
+    stability: alpha
+    notes: |-
+      - Adds Span kind (#151)
+      - Adds Span sameProcessAsParentSpan (#153)
