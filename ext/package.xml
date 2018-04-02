@@ -12,11 +12,11 @@ This extension allows you to easily gather latency and other metadata by watchin
   <email>chingor@google.com</email>
   <active>yes</active>
  </lead>
- <date>2018-03-05</date>
- <time>12:31:00</time>
+ <date>2018-04-02</date>
+ <time>12:19:00</time>
  <version>
-  <release>0.1.4</release>
-  <api>0.1.4</api>
+  <release>0.2.0</release>
+  <api>0.2.0</api>
  </version>
  <stability>
   <release>alpha</release>
@@ -24,7 +24,8 @@ This extension allows you to easily gather latency and other metadata by watchin
  </stability>
  <license>Apache 2.0</license>
  <notes>
-Fix handling startTime when passed to opencensus_trace_begin (#135)
+- Adds Span kind (#151)
+- Adds Span sameProcessAsParentSpan (#153)
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -94,6 +95,8 @@ Fix handling startTime when passed to opencensus_trace_begin (#135)
     <file name="non-string-labels.phpt" role="test" />
     <file name="null_start_time.phpt" role="test" />
     <file name="span_class.phpt" role="test" />
+    <file name="span_kind.phpt" role="test" />
+    <file name="span_same_process_as_parent_span.phpt" role="test" />
     <file name="span_specify_id.phpt" role="test" />
     <file name="static_method_callback_scope.phpt" role="test" />
     <file name="static_method_test.phpt" role="test" />
@@ -253,6 +256,22 @@ Fix segfault on OSX (#129)
    <license>Apache 2.0</license>
    <notes>
 Fix handling startTime when passed to opencensus_trace_begin (#135)
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>0.2.0</release>
+    <api>0.2.0</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2018-04-02</date>
+   <license>Apache 2.0</license>
+   <notes>
+- Adds Span kind (#151)
+- Adds Span sameProcessAsParentSpan (#153)
    </notes>
   </release>
  </changelog>
