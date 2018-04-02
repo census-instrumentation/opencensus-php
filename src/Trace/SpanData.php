@@ -137,6 +137,14 @@ class SpanData
     private $kind;
 
     /**
+     * An optional value to de-dup the stackTrace array. Represented as a
+     * hexadecimal string.
+     *
+     * @var string
+     */
+    private $stackTraceHashId;
+
+    /**
      * Instantiate a new SpanData instance.
      *
      * @param string $name The name of the span.
@@ -301,6 +309,21 @@ class SpanData
     public function stackTrace()
     {
         return $this->stackTrace;
+    }
+
+    /**
+     * Return a hash id for this span's stackTrace in hexadecimal
+     *
+     * @return string
+     */
+    public function stackTraceHashId()
+    {
+        if (!isset($this->stackTraceHashId)) {
+            // take the lower 16 digits of the md5
+            $md5 = md5(serialize($this->stackTrace));
+            $this->stackTraceHashId = substr($md5, 16);
+        }
+        return $this->stackTraceHashId;
     }
 
     /**
