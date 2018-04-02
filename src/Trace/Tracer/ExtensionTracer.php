@@ -31,6 +31,11 @@ use OpenCensus\Trace\Span;
  */
 class ExtensionTracer implements TracerInterface
 {
+    /**
+     * @var bool
+     */
+    private $hasSpans = false;
+
     public function __construct(SpanContext $initialContext = null)
     {
         if ($initialContext) {
@@ -49,7 +54,9 @@ class ExtensionTracer implements TracerInterface
      */
     public function inSpan(array $spanOptions, callable $callable, array $arguments = [])
     {
-        $span = $this->startSpan($spanOptions);
+        $span = $this->startSpan($spanOptions + [
+            'sameProcessAsParentSpan' => $this->hasSpans
+        ]);
         $scope = $this->withSpan($span);
         try {
             return call_user_func_array($callable, $arguments);
@@ -91,9 +98,11 @@ class ExtensionTracer implements TracerInterface
             'startTime' => $startTime,
             'attributes' => $spanData->attributes(),
             'stackTrace' => $spanData->stackTrace(),
-            'kind' => $spanData->kind()
+            'kind' => $spanData->kind(),
+            'sameProcessAsParentSpan' => $spanData->sameProcessAsParentSpan()
         ];
         opencensus_trace_begin($spanData->name(), $info);
+        $this->hasSpans = true;
         return new Scope(function () {
             opencensus_trace_finish();
         });
@@ -249,7 +258,8 @@ class ExtensionTracer implements TracerInterface
             'stackTrace' => $span->stackTrace(),
             'links' => array_map([$this, 'mapLink'], $span->links()),
             'timeEvents' => array_map([$this, 'mapTimeEvent'], $span->timeEvents()),
-            'kind' => $this->getKind($span)
+            'kind' => $this->getKind($span),
+            'sameProcessAsParentSpan' => $this->getSameProcessAsParentSpan($span)
         ]);
     }
 
@@ -259,6 +269,14 @@ class ExtensionTracer implements TracerInterface
             return $span->kind();
         }
         return Span::KIND_UNSPECIFIED;
+    }
+
+    private function getSameProcessAsParentSpan($span)
+    {
+        if (method_exists($span, 'sameProcessAsParentSpan')) {
+            return $span->sameProcessAsParentSpan();
+        }
+        return true;
     }
 
     private function mapLink($link)

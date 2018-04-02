@@ -32,6 +32,7 @@ typedef struct opencensus_trace_span_t {
     double stop;
     struct opencensus_trace_span_t *parent;
     zval stackTrace;
+    zend_long same_process_as_parent_span;
 
     // zend_string* => zval*
     HashTable *attributes;

@@ -174,7 +174,7 @@ class Span
             'links' => [],
             'parentSpanId' => null,
             'status' => null,
-            'sameProcessAsParentSpan' => null,
+            'sameProcessAsParentSpan' => true,
             'kind' => self::KIND_UNSPECIFIED
         ];
 

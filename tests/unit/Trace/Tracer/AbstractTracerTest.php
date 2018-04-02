@@ -359,6 +359,38 @@ abstract class AbstractTracerTest extends TestCase
         $this->assertEquals(Span::KIND_SERVER, $spanData->kind());
     }
 
+    public function testDefaultSameProcessAsParentSpan()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $tracer->inSpan(['name' => 'main'], function () use ($tracer) {
+            $tracer->inSpan(['name' => 'inner'], function () {
+                // do nothing
+            });
+        });
+
+        $spans = $tracer->spans();
+        $this->assertCount(2, $spans);
+        $this->assertFalse($spans[0]->spanData()->sameProcessAsParentSpan());
+        $this->assertTrue($spans[1]->spanData()->sameProcessAsParentSpan());
+    }
+
+    public function testSameProcessAsParentSpan()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $tracer->inSpan(['name' => 'main', 'sameProcessAsParentSpan' => true], function () use ($tracer) {
+            $tracer->inSpan(['name' => 'inner', 'sameProcessAsParentSpan' => false], function () {
+                // do nothing
+            });
+        });
+
+        $spans = $tracer->spans();
+        $this->assertCount(2, $spans);
+        $this->assertTrue($spans[0]->spanData()->sameProcessAsParentSpan());
+        $this->assertFalse($spans[1]->spanData()->sameProcessAsParentSpan());
+    }
+
     private function assertEquivalentTimestamps($expected, $value)
     {
         $this->assertEquals((float)($expected->format('U.u')), (float)($value->format('U.u')), '', 0.000001);
