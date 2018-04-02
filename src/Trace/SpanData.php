@@ -137,9 +137,10 @@ class SpanData
     private $kind;
 
     /**
-     * An optional value to de-dup the stackTrace array.
+     * An optional value to de-dup the stackTrace array. Represented as a
+     * hexadecimal string.
      *
-     * @var int
+     * @var string
      */
     private $stackTraceHashId;
 
@@ -311,18 +312,16 @@ class SpanData
     }
 
     /**
-     * Return a hash id for this span's stackTrace.
+     * Return a hash id for this span's stackTrace in hexadecimal
      *
-     * @return id
+     * @return string
      */
     public function stackTraceHashId()
     {
         if (!isset($this->stackTraceHashId)) {
-            // take the lower 16 (8 for 32-bit PHP) digits of the md5 and
-            // convert to an int
-            $digits = PHP_INT_SIZE * -2;
+            // take the lower 16 digits of the md5
             $md5 = md5(serialize($this->stackTrace));
-            $this->stackTraceHashId = hexdec(substr($md5, $digits));
+            $this->stackTraceHashId = substr($md5, 16);
         }
         return $this->stackTraceHashId;
     }
