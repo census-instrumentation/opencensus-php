@@ -93,6 +93,7 @@ class ExtensionTracer implements TracerInterface
             ? (float)($spanData->startTime()->format('U.u'))
             : microtime(true);
         $info = [
+            'traceId' => $spanData->traceId(),
             'spanId' => $spanData->spanId(),
             'parentSpanId' => $spanData->parentSpanId(),
             'startTime' => $startTime,
@@ -117,7 +118,10 @@ class ExtensionTracer implements TracerInterface
     {
         // each span returned from opencensus_trace_list should be a
         // OpenCensus\Span object
-        return array_map([$this, 'mapSpan'], opencensus_trace_list());
+        $traceId = $this->spanContext()->traceId();
+        return array_map(function ($span) use ($traceId) {
+            return $this->mapSpan($span, $traceId);
+        }, opencensus_trace_list());
     }
 
     /**
@@ -246,9 +250,10 @@ class ExtensionTracer implements TracerInterface
         return uniqid('span');
     }
 
-    private function mapSpan($span)
+    private function mapSpan($span, $traceId)
     {
         return new Span([
+            'traceId' => $traceId,
             'name' => $span->name(),
             'spanId' => $span->spanId(),
             'parentSpanId' => $span->parentSpanId(),
