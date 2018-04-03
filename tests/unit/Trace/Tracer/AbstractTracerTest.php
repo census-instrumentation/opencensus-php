@@ -48,6 +48,7 @@ abstract class AbstractTracerTest extends TestCase
         $spans = $tracer->spans();
         $this->assertCount(1, $spans);
         $spanData = $spans[0]->spanData();
+        $this->assertEquals('traceid', $spanData->traceId());
         $this->assertEquals('test', $spanData->name());
         $this->assertEquals($parentSpanId, $spanData->parentSpanId());
     }
