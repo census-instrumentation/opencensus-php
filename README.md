@@ -107,8 +107,8 @@ The provided exporters are:
 | [JaegerExporter][jaeger-exporter] | Report traces to Jaeger server via Thrift over UDP | [opencensus/opencensus-exporter-jaeger][jaeger-packagist] |
 | [LoggerExporter][logger-exporter] | Exporter JSON encoded spans to a PSR-3 logger | |
 | [NullExporter][null-exporter] | No-op | |
-| [StackdriverExporter][stackdriver-exporter] | Report traces to Google Cloud Stackdriver Trace | |
-| [ZipkinExporter][zipkin-exporter] | Report collected spans to a Zipkin server | |
+| [StackdriverExporter][stackdriver-exporter] | Report traces to Google Cloud Stackdriver Trace | [opencensus/opencensus-exporter-stackdriver][stackdriver-packagist] |
+| [ZipkinExporter][zipkin-exporter] | Report collected spans to a Zipkin server | [opencensus/opencensus-exporter-zipkin][zipkin-packagist] |
 
 If you would like to provide your own reporter, create a class that implements
 `ExporterInterface`.
@@ -170,6 +170,8 @@ This is not an official Google product.
 [jaeger-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-jaeger
 [logger-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/LoggerExporter.html
 [null-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/NullExporter.html
-[stackdriver-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/StackdriverExporter.html
-[zipkin-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/ZipkinExporter.html
+[stackdriver-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-stackdriver/blob/master/src/StackdriverExporter.php
+[stackdriver-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-stackdriver
+[zipkin-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-zipkin/blob/master/src/ZipkinExporter.php
+[zipkin-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-zipkin
 [semver]: http://semver.org/
