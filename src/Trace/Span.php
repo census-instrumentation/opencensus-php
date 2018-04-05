@@ -342,9 +342,9 @@ class Span
     {
         if (!$when) {
             // now
-            $when = formatFloatTimeToDate(microtime(true));
+            $when = $this->formatFloatTimeToDate(microtime(true));
         } elseif (is_numeric($when)) {
-            $when = formatFloatTimeToDate($when);
+            $when = $this->formatFloatTimeToDate($when);
         } elseif (!$when instanceof \DateTimeInterface) {
             throw new \InvalidArgumentException('Invalid date format. Must be a \DateTimeInterface or numeric.');
         }
