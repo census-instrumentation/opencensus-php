@@ -179,10 +179,7 @@ class StackdriverExporterTest extends TestCase
             ->willReturn(true)->shouldBeCalled();
 
         $span = new OCSpan([
-            'traceId' => 'aaa',
-            'attributes' => [
-                $key => $value
-            ]
+            'traceId' => 'aaa'
         ]);
         $span->setStartTime();
         $span->setEndTime();

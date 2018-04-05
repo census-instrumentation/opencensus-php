@@ -70,7 +70,7 @@ class FileExporter implements ExporterInterface
      */
     private function convertSpans(array $spans)
     {
-        return array_map(function (SpanData $span) use ($traceId) {
+        return array_map(function (SpanData $span) {
             return [
                 'traceId' => $span->traceId(),
                 'name' => $span->name(),
