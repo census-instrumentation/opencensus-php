@@ -1,7 +1,7 @@
 # Contributing to OpenCensus for PHP
 
 1. **Sign one of the contributor license agreements below.**
-2. Fork the repo, develop and test your code changes.
+2. Fork the repo, develop, and test your code changes.
 3. Send a pull request.
 
 ## Contributor License Agreements
@@ -13,11 +13,11 @@ Please fill out either the individual or corporate Contributor License Agreement
 (CLA).
 
   * If you are an individual writing original source code and you're sure you
-    own the intellectual property, then you'll need to sign an [individual CLA]
-    (https://developers.google.com/open-source/cla/individual).
+    own the intellectual property, then you'll need to sign an
+    [individual CLA](https://developers.google.com/open-source/cla/individual).
   * If you work for a company that wants to allow you to contribute your work,
-    then you'll need to sign a [corporate CLA]
-    (https://developers.google.com/open-source/cla/corporate).
+    then you'll need to sign a
+    [corporate CLA](https://developers.google.com/open-source/cla/corporate).
 
 Follow either of the two links above to access the appropriate CLA and
 instructions for how to sign and return it. Once we receive it, we'll be able to
@@ -48,7 +48,7 @@ In order to use OpenCensus for PHP, some setup is required!
 Tests are a very important part of OpenCensus for PHP. All contributions should
 include tests that ensure the contributed code behaves as expected.
 
-To run all tests, the following command may be invoked;
+To run all tests, the following command may be invoked:
 
 ```sh
 $ composer tests
