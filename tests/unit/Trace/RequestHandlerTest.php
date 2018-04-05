@@ -17,6 +17,9 @@
 
 namespace OpenCensus\Tests\Unit\Trace;
 
+use OpenCensus\Trace\Annotation;
+use OpenCensus\Trace\Link;
+use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\RequestHandler;
@@ -125,5 +128,211 @@ class RequestHandlerTest extends TestCase
 
         $this->assertFalse($tracer->enabled());
         $this->assertInstanceOf(NullTracer::class, $tracer);
+    }
+
+    /**
+     * @group focus
+     */
+    public function testAddsAnnotation()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt) {
+            $rt->addAnnotation('some message', [
+                'attributes' => [
+                    'foo' => 'bar'
+                ]
+            ]);
+        });
+        $scope->close();
+
+        $spans = $rt->tracer()->spans();
+        $this->assertCount(3, $spans);
+        $span = $spans[2]->spanData();
+        $timeEvents = $span->timeEvents();
+        $this->assertCount(1, $timeEvents);
+        $this->assertInstanceOf(Annotation::class, $timeEvents[0]);
+        $this->assertCount(1, $timeEvents[0]->attributes());
+        $this->assertEquals('bar', $timeEvents[0]->attributes()['foo']);
+    }
+
+    public function testAddsAnnotationToSpecificSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt, $outer) {
+            $rt->addAnnotation('some message', [
+                'attributes' => [
+                    'foo' => 'bar'
+                ],
+                'span' => $outer
+            ]);
+        });
+        $scope->close();
+
+        $spans = $rt->tracer()->spans();
+        $this->assertCount(3, $spans);
+        $span = $spans[1]->spanData();
+        $timeEvents = $span->timeEvents();
+        $this->assertCount(1, $timeEvents);
+        $this->assertInstanceOf(Annotation::class, $timeEvents[0]);
+        $this->assertCount(1, $timeEvents[0]->attributes());
+        $this->assertEquals('bar', $timeEvents[0]->attributes()['foo']);
+    }
+
+    public function testAddsLink()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt) {
+            $rt->addLink('aaa', 'bbb', [
+                'type' => Link::TYPE_PARENT_LINKED_SPAN,
+                'attributes' => [
+                    'foo' => 'bar'
+                ]
+            ]);
+        });
+        $scope->close();
+
+        $spans = $rt->tracer()->spans();
+        $this->assertCount(3, $spans);
+        $span = $spans[2]->spanData();
+        $links = $span->links();
+        $this->assertCount(1, $links);
+        $this->assertEquals('aaa', $links[0]->traceId());
+        $this->assertEquals('bbb', $links[0]->spanId());
+        $this->assertEquals('PARENT_LINKED_SPAN', $links[0]->type());
+        $this->assertCount(1, $links[0]->attributes());
+        $this->assertEquals('bar', $links[0]->attributes()['foo']);
+    }
+
+    public function testAddsLinkToSpecificSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt, $outer) {
+            $rt->addLink('aaa', 'bbb', [
+                'type' => Link::TYPE_PARENT_LINKED_SPAN,
+                'attributes' => [
+                    'foo' => 'bar'
+                ],
+                'span' => $outer
+            ]);
+        });
+        $scope->close();
+
+        $spans = $rt->tracer()->spans();
+        $this->assertCount(3, $spans);
+        $span = $spans[1]->spanData();
+        $links = $span->links();
+        $this->assertCount(1, $links);
+        $this->assertEquals('aaa', $links[0]->traceId());
+        $this->assertEquals('bbb', $links[0]->spanId());
+        $this->assertEquals('PARENT_LINKED_SPAN', $links[0]->type());
+        $this->assertCount(1, $links[0]->attributes());
+        $this->assertEquals('bar', $links[0]->attributes()['foo']);
+    }
+
+    public function testAddsMessageEvent()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt) {
+            $rt->addMessageEvent(MessageEvent::TYPE_SENT, 'message-id', [
+                'compressedSize' => 123,
+                'uncompressedSize' => 234
+            ]);
+        });
+        $scope->close();
+
+        $spans = $rt->tracer()->spans();
+        $this->assertCount(3, $spans);
+        $span = $spans[2]->spanData();
+        $timeEvents = $span->timeEvents();
+        $this->assertCount(1, $timeEvents);
+        $this->assertInstanceOf(MessageEvent::class, $timeEvents[0]);
+        $this->assertEquals('SENT', $timeEvents[0]->type());
+        $this->assertEquals('message-id', $timeEvents[0]->id());
+        $this->assertEquals(123, $timeEvents[0]->compressedSize());
+        $this->assertEquals(234, $timeEvents[0]->uncompressedSize());
+    }
+
+    public function testAddsMessageEventToSpecificSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt, $outer) {
+            $rt->addMessageEvent(MessageEvent::TYPE_SENT, 'message-id', [
+                'compressedSize' => 123,
+                'uncompressedSize' => 234,
+                'span' => $outer
+            ]);
+        });
+        $scope->close();
+
+        $spans = $rt->tracer()->spans();
+        $this->assertCount(3, $spans);
+        $span = $spans[1]->spanData();
+        $timeEvents = $span->timeEvents();
+        $this->assertCount(1, $timeEvents);
+        $this->assertInstanceOf(MessageEvent::class, $timeEvents[0]);
+        $this->assertEquals('SENT', $timeEvents[0]->type());
+        $this->assertEquals('message-id', $timeEvents[0]->id());
+        $this->assertEquals(123, $timeEvents[0]->compressedSize());
+        $this->assertEquals(234, $timeEvents[0]->uncompressedSize());
     }
 }
