@@ -354,11 +354,12 @@ class Span
 
     /**
      * Converts a float timestamp into a \DateTimeInterface object.
-     * 
+     *
      * @param float $when The Unix timestamp to be converted.
      * @return \DateTimeInterface
      */
-    private function formatFloatTimeToDate($when) {
+    private function formatFloatTimeToDate($when)
+    {
         $sec = floor($when);
         $micro = sprintf("%06d", ($when - $sec) * 1000000);
         return new \DateTime(date('Y-m-d H:i:s.'. $micro, $sec));
