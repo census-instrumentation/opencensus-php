@@ -53,3 +53,17 @@ To run all tests, the following command may be invoked:
 ```sh
 $ composer tests
 ```
+
+## Coding Style
+
+Please follow the established coding style in the library. OpenCensus for PHP
+follows the [PSR-2](https://www.php-fig.org/psr/psr-2/) Coding Style.
+
+You can check your code against these rules by running PHPCS with the proper
+ruleset, like this:
+
+```sh
+$ vendor/bin/phpcs --standard=phpcs-ruleset
+```
+
+Coding style checks are run along with the other test suites.
