@@ -29,6 +29,8 @@ RUN mkdir -p /build && \
 
 COPY . /build/
 
+COPY config/php.ini /usr/local/etc/php/
+
 WORKDIR /build/ext
 
 ENV TEST_PHP_ARGS="-q" \
