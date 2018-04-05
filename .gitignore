@@ -1,7 +1,17 @@
+# OS X
 .DS_Store
+
+# VSCode
+.vscode/
+
+# Composer
 build/
 cache/
 composer.phar
 composer.lock
+
+# Docs
 docs/json/**/*
+
+# Vendors
 vendor/
