@@ -342,18 +342,26 @@ class Span
     {
         if (!$when) {
             // now
-            list($usec, $sec) = explode(' ', microtime());
-            $micro = sprintf("%06d", $usec * 1000000);
-            $when = new \DateTime(date('Y-m-d H:i:s.' . $micro));
+            $when = formatFloatTimeToDate(microtime(true));
         } elseif (is_numeric($when)) {
-            // Expect that this is a timestamp
-            $micro = sprintf("%06d", ($when - floor($when)) * 1000000);
-            $when = new \DateTime(date('Y-m-d H:i:s.'. $micro, (int) $when));
+            $when = formatFloatTimeToDate($when);
         } elseif (!$when instanceof \DateTimeInterface) {
             throw new \InvalidArgumentException('Invalid date format. Must be a \DateTimeInterface or numeric.');
         }
         $when->setTimezone(new \DateTimeZone('UTC'));
         return $when;
+    }
+
+    /**
+     * Converst a float timestamp into a \DateTimeInterface object.
+     * 
+     * @param float $when The Unix timestamp to be converted.
+     * @return \DateTimeInterface
+     */
+    private function formatFloatTimeToDate($when) {
+        $sec = floor($when);
+        $micro = sprintf("%06d", ($when - $sec) * 1000000);
+        return new \DateTime(date('Y-m-d H:i:s.'. $micro, $sec));
     }
 
     /**
