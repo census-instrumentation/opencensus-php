@@ -353,7 +353,7 @@ class Span
     }
 
     /**
-     * Converst a float timestamp into a \DateTimeInterface object.
+     * Converts a float timestamp into a \DateTimeInterface object.
      * 
      * @param float $when The Unix timestamp to be converted.
      * @return \DateTimeInterface
