@@ -186,4 +186,15 @@ class SpanTest extends TestCase
             ['endTime', 1490737450.4843, '2017-03-28T21:44:10.484299000Z'],
         ];
     }
+
+    public function testMicroseconds()
+    {
+        $span = new Span();
+        $span->setStartTime();
+        $span->setEndTime();
+        $data = $span->spanData();
+
+        $this->assertNotEquals(0, (int) $data->startTime()->format('u'));
+        $this->assertNotEquals(0, (int) $data->endTime()->format('u'));
+    }
 }
