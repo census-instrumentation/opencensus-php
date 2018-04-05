@@ -68,6 +68,6 @@ class LoggerExporterTest extends TestCase
         $this->logger->log('some-level', Argument::type('string'))->shouldBeCalled();
 
         $exporter = new LoggerExporter($this->logger->reveal(), 'some-level');
-        $this->assertTrue($exporter->export([$span->spanData]));
+        $this->assertTrue($exporter->export([$span->spanData()]));
     }
 }

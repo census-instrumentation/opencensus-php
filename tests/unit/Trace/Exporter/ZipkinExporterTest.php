@@ -91,6 +91,19 @@ class ZipkinExporterTest extends TestCase
         $this->assertEquals($kind, $spans[0]['kind']);
     }
 
+    public function testUnspecifiedSpanKind()
+    {
+        $span = new Span([
+            'kind' => Span::KIND_UNSPECIFIED
+        ]);
+        $span->setStartTime();
+        $span->setEndTime();
+        $exporter = new ZipkinExporter('myapp');
+        $spans = $exporter->convertSpans([$span->spanData()]);
+
+        $this->assertArrayNotHasKey('kind', $spans[0]);
+    }
+
     public function spanOptionsForKind()
     {
         return [
@@ -99,8 +112,7 @@ class ZipkinExporterTest extends TestCase
             [['name' => 'span3', 'timeEvents' => [new MessageEvent(MessageEvent::TYPE_RECEIVED, '')]], 'SERVER'],
             [['name' => 'span4', 'timeEvents' => [new MessageEvent(MessageEvent::TYPE_SENT, '')]], 'CLIENT'],
             [['kind' => Span::KIND_SERVER], 'SERVER'],
-            [['kind' => Span::KIND_CLIENT], 'CLIENT'],
-            [['kind' => Span::KIND_UNSPECIFIED], null]
+            [['kind' => Span::KIND_CLIENT], 'CLIENT']
         ];
     }
 
