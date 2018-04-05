@@ -154,7 +154,7 @@ class ContextTracer implements TracerInterface
     public function addAnnotation($description, $options = [])
     {
         $span = $this->getSpan($options);
-        $span->addTimeEvent(new Annotation($description, $options = []));
+        $span->addTimeEvent(new Annotation($description, $options));
     }
 
     /**
@@ -194,7 +194,7 @@ class ContextTracer implements TracerInterface
     public function addMessageEvent($type, $id, $options = [])
     {
         $span = $this->getSpan($options);
-        $span->addTimeEvent(new MessageEvent($id, $options));
+        $span->addTimeEvent(new MessageEvent($type, $id, $options));
     }
 
     /**
