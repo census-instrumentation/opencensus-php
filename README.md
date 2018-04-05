@@ -166,12 +166,12 @@ This is not an official Google product.
 [probability-sampler]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
 [echo-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/EchoExporter.html
 [file-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/FileExporter.html
-[jaeger-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-jaeger/blob/master/src/JaegerExporter.php
+[jaeger-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-jaeger
 [jaeger-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-jaeger
 [logger-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/LoggerExporter.html
 [null-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/NullExporter.html
-[stackdriver-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-stackdriver/blob/master/src/StackdriverExporter.php
+[stackdriver-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-stackdriver
 [stackdriver-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-stackdriver
-[zipkin-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-zipkin/blob/master/src/ZipkinExporter.php
+[zipkin-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-zipkin
 [zipkin-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-zipkin
 [semver]: http://semver.org/
