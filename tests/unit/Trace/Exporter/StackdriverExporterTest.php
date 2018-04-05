@@ -163,4 +163,31 @@ class StackdriverExporterTest extends TestCase
             ['http.user_agent', 'user agent', '/http/user_agent', 'user agent']
         ];
     }
+
+    public function testReportsVersionAttribute()
+    {
+        $trace = $this->prophesize(Trace::class);
+        $trace->setSpans(Argument::that(function ($spans) {
+            $this->assertCount(1, $spans);
+            $attributes = $spans[0]->jsonSerialize()['attributes'];
+            $this->assertArrayHasKey('g.co/agent', $attributes);
+            $this->assertRegexp('/\d+\.\d+\.\d+/', $attributes['g.co/agent']);
+            return true;
+        }))->shouldBeCalled();
+        $this->client->trace('aaa')->willReturn($trace->reveal());
+        $this->client->insert(Argument::type(Trace::class))
+            ->willReturn(true)->shouldBeCalled();
+
+        $span = new OCSpan([
+            'traceId' => 'aaa',
+            'attributes' => [
+                $key => $value
+            ]
+        ]);
+        $span->setStartTime();
+        $span->setEndTime();
+
+        $exporter = new StackdriverExporter(['client' => $this->client->reveal()]);
+        $this->assertTrue($exporter->export([$span->spanData()]));
+    }
 }
