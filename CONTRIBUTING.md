@@ -1,4 +1,8 @@
-# How to become a contributor and submit your own code
+# Contributing to OpenCensus for PHP
+
+1. **Sign one of the contributor license agreements below.**
+2. Fork the repo, develop and test your code changes.
+3. Send a pull request.
 
 ## Contributor License Agreements
 
@@ -19,16 +23,33 @@ Follow either of the two links above to access the appropriate CLA and
 instructions for how to sign and return it. Once we receive it, we'll be able to
 accept your pull requests.
 
-## Contributing A Patch
+## Setup
 
-1. Submit an issue describing your proposed change to the repo in question.
-1. The repo owner will respond to your issue promptly.
-1. If your proposed change is accepted, and you haven't already done so, sign a
-   Contributor License Agreement (see details above).
-1. Fork the desired repo, develop and test your code changes.
-1. Ensure that your code adheres to the existing style in the sample to which
-   you are contributing. Refer to the
-   [Google Cloud Platform Samples Style Guide]
-   (https://github.com/GoogleCloudPlatform/Template/wiki/style.html) for the
-   recommended coding standards for this organization.
-1. Submit a pull request.
+In order to use OpenCensus for PHP, some setup is required!
+
+1. Install PHP. OpenCensus for PHP requires PHP 5.6 or higher. Installation of
+   PHP varies depending on your system. Refer to the
+   [PHP installation and configuration documentation](http://php.net/manual/en/install.php)
+   for detailed instructions.
+
+1. Install [Composer](https://getcomposer.org/download/).
+
+    Composer is a dependency manager for PHP, and is required to isntall and use
+    OpenCensus for PHP.
+
+1. Install the project dependencies.
+
+    ```sh
+    $ composer install
+    ```
+
+## Tests
+
+Tests are a very important part of OpenCensus for PHP. All contributions should
+include tests that ensure the contributed code behaves as expected.
+
+To run all tests, the following command may be invoked;
+
+```sh
+$ composer tests
+```
