@@ -100,14 +100,15 @@ You can choose different exporters to send the collected traces to.
 
 The provided exporters are:
 
-| Class | Description |
-| ----- | ----------- |
-| [EchoExporter][echo-exporter] | Output the collected spans to stdout |
-| [FileExporter][file-exporter] | Output JSON encoded spans to a file |
-| [StackdriverExporter][stackdriver-exporter] | Report traces to Google Cloud Stackdriver Trace |
-| [LoggerExporter][logger-exporter] | Exporter JSON encoded spans to a PSR-3 logger |
-| [NullExporter][null-exporter] | No-op |
-| [ZipkinExporter][zipkin-exporter] | Report collected spans to a Zipkin server |
+| Class | Description | Dependency |
+| ----- | ----------- | ---------- |
+| [EchoExporter][echo-exporter] | Output the collected spans to stdout | |
+| [FileExporter][file-exporter] | Output JSON encoded spans to a file | |
+| [JaegerExporter][jaeger-exporter] | Report traces to Jaeger server via Thrift over UDP | [opencensus/opencensus-exporter-jaeger][jaeger-packagist] |
+| [LoggerExporter][logger-exporter] | Exporter JSON encoded spans to a PSR-3 logger | |
+| [NullExporter][null-exporter] | No-op | |
+| [StackdriverExporter][stackdriver-exporter] | Report traces to Google Cloud Stackdriver Trace | |
+| [ZipkinExporter][zipkin-exporter] | Report collected spans to a Zipkin server | |
 
 If you would like to provide your own reporter, create a class that implements
 `ExporterInterface`.
@@ -165,8 +166,10 @@ This is not an official Google product.
 [probability-sampler]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Sampler/NeverSampleSampler.html
 [echo-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/EchoExporter.html
 [file-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/FileExporter.html
-[stackdriver-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/StackdriverExporter.html
+[jaeger-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-jaeger/blob/master/src/JaegerExporter.php
+[jaeger-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-jaeger
 [logger-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/LoggerExporter.html
 [null-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/NullExporter.html
+[stackdriver-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/StackdriverExporter.html
 [zipkin-exporter]: https://census-instrumentation.github.io/opencensus-php/api/OpenCensus/Trace/Exporter/ZipkinExporter.html
 [semver]: http://semver.org/
