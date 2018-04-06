@@ -28,6 +28,9 @@
         "ext-opencensus": "< 0.1.0"
     },
     "suggest": {
+        "opencensus/opencensus-exporter-jaeger": "Export data to Jaeger",
+        "opencensus/opencensus-exporter-stackdriver": "Export data to Stackdriver",
+        "opencensus/opencensus-exporter-zipkin": "Export data to Zipkin",
         "ext-opencensus": "Enable tracing arbitrary functions.",
         "cache/apcu-adapter": "Enable QpsSampler to use apcu cache.",
         "cache/apc-adapter": "Enable QpsSampler to use apc cache.",
