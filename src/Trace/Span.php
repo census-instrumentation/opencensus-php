@@ -147,6 +147,11 @@ class Span
     private $kind;
 
     /**
+     * @var TracerInterface
+     */
+    private $tracer;
+
+    /**
      * Instantiate a new Span instance.
      *
      * @param array $options [optional] Configuration options.
@@ -176,7 +181,8 @@ class Span
             'parentSpanId' => null,
             'status' => null,
             'sameProcessAsParentSpan' => true,
-            'kind' => self::KIND_UNSPECIFIED
+            'kind' => self::KIND_UNSPECIFIED,
+            'tracer' => null
         ];
 
         $this->traceId = $options['traceId'];
@@ -215,6 +221,7 @@ class Span
         $this->status = $options['status'];
         $this->sameProcessAsParentSpan = $options['sameProcessAsParentSpan'];
         $this->kind = $options['kind'];
+        $this->tracer = $options['tracer'];
     }
 
     /**

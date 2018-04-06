@@ -130,9 +130,6 @@ class RequestHandlerTest extends TestCase
         $this->assertInstanceOf(NullTracer::class, $tracer);
     }
 
-    /**
-     * @group focus
-     */
     public function testAddsAnnotation()
     {
         $this->sampler->shouldSample()->willReturn(true);
