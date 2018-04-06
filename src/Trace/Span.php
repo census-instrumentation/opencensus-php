@@ -27,6 +27,7 @@ namespace OpenCensus\Trace;
 class Span
 {
     use AttributeTrait;
+    use DateFormatTrait;
 
     // See https://github.com/census-instrumentation/opencensus-specs/blob/master/trace/HTTP.md#attributes
     const ATTRIBUTE_HOST = 'http.host';
@@ -329,40 +330,6 @@ class Span
     public function setStatus($code, $message)
     {
         $this->status = new Status($code, $message);
-    }
-
-    /**
-     * Handles parsing a \DateTimeInterface object from a provided timestamp.
-     *
-     * @param  \DateTimeInterface|int|float $when [optional] The end time of this span.
-     *         **Defaults to** now. If provided as an int or float, it is expected to be a Unix timestamp.
-     * @return \DateTimeInterface
-     */
-    private function formatDate($when = null)
-    {
-        if (!$when) {
-            // now
-            $when = $this->formatFloatTimeToDate(microtime(true));
-        } elseif (is_numeric($when)) {
-            $when = $this->formatFloatTimeToDate($when);
-        } elseif (!$when instanceof \DateTimeInterface) {
-            throw new \InvalidArgumentException('Invalid date format. Must be a \DateTimeInterface or numeric.');
-        }
-        $when->setTimezone(new \DateTimeZone('UTC'));
-        return $when;
-    }
-
-    /**
-     * Converts a float timestamp into a \DateTimeInterface object.
-     *
-     * @param float $when The Unix timestamp to be converted.
-     * @return \DateTimeInterface
-     */
-    private function formatFloatTimeToDate($when)
-    {
-        $sec = floor($when);
-        $micro = sprintf("%06d", ($when - $sec) * 1000000);
-        return new \DateTime(date('Y-m-d H:i:s.'. $micro, $sec));
     }
 
     /**
