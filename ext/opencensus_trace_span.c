@@ -97,6 +97,7 @@
 #include "opencensus_trace_link.h"
 #include "opencensus_trace_message_event.h"
 #include "Zend/zend_alloc.h"
+#include "Zend/zend_variables.h"
 
 zend_class_entry* opencensus_trace_span_ce = NULL;
 
@@ -499,7 +500,7 @@ int opencensus_trace_span_add_annotation(opencensus_trace_span_t *span, zend_str
     annotation->time_event.time = opencensus_now();
     annotation->description = zend_string_copy(description);
     if (options != NULL) {
-        ZVAL_COPY(&annotation->options, options);
+        zend_hash_merge(Z_ARR(annotation->options), Z_ARR_P(options), zval_add_ref, 1);
     }
 
     zend_hash_next_index_insert_ptr(span->time_events, annotation);
@@ -513,7 +514,7 @@ int opencensus_trace_span_add_link(opencensus_trace_span_t *span, zend_string *t
     link->trace_id = zend_string_copy(trace_id);
     link->span_id = zend_string_copy(span_id);
     if (options != NULL) {
-        ZVAL_COPY(&link->options, options);
+        zend_hash_merge(Z_ARR(link->options), Z_ARR_P(options), zval_add_ref, 1);
     }
 
     zend_hash_next_index_insert_ptr(span->links, link);
@@ -528,7 +529,7 @@ int opencensus_trace_span_add_message_event(opencensus_trace_span_t *span, zend_
     message_event->type = zend_string_copy(type);
     message_event->id = zend_string_copy(id);
     if (options != NULL) {
-        ZVAL_COPY(&message_event->options, options);
+        zend_hash_merge(Z_ARR(message_event->options), Z_ARR_P(options), zval_add_ref, 1);
     }
 
     zend_hash_next_index_insert_ptr(span->time_events, message_event);
