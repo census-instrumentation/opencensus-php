@@ -104,6 +104,27 @@ class ExtensionTracer implements TracerInterface
             'sameProcessAsParentSpan' => $spanData->sameProcessAsParentSpan()
         ];
         opencensus_trace_begin($spanData->name(), $info);
+        foreach ($spanData->timeEvents() as $timeEvent) {
+            if ($timeEvent instanceof Annotation) {
+                $this->addAnnotation($timeEvent->description(), [
+                    'time' => $timeEvent->time(),
+                    'attributes' => $timeEvent->attributes()
+                ]);
+            } elseif ($timeEvent instanceof MessageEvent) {
+                $this->addMessageEvent($timeEvent->type(), $timeEvent->id(), [
+                    'time' => $timeEvent->time(),
+                    'compressedSize' => $timeEvent->compressedSize(),
+                    'uncompressedSize' => $timeEvent->uncompressedSize()
+                ]);
+            }
+        }
+        foreach ($spanData->links() as $link) {
+            $this->addLink($link->traceId(), $link->spanId(), [
+                'type' => $link->type(),
+                'attributes' => $link->attributes()
+            ]);
+        }
+
         $this->hasSpans = true;
         return new Scope(function () {
             opencensus_trace_finish();

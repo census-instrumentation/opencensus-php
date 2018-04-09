@@ -152,6 +152,11 @@ class Span
     private $tracer;
 
     /**
+     * @var bool
+     */
+    private $attached = false;
+
+    /**
      * Instantiate a new Span instance.
      *
      * @param array $options [optional] Configuration options.
@@ -297,6 +302,20 @@ class Span
     }
 
     /**
+     * Attach a single attribute to this object.
+     *
+     * @param string $attribute The name of the attribute.
+     * @param mixed $value The value of the attribute. Will be cast to a string
+     */
+    public function addAttribute($attribute, $value)
+    {
+        $this->attributes[$attribute] = (string) $value;
+        if ($this->tracer) {
+            $this->tracer->addAttribute($attribute, $value, ['span' => $this]);
+        }
+    }
+
+    /**
      * Add a time event to this span.
      *
      * @param TimeEvent $timeEvent
@@ -318,9 +337,8 @@ class Span
                     'span' => $this
                 ]);
             }
-        } else {
-            $this->timeEvents[] = $timeEvent;
         }
+        $this->timeEvents[] = $timeEvent;
     }
 
     /**
@@ -348,9 +366,8 @@ class Span
                 'type' => $link->type(),
                 'span' => $this
             ]);
-        } else {
-            $this->links[] = $link;
         }
+        $this->links[] = $link;
     }
 
     /**
