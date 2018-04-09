@@ -99,6 +99,7 @@ class ContextTracer implements TracerInterface
      */
     public function withSpan(Span $span)
     {
+        $span->attach();
         array_push($this->spans, $span);
         $prevContext = Context::current()
             ->withValues([

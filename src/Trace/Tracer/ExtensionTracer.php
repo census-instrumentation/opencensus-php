@@ -103,6 +103,7 @@ class ExtensionTracer implements TracerInterface
             'kind' => $spanData->kind(),
             'sameProcessAsParentSpan' => $spanData->sameProcessAsParentSpan()
         ];
+        $span->attach();
         opencensus_trace_begin($spanData->name(), $info);
         foreach ($spanData->timeEvents() as $timeEvent) {
             if ($timeEvent instanceof Annotation) {

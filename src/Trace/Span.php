@@ -310,7 +310,7 @@ class Span
     public function addAttribute($attribute, $value)
     {
         $this->attributes[$attribute] = (string) $value;
-        if ($this->tracer) {
+        if ($this->attached && $this->tracer) {
             $this->tracer->addAttribute($attribute, $value, ['span' => $this]);
         }
     }
@@ -322,7 +322,7 @@ class Span
      */
     public function addTimeEvent(TimeEvent $timeEvent)
     {
-        if ($this->tracer) {
+        if ($this->attached && $this->tracer) {
             if ($timeEvent instanceof Annotation) {
                 $this->tracer->addAnnotation($timeEvent->description(), [
                     'time' => $timeEvent->time(),
@@ -360,7 +360,7 @@ class Span
      */
     public function addLink(Link $link)
     {
-        if ($this->tracer) {
+        if ($this->attached && $this->tracer) {
             $this->tracer->addLink($link->traceId(), $link->spanId(), [
                 'attributes' => $link->attributes(),
                 'type' => $link->type(),
@@ -379,6 +379,14 @@ class Span
     public function setStatus($code, $message)
     {
         $this->status = new Status($code, $message);
+    }
+
+    /**
+     * Mark this span as attached.
+     */
+    public function attach()
+    {
+        $this->attached = true;
     }
 
     /**
