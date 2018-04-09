@@ -148,12 +148,10 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[2]->spanData();
-        $attributes = $span->attributes();
-        $this->assertCount(1, $attributes);
-        $this->assertEquals('bar', $attributes['foo']);
+        $spanAttributes = array_map(function ($span) {
+            return $span->spanData()->attributes();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([[], [], ['foo' => 'bar']], $spanAttributes);
     }
 
 
@@ -177,12 +175,10 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[1]->spanData();
-        $attributes = $span->attributes();
-        $this->assertCount(1, $attributes);
-        $this->assertEquals('bar', $attributes['foo']);
+        $spanAttributes = array_map(function ($span) {
+            return $span->spanData()->attributes();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([[], ['foo' => 'bar'], []], $spanAttributes);
     }
 
     public function testAddsAttributesToSpecificUnattachedDetachedSpan()
@@ -203,12 +199,10 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[1]->spanData();
-        $attributes = $span->attributes();
-        $this->assertCount(1, $attributes);
-        $this->assertEquals('bar', $attributes['foo']);
+        $spanAttributes = array_map(function ($span) {
+            return $span->spanData()->attributes();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([[], ['foo' => 'bar'], []], $spanAttributes);
     }
 
     public function testAddsAttributesToSpecificDetachedSpan()
@@ -229,12 +223,10 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[1]->spanData();
-        $attributes = $span->attributes();
-        $this->assertCount(1, $attributes);
-        $this->assertEquals('bar', $attributes['foo']);
+        $spanAttributes = array_map(function ($span) {
+            return $span->spanData()->attributes();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([[], ['foo' => 'bar'], []], $spanAttributes);
     }
 
     public function testAddsAnnotation()
@@ -259,14 +251,16 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[2]->spanData();
-        $timeEvents = $span->timeEvents();
-        $this->assertCount(1, $timeEvents);
-        $this->assertInstanceOf(Annotation::class, $timeEvents[0]);
-        $this->assertCount(1, $timeEvents[0]->attributes());
-        $this->assertEquals('bar', $timeEvents[0]->attributes()['foo']);
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->spanData()->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 0, 1], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $annotation = $spanTimeEvents[2][0];
+        $this->assertInstanceOf(Annotation::class, $annotation);
+        $this->assertCount(1, $annotation->attributes());
+        $this->assertEquals('bar', $annotation->attributes()['foo']);
     }
 
     public function testAddsAnnotationToSpecificSpan()
@@ -292,14 +286,16 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[1]->spanData();
-        $timeEvents = $span->timeEvents();
-        $this->assertCount(1, $timeEvents);
-        $this->assertInstanceOf(Annotation::class, $timeEvents[0]);
-        $this->assertCount(1, $timeEvents[0]->attributes());
-        $this->assertEquals('bar', $timeEvents[0]->attributes()['foo']);
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->spanData()->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $annotation = $spanTimeEvents[1][0];
+        $this->assertInstanceOf(Annotation::class, $annotation);
+        $this->assertCount(1, $annotation->attributes());
+        $this->assertEquals('bar', $annotation->attributes()['foo']);
     }
 
     public function testAddsAnnotationToSpecificUnattachedDetachedSpan()
@@ -324,14 +320,16 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[1]->spanData();
-        $timeEvents = $span->timeEvents();
-        $this->assertCount(1, $timeEvents);
-        $this->assertInstanceOf(Annotation::class, $timeEvents[0]);
-        $this->assertCount(1, $timeEvents[0]->attributes());
-        $this->assertEquals('bar', $timeEvents[0]->attributes()['foo']);
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->spanData()->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $annotation = $spanTimeEvents[1][0];
+        $this->assertInstanceOf(Annotation::class, $annotation);
+        $this->assertCount(1, $annotation->attributes());
+        $this->assertEquals('bar', $annotation->attributes()['foo']);
     }
 
     public function testAddsAnnotationToSpecificDetachedSpan()
@@ -356,14 +354,16 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[1]->spanData();
-        $timeEvents = $span->timeEvents();
-        $this->assertCount(1, $timeEvents);
-        $this->assertInstanceOf(Annotation::class, $timeEvents[0]);
-        $this->assertCount(1, $timeEvents[0]->attributes());
-        $this->assertEquals('bar', $timeEvents[0]->attributes()['foo']);
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->spanData()->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $annotation = $spanTimeEvents[1][0];
+        $this->assertInstanceOf(Annotation::class, $annotation);
+        $this->assertCount(1, $annotation->attributes());
+        $this->assertEquals('bar', $annotation->attributes()['foo']);
     }
 
     public function testAddsLink()
@@ -389,11 +389,13 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[2]->spanData();
-        $links = $span->links();
-        $this->assertCount(1, $links);
+        $spanLinks = array_map(function ($span) {
+            return $span->spanData()->links();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 0, 1], array_map(function ($links) {
+            return count($links);
+        }, $spanLinks));
+        $links = $spanLinks[2];
         $this->assertEquals('aaa', $links[0]->traceId());
         $this->assertEquals('bbb', $links[0]->spanId());
         $this->assertEquals('PARENT_LINKED_SPAN', $links[0]->type());
@@ -425,11 +427,13 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[1]->spanData();
-        $links = $span->links();
-        $this->assertCount(1, $links);
+        $spanLinks = array_map(function ($span) {
+            return $span->spanData()->links();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($links) {
+            return count($links);
+        }, $spanLinks));
+        $links = $spanLinks[1];
         $this->assertEquals('aaa', $links[0]->traceId());
         $this->assertEquals('bbb', $links[0]->spanId());
         $this->assertEquals('PARENT_LINKED_SPAN', $links[0]->type());
@@ -460,11 +464,13 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[1]->spanData();
-        $links = $span->links();
-        $this->assertCount(1, $links);
+        $spanLinks = array_map(function ($span) {
+            return $span->spanData()->links();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($links) {
+            return count($links);
+        }, $spanLinks));
+        $links = $spanLinks[1];
         $this->assertEquals('aaa', $links[0]->traceId());
         $this->assertEquals('bbb', $links[0]->spanId());
         $this->assertEquals('PARENT_LINKED_SPAN', $links[0]->type());
@@ -495,11 +501,13 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[1]->spanData();
-        $links = $span->links();
-        $this->assertCount(1, $links);
+        $spanLinks = array_map(function ($span) {
+            return $span->spanData()->links();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($links) {
+            return count($links);
+        }, $spanLinks));
+        $links = $spanLinks[1];
         $this->assertEquals('aaa', $links[0]->traceId());
         $this->assertEquals('bbb', $links[0]->spanId());
         $this->assertEquals('PARENT_LINKED_SPAN', $links[0]->type());
@@ -528,16 +536,18 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[2]->spanData();
-        $timeEvents = $span->timeEvents();
-        $this->assertCount(1, $timeEvents);
-        $this->assertInstanceOf(MessageEvent::class, $timeEvents[0]);
-        $this->assertEquals('SENT', $timeEvents[0]->type());
-        $this->assertEquals('message-id', $timeEvents[0]->id());
-        $this->assertEquals(123, $timeEvents[0]->compressedSize());
-        $this->assertEquals(234, $timeEvents[0]->uncompressedSize());
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->spanData()->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 0, 1], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $messageEvent = $spanTimeEvents[2][0];
+        $this->assertInstanceOf(MessageEvent::class, $messageEvent);
+        $this->assertEquals('SENT', $messageEvent->type());
+        $this->assertEquals('message-id', $messageEvent->id());
+        $this->assertEquals(123, $messageEvent->compressedSize());
+        $this->assertEquals(234, $messageEvent->uncompressedSize());
     }
 
     public function testAddsMessageEventToSpecificSpan()
@@ -562,16 +572,18 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[1]->spanData();
-        $timeEvents = $span->timeEvents();
-        $this->assertCount(1, $timeEvents);
-        $this->assertInstanceOf(MessageEvent::class, $timeEvents[0]);
-        $this->assertEquals('SENT', $timeEvents[0]->type());
-        $this->assertEquals('message-id', $timeEvents[0]->id());
-        $this->assertEquals(123, $timeEvents[0]->compressedSize());
-        $this->assertEquals(234, $timeEvents[0]->uncompressedSize());
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->spanData()->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $messageEvent = $spanTimeEvents[1][0];
+        $this->assertInstanceOf(MessageEvent::class, $messageEvent);
+        $this->assertEquals('SENT', $messageEvent->type());
+        $this->assertEquals('message-id', $messageEvent->id());
+        $this->assertEquals(123, $messageEvent->compressedSize());
+        $this->assertEquals(234, $messageEvent->uncompressedSize());
     }
 
     public function testAddsMessageEventToSpecificUnattachedDetachedSpan()
@@ -599,16 +611,18 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[1]->spanData();
-        $timeEvents = $span->timeEvents();
-        $this->assertCount(1, $timeEvents);
-        $this->assertInstanceOf(MessageEvent::class, $timeEvents[0]);
-        $this->assertEquals('SENT', $timeEvents[0]->type());
-        $this->assertEquals('message-id', $timeEvents[0]->id());
-        $this->assertEquals(123, $timeEvents[0]->compressedSize());
-        $this->assertEquals(234, $timeEvents[0]->uncompressedSize());
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->spanData()->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $messageEvent = $spanTimeEvents[1][0];
+        $this->assertInstanceOf(MessageEvent::class, $messageEvent);
+        $this->assertEquals('SENT', $messageEvent->type());
+        $this->assertEquals('message-id', $messageEvent->id());
+        $this->assertEquals(123, $messageEvent->compressedSize());
+        $this->assertEquals(234, $messageEvent->uncompressedSize());
     }
 
     public function testAddsMessageEventToSpecificDetachedSpan()
@@ -636,15 +650,17 @@ class RequestHandlerTest extends TestCase
         });
         $scope->close();
 
-        $spans = $rt->tracer()->spans();
-        $this->assertCount(3, $spans);
-        $span = $spans[1]->spanData();
-        $timeEvents = $span->timeEvents();
-        $this->assertCount(1, $timeEvents);
-        $this->assertInstanceOf(MessageEvent::class, $timeEvents[0]);
-        $this->assertEquals('SENT', $timeEvents[0]->type());
-        $this->assertEquals('message-id', $timeEvents[0]->id());
-        $this->assertEquals(123, $timeEvents[0]->compressedSize());
-        $this->assertEquals(234, $timeEvents[0]->uncompressedSize());
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->spanData()->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $messageEvent = $spanTimeEvents[1][0];
+        $this->assertInstanceOf(MessageEvent::class, $messageEvent);
+        $this->assertEquals('SENT', $messageEvent->type());
+        $this->assertEquals('message-id', $messageEvent->id());
+        $this->assertEquals(123, $messageEvent->compressedSize());
+        $this->assertEquals(234, $messageEvent->uncompressedSize());
     }
 }
