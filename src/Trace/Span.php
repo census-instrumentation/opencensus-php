@@ -303,7 +303,24 @@ class Span
      */
     public function addTimeEvent(TimeEvent $timeEvent)
     {
-        $this->timeEvents[] = $timeEvent;
+        if ($this->tracer) {
+            if ($timeEvent instanceof Annotation) {
+                $this->tracer->addAnnotation($timeEvent->description(), [
+                    'time' => $timeEvent->time(),
+                    'attributes' => $timeEvent->attributes(),
+                    'span' => $this
+                ]);
+            } else {
+                $this->tracer->addMessageEvent($timeEvent->type(), $timeEvent->id(), [
+                    'time' => $timeEvent->time(),
+                    'compressedSize' => $timeEvent->compressedSize(),
+                    'uncompressedSize' => $timeEvent->uncompressedSize(),
+                    'span' => $this
+                ]);
+            }
+        } else {
+            $this->timeEvents[] = $timeEvent;
+        }
     }
 
     /**
@@ -325,7 +342,15 @@ class Span
      */
     public function addLink(Link $link)
     {
-        $this->links[] = $link;
+        if ($this->tracer) {
+            $this->tracer->addLink($link->traceId(), $link->spanId(), [
+                'attributes' => $link->attributes(),
+                'type' => $link->type(),
+                'span' => $this
+            ]);
+        } else {
+            $this->links[] = $link;
+        }
     }
 
     /**

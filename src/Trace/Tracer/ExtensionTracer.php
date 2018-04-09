@@ -76,6 +76,7 @@ class ExtensionTracer implements TracerInterface
         if (!array_key_exists('name', $spanOptions)) {
             $spanOption['name'] = $this->generateSpanName();
         }
+        $spanOptions['tracer'] = $this;
         return new Span($spanOptions);
     }
 
