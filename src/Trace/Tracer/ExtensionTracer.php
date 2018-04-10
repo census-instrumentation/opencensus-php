@@ -23,6 +23,7 @@ use OpenCensus\Trace\Link;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
+use OpenCensus\Trace\SpanData;
 
 /**
  * This implementation of the TracerInterface utilizes the opencensus extension
@@ -252,20 +253,22 @@ class ExtensionTracer implements TracerInterface
 
     private function mapSpan($span, $traceId)
     {
-        return new Span([
-            'traceId' => $traceId,
-            'name' => $span->name(),
-            'spanId' => $span->spanId(),
-            'parentSpanId' => $span->parentSpanId(),
-            'startTime' => $span->startTime(),
-            'endTime' => $span->endTime(),
-            'attributes' => $span->attributes(),
-            'stackTrace' => $span->stackTrace(),
-            'links' => array_map([$this, 'mapLink'], $span->links()),
-            'timeEvents' => array_map([$this, 'mapTimeEvent'], $span->timeEvents()),
-            'kind' => $this->getKind($span),
-            'sameProcessAsParentSpan' => $this->getSameProcessAsParentSpan($span)
-        ]);
+        return new SpanData(
+            $span->name(),
+            $traceId,
+            $span->spanId(),
+            [
+                'parentSpanId' => $span->parentSpanId(),
+                'startTime' => $span->startTime(),
+                'endTime' => $span->endTime(),
+                'attributes' => $span->attributes(),
+                'stackTrace' => $span->stackTrace(),
+                'links' => array_map([$this, 'mapLink'], $span->links()),
+                'timeEvents' => array_map([$this, 'mapTimeEvent'], $span->timeEvents()),
+                'kind' => $this->getKind($span),
+                'sameProcessAsParentSpan' => $this->getSameProcessAsParentSpan($span)
+            ]
+        );
     }
 
     private function getKind($span)

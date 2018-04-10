@@ -138,11 +138,7 @@ class RequestHandler
 
         $this->scope->close();
 
-        // Fetch the SpanData of all the collected Spans
-        $spans = array_map(function (Span $span) {
-            return $span->spanData();
-        }, $this->tracer->spans());
-        $this->exporter->export($spans);
+        $this->exporter->export($this->tracer->spans());
     }
 
     /**

@@ -119,11 +119,13 @@ class ContextTracer implements TracerInterface
     /**
      * Return the spans collected.
      *
-     * @return Span[]
+     * @return SpanData[]
      */
     public function spans()
     {
-        return $this->spans;
+        return array_map(function ($span) {
+            return $span->spanData();
+        }, $this->spans);
     }
 
     /**
