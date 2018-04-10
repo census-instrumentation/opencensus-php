@@ -4,7 +4,9 @@ OpenCensus Trace: Test setting message events
 <?php
 
 opencensus_trace_begin('root', ['spanId' => '1234']);
-opencensus_trace_add_message_event('TYPE_UNSPECIFIED', 'some id');
+opencensus_trace_add_message_event('TYPE_UNSPECIFIED', 'some id', [
+    'compressedSize' => 123
+]);
 opencensus_trace_begin('inner', []);
 opencensus_trace_add_message_event('TYPE_UNSPECIFIED', 'some id', ['spanId' => '1234']);
 opencensus_trace_add_message_event('TYPE_UNSPECIFIED', 'some id');
@@ -30,6 +32,7 @@ Array
             [time:protected] => %d.%d
             [options:protected] => Array
                 (
+                    [compressedSize] => 123
                 )
 
         )
@@ -41,6 +44,7 @@ Array
             [time:protected] => %d.%d
             [options:protected] => Array
                 (
+                    [spanId] => 1234
                 )
 
         )
