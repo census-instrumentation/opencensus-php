@@ -396,4 +396,15 @@ abstract class AbstractTracerTest extends TestCase
     {
         $this->assertEquals((float)($expected->format('U.u')), (float)($value->format('U.u')), '', 0.000001);
     }
+
+    public function testAttachesSpan()
+    {
+        $class = $this->getTracerClass();
+        $tracer = new $class();
+        $rootSpan = $tracer->startSpan(['name' => 'root']);
+        $this->assertFalse($rootSpan->attached());
+        $scope = $tracer->withSpan($rootSpan);
+        $this->assertTrue($rootSpan->attached());
+        $scope->close();
+    }
 }

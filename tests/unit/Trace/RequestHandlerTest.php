@@ -155,7 +155,6 @@ class RequestHandlerTest extends TestCase
         $this->assertEquals([[], [], ['foo' => 'bar']], $spanAttributes);
     }
 
-
     public function testAddsAttributesToSpecificSpan()
     {
         $this->sampler->shouldSample()->willReturn(true);

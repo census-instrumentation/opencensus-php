@@ -106,6 +106,7 @@ class ContextTracer implements TracerInterface
                 'spanId' => $span->spanId()
             ])
             ->attach();
+        $span->attach();
         return new Scope(function () use ($prevContext) {
             $currentContext = Context::current();
             $span = $currentContext->value('currentSpan');

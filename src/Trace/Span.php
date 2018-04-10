@@ -18,6 +18,7 @@
 namespace OpenCensus\Trace;
 
 use OpenCensus\Trace\EventHandler\SpanEventHandler;
+use OpenCensus\Trace\EventHandler\NullEventHandler;
 
 /**
  * This plain PHP class represents a single timed event within a Trace. Spans can
@@ -154,6 +155,11 @@ class Span
     private $eventHandler;
 
     /**
+     * @var bool
+     */
+    private $attached = false;
+
+    /**
      * Instantiate a new Span instance.
      *
      * @param array $options [optional] Configuration options.
@@ -188,7 +194,9 @@ class Span
         ];
 
         $this->traceId = $options['traceId'];
-        $this->eventHandler = $options['eventHandler'];
+        $this->eventHandler = $options['eventHandler']
+            ? $options['eventHandler']
+            : new NullEventHandler();
 
         if (array_key_exists('startTime', $options)) {
             $this->setStartTime($options['startTime']);
@@ -286,6 +294,22 @@ class Span
         );
     }
 
+    public function attach()
+    {
+        $this->attached = true;
+    }
+
+    public function attached()
+    {
+        return $this->attached;
+    }
+
+    public function addAttribute($attribute, $value)
+    {
+        $this->attributes[$attribute] = (string) $value;
+        $this->eventHandler->attributeAdded($this, $attribute, $value);
+    }
+
     /**
      * Add time events to this span.
      *
@@ -306,6 +330,7 @@ class Span
     public function addTimeEvent(TimeEvent $timeEvent)
     {
         $this->timeEvents[] = $timeEvent;
+        $this->eventHandler->timeEventAdded($this, $timeEvent);
     }
 
     /**
@@ -328,6 +353,7 @@ class Span
     public function addLink(Link $link)
     {
         $this->links[] = $link;
+        $this->eventHandler->linkAdded($this, $link);
     }
 
     /**
