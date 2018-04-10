@@ -2,11 +2,13 @@
 
 namespace OpenCensus\Trace\Storage;
 
+use OpenCensus\Core\Context;
 use OpenCensus\Trace\Annotation;
 use OpenCensus\Trace\AttributeTrait;
 use OpenCensus\Trace\Link;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Span;
+use OpenCensus\Trace\SpanContext;
 
 class MemoryStorage implements SpanStorageInterface
 {
