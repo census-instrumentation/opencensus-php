@@ -17,7 +17,6 @@
 
 namespace OpenCensus\Tests\Unit\Trace;
 
-use OpenCensus\Trace\EventHandler\SpanEventHanlderInterface;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Status;
 use PHPUnit\Framework\TestCase;

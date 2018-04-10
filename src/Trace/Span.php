@@ -150,11 +150,15 @@ class Span
     private $kind;
 
     /**
+     * Event handler for span updates.
+     *
      * @var SpanEventHandlerInterface
      */
     private $eventHandler;
 
     /**
+     * Whether or not this span has been attached.
+     *
      * @var bool
      */
     private $attached = false;
@@ -294,16 +298,30 @@ class Span
         );
     }
 
+    /**
+     * Mark this span as attached.
+     */
     public function attach()
     {
         $this->attached = true;
     }
 
+    /**
+     * Returns whether or not this span has been attached.
+     *
+     * @return bool
+     */
     public function attached()
     {
         return $this->attached;
     }
 
+    /**
+     * Add an attribute to this span.
+     *
+     * @param string $attribute The name of the attribute to add
+     * @param string $value The attribute value
+     */
     public function addAttribute($attribute, $value)
     {
         $this->attributes[$attribute] = (string) $value;

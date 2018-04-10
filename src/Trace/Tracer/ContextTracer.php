@@ -37,6 +37,12 @@ class ContextTracer implements TracerInterface
      */
     private $spans = [];
 
+    /**
+     * Create a new ContextTracer
+     *
+     * @param SpanContext|null $initialContext [optional] The starting span
+     *     context.
+     */
     public function __construct(SpanContext $initialContext = null)
     {
         if ($initialContext) {

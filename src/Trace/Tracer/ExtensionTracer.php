@@ -42,6 +42,12 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
      */
     private $hasSpans = false;
 
+    /**
+     * Create a new ExtensionTracer
+     *
+     * @param SpanContext|null $initialContext [optional] The starting span
+     *     context.
+     */
     public function __construct(SpanContext $initialContext = null)
     {
         if ($initialContext) {
@@ -242,8 +248,17 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         return $this->spanContext()->enabled();
     }
 
+    /**
+     * Triggers when an attribute is added to a span.
+     *
+     * @param Span $span The span the attribute was added to
+     * @param string $attribute The name of the attribute added
+     * @param string $value The attribute value
+     */
     public function attributeAdded(Span $span, $attribute, $value)
     {
+        // If the span is already attached (managed by the extension), then
+        // tell the extension to add the attribute.
         if ($span->attached()) {
             $this->addAttribute($attribute, $value, [
                 'span' => $span
@@ -251,8 +266,16 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         }
     }
 
+    /**
+     * Triggers when a link is added to a span.
+     *
+     * @param Span $span The span the link was added to
+     * @param Link $link The link added to the span
+     */
     public function linkAdded(Span $span, Link $link)
     {
+        // If the span is already attached (managed by the extension), then
+        // tell the extension to add the link.
         if ($span->attached()) {
             $this->addLink($link->traceId(), $link->spanId(), [
                 'type' => $link->type(),
@@ -261,6 +284,13 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
             ]);
         }
     }
+
+    /**
+     * Triggers when a time event is added to a span.
+     *
+     * @param Span $span The span the time event was added to
+     * @param TimeEvent $timeEvent The time event added to the span
+     */
     public function timeEventAdded(Span $span, TimeEvent $timeEvent)
     {
         if ($span->attached()) {
