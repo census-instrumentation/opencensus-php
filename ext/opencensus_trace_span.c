@@ -579,6 +579,8 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
             if (Z_TYPE_P(v) == IS_FALSE) {
                 span->same_process_as_parent_span = 0;
             }
+        } else if (strcmp(ZSTR_VAL(k), "stackTrace") == 0) {
+            ZVAL_COPY(&span->stackTrace, v);
         }
     } ZEND_HASH_FOREACH_END();
     return SUCCESS;

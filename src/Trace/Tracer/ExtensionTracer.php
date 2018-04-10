@@ -23,6 +23,8 @@ use OpenCensus\Trace\Link;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
+use OpenCensus\Trace\SpanData;
+use OpenCensus\Trace\Storage\ExtensionStorage;
 
 /**
  * This implementation of the TracerInterface utilizes the opencensus extension
@@ -32,15 +34,13 @@ use OpenCensus\Trace\Span;
 class ExtensionTracer implements TracerInterface
 {
     /**
-     * @var bool
+     * @var ExtensionStorage
      */
-    private $hasSpans = false;
+    private $storage;
 
     public function __construct(SpanContext $initialContext = null)
     {
-        if ($initialContext) {
-            opencensus_trace_set_context($initialContext->traceId(), $initialContext->spanId());
-        }
+        $this->storage = new ExtensionStorage($initialContext);
     }
 
     /**
@@ -55,7 +55,7 @@ class ExtensionTracer implements TracerInterface
     public function inSpan(array $spanOptions, callable $callable, array $arguments = [])
     {
         $span = $this->startSpan($spanOptions + [
-            'sameProcessAsParentSpan' => $this->hasSpans
+            'sameProcessAsParentSpan' => $this->storage->hasAttachedSpans()
         ]);
         $scope = $this->withSpan($span);
         try {
@@ -74,9 +74,9 @@ class ExtensionTracer implements TracerInterface
     public function startSpan(array $spanOptions)
     {
         if (!array_key_exists('name', $spanOptions)) {
-            $spanOption['name'] = $this->generateSpanName();
+            $spanOptions['name'] = $this->generateSpanName();
         }
-        $spanOptions['tracer'] = $this;
+        $spanOptions['storage'] = $this->storage;
         return new Span($spanOptions);
     }
 
@@ -89,62 +89,20 @@ class ExtensionTracer implements TracerInterface
      */
     public function withSpan(Span $span)
     {
-        $spanData = $span->spanData();
-        $startTime = $spanData->startTime()
-            ? (float)($spanData->startTime()->format('U.u'))
-            : microtime(true);
-        $info = [
-            'traceId' => $spanData->traceId(),
-            'spanId' => $spanData->spanId(),
-            'parentSpanId' => $spanData->parentSpanId(),
-            'startTime' => $startTime,
-            'attributes' => $spanData->attributes(),
-            'stackTrace' => $spanData->stackTrace(),
-            'kind' => $spanData->kind(),
-            'sameProcessAsParentSpan' => $spanData->sameProcessAsParentSpan()
-        ];
-        $span->attach();
-        opencensus_trace_begin($spanData->name(), $info);
-        foreach ($spanData->timeEvents() as $timeEvent) {
-            if ($timeEvent instanceof Annotation) {
-                $this->addAnnotation($timeEvent->description(), [
-                    'time' => $timeEvent->time(),
-                    'attributes' => $timeEvent->attributes()
-                ]);
-            } elseif ($timeEvent instanceof MessageEvent) {
-                $this->addMessageEvent($timeEvent->type(), $timeEvent->id(), [
-                    'time' => $timeEvent->time(),
-                    'compressedSize' => $timeEvent->compressedSize(),
-                    'uncompressedSize' => $timeEvent->uncompressedSize()
-                ]);
-            }
-        }
-        foreach ($spanData->links() as $link) {
-            $this->addLink($link->traceId(), $link->spanId(), [
-                'type' => $link->type(),
-                'attributes' => $link->attributes()
-            ]);
-        }
-
-        $this->hasSpans = true;
-        return new Scope(function () {
-            opencensus_trace_finish();
+        $this->storage->attach($span);
+        return new Scope(function () use ($span) {
+            $this->storage->detach($span);
         });
     }
 
     /**
      * Return the spans collected.
      *
-     * @return Span[]
+     * @return SpanData[]
      */
     public function spans()
     {
-        // each span returned from opencensus_trace_list should be a
-        // OpenCensus\Span object
-        $traceId = $this->spanContext()->traceId();
-        return array_map(function ($span) use ($traceId) {
-            return $this->mapSpan($span, $traceId);
-        }, opencensus_trace_list());
+        return $this->storage->spans();
     }
 
     /**
@@ -158,10 +116,8 @@ class ExtensionTracer implements TracerInterface
      */
     public function addAttribute($attribute, $value, $options = [])
     {
-        if (array_key_exists('span', $options)) {
-            $options['spanId'] = $options['span']->spanId();
-        }
-        opencensus_trace_add_attribute($attribute, $value, $options);
+        $span = $this->getSpan($options);
+        $this->storage->addAttribute($span, $attribute, $value, $options);
     }
 
     /**
@@ -176,10 +132,8 @@ class ExtensionTracer implements TracerInterface
      */
     public function addAnnotation($description, $options = [])
     {
-        if (array_key_exists('span', $options)) {
-            $options['spanId'] = $options['span']->spanId();
-        }
-        opencensus_trace_add_annotation($description, $options);
+        $span = $this->getSpan($options);
+        $this->storage->addAnnotation($span, new Annotation($description, $options));
     }
 
     /**
@@ -197,10 +151,8 @@ class ExtensionTracer implements TracerInterface
      */
     public function addLink($traceId, $spanId, $options = [])
     {
-        if (array_key_exists('span', $options)) {
-            $options['spanId'] = $options['span']->spanId();
-        }
-        opencensus_trace_add_link($traceId, $spanId, $options);
+        $span = $this->getSpan($options);
+        $this->storage->addLink($span, new Link($traceId, $spanId, $options));
     }
 
     /**
@@ -220,10 +172,8 @@ class ExtensionTracer implements TracerInterface
      */
     public function addMessageEvent($type, $id, $options = [])
     {
-        if (array_key_exists('span', $options)) {
-            $options['spanId'] = $options['span']->spanId();
-        }
-        opencensus_trace_add_message_event($type, $id, $options);
+        $span = $this->getSpan($options);
+        $this->storage->addMessageEvent($span, new MessageEvent($type, $id, $options));
     }
 
     /**
@@ -233,12 +183,7 @@ class ExtensionTracer implements TracerInterface
      */
     public function spanContext()
     {
-        $context = opencensus_trace_context();
-        return new SpanContext(
-            $context->traceId(),
-            $context->spanId(),
-            true
-        );
+        return $this->storage->spanContext();
     }
 
     /**
@@ -273,58 +218,10 @@ class ExtensionTracer implements TracerInterface
         return uniqid('span');
     }
 
-    private function mapSpan($span, $traceId)
+    private function getSpan(array $options)
     {
-        return new Span([
-            'traceId' => $traceId,
-            'name' => $span->name(),
-            'spanId' => $span->spanId(),
-            'parentSpanId' => $span->parentSpanId(),
-            'startTime' => $span->startTime(),
-            'endTime' => $span->endTime(),
-            'attributes' => $span->attributes(),
-            'stackTrace' => $span->stackTrace(),
-            'links' => array_map([$this, 'mapLink'], $span->links()),
-            'timeEvents' => array_map([$this, 'mapTimeEvent'], $span->timeEvents()),
-            'kind' => $this->getKind($span),
-            'sameProcessAsParentSpan' => $this->getSameProcessAsParentSpan($span)
-        ]);
-    }
-
-    private function getKind($span)
-    {
-        if (method_exists($span, 'kind')) {
-            return $span->kind();
-        }
-        return Span::KIND_UNSPECIFIED;
-    }
-
-    private function getSameProcessAsParentSpan($span)
-    {
-        if (method_exists($span, 'sameProcessAsParentSpan')) {
-            return $span->sameProcessAsParentSpan();
-        }
-        return true;
-    }
-
-    private function mapLink($link)
-    {
-        return new Link($link->traceId(), $link->spanId(), $link->options());
-    }
-
-    private function mapTimeEvent($timeEvent)
-    {
-        $options = $timeEvent->options();
-        $options['time'] = $timeEvent->time();
-
-        switch (get_class($timeEvent)) {
-            case 'OpenCensus\Trace\Ext\Annotation':
-                return new Annotation($timeEvent->description(), $options);
-                break;
-            case 'OpenCensus\Trace\Ext\MessageEvent':
-                return new MessageEvent($timeEvent->type(), $timeEvent->id(), $options);
-                break;
-        }
-        return null;
+        return array_key_exists('span', $options)
+            ? $options['span']
+            : new Span(['spanId' => $this->spanContext()->spanId()]);
     }
 }

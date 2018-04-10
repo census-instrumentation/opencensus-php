@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace;
 
+use OpenCensus\Trace\Storage\SpanStorageInterface;
+
 /**
  * This plain PHP class represents a single timed event within a Trace. Spans can
  * be nested and form a trace tree. Often, a trace contains a root span that
@@ -147,14 +149,9 @@ class Span
     private $kind;
 
     /**
-     * @var TracerInterface
+     * @var SpanStorageInterface
      */
-    private $tracer;
-
-    /**
-     * @var bool
-     */
-    private $attached = false;
+    private $storage;
 
     /**
      * Instantiate a new Span instance.
@@ -187,10 +184,11 @@ class Span
             'status' => null,
             'sameProcessAsParentSpan' => true,
             'kind' => self::KIND_UNSPECIFIED,
-            'tracer' => null
+            'storage' => null
         ];
 
         $this->traceId = $options['traceId'];
+        $this->storage = $options['storage'];
 
         if (array_key_exists('startTime', $options)) {
             $this->setStartTime($options['startTime']);
@@ -226,7 +224,6 @@ class Span
         $this->status = $options['status'];
         $this->sameProcessAsParentSpan = $options['sameProcessAsParentSpan'];
         $this->kind = $options['kind'];
-        $this->tracer = $options['tracer'];
     }
 
     /**
@@ -310,8 +307,8 @@ class Span
     public function addAttribute($attribute, $value)
     {
         $this->attributes[$attribute] = (string) $value;
-        if ($this->attached && $this->tracer) {
-            $this->tracer->addAttribute($attribute, $value, ['span' => $this]);
+        if ($this->storage) {
+            $this->storage->addAttribute($this, $attribute, $value);
         }
     }
 
@@ -322,23 +319,14 @@ class Span
      */
     public function addTimeEvent(TimeEvent $timeEvent)
     {
-        if ($this->attached && $this->tracer) {
+        $this->timeEvents[] = $timeEvent;
+        if ($this->storage) {
             if ($timeEvent instanceof Annotation) {
-                $this->tracer->addAnnotation($timeEvent->description(), [
-                    'time' => $timeEvent->time(),
-                    'attributes' => $timeEvent->attributes(),
-                    'span' => $this
-                ]);
+                $this->storage->addAnnotation($this, $timeEvent);
             } else {
-                $this->tracer->addMessageEvent($timeEvent->type(), $timeEvent->id(), [
-                    'time' => $timeEvent->time(),
-                    'compressedSize' => $timeEvent->compressedSize(),
-                    'uncompressedSize' => $timeEvent->uncompressedSize(),
-                    'span' => $this
-                ]);
+                $this->storage->addMessageEvent($this, $timeEvent);
             }
         }
-        $this->timeEvents[] = $timeEvent;
     }
 
     /**
@@ -360,14 +348,10 @@ class Span
      */
     public function addLink(Link $link)
     {
-        if ($this->attached && $this->tracer) {
-            $this->tracer->addLink($link->traceId(), $link->spanId(), [
-                'attributes' => $link->attributes(),
-                'type' => $link->type(),
-                'span' => $this
-            ]);
-        }
         $this->links[] = $link;
+        if ($this->storage) {
+            $this->storage->addLink($this, $link);
+        }
     }
 
     /**
@@ -379,14 +363,6 @@ class Span
     public function setStatus($code, $message)
     {
         $this->status = new Status($code, $message);
-    }
-
-    /**
-     * Mark this span as attached.
-     */
-    public function attach()
-    {
-        $this->attached = true;
     }
 
     /**

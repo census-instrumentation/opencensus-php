@@ -22,6 +22,7 @@ use OpenCensus\Trace\Link;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanContext;
+use OpenCensus\Trace\SpanData;
 use OpenCensus\Trace\RequestHandler;
 use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Sampler\SamplerInterface;
@@ -64,11 +65,11 @@ class RequestHandlerTest extends TestCase
         $spans = $rt->tracer()->spans();
         $this->assertCount(2, $spans);
         foreach ($spans as $span) {
-            $this->assertInstanceOf(Span::class, $span);
-            $this->assertNotEmpty($span->spanData()->endTime());
+            $this->assertInstanceOf(SpanData::class, $span);
+            $this->assertNotEmpty($span->endTime());
         }
-        $spanData1 = $spans[0]->spanData();
-        $spanData2 = $spans[1]->spanData();
+        $spanData1 = $spans[0];
+        $spanData2 = $spans[1];
         $this->assertEquals('main', $spanData1->name());
         $this->assertEquals('inner', $spanData2->name());
         $this->assertEquals($spanData1->spanId(), $spanData2->parentSpanId());
@@ -88,7 +89,7 @@ class RequestHandlerTest extends TestCase
             ]
         );
         $span = $rt->tracer()->spans()[0];
-        $this->assertEquals('15b3', $span->spanData()->parentSpanId());
+        $this->assertEquals('15b3', $span->parentSpanId());
         $context = $rt->tracer()->spanContext();
         $this->assertEquals('12345678901234567890123456789012', $context->traceId());
     }
@@ -149,7 +150,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanAttributes = array_map(function ($span) {
-            return $span->spanData()->attributes();
+            return $span->attributes();
         }, $rt->tracer()->spans());
         $this->assertEquals([[], [], ['foo' => 'bar']], $spanAttributes);
     }
@@ -176,7 +177,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanAttributes = array_map(function ($span) {
-            return $span->spanData()->attributes();
+            return $span->attributes();
         }, $rt->tracer()->spans());
         $this->assertEquals([[], ['foo' => 'bar'], []], $spanAttributes);
     }
@@ -200,7 +201,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanAttributes = array_map(function ($span) {
-            return $span->spanData()->attributes();
+            return $span->attributes();
         }, $rt->tracer()->spans());
         $this->assertEquals([[], ['foo' => 'bar'], []], $spanAttributes);
     }
@@ -224,7 +225,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanAttributes = array_map(function ($span) {
-            return $span->spanData()->attributes();
+            return $span->attributes();
         }, $rt->tracer()->spans());
         $this->assertEquals([[], ['foo' => 'bar'], []], $spanAttributes);
     }
@@ -252,7 +253,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanTimeEvents = array_map(function ($span) {
-            return $span->spanData()->timeEvents();
+            return $span->timeEvents();
         }, $rt->tracer()->spans());
         $this->assertEquals([0, 0, 1], array_map(function ($timeEvents) {
             return count($timeEvents);
@@ -287,7 +288,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanTimeEvents = array_map(function ($span) {
-            return $span->spanData()->timeEvents();
+            return $span->timeEvents();
         }, $rt->tracer()->spans());
         $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
             return count($timeEvents);
@@ -321,7 +322,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanTimeEvents = array_map(function ($span) {
-            return $span->spanData()->timeEvents();
+            return $span->timeEvents();
         }, $rt->tracer()->spans());
         $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
             return count($timeEvents);
@@ -355,7 +356,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanTimeEvents = array_map(function ($span) {
-            return $span->spanData()->timeEvents();
+            return $span->timeEvents();
         }, $rt->tracer()->spans());
         $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
             return count($timeEvents);
@@ -390,7 +391,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanLinks = array_map(function ($span) {
-            return $span->spanData()->links();
+            return $span->links();
         }, $rt->tracer()->spans());
         $this->assertEquals([0, 0, 1], array_map(function ($links) {
             return count($links);
@@ -428,7 +429,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanLinks = array_map(function ($span) {
-            return $span->spanData()->links();
+            return $span->links();
         }, $rt->tracer()->spans());
         $this->assertEquals([0, 1, 0], array_map(function ($links) {
             return count($links);
@@ -465,7 +466,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanLinks = array_map(function ($span) {
-            return $span->spanData()->links();
+            return $span->links();
         }, $rt->tracer()->spans());
         $this->assertEquals([0, 1, 0], array_map(function ($links) {
             return count($links);
@@ -502,7 +503,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanLinks = array_map(function ($span) {
-            return $span->spanData()->links();
+            return $span->links();
         }, $rt->tracer()->spans());
         $this->assertEquals([0, 1, 0], array_map(function ($links) {
             return count($links);
@@ -537,7 +538,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanTimeEvents = array_map(function ($span) {
-            return $span->spanData()->timeEvents();
+            return $span->timeEvents();
         }, $rt->tracer()->spans());
         $this->assertEquals([0, 0, 1], array_map(function ($timeEvents) {
             return count($timeEvents);
@@ -573,7 +574,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanTimeEvents = array_map(function ($span) {
-            return $span->spanData()->timeEvents();
+            return $span->timeEvents();
         }, $rt->tracer()->spans());
         $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
             return count($timeEvents);
@@ -612,7 +613,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanTimeEvents = array_map(function ($span) {
-            return $span->spanData()->timeEvents();
+            return $span->timeEvents();
         }, $rt->tracer()->spans());
         $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
             return count($timeEvents);
@@ -651,7 +652,7 @@ class RequestHandlerTest extends TestCase
         $scope->close();
 
         $spanTimeEvents = array_map(function ($span) {
-            return $span->spanData()->timeEvents();
+            return $span->timeEvents();
         }, $rt->tracer()->spans());
         $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
             return count($timeEvents);
