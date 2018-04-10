@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace;
 
+use OpenCensus\Trace\EventHandler\SpanEventHandler;
+
 /**
  * This plain PHP class represents a single timed event within a Trace. Spans can
  * be nested and form a trace tree. Often, a trace contains a root span that
@@ -147,6 +149,11 @@ class Span
     private $kind;
 
     /**
+     * @var SpanEventHandlerInterface
+     */
+    private $eventHandler;
+
+    /**
      * Instantiate a new Span instance.
      *
      * @param array $options [optional] Configuration options.
@@ -176,10 +183,12 @@ class Span
             'parentSpanId' => null,
             'status' => null,
             'sameProcessAsParentSpan' => true,
-            'kind' => self::KIND_UNSPECIFIED
+            'kind' => self::KIND_UNSPECIFIED,
+            'eventHandler' => null
         ];
 
         $this->traceId = $options['traceId'];
+        $this->eventHandler = $options['eventHandler'];
 
         if (array_key_exists('startTime', $options)) {
             $this->setStartTime($options['startTime']);

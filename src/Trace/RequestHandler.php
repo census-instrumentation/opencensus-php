@@ -206,6 +206,59 @@ class RequestHandler
         $this->tracer->addAttribute($attribute, $value, $options);
     }
 
+    /**
+     * Add an annotation to the provided Span
+     *
+     * @param string $description
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the annotation to.
+     *      @type array $attributes Attributes for this annotation.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
+     */
+    public function addAnnotation($description, $options = [])
+    {
+        $this->tracer->addAnnotation($description, $options);
+    }
+
+    /**
+     * Add a link to the provided Span
+     *
+     * @param string $traceId
+     * @param string $spanId
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the link to.
+     *      @type string $type The relationship of the current span relative to
+     *            the linked span: child, parent, or unspecified.
+     *      @type array $attributes Attributes for this annotation.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
+     */
+    public function addLink($traceId, $spanId, $options = [])
+    {
+        $this->tracer->addLink($traceId, $spanId, $options);
+    }
+
+    /**
+     * Add an message event to the provided Span
+     *
+     * @param string $type
+     * @param string $id
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the message event to.
+     *      @type int $uncompressedSize The number of uncompressed bytes sent or
+     *            received.
+     *      @type int $compressedSize The number of compressed bytes sent or
+     *            received. If missing assumed to be the same size as
+     *            uncompressed.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
+     */
+    public function addMessageEvent($type, $id, $options)
+    {
+        $this->tracer->addMessageEvent($type, $id, $options);
+    }
+
     public function addCommonRequestAttributes(array $headers)
     {
         $responseCode = http_response_code();

@@ -24,6 +24,7 @@ use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanData;
+use OpenCensus\Trace\DateFormatTrait;
 
 /**
  * This implementation of the TracerInterface utilizes the opencensus extension
@@ -32,6 +33,8 @@ use OpenCensus\Trace\SpanData;
  */
 class ExtensionTracer implements TracerInterface
 {
+    use DateFormatTrait;
+
     /**
      * @var bool
      */
@@ -257,10 +260,10 @@ class ExtensionTracer implements TracerInterface
             $span->name(),
             $traceId,
             $span->spanId(),
+            $this->formatFloatTimeToDate($span->startTime()),
+            $this->formatFloatTimeToDate($span->endTime()),
             [
                 'parentSpanId' => $span->parentSpanId(),
-                'startTime' => $span->startTime(),
-                'endTime' => $span->endTime(),
                 'attributes' => $span->attributes(),
                 'stackTrace' => $span->stackTrace(),
                 'links' => array_map([$this, 'mapLink'], $span->links()),
