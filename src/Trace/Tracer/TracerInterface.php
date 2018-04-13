@@ -19,6 +19,7 @@ namespace OpenCensus\Trace\Tracer;
 
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
+use OpenCensus\Trace\SpanData;
 
 /**
  * This interface allows you to use the null object pattern for your tracer.
@@ -58,7 +59,7 @@ interface TracerInterface
     /**
      * Return the spans collected.
      *
-     * @return Span[]
+     * @return SpanData[]
      */
     public function spans();
 

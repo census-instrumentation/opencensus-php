@@ -4,7 +4,11 @@ OpenCensus Trace: Test setting annotations
 <?php
 
 opencensus_trace_begin('root', ['spanId' => '1234']);
-opencensus_trace_add_annotation('foo');
+opencensus_trace_add_annotation('foo', [
+    'attributes' => [
+        'foo' => 'bar'
+    ]
+]);
 opencensus_trace_begin('inner', []);
 opencensus_trace_add_annotation('asdf', ['spanId' => '1234']);
 opencensus_trace_add_annotation('abc');
@@ -29,6 +33,11 @@ Array
             [time:protected] => %d.%d
             [options:protected] => Array
                 (
+                    [attributes] => Array
+                        (
+                            [foo] => bar
+                        )
+
                 )
 
         )
@@ -39,6 +48,7 @@ Array
             [time:protected] => %d.%d
             [options:protected] => Array
                 (
+                    [spanId] => 1234
                 )
 
         )

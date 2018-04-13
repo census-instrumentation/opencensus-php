@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace;
 
+use OpenCensus\Trace\Storage\SpanStorageInterface;
+
 /**
  * This plain PHP class represents a single timed event within a Trace. Spans can
  * be nested and form a trace tree. Often, a trace contains a root span that
@@ -147,6 +149,11 @@ class Span
     private $kind;
 
     /**
+     * @var SpanStorageInterface
+     */
+    private $storage;
+
+    /**
      * Instantiate a new Span instance.
      *
      * @param array $options [optional] Configuration options.
@@ -176,10 +183,12 @@ class Span
             'parentSpanId' => null,
             'status' => null,
             'sameProcessAsParentSpan' => true,
-            'kind' => self::KIND_UNSPECIFIED
+            'kind' => self::KIND_UNSPECIFIED,
+            'storage' => null
         ];
 
         $this->traceId = $options['traceId'];
+        $this->storage = $options['storage'];
 
         if (array_key_exists('startTime', $options)) {
             $this->setStartTime($options['startTime']);
@@ -290,6 +299,20 @@ class Span
     }
 
     /**
+     * Attach a single attribute to this object.
+     *
+     * @param string $attribute The name of the attribute.
+     * @param mixed $value The value of the attribute. Will be cast to a string
+     */
+    public function addAttribute($attribute, $value)
+    {
+        $this->attributes[$attribute] = (string) $value;
+        if ($this->storage) {
+            $this->storage->addAttribute($this, $attribute, $value);
+        }
+    }
+
+    /**
      * Add a time event to this span.
      *
      * @param TimeEvent $timeEvent
@@ -297,6 +320,13 @@ class Span
     public function addTimeEvent(TimeEvent $timeEvent)
     {
         $this->timeEvents[] = $timeEvent;
+        if ($this->storage) {
+            if ($timeEvent instanceof Annotation) {
+                $this->storage->addAnnotation($this, $timeEvent);
+            } else {
+                $this->storage->addMessageEvent($this, $timeEvent);
+            }
+        }
     }
 
     /**
@@ -319,6 +349,9 @@ class Span
     public function addLink(Link $link)
     {
         $this->links[] = $link;
+        if ($this->storage) {
+            $this->storage->addLink($this, $link);
+        }
     }
 
     /**

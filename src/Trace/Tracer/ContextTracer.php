@@ -24,6 +24,7 @@ use OpenCensus\Trace\Link;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanContext;
+use OpenCensus\Trace\Storage\MemoryStorage;
 
 /**
  * This implementation of the TracerInterface manages your trace context throughout
@@ -33,9 +34,9 @@ use OpenCensus\Trace\SpanContext;
 class ContextTracer implements TracerInterface
 {
     /**
-     * @var Span[] List of Spans to report
+     * @var MemoryStorage
      */
-    private $spans = [];
+    private $storage;
 
     public function __construct(SpanContext $initialContext = null)
     {
@@ -47,6 +48,7 @@ class ContextTracer implements TracerInterface
                 'fromHeader' => $initialContext->fromHeader()
             ])->attach();
         }
+        $this->storage = new MemoryStorage();
     }
 
     /**
@@ -61,7 +63,7 @@ class ContextTracer implements TracerInterface
     public function inSpan(array $spanOptions, callable $callable, array $arguments = [])
     {
         $span = $this->startSpan($spanOptions + [
-            'sameProcessAsParentSpan' => !empty($this->spans)
+            'sameProcessAsParentSpan' => $this->storage->hasAttachedSpans()
         ]);
         $scope = $this->withSpan($span);
         try {
@@ -84,7 +86,8 @@ class ContextTracer implements TracerInterface
         $spanOptions += [
             'traceId' => $this->spanContext()->traceId(),
             'parentSpanId' => $this->spanContext()->spanId(),
-            'startTime' => microtime(true)
+            'startTime' => microtime(true),
+            'storage' => $this->storage
         ];
 
         return new Span($spanOptions);
@@ -99,7 +102,7 @@ class ContextTracer implements TracerInterface
      */
     public function withSpan(Span $span)
     {
-        array_push($this->spans, $span);
+        $this->storage->attach($span);
         $prevContext = Context::current()
             ->withValues([
                 'currentSpan' => $span,
@@ -119,11 +122,13 @@ class ContextTracer implements TracerInterface
     /**
      * Return the spans collected.
      *
-     * @return Span[]
+     * @return SpanData[]
      */
     public function spans()
     {
-        return $this->spans;
+        return array_map(function ($span) {
+            return $span->spanData();
+        }, $this->storage->spans());
     }
 
     /**
@@ -154,7 +159,7 @@ class ContextTracer implements TracerInterface
     public function addAnnotation($description, $options = [])
     {
         $span = $this->getSpan($options);
-        $span->addTimeEvent(new Annotation($description, $options = []));
+        $span->addTimeEvent(new Annotation($description, $options));
     }
 
     /**
@@ -194,7 +199,7 @@ class ContextTracer implements TracerInterface
     public function addMessageEvent($type, $id, $options = [])
     {
         $span = $this->getSpan($options);
-        $span->addTimeEvent(new MessageEvent($id, $options));
+        $span->addTimeEvent(new MessageEvent($type, $id, $options));
     }
 
     /**
@@ -204,13 +209,7 @@ class ContextTracer implements TracerInterface
      */
     public function spanContext()
     {
-        $context = Context::current();
-        return new SpanContext(
-            $context->value('traceId'),
-            $context->value('spanId'),
-            $context->value('enabled'),
-            $context->value('fromHeader')
-        );
+        return $this->storage->spanContext();
     }
 
     /**
