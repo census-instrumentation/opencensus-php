@@ -155,21 +155,21 @@ Apache 2.0 - See [LICENSE](LICENSE) for more information.
 This is not an official Google product.
 
 [census-org]: https://github.com/census-instrumentation
-[api-docs]: https://census-instrumentation.github.io/opencensus-php/api/master/
-[integration-docs]: https://census-instrumentation.github.io/opencensus-php
+[api-docs]: https://opencensus.io/api/php/api/master/
+[integration-docs]: https://opencensus.io/api/php
 [composer]: https://getcomposer.org/
 [pecl]: https://pecl.php.net/
-[never-sampler]: https://census-instrumentation.github.io/opencensus-php/api/master/OpenCensus/Trace/Sampler/NeverSampleSampler.html
-[always-sampler]: https://census-instrumentation.github.io/opencensus-php/api/master/OpenCensus/Trace/Sampler/NeverSampleSampler.html
-[multi-sampler]: https://census-instrumentation.github.io/opencensus-php/api/master/OpenCensus/Trace/Sampler/MultiSampler.html
-[qps-sampler]: https://census-instrumentation.github.io/opencensus-php/api/master/OpenCensus/Trace/Sampler/NeverSampleSampler.html
-[probability-sampler]: https://census-instrumentation.github.io/opencensus-php/api/master/OpenCensus/Trace/Sampler/NeverSampleSampler.html
-[echo-exporter]: https://census-instrumentation.github.io/opencensus-php/api/master/OpenCensus/Trace/Exporter/EchoExporter.html
-[file-exporter]: https://census-instrumentation.github.io/opencensus-php/api/master/OpenCensus/Trace/Exporter/FileExporter.html
+[never-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[always-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[multi-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/MultiSampler.html
+[qps-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[probability-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[echo-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/EchoExporter.html
+[file-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/FileExporter.html
 [jaeger-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-jaeger/blob/master/src/JaegerExporter.php
 [jaeger-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-jaeger
-[logger-exporter]: https://census-instrumentation.github.io/opencensus-php/api/master/OpenCensus/Trace/Exporter/LoggerExporter.html
-[null-exporter]: https://census-instrumentation.github.io/opencensus-php/api/master/OpenCensus/Trace/Exporter/NullExporter.html
-[stackdriver-exporter]: https://census-instrumentation.github.io/opencensus-php/api/master/OpenCensus/Trace/Exporter/StackdriverExporter.html
-[zipkin-exporter]: https://census-instrumentation.github.io/opencensus-php/api/master/OpenCensus/Trace/Exporter/ZipkinExporter.html
+[logger-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/LoggerExporter.html
+[null-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/NullExporter.html
+[stackdriver-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/StackdriverExporter.html
+[zipkin-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/ZipkinExporter.html
 [semver]: http://semver.org/
