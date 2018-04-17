@@ -11,7 +11,8 @@ script:
   - pushd docs
   - hugo
   - popd
-  - php sami.phar update config/sami.php
+  - cp config/sami.php config/sami-config.php
+  - php sami.phar update config/sami-config.php
   - touch docs/.nojekyll
 
 branches:
