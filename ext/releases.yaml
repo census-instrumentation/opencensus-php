@@ -74,3 +74,11 @@ releases:
     notes: |-
       - Adds Span kind (#151)
       - Adds Span sameProcessAsParentSpan (#153)
+
+  - date: '2018-04-18'
+    time: 14:21:00
+    version: 0.2.1
+    stability: alpha
+    notes: |-
+      - Preserve annotation, link, and message event options (#171)
+      - Preserve span stacktrace when provided as an option (#171)
