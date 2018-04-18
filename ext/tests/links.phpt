@@ -4,7 +4,9 @@ OpenCensus Trace: Test setting links
 <?php
 
 opencensus_trace_begin('root', ['spanId' => '1234']);
-opencensus_trace_add_link('traceId', 'spanId');
+opencensus_trace_add_link('traceId', 'spanId', [
+    'type' => 'CHILD_LINKED_SPAN'
+]);
 opencensus_trace_begin('inner', []);
 opencensus_trace_add_link('traceId', 'spanId', ['spanId' => '1234']);
 opencensus_trace_add_link('traceId', 'spanId');
@@ -29,6 +31,7 @@ Array
             [spanId:protected] => spanId
             [options:protected] => Array
                 (
+                    [type] => CHILD_LINKED_SPAN
                 )
 
         )
@@ -39,6 +42,7 @@ Array
             [spanId:protected] => spanId
             [options:protected] => Array
                 (
+                    [spanId] => 1234
                 )
 
         )

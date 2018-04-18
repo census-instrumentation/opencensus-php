@@ -20,6 +20,7 @@ namespace OpenCensus\Trace\Tracer;
 use OpenCensus\Core\Scope;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
+use OpenCensus\Trace\SpanData;
 
 /**
  * This implementation of the TracerInterface is the null object implementation.
@@ -70,7 +71,7 @@ class NullTracer implements TracerInterface
     /**
      * Return the spans collected.
      *
-     * @return Span[]
+     * @return SpanData[]
      */
     public function spans()
     {
