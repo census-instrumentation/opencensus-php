@@ -1,0 +1,100 @@
+unit-config: &unit-config
+  steps:
+    # library requires sockets extension
+    - run: sudo docker-php-ext-install sockets
+
+    - checkout
+    - run: cp config/php.ini /usr/local/etc/php
+
+    # Download and cache dependencies
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "composer.json" }}
+        # fallback to using the latest cache if no exact match is found
+        - v1-dependencies-
+
+    - run: composer install -n --prefer-dist
+
+    - save_cache:
+        paths:
+          - ./vendor
+        key: v1-dependencies-{{ checksum "composer.json" }}
+
+    # run extension tests
+    - run: pushd ext
+    - run: phpize
+    - run: ./configure --enable-opencensus
+    - run: make test || ((find . -name '*.diff' | xargs cat) && false)
+    - run: make install
+    - run: popd
+
+    # run tests!
+    - run: vendor/bin/phpcs --standard=./phpcs-ruleset.xml
+    - run: vendor/bin/phpunit
+    - run: php -d extension=opencensus.so vendor/bin/phpunit
+
+version: 2
+jobs:
+  php56:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:5.6-node
+
+  php56-zts:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:5.6-zts-node
+
+  php70:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.0-node
+
+  php70-zts:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.0-zts-node
+
+  php71:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.1-node
+
+  php71-zts:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.1-zts-node
+
+  php72:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.2-node
+
+  php72-zts:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.2-zts-node
+
+  php70-32bit:
+    <<: *unit-config
+    docker:
+      - image: gcr.io/php-stackdriver/php70-32bit
+
+  php71-32bit:
+    <<: *unit-config
+    docker:
+      - image: gcr.io/php-stackdriver/php71-32bit
+
+  php71-debug:
+    <<: *unit-config
+    docker:
+      - image: gcr.io/php-stackdriver/php71-debug
+
+workflows:
+  version: 2
+  units:
+    jobs:
+      - php56
+      - php70
+      - php71
+      - php72
