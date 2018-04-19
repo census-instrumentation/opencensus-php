@@ -1,10 +1,17 @@
 unit-config: &unit-config
+  environment:
+    - TEST_PHP_ARGS: -q
+    - REPORT_EXIT_STATUS: 1
   steps:
-    # library requires sockets extension
-    - run: sudo docker-php-ext-install sockets
-
     - checkout
-    - run: cp config/php.ini /usr/local/etc/php
+
+    # run extension tests
+    - run: pushd ext
+    - run: phpize
+    - run: ./configure --enable-opencensus
+    - run: make test || ((find . -name '*.diff' | xargs cat) && false)
+    - run: sudo make install
+    - run: popd
 
     # Download and cache dependencies
     - restore_cache:
@@ -20,13 +27,7 @@ unit-config: &unit-config
           - ./vendor
         key: v1-dependencies-{{ checksum "composer.json" }}
 
-    # run extension tests
-    - run: pushd ext
-    - run: phpize
-    - run: ./configure --enable-opencensus
-    - run: make test || ((find . -name '*.diff' | xargs cat) && false)
-    - run: make install
-    - run: popd
+    - run: sudo cp config/php.ini /usr/local/etc/php
 
     # run tests!
     - run: vendor/bin/phpcs --standard=./phpcs-ruleset.xml
