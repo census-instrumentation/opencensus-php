@@ -9,16 +9,19 @@ unit-config: &unit-config
     - run:
         name: Install build tools
         command: |
-          autoconf -V || sudo apt-get update -y && \
-            apt-get install -y -q --no-install-recommends \
-              build-essential \
-              g++ \
-              gcc \
-              libc-dev \
-              make \
-              autoconf \
-              git \
-              unzip
+          autoconf -V || \
+            (
+              sudo apt-get update -y && \
+              sudo apt-get install -y -q --no-install-recommends \
+                build-essential \
+                g++ \
+                gcc \
+                libc-dev \
+                make \
+                autoconf \
+                git \
+                unzip
+            )
 
     - run:
         name: Extension unit tests
