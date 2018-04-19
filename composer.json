@@ -21,7 +21,7 @@
         "phpunit/phpunit": "^5.0",
         "squizlabs/php_codesniffer": "2.*",
         "google/cloud-trace": "^0.4",
-        "twig/twig": "~2.0",
+        "twig/twig": "~2.0 || ~1.35",
         "symfony/yaml": "~3.3",
         "guzzlehttp/guzzle": "~5.3"
     },
