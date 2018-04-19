@@ -2,17 +2,24 @@ unit-config: &unit-config
   environment:
     - TEST_PHP_ARGS: -q
     - REPORT_EXIT_STATUS: 1
+      RUN_EXTENSION_TESTS: 1
   steps:
     - checkout
 
     # run extension tests
-    - run: |
-        pushd ext
-        phpize
-        ./configure --enable-opencensus
-        make test || ((find . -name '*.diff' | xargs cat) && false)
-        sudo make install
-        popd
+    - run:
+        name: Extension unit tests
+        command: |
+          if [ $RUN_EXTENSION_TESTS -eq "1" ]; then
+            pushd ext
+            phpize
+            ./configure --enable-opencensus
+            make test || ((find . -name '*.diff' | xargs cat) && false)
+            sudo make install
+            popd
+          else
+            echo "Skipping extension tests"
+          fi
 
     # Download and cache dependencies
     - restore_cache:
@@ -21,19 +28,33 @@ unit-config: &unit-config
         # fallback to using the latest cache if no exact match is found
         - v1-dependencies-
 
-    - run: composer install -n --prefer-dist
+    - run:
+        name: Install composer packages
+        command: composer install -n --prefer-dist
 
     - save_cache:
         paths:
           - ./vendor
         key: v1-dependencies-{{ checksum "composer.json" }}
 
-    - run: sudo cp config/php.ini /usr/local/etc/php
+    - run:
+        name: Enable E_ALL error reporting for strict testing
+        command: sudo cp config/php.ini /usr/local/etc/php
 
-    # run tests!
-    - run: vendor/bin/phpcs --standard=./phpcs-ruleset.xml
-    - run: vendor/bin/phpunit
-    - run: php -d extension=opencensus.so vendor/bin/phpunit
+    - run:
+        name: PHP Code Style
+        command: vendor/bin/phpcs --standard=./phpcs-ruleset.xml
+    - run:
+        name: PHP unit tests
+        command: vendor/bin/phpunit
+    - run:
+        name: PHP unit tests with extension
+        command: |
+          if [ $RUN_EXTENSION_TESTS -eq "1" ]; then
+            php -d extension=opencensus.so vendor/bin/phpunit
+          else
+            echo "Skipping units tests with extension"
+          fi
 
 version: 2
 jobs:
@@ -41,11 +62,15 @@ jobs:
     <<: *unit-config
     docker:
       - image: circleci/php:5.6-node
+    environment:
+      RUN_EXTENSION_TESTS: 0
 
   php56-zts:
     <<: *unit-config
     docker:
       - image: circleci/php:5.6-zts-node
+    environment:
+      RUN_EXTENSION_TESTS: 0
 
   php70:
     <<: *unit-config
