@@ -6,7 +6,20 @@ unit-config: &unit-config
   steps:
     - checkout
 
-    # run extension tests
+    - run:
+        name: Install build tools
+        run:
+          autoconf -V || sudo apt-get update -y && \
+            apt-get install -y -q --no-install-recommends \
+              build-essential \
+              g++ \
+              gcc \
+              libc-dev \
+              make \
+              autoconf \
+              git \
+              unzip
+
     - run:
         name: Extension unit tests
         command: |
