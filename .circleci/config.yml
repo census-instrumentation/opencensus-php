@@ -11,8 +11,8 @@ unit-config: &unit-config
         command: |
           autoconf -V || \
             (
-              sudo apt-get update -y && \
-              sudo apt-get install -y -q --no-install-recommends \
+              apt-get update -y && \
+              apt-get install -y -q --no-install-recommends \
                 build-essential \
                 g++ \
                 gcc \
