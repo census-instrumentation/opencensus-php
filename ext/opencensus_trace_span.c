@@ -97,6 +97,7 @@
 #include "opencensus_trace_link.h"
 #include "opencensus_trace_message_event.h"
 #include "Zend/zend_alloc.h"
+#include "Zend/zend_variables.h"
 
 zend_class_entry* opencensus_trace_span_ce = NULL;
 
@@ -498,6 +499,9 @@ int opencensus_trace_span_add_annotation(opencensus_trace_span_t *span, zend_str
     opencensus_trace_annotation_t *annotation = opencensus_trace_annotation_alloc();
     annotation->time_event.time = opencensus_now();
     annotation->description = zend_string_copy(description);
+    if (options != NULL) {
+        zend_hash_merge(Z_ARR(annotation->options), Z_ARR_P(options), zval_add_ref, 1);
+    }
 
     zend_hash_next_index_insert_ptr(span->time_events, annotation);
     return SUCCESS;
@@ -509,6 +513,9 @@ int opencensus_trace_span_add_link(opencensus_trace_span_t *span, zend_string *t
     opencensus_trace_link_t *link = opencensus_trace_link_alloc();
     link->trace_id = zend_string_copy(trace_id);
     link->span_id = zend_string_copy(span_id);
+    if (options != NULL) {
+        zend_hash_merge(Z_ARR(link->options), Z_ARR_P(options), zval_add_ref, 1);
+    }
 
     zend_hash_next_index_insert_ptr(span->links, link);
     return FAILURE;
@@ -521,6 +528,9 @@ int opencensus_trace_span_add_message_event(opencensus_trace_span_t *span, zend_
     message_event->time_event.time = opencensus_now();
     message_event->type = zend_string_copy(type);
     message_event->id = zend_string_copy(id);
+    if (options != NULL) {
+        zend_hash_merge(Z_ARR(message_event->options), Z_ARR_P(options), zval_add_ref, 1);
+    }
 
     zend_hash_next_index_insert_ptr(span->time_events, message_event);
     return SUCCESS;
@@ -569,6 +579,8 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
             if (Z_TYPE_P(v) == IS_FALSE) {
                 span->same_process_as_parent_span = 0;
             }
+        } else if (strcmp(ZSTR_VAL(k), "stackTrace") == 0) {
+            ZVAL_COPY(&span->stackTrace, v);
         }
     } ZEND_HASH_FOREACH_END();
     return SUCCESS;

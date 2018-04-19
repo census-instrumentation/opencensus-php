@@ -63,7 +63,7 @@ class MiddlewareTest extends TestCase
         $req = $this->prophesize(RequestInterface::class);
         $req->getMethod()->willReturn('GET')->shouldBeCalled();
         $req->getUri()->willReturn('/')->shouldBeCalled();
-        $req->withHeader('HTTP_X_CLOUD_TRACE_CONTEXT', Argument::that(function ($val) {
+        $req->withHeader('X-CLOUD-TRACE-CONTEXT', Argument::that(function ($val) {
             return preg_match('/[0-9a-f]+\/4660;o=1/', $val);
         }))->willReturn($req->reveal())->shouldBeCalled();
         $request = $req->reveal();

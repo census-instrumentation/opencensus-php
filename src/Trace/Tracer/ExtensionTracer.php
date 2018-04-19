@@ -23,19 +23,31 @@ use OpenCensus\Trace\Link;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
+use OpenCensus\Trace\SpanData;
+use OpenCensus\Trace\TimeEvent;
+use OpenCensus\Trace\DateFormatTrait;
+use OpenCensus\Trace\EventHandler\SpanEventHandlerInterface;
 
 /**
  * This implementation of the TracerInterface utilizes the opencensus extension
  * to manage span context. The opencensus extension augments user created spans and
  * adds automatic tracing to several commonly desired events.
  */
-class ExtensionTracer implements TracerInterface
+class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
 {
+    use DateFormatTrait;
+
     /**
      * @var bool
      */
     private $hasSpans = false;
 
+    /**
+     * Create a new ExtensionTracer
+     *
+     * @param SpanContext|null $initialContext [optional] The starting span
+     *     context.
+     */
     public function __construct(SpanContext $initialContext = null)
     {
         if ($initialContext) {
@@ -74,8 +86,9 @@ class ExtensionTracer implements TracerInterface
     public function startSpan(array $spanOptions)
     {
         if (!array_key_exists('name', $spanOptions)) {
-            $spanOption['name'] = $this->generateSpanName();
+            $spanOptions['name'] = $this->generateSpanName();
         }
+        $spanOptions['eventHandler'] = $this;
         return new Span($spanOptions);
     }
 
@@ -104,6 +117,13 @@ class ExtensionTracer implements TracerInterface
         ];
         opencensus_trace_begin($spanData->name(), $info);
         $this->hasSpans = true;
+        $span->attach();
+        foreach ($spanData->timeEvents() as $timeEvent) {
+            $this->timeEventAdded($span, $timeEvent);
+        }
+        foreach ($spanData->links() as $link) {
+            $this->linkAdded($span, $link);
+        }
         return new Scope(function () {
             opencensus_trace_finish();
         });
@@ -229,6 +249,69 @@ class ExtensionTracer implements TracerInterface
     }
 
     /**
+     * Triggers when an attribute is added to a span.
+     *
+     * @param Span $span The span the attribute was added to
+     * @param string $attribute The name of the attribute added
+     * @param string $value The attribute value
+     */
+    public function attributeAdded(Span $span, $attribute, $value)
+    {
+        // If the span is already attached (managed by the extension), then
+        // tell the extension to add the attribute.
+        if ($span->attached()) {
+            $this->addAttribute($attribute, $value, [
+                'span' => $span
+            ]);
+        }
+    }
+
+    /**
+     * Triggers when a link is added to a span.
+     *
+     * @param Span $span The span the link was added to
+     * @param Link $link The link added to the span
+     */
+    public function linkAdded(Span $span, Link $link)
+    {
+        // If the span is already attached (managed by the extension), then
+        // tell the extension to add the link.
+        if ($span->attached()) {
+            $this->addLink($link->traceId(), $link->spanId(), [
+                'type' => $link->type(),
+                'attributes' => $link->attributes(),
+                'span' => $span
+            ]);
+        }
+    }
+
+    /**
+     * Triggers when a time event is added to a span.
+     *
+     * @param Span $span The span the time event was added to
+     * @param TimeEvent $timeEvent The time event added to the span
+     */
+    public function timeEventAdded(Span $span, TimeEvent $timeEvent)
+    {
+        if ($span->attached()) {
+            if ($timeEvent instanceof Annotation) {
+                $this->addAnnotation($timeEvent->description(), [
+                    'time' => $timeEvent->time(),
+                    'attributes' => $timeEvent->attributes(),
+                    'span' => $span
+                ]);
+            } elseif ($timeEvent instanceof MessageEvent) {
+                $this->addMessageEvent($timeEvent->type(), $timeEvent->id(), [
+                    'time' => $timeEvent->time(),
+                    'uncompressedSize' => $timeEvent->uncompressedSize(),
+                    'compressedSize' => $timeEvent->compressedSize(),
+                    'span' => $span
+                ]);
+            }
+        }
+    }
+
+    /**
      * Generate a name for this span. Attempts to generate a name
      * based on the caller's code.
      *
@@ -252,20 +335,22 @@ class ExtensionTracer implements TracerInterface
 
     private function mapSpan($span, $traceId)
     {
-        return new Span([
-            'traceId' => $traceId,
-            'name' => $span->name(),
-            'spanId' => $span->spanId(),
-            'parentSpanId' => $span->parentSpanId(),
-            'startTime' => $span->startTime(),
-            'endTime' => $span->endTime(),
-            'attributes' => $span->attributes(),
-            'stackTrace' => $span->stackTrace(),
-            'links' => array_map([$this, 'mapLink'], $span->links()),
-            'timeEvents' => array_map([$this, 'mapTimeEvent'], $span->timeEvents()),
-            'kind' => $this->getKind($span),
-            'sameProcessAsParentSpan' => $this->getSameProcessAsParentSpan($span)
-        ]);
+        return new SpanData(
+            $span->name(),
+            $traceId,
+            $span->spanId(),
+            $this->formatFloatTimeToDate($span->startTime()),
+            $this->formatFloatTimeToDate($span->endTime()),
+            [
+                'parentSpanId' => $span->parentSpanId(),
+                'attributes' => $span->attributes(),
+                'stackTrace' => $span->stackTrace(),
+                'links' => array_map([$this, 'mapLink'], $span->links()),
+                'timeEvents' => array_map([$this, 'mapTimeEvent'], $span->timeEvents()),
+                'kind' => $this->getKind($span),
+                'sameProcessAsParentSpan' => $this->getSameProcessAsParentSpan($span)
+            ]
+        );
     }
 
     private function getKind($span)

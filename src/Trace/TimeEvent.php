@@ -22,6 +22,8 @@ namespace OpenCensus\Trace;
  */
 abstract class TimeEvent
 {
+    use DateFormatTrait;
+
     /**
      * @var \DateTimeInterface The time of this event
      */
@@ -59,16 +61,6 @@ abstract class TimeEvent
      */
     public function setTime($time = null)
     {
-        if (!$time) {
-            list($usec, $sec) = explode(' ', microtime());
-            $micro = sprintf("%06d", $usec * 1000000);
-            $time = new \DateTime(date('Y-m-d H:i:s.' . $micro));
-        } elseif (is_numeric($time)) {
-            // Expect that this is a timestamp
-            $micro = sprintf("%06d", ($time - floor($time)) * 1000000);
-            $time = new \DateTime(date('Y-m-d H:i:s.'. $micro, (int) $time));
-        }
-        $time->setTimezone(new \DateTimeZone('UTC'));
-        $this->time = $time;
+        $this->time = $this->formatDate($time);
     }
 }

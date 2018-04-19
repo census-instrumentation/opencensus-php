@@ -37,6 +37,12 @@ class ContextTracer implements TracerInterface
      */
     private $spans = [];
 
+    /**
+     * Create a new ContextTracer
+     *
+     * @param SpanContext|null $initialContext [optional] The starting span
+     *     context.
+     */
     public function __construct(SpanContext $initialContext = null)
     {
         if ($initialContext) {
@@ -106,6 +112,7 @@ class ContextTracer implements TracerInterface
                 'spanId' => $span->spanId()
             ])
             ->attach();
+        $span->attach();
         return new Scope(function () use ($prevContext) {
             $currentContext = Context::current();
             $span = $currentContext->value('currentSpan');
@@ -119,11 +126,13 @@ class ContextTracer implements TracerInterface
     /**
      * Return the spans collected.
      *
-     * @return Span[]
+     * @return SpanData[]
      */
     public function spans()
     {
-        return $this->spans;
+        return array_map(function ($span) {
+            return $span->spanData();
+        }, $this->spans);
     }
 
     /**
@@ -154,7 +163,7 @@ class ContextTracer implements TracerInterface
     public function addAnnotation($description, $options = [])
     {
         $span = $this->getSpan($options);
-        $span->addTimeEvent(new Annotation($description, $options = []));
+        $span->addTimeEvent(new Annotation($description, $options));
     }
 
     /**
@@ -194,7 +203,7 @@ class ContextTracer implements TracerInterface
     public function addMessageEvent($type, $id, $options = [])
     {
         $span = $this->getSpan($options);
-        $span->addTimeEvent(new MessageEvent($id, $options));
+        $span->addTimeEvent(new MessageEvent($type, $id, $options));
     }
 
     /**

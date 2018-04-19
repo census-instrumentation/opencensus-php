@@ -12,11 +12,11 @@ This extension allows you to easily gather latency and other metadata by watchin
   <email>chingor@google.com</email>
   <active>yes</active>
  </lead>
- <date>2018-04-02</date>
- <time>12:19:00</time>
+ <date>2018-04-18</date>
+ <time>14:21:00</time>
  <version>
-  <release>0.2.0</release>
-  <api>0.2.0</api>
+  <release>0.2.1</release>
+  <api>0.2.1</api>
  </version>
  <stability>
   <release>alpha</release>
@@ -24,8 +24,8 @@ This extension allows you to easily gather latency and other metadata by watchin
  </stability>
  <license>Apache 2.0</license>
  <notes>
-- Adds Span kind (#151)
-- Adds Span sameProcessAsParentSpan (#153)
+- Preserve annotation, link, and message event options (#171)
+- Preserve span stacktrace when provided as an option (#171)
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -272,6 +272,22 @@ Fix handling startTime when passed to opencensus_trace_begin (#135)
    <notes>
 - Adds Span kind (#151)
 - Adds Span sameProcessAsParentSpan (#153)
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>0.2.1</release>
+    <api>0.2.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2018-04-18</date>
+   <license>Apache 2.0</license>
+   <notes>
+- Preserve annotation, link, and message event options (#171)
+- Preserve span stacktrace when provided as an option (#171)
    </notes>
   </release>
  </changelog>

@@ -17,8 +17,12 @@
 
 namespace OpenCensus\Tests\Unit\Trace;
 
+use OpenCensus\Trace\Annotation;
+use OpenCensus\Trace\Link;
+use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanContext;
+use OpenCensus\Trace\SpanData;
 use OpenCensus\Trace\RequestHandler;
 use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Sampler\SamplerInterface;
@@ -61,11 +65,11 @@ class RequestHandlerTest extends TestCase
         $spans = $rt->tracer()->spans();
         $this->assertCount(2, $spans);
         foreach ($spans as $span) {
-            $this->assertInstanceOf(Span::class, $span);
-            $this->assertNotEmpty($span->spanData()->endTime());
+            $this->assertInstanceOf(SpanData::class, $span);
+            $this->assertNotEmpty($span->endTime());
         }
-        $spanData1 = $spans[0]->spanData();
-        $spanData2 = $spans[1]->spanData();
+        $spanData1 = $spans[0];
+        $spanData2 = $spans[1];
         $this->assertEquals('main', $spanData1->name());
         $this->assertEquals('inner', $spanData2->name());
         $this->assertEquals($spanData1->spanId(), $spanData2->parentSpanId());
@@ -85,7 +89,7 @@ class RequestHandlerTest extends TestCase
             ]
         );
         $span = $rt->tracer()->spans()[0];
-        $this->assertEquals('15b3', $span->spanData()->parentSpanId());
+        $this->assertEquals('15b3', $span->parentSpanId());
         $context = $rt->tracer()->spanContext();
         $this->assertEquals('12345678901234567890123456789012', $context->traceId());
     }
@@ -125,5 +129,538 @@ class RequestHandlerTest extends TestCase
 
         $this->assertFalse($tracer->enabled());
         $this->assertInstanceOf(NullTracer::class, $tracer);
+    }
+
+    public function testAddsAttributes()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt) {
+            $rt->addAttribute('foo', 'bar');
+        });
+        $scope->close();
+
+        $spanAttributes = array_map(function ($span) {
+            return $span->attributes();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([[], [], ['foo' => 'bar']], $spanAttributes);
+    }
+
+    public function testAddsAttributesToSpecificSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt, $outer) {
+            $rt->addAttribute('foo', 'bar', [
+                'span' => $outer
+            ]);
+        });
+        $scope->close();
+
+        $spanAttributes = array_map(function ($span) {
+            return $span->attributes();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([[], ['foo' => 'bar'], []], $spanAttributes);
+    }
+
+    public function testAddsAttributesToSpecificUnattachedDetachedSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $outer->addAttribute('foo', 'bar');
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt) {
+        });
+        $scope->close();
+
+        $spanAttributes = array_map(function ($span) {
+            return $span->attributes();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([[], ['foo' => 'bar'], []], $spanAttributes);
+    }
+
+    public function testAddsAttributesToSpecificDetachedSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt, $outer) {
+            $outer->addAttribute('foo', 'bar');
+        });
+        $scope->close();
+
+        $spanAttributes = array_map(function ($span) {
+            return $span->attributes();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([[], ['foo' => 'bar'], []], $spanAttributes);
+    }
+
+    public function testAddsAnnotation()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt) {
+            $rt->addAnnotation('some message', [
+                'attributes' => [
+                    'foo' => 'bar'
+                ]
+            ]);
+        });
+        $scope->close();
+
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 0, 1], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $annotation = $spanTimeEvents[2][0];
+        $this->assertInstanceOf(Annotation::class, $annotation);
+        $this->assertCount(1, $annotation->attributes());
+        $this->assertEquals('bar', $annotation->attributes()['foo']);
+    }
+
+    public function testAddsAnnotationToSpecificSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt, $outer) {
+            $rt->addAnnotation('some message', [
+                'attributes' => [
+                    'foo' => 'bar'
+                ],
+                'span' => $outer
+            ]);
+        });
+        $scope->close();
+
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $annotation = $spanTimeEvents[1][0];
+        $this->assertInstanceOf(Annotation::class, $annotation);
+        $this->assertCount(1, $annotation->attributes());
+        $this->assertEquals('bar', $annotation->attributes()['foo']);
+    }
+
+    public function testAddsAnnotationToSpecificUnattachedDetachedSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $outer->addTimeEvent(new Annotation('some message', [
+            'attributes' => [
+                'foo' => 'bar'
+            ]
+        ]));
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt) {
+        });
+        $scope->close();
+
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $annotation = $spanTimeEvents[1][0];
+        $this->assertInstanceOf(Annotation::class, $annotation);
+        $this->assertCount(1, $annotation->attributes());
+        $this->assertEquals('bar', $annotation->attributes()['foo']);
+    }
+
+    public function testAddsAnnotationToSpecificDetachedSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt, $outer) {
+            $outer->addTimeEvent(new Annotation('some message', [
+                'attributes' => [
+                    'foo' => 'bar'
+                ]
+            ]));
+        });
+        $scope->close();
+
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $annotation = $spanTimeEvents[1][0];
+        $this->assertInstanceOf(Annotation::class, $annotation);
+        $this->assertCount(1, $annotation->attributes());
+        $this->assertEquals('bar', $annotation->attributes()['foo']);
+    }
+
+    public function testAddsLink()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt) {
+            $rt->addLink('aaa', 'bbb', [
+                'type' => Link::TYPE_PARENT_LINKED_SPAN,
+                'attributes' => [
+                    'foo' => 'bar'
+                ]
+            ]);
+        });
+        $scope->close();
+
+        $spanLinks = array_map(function ($span) {
+            return $span->links();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 0, 1], array_map(function ($links) {
+            return count($links);
+        }, $spanLinks));
+        $links = $spanLinks[2];
+        $this->assertEquals('aaa', $links[0]->traceId());
+        $this->assertEquals('bbb', $links[0]->spanId());
+        $this->assertEquals('PARENT_LINKED_SPAN', $links[0]->type());
+        $this->assertCount(1, $links[0]->attributes());
+        $this->assertEquals('bar', $links[0]->attributes()['foo']);
+    }
+
+    public function testAddsLinkToSpecificSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt, $outer) {
+            $rt->addLink('aaa', 'bbb', [
+                'type' => Link::TYPE_PARENT_LINKED_SPAN,
+                'attributes' => [
+                    'foo' => 'bar'
+                ],
+                'span' => $outer
+            ]);
+        });
+        $scope->close();
+
+        $spanLinks = array_map(function ($span) {
+            return $span->links();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($links) {
+            return count($links);
+        }, $spanLinks));
+        $links = $spanLinks[1];
+        $this->assertEquals('aaa', $links[0]->traceId());
+        $this->assertEquals('bbb', $links[0]->spanId());
+        $this->assertEquals('PARENT_LINKED_SPAN', $links[0]->type());
+        $this->assertCount(1, $links[0]->attributes());
+        $this->assertEquals('bar', $links[0]->attributes()['foo']);
+    }
+
+    public function testAddsLinkToSpecificUnattachedDetachedSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $outer->addLink(new Link('aaa', 'bbb', [
+            'type' => Link::TYPE_PARENT_LINKED_SPAN,
+            'attributes' => [
+                'foo' => 'bar'
+            ]
+        ]));
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt) {
+        });
+        $scope->close();
+
+        $spanLinks = array_map(function ($span) {
+            return $span->links();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($links) {
+            return count($links);
+        }, $spanLinks));
+        $links = $spanLinks[1];
+        $this->assertEquals('aaa', $links[0]->traceId());
+        $this->assertEquals('bbb', $links[0]->spanId());
+        $this->assertEquals('PARENT_LINKED_SPAN', $links[0]->type());
+        $this->assertCount(1, $links[0]->attributes());
+        $this->assertEquals('bar', $links[0]->attributes()['foo']);
+    }
+
+    public function testAddsLinkToSpecificDetachedSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt, $outer) {
+            $outer->addLink(new Link('aaa', 'bbb', [
+                'type' => Link::TYPE_PARENT_LINKED_SPAN,
+                'attributes' => [
+                    'foo' => 'bar'
+                ]
+            ]));
+        });
+        $scope->close();
+
+        $spanLinks = array_map(function ($span) {
+            return $span->links();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($links) {
+            return count($links);
+        }, $spanLinks));
+        $links = $spanLinks[1];
+        $this->assertEquals('aaa', $links[0]->traceId());
+        $this->assertEquals('bbb', $links[0]->spanId());
+        $this->assertEquals('PARENT_LINKED_SPAN', $links[0]->type());
+        $this->assertCount(1, $links[0]->attributes());
+        $this->assertEquals('bar', $links[0]->attributes()['foo']);
+    }
+
+    public function testAddsMessageEvent()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt) {
+            $rt->addMessageEvent(MessageEvent::TYPE_SENT, 'message-id', [
+                'compressedSize' => 123,
+                'uncompressedSize' => 234
+            ]);
+        });
+        $scope->close();
+
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 0, 1], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $messageEvent = $spanTimeEvents[2][0];
+        $this->assertInstanceOf(MessageEvent::class, $messageEvent);
+        $this->assertEquals('SENT', $messageEvent->type());
+        $this->assertEquals('message-id', $messageEvent->id());
+        $this->assertEquals(123, $messageEvent->compressedSize());
+        $this->assertEquals(234, $messageEvent->uncompressedSize());
+    }
+
+    public function testAddsMessageEventToSpecificSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt, $outer) {
+            $rt->addMessageEvent(MessageEvent::TYPE_SENT, 'message-id', [
+                'compressedSize' => 123,
+                'uncompressedSize' => 234,
+                'span' => $outer
+            ]);
+        });
+        $scope->close();
+
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $messageEvent = $spanTimeEvents[1][0];
+        $this->assertInstanceOf(MessageEvent::class, $messageEvent);
+        $this->assertEquals('SENT', $messageEvent->type());
+        $this->assertEquals('message-id', $messageEvent->id());
+        $this->assertEquals(123, $messageEvent->compressedSize());
+        $this->assertEquals(234, $messageEvent->uncompressedSize());
+    }
+
+    public function testAddsMessageEventToSpecificUnattachedDetachedSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $outer->addTimeEvent(
+            new MessageEvent(
+                MessageEvent::TYPE_SENT, 'message-id', [
+                    'compressedSize' => 123,
+                    'uncompressedSize' => 234
+                ]
+            )
+        );
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt) {
+        });
+        $scope->close();
+
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $messageEvent = $spanTimeEvents[1][0];
+        $this->assertInstanceOf(MessageEvent::class, $messageEvent);
+        $this->assertEquals('SENT', $messageEvent->type());
+        $this->assertEquals('message-id', $messageEvent->id());
+        $this->assertEquals(123, $messageEvent->compressedSize());
+        $this->assertEquals(234, $messageEvent->uncompressedSize());
+    }
+
+    public function testAddsMessageEventToSpecificDetachedSpan()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        $outer = $rt->startSpan(['name' => 'outer']);
+        $scope = $rt->withSpan($outer);
+        $rt->inSpan(['name' => 'inner'], function () use ($rt, $outer) {
+            $outer->addTimeEvent(
+                new MessageEvent(
+                    MessageEvent::TYPE_SENT, 'message-id', [
+                        'compressedSize' => 123,
+                        'uncompressedSize' => 234
+                    ]
+                )
+            );
+        });
+        $scope->close();
+
+        $spanTimeEvents = array_map(function ($span) {
+            return $span->timeEvents();
+        }, $rt->tracer()->spans());
+        $this->assertEquals([0, 1, 0], array_map(function ($timeEvents) {
+            return count($timeEvents);
+        }, $spanTimeEvents));
+        $messageEvent = $spanTimeEvents[1][0];
+        $this->assertInstanceOf(MessageEvent::class, $messageEvent);
+        $this->assertEquals('SENT', $messageEvent->type());
+        $this->assertEquals('message-id', $messageEvent->id());
+        $this->assertEquals(123, $messageEvent->compressedSize());
+        $this->assertEquals(234, $messageEvent->uncompressedSize());
     }
 }

@@ -16,7 +16,7 @@
  */
 
 use Sami\Sami;
-// use Sami\Version\GitVersionCollection;
+use Sami\Version\GitVersionCollection;
 use Symfony\Component\Finder\Finder;
 use Sami\Parser\Filter\FilterInterface;
 use Sami\Reflection\ClassReflection;
@@ -30,14 +30,15 @@ $iterator = Finder::create()
     ->name('*.php')
     ->in(__DIR__ . '/../src');
 
-// $versions = GitVersionCollection::create($root_dir)
-//     ->addFromTags('v0.*')
-//     ->add('master', 'master branch');
+$versions = GitVersionCollection::create($root_dir)
+    ->addFromTags('v0.*')
+    ->add('master', 'master branch');
 
 $sami = new Sami($iterator, [
-    // 'versions'  => $versions,
-    'build_dir' => __DIR__ . '/../docs/public/api',
-    'title' => 'OpenCensus PHP API'
+    'versions'  => $versions,
+    'build_dir' => __DIR__ . '/../docs/public/api/%version%/',
+    'title' => 'OpenCensus PHP API',
+    'cache_dir' => __DIR__ . '/../cache/%version%/'
 ]);
 
 class VisibleFilter implements FilterInterface
