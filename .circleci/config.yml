@@ -6,12 +6,13 @@ unit-config: &unit-config
     - checkout
 
     # run extension tests
-    - run: pushd ext
-    - run: phpize
-    - run: ./configure --enable-opencensus
-    - run: make test || ((find . -name '*.diff' | xargs cat) && false)
-    - run: sudo make install
-    - run: popd
+    - run: |
+        pushd ext
+        phpize
+        ./configure --enable-opencensus
+        make test || ((find . -name '*.diff' | xargs cat) && false)
+        sudo make install
+        popd
 
     # Download and cache dependencies
     - restore_cache:
