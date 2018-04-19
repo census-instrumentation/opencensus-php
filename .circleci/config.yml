@@ -124,6 +124,13 @@ workflows:
   units:
     jobs:
       - php56
+      - php56-zts
       - php70
+      - php70-zts
       - php71
+      - php71-zts
       - php72
+      - php72-zts
+      - php70-32bit
+      - php71-32bit
+      - php71-debug
