@@ -2,7 +2,8 @@ unit-config: &unit-config
   environment:
     - TEST_PHP_ARGS: -q
     - REPORT_EXIT_STATUS: 1
-      RUN_EXTENSION_TESTS: 1
+    - RUN_EXTENSION_TESTS: 1
+    - SUDO_CMD: "sudo"
   steps:
     - checkout
 
@@ -11,8 +12,8 @@ unit-config: &unit-config
         command: |
           autoconf -V || \
             (
-              apt-get update -y && \
-              apt-get install -y -q --no-install-recommends \
+              $SUDO_CMD apt-get update -y && \
+              $SUDO_CMD apt-get install -y -q --no-install-recommends \
                 build-essential \
                 g++ \
                 gcc \
@@ -31,7 +32,7 @@ unit-config: &unit-config
             phpize
             ./configure --enable-opencensus
             make test || ((find . -name '*.diff' | xargs cat) && false)
-            sudo make install
+            $SUDO_CMD make install
             popd
           else
             echo "Skipping extension tests"
@@ -55,7 +56,7 @@ unit-config: &unit-config
 
     - run:
         name: Enable E_ALL error reporting for strict testing
-        command: sudo cp config/php.ini /usr/local/etc/php
+        command: $SUDO_CMD cp config/php.ini /usr/local/etc/php
 
     - run:
         name: PHP Code Style
@@ -124,16 +125,22 @@ jobs:
     <<: *unit-config
     docker:
       - image: gcr.io/php-stackdriver/php70-32bit
+    environment:
+      SUDO_CMD: ""
 
   php71-32bit:
     <<: *unit-config
     docker:
       - image: gcr.io/php-stackdriver/php71-32bit
+    environment:
+      SUDO_CMD: ""
 
   php71-debug:
     <<: *unit-config
     docker:
       - image: gcr.io/php-stackdriver/php71-debug
+    environment:
+      SUDO_CMD: ""
 
 workflows:
   version: 2
