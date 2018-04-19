@@ -1,9 +1,9 @@
 unit-config: &unit-config
   environment:
-    - TEST_PHP_ARGS: -q
-    - REPORT_EXIT_STATUS: 1
-    - RUN_EXTENSION_TESTS: 1
-    - SUDO_CMD: "sudo"
+    TEST_PHP_ARGS: -q
+    REPORT_EXIT_STATUS: 1
+    RUN_EXTENSION_TESTS: 1
+    SUDO_CMD: "sudo"
   steps:
     - checkout
 
@@ -83,6 +83,7 @@ jobs:
       - image: circleci/php:5.6-node
     environment:
       RUN_EXTENSION_TESTS: 0
+      SUDO_CMD: "sudo"
 
   php56-zts:
     <<: *unit-config
@@ -90,6 +91,7 @@ jobs:
       - image: circleci/php:5.6-zts-node
     environment:
       RUN_EXTENSION_TESTS: 0
+      SUDO_CMD: "sudo"
 
   php70:
     <<: *unit-config
@@ -126,6 +128,9 @@ jobs:
     docker:
       - image: gcr.io/php-stackdriver/php70-32bit
     environment:
+      TEST_PHP_ARGS: -q
+      REPORT_EXIT_STATUS: 1
+      RUN_EXTENSION_TESTS: 1
       SUDO_CMD: ""
 
   php71-32bit:
@@ -133,6 +138,9 @@ jobs:
     docker:
       - image: gcr.io/php-stackdriver/php71-32bit
     environment:
+      TEST_PHP_ARGS: -q
+      REPORT_EXIT_STATUS: 1
+      RUN_EXTENSION_TESTS: 1
       SUDO_CMD: ""
 
   php71-debug:
@@ -140,6 +148,9 @@ jobs:
     docker:
       - image: gcr.io/php-stackdriver/php71-debug
     environment:
+      TEST_PHP_ARGS: -q
+      REPORT_EXIT_STATUS: 1
+      RUN_EXTENSION_TESTS: 1
       SUDO_CMD: ""
 
 workflows:
