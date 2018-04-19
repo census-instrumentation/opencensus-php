@@ -8,7 +8,7 @@ unit-config: &unit-config
 
     - run:
         name: Install build tools
-        run:
+        command: |
           autoconf -V || sudo apt-get update -y && \
             apt-get install -y -q --no-install-recommends \
               build-essential \
