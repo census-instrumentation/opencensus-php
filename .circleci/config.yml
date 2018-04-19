@@ -1,0 +1,170 @@
+unit-config: &unit-config
+  environment:
+    TEST_PHP_ARGS: -q
+    REPORT_EXIT_STATUS: 1
+    RUN_EXTENSION_TESTS: 1
+    SUDO_CMD: "sudo"
+  steps:
+    - checkout
+
+    - run:
+        name: Install build tools
+        command: |
+          autoconf -V || \
+            (
+              $SUDO_CMD apt-get update -y && \
+              $SUDO_CMD apt-get install -y -q --no-install-recommends \
+                build-essential \
+                g++ \
+                gcc \
+                libc-dev \
+                make \
+                autoconf \
+                git \
+                unzip
+            )
+
+    - run:
+        name: Extension unit tests
+        command: |
+          if [ $RUN_EXTENSION_TESTS -eq "1" ]; then
+            pushd ext
+            phpize
+            ./configure --enable-opencensus
+            make test || ((find . -name '*.diff' | xargs cat) && false)
+            $SUDO_CMD make install
+            popd
+          else
+            echo "Skipping extension tests"
+          fi
+
+    # Download and cache dependencies
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "composer.json" }}
+        # fallback to using the latest cache if no exact match is found
+        - v1-dependencies-
+
+    - run:
+        name: Install composer packages
+        command: composer install -n --prefer-dist
+
+    - save_cache:
+        paths:
+          - ./vendor
+        key: v1-dependencies-{{ checksum "composer.json" }}
+
+    - run:
+        name: Enable E_ALL error reporting for strict testing
+        command: $SUDO_CMD cp config/php.ini /usr/local/etc/php
+
+    - run:
+        name: PHP Code Style
+        command: vendor/bin/phpcs --standard=./phpcs-ruleset.xml
+
+    - run:
+        name: PHP unit tests
+        command: vendor/bin/phpunit
+
+    - run:
+        name: PHP unit tests with extension
+        command: |
+          if [ $RUN_EXTENSION_TESTS -eq "1" ]; then
+            php -d extension=opencensus.so vendor/bin/phpunit
+          else
+            echo "Skipping units tests with extension"
+          fi
+
+version: 2
+jobs:
+  php56:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:5.6-node
+    environment:
+      RUN_EXTENSION_TESTS: 0
+      SUDO_CMD: "sudo"
+
+  php56-zts:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:5.6-zts-node
+    environment:
+      RUN_EXTENSION_TESTS: 0
+      SUDO_CMD: "sudo"
+
+  php70:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.0-node
+
+  php70-zts:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.0-zts-node
+
+  php71:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.1-node
+
+  php71-zts:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.1-zts-node
+
+  php72:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.2-node
+
+  php72-zts:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.2-zts-node
+
+  php70-32bit:
+    <<: *unit-config
+    docker:
+      - image: gcr.io/php-stackdriver/php70-32bit
+    environment:
+      TEST_PHP_ARGS: -q
+      REPORT_EXIT_STATUS: 1
+      RUN_EXTENSION_TESTS: 1
+      SUDO_CMD: ""
+
+  php71-32bit:
+    <<: *unit-config
+    docker:
+      - image: gcr.io/php-stackdriver/php71-32bit
+    environment:
+      TEST_PHP_ARGS: -q
+      REPORT_EXIT_STATUS: 1
+      RUN_EXTENSION_TESTS: 1
+      SUDO_CMD: ""
+
+  php71-debug:
+    <<: *unit-config
+    docker:
+      - image: gcr.io/php-stackdriver/php71-debug
+    environment:
+      TEST_PHP_ARGS: -q
+      REPORT_EXIT_STATUS: 1
+      RUN_EXTENSION_TESTS: 1
+      SUDO_CMD: ""
+
+workflows:
+  version: 2
+  units:
+    jobs:
+      - php56
+      - php56-zts
+      - php70
+      - php70-zts
+      - php71
+      - php71-zts
+      - php72
+      - php72-zts
+      - php70-32bit
+      - php71-32bit
+      - php71-debug

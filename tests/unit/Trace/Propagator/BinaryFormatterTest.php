@@ -50,7 +50,7 @@ class BinaryFormatterTest extends TestCase
     }
 
     /**
-     * @expectedException \PHPUnit\Framework\Error\Warning
+     * @expectedException PHPUnit_Framework_Error_Warning
      */
     public function testDeserializeBadData()
     {
