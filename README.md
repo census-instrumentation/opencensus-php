@@ -107,6 +107,7 @@ The provided exporters are:
 | [JaegerExporter][jaeger-exporter] | Report traces to Jaeger server via Thrift over UDP | [opencensus/opencensus-exporter-jaeger][jaeger-packagist] |
 | [LoggerExporter][logger-exporter] | Exporter JSON encoded spans to a PSR-3 logger | |
 | [NullExporter][null-exporter] | No-op | |
+| [OneLineEchoExporter][one-line-echo-exporter] | Output the collected spans to stdout with one-line | |
 | [StackdriverExporter][stackdriver-exporter] | Report traces to Google Cloud Stackdriver Trace | [opencensus/opencensus-exporter-stackdriver][stackdriver-packagist] |
 | [ZipkinExporter][zipkin-exporter] | Report collected spans to a Zipkin server | [opencensus/opencensus-exporter-zipkin][zipkin-packagist] |
 
@@ -165,6 +166,7 @@ This is not an official Google product.
 [qps-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/NeverSampleSampler.html
 [probability-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/NeverSampleSampler.html
 [echo-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/EchoExporter.html
+[one-line-echo-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/OneLineEchoExporter.html
 [file-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/FileExporter.html
 [jaeger-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-jaeger
 [jaeger-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-jaeger
