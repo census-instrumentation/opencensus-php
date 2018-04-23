@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2017 OpenCensus Authors
+ * Copyright 2018 OpenCensus Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,11 @@ class OneLineEchoExporterTest extends TestCase
 {
     public function testLogsTrace()
     {
+        $startTime = microtime(true);
         $span = new Span([
             'name' => 'span',
-            'startTime' => microtime(true),
-            'endTime' => microtime(true) + 10
+            'startTime' => $startTime,
+            'endTime' => $startTime + 10
         ]);
 
         ob_start();

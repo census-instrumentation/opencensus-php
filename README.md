@@ -103,11 +103,11 @@ The provided exporters are:
 | Class | Description | Dependency |
 | ----- | ----------- | ---------- |
 | [EchoExporter][echo-exporter] | Output the collected spans to stdout | |
-| [OneLineEchoExporter][one-line-echo-exporter] | Output the collected spans to stdout with one-line | |
 | [FileExporter][file-exporter] | Output JSON encoded spans to a file | |
 | [JaegerExporter][jaeger-exporter] | Report traces to Jaeger server via Thrift over UDP | [opencensus/opencensus-exporter-jaeger][jaeger-packagist] |
 | [LoggerExporter][logger-exporter] | Exporter JSON encoded spans to a PSR-3 logger | |
 | [NullExporter][null-exporter] | No-op | |
+| [OneLineEchoExporter][one-line-echo-exporter] | Output the collected spans to stdout with one-line | |
 | [StackdriverExporter][stackdriver-exporter] | Report traces to Google Cloud Stackdriver Trace | |
 | [ZipkinExporter][zipkin-exporter] | Report collected spans to a Zipkin server | |
 
