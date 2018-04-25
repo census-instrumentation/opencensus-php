@@ -168,12 +168,12 @@ This is not an official Google product.
 [echo-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/EchoExporter.html
 [one-line-echo-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/OneLineEchoExporter.html
 [file-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/FileExporter.html
-[jaeger-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-jaeger
+[jaeger-exporter]: https://github.com/census-ecosystem/opencensus-php-exporter-jaeger
 [jaeger-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-jaeger
 [logger-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/LoggerExporter.html
 [null-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/NullExporter.html
-[stackdriver-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-stackdriver
+[stackdriver-exporter]: https://github.com/census-ecosystem/opencensus-php-exporter-stackdriver
 [stackdriver-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-stackdriver
-[zipkin-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-zipkin
+[zipkin-exporter]: https://github.com/census-ecosystem/opencensus-php-exporter-zipkin
 [zipkin-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-zipkin
 [semver]: http://semver.org/
