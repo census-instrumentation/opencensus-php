@@ -108,8 +108,8 @@ The provided exporters are:
 | [LoggerExporter][logger-exporter] | Exporter JSON encoded spans to a PSR-3 logger | |
 | [NullExporter][null-exporter] | No-op | |
 | [OneLineEchoExporter][one-line-echo-exporter] | Output the collected spans to stdout with one-line | |
-| [StackdriverExporter][stackdriver-exporter] | Report traces to Google Cloud Stackdriver Trace | |
-| [ZipkinExporter][zipkin-exporter] | Report collected spans to a Zipkin server | |
+| [StackdriverExporter][stackdriver-exporter] | Report traces to Google Cloud Stackdriver Trace | [opencensus/opencensus-exporter-stackdriver][stackdriver-packagist] |
+| [ZipkinExporter][zipkin-exporter] | Report collected spans to a Zipkin server | [opencensus/opencensus-exporter-zipkin][zipkin-packagist] |
 
 If you would like to provide your own reporter, create a class that implements
 `ExporterInterface`.
@@ -168,10 +168,12 @@ This is not an official Google product.
 [echo-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/EchoExporter.html
 [one-line-echo-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/OneLineEchoExporter.html
 [file-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/FileExporter.html
-[jaeger-exporter]: https://github.com/census-instrumentation/opencensus-php-exporter-jaeger/blob/master/src/JaegerExporter.php
+[jaeger-exporter]: https://github.com/census-ecosystem/opencensus-php-exporter-jaeger
 [jaeger-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-jaeger
 [logger-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/LoggerExporter.html
 [null-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/NullExporter.html
-[stackdriver-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/StackdriverExporter.html
-[zipkin-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/ZipkinExporter.html
+[stackdriver-exporter]: https://github.com/census-ecosystem/opencensus-php-exporter-stackdriver
+[stackdriver-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-stackdriver
+[zipkin-exporter]: https://github.com/census-ecosystem/opencensus-php-exporter-zipkin
+[zipkin-packagist]: https://packagist.org/packages/opencensus/opencensus-exporter-zipkin
 [semver]: http://semver.org/
