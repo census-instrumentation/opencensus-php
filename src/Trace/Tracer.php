@@ -240,6 +240,68 @@ class Tracer
     }
 
     /**
+     * Add an annotation to the provided Span
+     *
+     * @param string $description
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the annotation to.
+     *      @type array $attributes Attributes for this annotation.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
+     */
+    public static function addAnnotation($description, $options = [])
+    {
+        if (!isset(self::$instance)) {
+            return;
+        }
+        return self::$instance->addAnnotation($description, $options);
+    }
+
+    /**
+     * Add a link to the provided Span
+     *
+     * @param string $traceId
+     * @param string $spanId
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the link to.
+     *      @type string $type The relationship of the current span relative to
+     *            the linked span: child, parent, or unspecified.
+     *      @type array $attributes Attributes for this annotation.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
+     */
+    public static function addLink($traceId, $spanId, $options = [])
+    {
+        if (!isset(self::$instance)) {
+            return;
+        }
+        return self::$instance->addLink($traceId, $spanId, $options);
+    }
+
+    /**
+     * Add an message event to the provided Span
+     *
+     * @param string $type
+     * @param string $id
+     * @param array $options [optional] Configuration options.
+     *
+     *      @type Span $span The span to add the message event to.
+     *      @type int $uncompressedSize The number of uncompressed bytes sent or
+     *            received.
+     *      @type int $compressedSize The number of compressed bytes sent or
+     *            received. If missing assumed to be the same size as
+     *            uncompressed.
+     *      @type \DateTimeInterface|int|float $time The time of this event.
+     */
+    public static function addMessageEvent($type, $id, $options)
+    {
+        if (!isset(self::$instance)) {
+            return;
+        }
+        return self::$instance->addMessageEvent($type, $id, $options);
+    }
+
+    /**
      * Returns the current span context.
      *
      * @return SpanContext
