@@ -58,4 +58,68 @@ class TracerTest extends TestCase
 
         $this->assertTrue($tracer->spanContext()->enabled());
     }
+
+    public function testGlobalAttributes()
+    {
+        $rt = Tracer::start($this->reporter->reveal(), [
+            'sampler' => new AlwaysSampleSampler(),
+            'skipReporting' => true
+        ]);
+        Tracer::addAttribute('foo', 'bar');
+        $spans = $rt->tracer()->spans();
+        $span = $spans[count($spans) - 1];
+        $this->assertEquals(['foo' => 'bar'], $span->attributes());
+    }
+
+    public function testGlobalAnnotation()
+    {
+        $rt = Tracer::start($this->reporter->reveal(), [
+            'sampler' => new AlwaysSampleSampler(),
+            'skipReporting' => true
+        ]);
+        Tracer::addAnnotation('some description', [
+            'attributes' => [
+                'foo' => 'bar'
+            ]
+        ]);
+        $spans = $rt->tracer()->spans();
+        $span = $spans[count($spans) - 1];
+
+        $this->assertCount(1, $span->timeEvents());
+        $annotation = $span->timeEvents()[0];
+        $this->assertEquals('some description', $annotation->description());
+        $this->assertEquals(['foo' => 'bar'], $annotation->attributes());
+    }
+
+    public function testGlobalMessageEvent()
+    {
+        $rt = Tracer::start($this->reporter->reveal(), [
+            'sampler' => new AlwaysSampleSampler(),
+            'skipReporting' => true
+        ]);
+        Tracer::addMessageEvent('SENT', 'message-id');
+        $spans = $rt->tracer()->spans();
+        $span = $spans[count($spans) - 1];
+
+        $this->assertCount(1, $span->timeEvents());
+        $messageEvent = $span->timeEvents()[0];
+        $this->assertEquals('SENT', $messageEvent->type());
+        $this->assertEquals('message-id', $messageEvent->id());
+    }
+
+    public function testGlobalLink()
+    {
+        $rt = Tracer::start($this->reporter->reveal(), [
+            'sampler' => new AlwaysSampleSampler(),
+            'skipReporting' => true
+        ]);
+        Tracer::addLink('trace-id', 'span-id');
+        $spans = $rt->tracer()->spans();
+        $span = $spans[count($spans) - 1];
+
+        $this->assertCount(1, $span->links());
+        $link = $span->links()[0];
+        $this->assertEquals('trace-id', $link->traceId());
+        $this->assertEquals('span-id', $link->spanId());
+    }
 }

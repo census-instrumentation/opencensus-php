@@ -293,7 +293,7 @@ class Tracer
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public static function addMessageEvent($type, $id, $options)
+    public static function addMessageEvent($type, $id, $options = [])
     {
         if (!isset(self::$instance)) {
             return;
