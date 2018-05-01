@@ -77,12 +77,9 @@ class Eloquent implements IntegrationInterface
         });
 
         // public function delete()
-        opencensus_trace_method(Model::class, 'delete', function ($model, $query) {
+        opencensus_trace_method(Model::class, 'delete', function ($model) {
             return [
                 'name' => 'eloquent/delete',
-                'attributes' => [
-                    'query' => $query->toBase()->toSql()
-                ],
                 'kind' => Span::KIND_CLIENT
             ];
         });

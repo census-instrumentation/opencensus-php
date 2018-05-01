@@ -45,7 +45,7 @@ class Memcached implements IntegrationInterface
         opencensus_trace_method('Memcached', 'add', [self::class, 'handleAttributes']);
 
         // bool Memcached::addByKey ( string $server_key , string $key , mixed $value [, int $expiration ] )
-        opencensus_trace_method('Memcached', 'add', [self::class, 'handleAttributesByKey']);
+        opencensus_trace_method('Memcached', 'addByKey', [self::class, 'handleAttributesByKey']);
 
         // bool Memcached::append ( string $key , string $value )
         opencensus_trace_method('Memcached', 'append', [self::class, 'handleAttributes']);
