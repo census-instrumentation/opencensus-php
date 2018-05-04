@@ -215,6 +215,9 @@ jobs:
           name: Memcached test
           command: tests/integration/memcached/test.sh
       - run:
+          name: Symfony 4 test
+          command: tests/integration/symfony4/test.sh
+      - run:
           name: Wordpress test
           command: tests/integration/wordpress/test.sh
     environment:
