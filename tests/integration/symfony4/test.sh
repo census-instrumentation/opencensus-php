@@ -22,7 +22,6 @@ composer config repositories.opencensus git ${REPO}
 composer require opencensus/opencensus:dev-${BRANCH} doctrine
 composer require --dev phpunit/phpunit:^7.0 guzzlehttp/guzzle:~6.0
 
-bin/console doctrine:database:create
 bin/console doctrine:migrations:migrate
 vendor/bin/phpunit
 
