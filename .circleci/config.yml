@@ -217,6 +217,8 @@ jobs:
       - run:
           name: Symfony 4 test
           command: tests/integration/symfony4/test.sh
+          environment:
+            DATABASE_URL: mysql://mysql:mysql@127.0.0.1:3306/mysqldb
       - run:
           name: Wordpress test
           command: tests/integration/wordpress/test.sh
