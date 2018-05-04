@@ -20,7 +20,7 @@ namespace OpenCensus\Tests\Integration\Trace\Exporter;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 
-class SilexTest extends TestCase
+class LaravelTest extends TestCase
 {
     private static $outputFile;
     private static $client;
