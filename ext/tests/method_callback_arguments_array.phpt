@@ -12,7 +12,6 @@ class TestClass
 }
 
 opencensus_trace_method(TestClass::class, 'func1', function ($obj, $n) {
-var_dump($n);
     return [
         'attributes' => [
             'n' => count($n)

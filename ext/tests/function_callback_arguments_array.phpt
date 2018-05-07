@@ -9,7 +9,6 @@ function func1($n)
 }
 
 opencensus_trace_function('func1', function ($n) {
-    var_dump($n);
     return [
         'attributes' => [
             'n' => count($n)
