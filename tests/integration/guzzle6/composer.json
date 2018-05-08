@@ -6,12 +6,18 @@
         "ext-opencensus": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.0"
+        "phpunit/phpunit": "^7.0",
+        "jcchavezs/httptest": "dev-fixes_zombie_child_process_and_duplicated_tests"
     },
-    "repositories": [
-        {
+    "minimum-stability": "beta",
+    "repositories": {
+        "opencensus": {
             "type": "git",
             "url": "https://github.com/census-instrumentation/opencensus-php"
+        },
+        "httptest": {
+            "type": "git",
+            "url": "https://github.com/jcchavezs/httptest-php"
         }
-    ]
+    }
 }
