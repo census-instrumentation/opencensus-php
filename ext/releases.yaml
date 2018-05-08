@@ -82,3 +82,10 @@ releases:
     notes: |-
       - Preserve annotation, link, and message event options (#171)
       - Preserve span stacktrace when provided as an option (#171)
+
+  - date: '2018-05-08'
+    time: 16:17:00
+    version: 0.2.2
+    stability: alpha
+    notes: |-
+      - Fix refcounts for arguments in traced function callbacks (#184)
