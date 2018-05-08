@@ -30,7 +30,7 @@
 #include <sys/time.h>
 #endif
 
-#define PHP_OPENCENSUS_VERSION "0.2.1"
+#define PHP_OPENCENSUS_VERSION "0.2.2"
 #define PHP_OPENCENSUS_EXTNAME "opencensus"
 
 PHP_FUNCTION(opencensus_version);
