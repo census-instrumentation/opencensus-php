@@ -627,6 +627,7 @@ void opencensus_trace_execute_ex (zend_execute_data *execute_data TSRMLS_DC) {
             opencensus_trace_span_apply_span_options(span, &callback_result);
         }
         opencensus_free_args(args, num_args);
+        ZVAL_DESTRUCTOR(&callback_result);
     } else {
         /* Registered handler is span options array */
         opencensus_original_zend_execute_ex(execute_data TSRMLS_CC);
@@ -634,6 +635,7 @@ void opencensus_trace_execute_ex (zend_execute_data *execute_data TSRMLS_DC) {
             opencensus_trace_span_apply_span_options(span, trace_handler);
         }
     }
+    zend_string_release(callback_name);
     opencensus_trace_finish();
 }
 
@@ -692,6 +694,7 @@ void opencensus_trace_execute_internal(INTERNAL_FUNCTION_PARAMETERS)
             opencensus_trace_span_apply_span_options(span, &callback_result);
         }
         opencensus_free_args(args, num_args);
+        ZVAL_DESTRUCTOR(&callback_result);
     } else {
         /* Registered handler is span options array */
         resume_execute_internal(INTERNAL_FUNCTION_PARAM_PASSTHRU);
@@ -699,6 +702,7 @@ void opencensus_trace_execute_internal(INTERNAL_FUNCTION_PARAMETERS)
             opencensus_trace_span_apply_span_options(span, trace_handler);
         }
     }
+    zend_string_release(callback_name);
     opencensus_trace_finish();
 }
 
