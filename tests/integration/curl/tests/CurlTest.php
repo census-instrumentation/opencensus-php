@@ -21,6 +21,9 @@ use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Integrations\Curl;
 use PHPUnit\Framework\TestCase;
+use HttpTest\HttpTestServer;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @group trace
@@ -42,24 +45,55 @@ class CurlTest extends TestCase
 
     public function testCurlExec()
     {
-        $url = 'https://www.google.com/';
+        $server = HttpTestServer::create(
+            function (RequestInterface $request, ResponseInterface &$response) {
+                /* Assert the HTTP call includes the expected values */
+                $this->assertEquals('GET', $request->getMethod());
+                $response = $response->withStatus(200);
+            }
+        );
 
-        $exporter = $this->prophesize(ExporterInterface::class);
-        $tracer = Tracer::start($exporter->reveal(), [
-            'skipReporting' => true
-        ]);
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $output = curl_exec($ch);
-        curl_close($ch);
-        $this->assertNotEmpty($output);
-        $tracer->onExit();
+        $this->withServer($server, function ($server) {
+            $url = $server->getUrl() . '/';
+            $exporter = $this->prophesize(ExporterInterface::class);
+            $tracer = Tracer::start($exporter->reveal(), [
+                'skipReporting' => true
+            ]);
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $output = curl_exec($ch);
+            curl_close($ch);
+            $tracer->onExit();
 
-        $spans = $tracer->tracer()->spans();
-        $this->assertCount(2, $spans);
+            $spans = $tracer->tracer()->spans();
+            $this->assertCount(2, $spans);
 
-        $curlSpan = $spans[1];
-        $this->assertEquals('curl_exec', $curlSpan->name());
-        $this->assertEquals($url, $curlSpan->attributes()['uri']);
+            $curlSpan = $spans[1];
+            $this->assertEquals('curl_exec', $curlSpan->name());
+            $this->assertEquals($url, $curlSpan->attributes()['uri']);
+        });
+    }
+
+    private function withServer($server, $callback)
+    {
+        $pid = pcntl_fork();
+        if ($pid === -1) {
+            $this->fail('Error forking thread.');
+        } elseif ($pid) {
+            // The fork allows to run the HTTP server in background.
+            $server->start();
+            pcntl_waitpid($pid, $status);
+        } else {
+            // We are in the child process
+            $server->waitForReady();
+
+            try {
+                call_user_func($callback, $server);
+            } finally {
+                $server->stop();
+            }
+
+            exit;
+        }
     }
 }
