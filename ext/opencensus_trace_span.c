@@ -552,13 +552,20 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
         if (strcmp(ZSTR_VAL(k), "attributes") == 0) {
             zend_hash_merge(span->attributes, Z_ARRVAL_P(v), zval_add_ref, 0);
         } else if (strcmp(ZSTR_VAL(k), "startTime") == 0) {
-            if (!Z_ISNULL_P(v)) {
-                span->start = zval_get_double(v);
+            switch (Z_TYPE_P(v)) {
+                case IS_NULL:
+                    break;
+                case IS_LONG:
+                case IS_DOUBLE:
+                    span->start = zval_get_double(v);
+                    break;
+                default:
+                    php_error_docref(NULL, E_WARNING, "Provided startTime should be a float");
+                    break;
             }
         } else if (strcmp(ZSTR_VAL(k), "name") == 0) {
             str = zval_get_string(v);
             if (str == NULL) {
-                php_error_docref(NULL, E_WARNING, "Provided name should be a string");
             } else {
                 if (span->name) {
                     zend_string_release(span->name);
@@ -575,9 +582,7 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
                 php_error_docref(NULL, E_WARNING, "Provided kind should be a string");
             }
         } else if (strcmp(ZSTR_VAL(k), "sameProcessAsParentSpan") == 0) {
-            if (Z_TYPE_P(v) == IS_FALSE) {
-                span->same_process_as_parent_span = 0;
-            }
+            span->same_process_as_parent_span = zend_is_true(v);
         } else if (strcmp(ZSTR_VAL(k), "stackTrace") == 0) {
             ZVAL_COPY(&span->stackTrace, v);
         }
