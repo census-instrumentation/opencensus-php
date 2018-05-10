@@ -19,4 +19,4 @@ var_dump($span->name());
 
 ?>
 --EXPECTF--
-Recoverable fatal error: Object of class CastableObject could not be converted to string in %s/name_uncastable_object.php on line %d
+%s fatal error: Object of class CastableObject could not be converted to string in %s/name_uncastable_object.php on line %d
