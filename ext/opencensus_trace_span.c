@@ -545,7 +545,7 @@ int opencensus_trace_span_add_attribute_str(opencensus_trace_span_t *span, char 
 /* Update the provided span with the provided zval (array) of span options */
 int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval *span_options)
 {
-    zend_string *k, *str;
+    zend_string *k;
     zval *v;
 
     ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARR_P(span_options), k, v) {
@@ -564,13 +564,13 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
                     break;
             }
         } else if (strcmp(ZSTR_VAL(k), "name") == 0) {
-            str = zval_get_string(v);
-            if (str == NULL) {
-            } else {
+            if (!Z_ISNULL_P(v)) {
                 if (span->name) {
                     zend_string_release(span->name);
                 }
-                span->name = str;
+                span->name = zval_get_string(v);
+            } else {
+                php_error_docref(NULL, E_WARNING, "Provided name should be a string");
             }
         } else if (strcmp(ZSTR_VAL(k), "kind") == 0) {
             if (Z_TYPE_P(v) == IS_STRING) {
