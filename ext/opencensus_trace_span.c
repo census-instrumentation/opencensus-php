@@ -584,6 +584,9 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
         } else if (strcmp(ZSTR_VAL(k), "sameProcessAsParentSpan") == 0) {
             span->same_process_as_parent_span = zend_is_true(v);
         } else if (strcmp(ZSTR_VAL(k), "stackTrace") == 0) {
+            if (!Z_ISNULL(span->stackTrace)) {
+                ZVAL_DESTRUCTOR(&span->stackTrace);
+            }
             ZVAL_COPY(&span->stackTrace, v);
         }
     } ZEND_HASH_FOREACH_END();
