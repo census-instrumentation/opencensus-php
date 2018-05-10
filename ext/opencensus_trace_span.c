@@ -584,10 +584,14 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
         } else if (strcmp(ZSTR_VAL(k), "sameProcessAsParentSpan") == 0) {
             span->same_process_as_parent_span = zend_is_true(v);
         } else if (strcmp(ZSTR_VAL(k), "stackTrace") == 0) {
-            if (!Z_ISNULL(span->stackTrace)) {
-                ZVAL_DESTRUCTOR(&span->stackTrace);
+            if (Z_TYPE_P(v) == IS_ARRAY) {
+                if (!Z_ISNULL(span->stackTrace)) {
+                    ZVAL_DESTRUCTOR(&span->stackTrace);
+                }
+                ZVAL_COPY(&span->stackTrace, v);
+            } else {
+                php_error_docref(NULL, E_WARNING, "Provided stackTrace should be an array");
             }
-            ZVAL_COPY(&span->stackTrace, v);
         }
     } ZEND_HASH_FOREACH_END();
     return SUCCESS;
