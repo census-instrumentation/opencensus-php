@@ -14,4 +14,4 @@ var_dump($span->kind());
 --EXPECTF--
 Warning: opencensus_trace_begin(): Provided kind should be a string in %s on line %d
 Number of traces: 1
-NULL
+string(21) "SPAN_KIND_UNSPECIFIED"

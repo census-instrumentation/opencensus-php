@@ -545,36 +545,35 @@ int opencensus_trace_span_add_attribute_str(opencensus_trace_span_t *span, char 
 /* Update the provided span with the provided zval (array) of span options */
 int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval *span_options)
 {
-    zend_string *k;
+    zend_string *k, *str;
     zval *v;
 
     ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARR_P(span_options), k, v) {
         if (strcmp(ZSTR_VAL(k), "attributes") == 0) {
             zend_hash_merge(span->attributes, Z_ARRVAL_P(v), zval_add_ref, 0);
         } else if (strcmp(ZSTR_VAL(k), "startTime") == 0) {
-            switch (Z_TYPE_P(v)) {
-                case IS_DOUBLE:
-                    span->start = Z_DVAL_P(v);
-                    break;
-                case IS_LONG:
-                    span->start = (double) Z_LVAL_P(v);
-                    break;
+            if (!Z_ISNULL_P(v)) {
+                span->start = zval_get_double(v);
             }
         } else if (strcmp(ZSTR_VAL(k), "name") == 0) {
-            if (span->name) {
-                zend_string_release(span->name);
+            str = zval_get_string(v);
+            if (str == NULL) {
+                php_error_docref(NULL, E_WARNING, "Provided name should be a string");
+            } else {
+                if (span->name) {
+                    zend_string_release(span->name);
+                }
+                span->name = str;
             }
-            span->name = zend_string_copy(Z_STR_P(v));
-        } else if (strcmp(ZSTR_VAL(k), "spanId") == 0) {
-            if (span->span_id) {
-                zend_string_release(span->span_id);
-            }
-            span->span_id = zend_string_copy(Z_STR_P(v));
         } else if (strcmp(ZSTR_VAL(k), "kind") == 0) {
-            if (span->kind) {
-                zend_string_release(span->kind);
+            if (Z_TYPE_P(v) == IS_STRING) {
+                if (span->kind) {
+                    zend_string_release(span->kind);
+                }
+                span->kind = zval_get_string(v);
+            } else {
+                php_error_docref(NULL, E_WARNING, "Provided kind should be a string");
             }
-            span->kind = zend_string_copy(Z_STR_P(v));
         } else if (strcmp(ZSTR_VAL(k), "sameProcessAsParentSpan") == 0) {
             if (Z_TYPE_P(v) == IS_FALSE) {
                 span->same_process_as_parent_span = 0;

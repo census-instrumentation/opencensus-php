@@ -27,8 +27,8 @@
 #include "Zend/zend_exceptions.h"
 #include "zend_extensions.h"
 #include "standard/php_math.h"
-#include "ext/standard/info.h"
 #include "standard/php_rand.h"
+#include "ext/standard/info.h"
 
 /**
  * True globals for storing the original zend_execute_ex and
@@ -136,9 +136,14 @@ PHP_FUNCTION(opencensus_version)
     RETURN_STRING(PHP_OPENCENSUS_VERSION);
 }
 
+/**
+ * Fetch the spanId zend_string value from the provided array.
+ * Note that the returned zend_string must be released by the caller.
+ */
 static zend_string *span_id_from_options(HashTable *options)
 {
     zval *val;
+    zend_string *str = NULL;
     if (options == NULL) {
         return NULL;
     }
@@ -148,9 +153,24 @@ static zend_string *span_id_from_options(HashTable *options)
         return NULL;
     }
 
-    return Z_STR_P(val);
+    switch (Z_TYPE_P(val)) {
+        case IS_STRING:
+            str = zval_get_string(val);
+            break;
+        case IS_LONG:
+            str = _php_math_longtobase(val, 16);
+            break;
+    }
+
+    if (str == NULL) {
+        php_error_docref(NULL, E_WARNING, "Provided spanId should be a hex string");
+        return NULL;
+    }
+
+    return str;
 }
 
+/*Fetch the span struct for the spanId from the provided array. */
 static opencensus_trace_span_t *span_from_options(zval *options)
 {
     zend_string *span_id = NULL;
@@ -163,6 +183,7 @@ static opencensus_trace_span_t *span_from_options(zval *options)
     span_id = span_id_from_options(Z_ARR_P(options));
     if (span_id != NULL) {
         span = (opencensus_trace_span_t *)zend_hash_find_ptr(OPENCENSUS_TRACE_G(spans), span_id);
+        zend_string_release(span_id);
     }
 
     return span;
@@ -384,7 +405,7 @@ static opencensus_trace_span_t *opencensus_trace_begin(zend_string *name, zend_e
 
     span->start = opencensus_now();
     span->name = zend_string_copy(name);
-    if (span_id) {
+    if (span_id != NULL) {
         span->span_id = zend_string_copy(span_id);
     } else {
         span->span_id = generate_span_id();
@@ -479,6 +500,9 @@ PHP_FUNCTION(opencensus_trace_begin)
     } else {
         span_id = span_id_from_options(Z_ARR_P(span_options));
         span = opencensus_trace_begin(function_name, execute_data, span_id TSRMLS_CC);
+        if (span_id != NULL) {
+            zend_string_release(span_id);
+        }
         opencensus_trace_span_apply_span_options(span, span_options);
     }
 
