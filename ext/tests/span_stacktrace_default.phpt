@@ -1,5 +1,5 @@
 --TEST--
-OpenCensus Trace: Customize the trace span options for a function
+OpenCensus Trace: Default span stackTrace
 --FILE--
 <?php
 
@@ -29,7 +29,7 @@ array(2) {
   [0]=>
   array(3) {
     ["file"]=>
-    string(%d) "%s/backtrace_test.php"
+    string(%d) "%s/span_stacktrace_default.php"
     ["line"]=>
     int(10)
     ["function"]=>
@@ -38,7 +38,7 @@ array(2) {
   [1]=>
   array(3) {
     ["file"]=>
-    string(%d) "%s/backtrace_test.php"
+    string(%d) "%s/span_stacktrace_default.php"
     ["line"]=>
     int(14)
     ["function"]=>
