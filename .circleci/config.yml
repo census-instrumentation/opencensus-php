@@ -163,6 +163,10 @@ jobs:
           MYSQL_PASSWORD: mysql
           MYSQL_DATABASE: mysqldb
           MYSQL_RANDOM_ROOT_PASSWORD: yes
+      - image: postgres:9.6
+        environment:
+          POSTGRES_PASSWORD: pgsql
+          POSTGRES_USER: postgres
     steps:
       - checkout
       - run:
@@ -174,6 +178,7 @@ jobs:
               g++ \
               gcc \
               libc-dev \
+              libpqxx-dev \
               make \
               autoconf \
               git \
@@ -200,6 +205,9 @@ jobs:
           name: Install mysqli extension
           command: sudo docker-php-ext-install mysqli
       - run:
+          name: Install pgsql extension
+          command: sudo docker-php-ext-install pgsql
+      - run:
           name: Curl test
           command: tests/integration/curl/test.sh
       - run:
@@ -214,6 +222,9 @@ jobs:
       - run:
           name: Memcached test
           command: tests/integration/memcached/test.sh
+      - run:
+          name: Pgsql test
+          command: tests/integration/pgsql/test.sh
       - run:
           name: Symfony 4 test
           command: tests/integration/symfony4/test.sh

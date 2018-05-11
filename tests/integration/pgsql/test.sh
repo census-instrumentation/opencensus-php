@@ -17,19 +17,11 @@ set -e
 
 pushd $(dirname ${BASH_SOURCE[0]})
 source ../setup_test_repo.sh
+env
 
-curl -L https://wordpress.org/latest.tar.gz | tar zxf -
 sed -i "s|dev-master|dev-${BRANCH}|" composer.json
 sed -i "s|https://github.com/census-instrumentation/opencensus-php|${REPO}|" composer.json
 composer install -n --prefer-dist
-cp wp-config.php wordpress
-vendor/bin/wp core install  --admin_user=admin \
-                            --admin_password=password \
-                            --allow-root \
-                            --path=wordpress/ \
-                            --url=http://wordpress/ \
-                            --admin_email=admin@opencensus.io \
-                            --title="OpenCensus Test"
 
 vendor/bin/phpunit
 

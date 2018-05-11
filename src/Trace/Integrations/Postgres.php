@@ -41,6 +41,11 @@ class Postgres implements IntegrationInterface
             return;
         }
 
+        // resource pg_connect ( string $connection_string [, int $connect_type ] )
+        // resource pg_pconnect ( string $connection_string [, int $connect_type ] )
+        opencensus_trace_function('pg_connect');
+        opencensus_trace_function('pg_pconnect');
+
         // resource pg_query([resource $connection], string $query)
         opencensus_trace_function('pg_query', function () {
             $query = func_num_args() > 1
@@ -59,6 +64,23 @@ class Postgres implements IntegrationInterface
                 : func_get_arg(0);
             return [
                 'attributes' => ['query' => $query],
+                'kind' => Span::KIND_CLIENT
+            ];
+        });
+
+        // resource pg_prepare ([ resource $connection ], string $stmtname , string $query )
+        opencensus_trace_function('pg_prepare', function () {
+            $statementName = func_num_args() > 2
+                ? func_get_arg(1)
+                : func_get_arg(0);
+            $query = func_num_args() > 2
+                ? func_get_arg(2)
+                : func_get_arg(1);
+            return [
+                'attributes' => [
+                    'statement' => $statementName,
+                    'query' => $query
+                ],
                 'kind' => Span::KIND_CLIENT
             ];
         });

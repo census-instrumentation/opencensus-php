@@ -127,6 +127,8 @@ class Memcached implements IntegrationInterface
      * @param \Memcached $memcached
      * @param array|string $keyOrKeys The key or keys to operate on
      * @return array
+     *
+     * @access private
      */
     public static function handleAttributes($memcached, $keyOrKeys)
     {
@@ -145,6 +147,8 @@ class Memcached implements IntegrationInterface
      * @param string $serverKey The key identifying the server to store the value on or retrieve it from.
      * @param array|string $keyOrKeys The key or keys to operate on
      * @return array
+     *
+     * @access private
      */
     public static function handleAttributesByKey($memcached, $serverKey, $keyOrKeys)
     {
@@ -167,6 +171,8 @@ class Memcached implements IntegrationInterface
      *        memcache.
      * @param string $key The key or keys to operate on
      * @return array
+     *
+     * @access private
      */
     public static function handleCas($memcached, $casToken, $key)
     {
@@ -189,6 +195,8 @@ class Memcached implements IntegrationInterface
      * @param string $serverKey The key identifying the server to store the value on or retrieve it from.
      * @param string $key The key or keys to operate on
      * @return array
+     *
+     * @access private
      */
     public static function handleCasByKey($memcached, $casToken, $serverKey, $key)
     {
@@ -209,6 +217,8 @@ class Memcached implements IntegrationInterface
      * @param \Memcached $memcached
      * @param array $items The items being set in memcached.
      * @return array
+     *
+     * @access private
      */
     public static function handleSetMulti($memcached, $items)
     {
@@ -226,6 +236,8 @@ class Memcached implements IntegrationInterface
      * @param string $serverKey The key identifying the server to store the value on or retrieve it from.
      * @param array $items The items being set in memcached.
      * @return array
+     *
+     * @access private
      */
     public static function handleSetMultiByKey($memcached, $serverKey, $items)
     {
