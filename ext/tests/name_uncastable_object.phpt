@@ -3,12 +3,12 @@ OpenCensus Trace: Providing integer as name
 --FILE--
 <?php
 
-class CastableObject
+class UncastableObject
 {
     private $value = 'my value';
 }
 
-$obj = new CastableObject();
+$obj = new UncastableObject();
 opencensus_trace_begin('foo', ['name' => $obj]);
 opencensus_trace_finish();
 $spans = opencensus_trace_list();
@@ -19,4 +19,4 @@ var_dump($span->name());
 
 ?>
 --EXPECTF--
-%s fatal error: Object of class CastableObject could not be converted to string in %s/name_uncastable_object.php on line %d
+%s fatal error: Object of class UncastableObject could not be converted to string in %s/name_uncastable_object.php on line %d
