@@ -1,12 +1,12 @@
 --TEST--
-OpenCensus Trace: Set span sameProcessAsParentSpan
+OpenCensus Trace: Set span sameProcessAsParentSpan with truish or falsy value
 --FILE--
 <?php
 opencensus_trace_begin('/', [
-    'sameProcessAsParentSpan' => true
+    'sameProcessAsParentSpan' => [1]
 ]);
 opencensus_trace_begin('inner-1', [
-    'sameProcessAsParentSpan' => false
+    'sameProcessAsParentSpan' => []
 ]);
 opencensus_trace_finish();
 opencensus_trace_finish();

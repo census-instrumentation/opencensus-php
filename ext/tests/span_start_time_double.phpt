@@ -1,9 +1,9 @@
 --TEST--
-OpenCensus Trace: Bug 131: Providing integer start time should work
+OpenCensus Trace: Providing double start time should work
 --FILE--
 <?php
 
-opencensus_trace_begin('foo', ['startTime' => (int) microtime(true)]);
+opencensus_trace_begin('foo', ['startTime' => microtime(true)]);
 opencensus_trace_finish();
 $spans = opencensus_trace_list();
 
@@ -17,5 +17,5 @@ echo 'Start time just happened: ' . $test;
 ?>
 --EXPECTF--
 Number of spans: 1
-float(%d)
+float(%d.%d)
 Start time just happened: 1

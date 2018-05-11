@@ -553,34 +553,45 @@ int opencensus_trace_span_apply_span_options(opencensus_trace_span_t *span, zval
             zend_hash_merge(span->attributes, Z_ARRVAL_P(v), zval_add_ref, 0);
         } else if (strcmp(ZSTR_VAL(k), "startTime") == 0) {
             switch (Z_TYPE_P(v)) {
-                case IS_DOUBLE:
-                    span->start = Z_DVAL_P(v);
+                case IS_NULL:
                     break;
                 case IS_LONG:
-                    span->start = (double) Z_LVAL_P(v);
+                case IS_DOUBLE:
+                    span->start = zval_get_double(v);
+                    break;
+                default:
+                    php_error_docref(NULL, E_WARNING, "Provided startTime should be a float");
                     break;
             }
         } else if (strcmp(ZSTR_VAL(k), "name") == 0) {
-            if (span->name) {
-                zend_string_release(span->name);
+            if (!Z_ISNULL_P(v)) {
+                if (span->name) {
+                    zend_string_release(span->name);
+                }
+                span->name = zval_get_string(v);
+            } else {
+                php_error_docref(NULL, E_WARNING, "Provided name should be a string");
             }
-            span->name = zend_string_copy(Z_STR_P(v));
-        } else if (strcmp(ZSTR_VAL(k), "spanId") == 0) {
-            if (span->span_id) {
-                zend_string_release(span->span_id);
-            }
-            span->span_id = zend_string_copy(Z_STR_P(v));
         } else if (strcmp(ZSTR_VAL(k), "kind") == 0) {
-            if (span->kind) {
-                zend_string_release(span->kind);
+            if (Z_TYPE_P(v) == IS_STRING) {
+                if (span->kind) {
+                    zend_string_release(span->kind);
+                }
+                span->kind = zval_get_string(v);
+            } else {
+                php_error_docref(NULL, E_WARNING, "Provided kind should be a string");
             }
-            span->kind = zend_string_copy(Z_STR_P(v));
         } else if (strcmp(ZSTR_VAL(k), "sameProcessAsParentSpan") == 0) {
-            if (Z_TYPE_P(v) == IS_FALSE) {
-                span->same_process_as_parent_span = 0;
-            }
+            span->same_process_as_parent_span = zend_is_true(v);
         } else if (strcmp(ZSTR_VAL(k), "stackTrace") == 0) {
-            ZVAL_COPY(&span->stackTrace, v);
+            if (Z_TYPE_P(v) == IS_ARRAY) {
+                if (!Z_ISNULL(span->stackTrace)) {
+                    ZVAL_DESTRUCTOR(&span->stackTrace);
+                }
+                ZVAL_COPY(&span->stackTrace, v);
+            } else {
+                php_error_docref(NULL, E_WARNING, "Provided stackTrace should be an array");
+            }
         }
     } ZEND_HASH_FOREACH_END();
     return SUCCESS;
