@@ -20,6 +20,8 @@ namespace OpenCensus\Tests\Integration\Trace;
 use GuzzleHttp\Client;
 use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Exporter\ExporterInterface;
+use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
+use OpenCensus\Trace\Propagator\TraceContextFormatter;
 use OpenCensus\Trace\Integrations\Guzzle\EventSubscriber;
 use HttpTest\HttpTestServer;
 use Psr\Http\Message\RequestInterface;
@@ -96,6 +98,52 @@ class Guzzle5Test extends TestCase
                     'HTTP_X_CLOUD_TRACE_CONTEXT' => $traceContextHeader
                 ]
             ]);
+            $response = $this->client->get($server->getUrl());
+            $this->assertEquals(200, $response->getStatusCode());
+
+            $tracer->onExit();
+
+            $spans = $tracer->tracer()->spans();
+            $this->assertCount(2, $spans);
+
+            $curlSpan = $spans[1];
+            $this->assertEquals('GuzzleHttp::request', $curlSpan->name());
+            $this->assertEquals('GET', $curlSpan->attributes()['method']);
+            $this->assertEquals($server->getUrl(), $curlSpan->attributes()['uri']);
+        });
+    }
+
+    public function testPersistsTraceContextWithCustomFormat()
+    {
+        $server = HttpTestServer::create(
+            function (RequestInterface $request, ResponseInterface &$response) {
+                /* Assert the HTTP call includes the expected values */
+                $this->assertEquals('GET', $request->getMethod());
+
+                $contextHeader = $request->getHeaderLine('X-Trace-Context');
+                $this->assertNotEmpty($contextHeader);
+                $this->assertStringStartsWith('00-4bf92f3577b34da6a3ce929d0e0e4736', $contextHeader);
+                $response = $response->withStatus(200);
+            }
+        );
+
+        $this->withServer($server, function ($server) {
+            $propagator = new HttpHeaderPropagator(new TraceContextFormatter(), 'HTTP_X_TRACE_CONTEXT');
+            $traceContextHeader = '00-4BF92F3577B34DA6A3CE929D0E0E4736-00F067AA0BA902B7-01';
+            $exporter = $this->prophesize(ExporterInterface::class);
+            $tracer = Tracer::start($exporter->reveal(), [
+                'skipReporting' => true,
+                'propagator' => $propagator,
+                'headers' => [
+                    'HTTP_X_TRACE_CONTEXT' => $traceContextHeader
+                ]
+            ]);
+
+            $this->client = new Client();
+            $subscriber = new EventSubscriber($propagator);
+            $this->client->getEmitter()->attach($subscriber);
+
+
             $response = $this->client->get($server->getUrl());
             $this->assertEquals(200, $response->getStatusCode());
 
