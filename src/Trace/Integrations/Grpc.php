@@ -39,6 +39,8 @@ class Grpc implements IntegrationInterface
      */
     public static function load()
     {
+        trigger_error(static::class . ' is deprecated. Please use the OpenCensus\Trace\Integrations\Grpc\TraceInterceptor', E_USER_DEPRECATED);
+
         if (!extension_loaded('opencensus')) {
             trigger_error('opencensus extension required to load grpc integrations.', E_USER_WARNING);
             return;
