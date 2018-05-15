@@ -16,7 +16,7 @@
         },
         "grpc": {
             "type": "git",
-            "url": "https://github.com/grpc/grpc"
+            "url": "https://github.com/grpc/grpc-php"
         }
     }
 }
