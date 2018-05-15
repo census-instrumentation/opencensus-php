@@ -192,6 +192,11 @@ jobs:
             sudo make install
             sudo docker-php-ext-enable opencensus
       - run:
+          name: Install grpc extension
+          command: |
+            sudo pecl install grpc
+            sudo docker-php-ext-enable grpc
+      - run:
           name: Install memcached extension
           command: |
             sudo apt-get install -y -q --no-install-recommends \
@@ -210,6 +215,9 @@ jobs:
       - run:
           name: Curl test
           command: tests/integration/curl/test.sh
+      - run:
+          name: Grpc test
+          command: tests/integration/grpc/test.sh
       - run:
           name: Guzzle 5 test
           command: tests/integration/guzzle5/test.sh
