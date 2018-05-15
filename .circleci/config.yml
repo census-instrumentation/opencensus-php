@@ -179,6 +179,7 @@ jobs:
               gcc \
               libc-dev \
               libpqxx-dev \
+              zlib1g-dev \
               make \
               autoconf \
               git \
