@@ -75,7 +75,7 @@ class GrpcMetadataPropagator implements PropagatorInterface
      */
     public function inject(SpanContext $context, $metadata)
     {
-        $metadata[$this->key] = $this->formatter->serialize($context);
+        $metadata[$this->key] = [$this->formatter->serialize($context)];
         return $metadata;
     }
 
