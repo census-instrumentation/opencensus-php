@@ -18,6 +18,7 @@
 namespace OpenCensus\Trace\Integrations;
 
 use Grpc\BaseStub;
+use OpenCensus\Trace\Integrations\Grpc\TraceInterceptor;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Propagator\GrpcMetadataPropagator;
@@ -39,7 +40,7 @@ class Grpc implements IntegrationInterface
      */
     public static function load()
     {
-        trigger_error(static::class . ' is deprecated. Please use the OpenCensus\Trace\Integrations\Grpc\TraceInterceptor', E_USER_DEPRECATED);
+        trigger_error(static::class . ' is deprecated. Please use the ' . TraceInterceptor::class, E_USER_DEPRECATED);
 
         if (!extension_loaded('opencensus')) {
             trigger_error('opencensus extension required to load grpc integrations.', E_USER_WARNING);
