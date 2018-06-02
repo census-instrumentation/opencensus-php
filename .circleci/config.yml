@@ -208,6 +208,9 @@ jobs:
           name: Install pgsql extension
           command: sudo docker-php-ext-install pgsql
       - run:
+          name: Install pcntl extension
+          command: sudo docker-php-ext-install pcntl
+      - run:
           name: Curl test
           command: tests/integration/curl/test.sh
       - run:

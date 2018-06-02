@@ -18,10 +18,10 @@
 namespace OpenCensus\Tests\Integration\Trace;
 
 use GuzzleHttp\Client;
+use HttpTest\HttpTestServer;
 use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Integrations\Guzzle\EventSubscriber;
-use HttpTest\HttpTestServer;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use PHPUnit\Framework\TestCase;
@@ -54,24 +54,27 @@ class Guzzle5Test extends TestCase
             }
         );
 
-        $this->withServer($server, function ($server) {
-            $exporter = $this->prophesize(ExporterInterface::class);
-            $tracer = Tracer::start($exporter->reveal(), [
-                'skipReporting' => true
-            ]);
-            $response = $this->client->get($server->getUrl());
-            $this->assertEquals(200, $response->getStatusCode());
+        $exporter = $this->prophesize(ExporterInterface::class);
+        $tracer = Tracer::start($exporter->reveal(), [
+            'skipReporting' => true
+        ]);
 
-            $tracer->onExit();
+        $server->start();
 
-            $spans = $tracer->tracer()->spans();
-            $this->assertCount(2, $spans);
+        $response = $this->client->get($server->getUrl());
+        $this->assertEquals(200, $response->getStatusCode());
 
-            $curlSpan = $spans[1];
-            $this->assertEquals('GuzzleHttp::request', $curlSpan->name());
-            $this->assertEquals('GET', $curlSpan->attributes()['method']);
-            $this->assertEquals($server->getUrl(), $curlSpan->attributes()['uri']);
-        });
+        $server->stop();
+
+        $tracer->onExit();
+
+        $spans = $tracer->tracer()->spans();
+        $this->assertCount(2, $spans);
+
+        $curlSpan = $spans[1];
+        $this->assertEquals('GuzzleHttp::request', $curlSpan->name());
+        $this->assertEquals('GET', $curlSpan->attributes()['method']);
+        $this->assertEquals($server->getUrl(), $curlSpan->attributes()['uri']);
     }
 
     public function testPersistsTraceContext()
@@ -87,50 +90,30 @@ class Guzzle5Test extends TestCase
             }
         );
 
-        $this->withServer($server, function ($server) {
-            $traceContextHeader = '1603c1cde5c74f23bcf1682eb822fcf7/1150672535;o=1';
-            $exporter = $this->prophesize(ExporterInterface::class);
-            $tracer = Tracer::start($exporter->reveal(), [
-                'skipReporting' => true,
-                'headers' => [
-                    'HTTP_X_CLOUD_TRACE_CONTEXT' => $traceContextHeader
-                ]
-            ]);
-            $response = $this->client->get($server->getUrl());
-            $this->assertEquals(200, $response->getStatusCode());
+        $traceContextHeader = '1603c1cde5c74f23bcf1682eb822fcf7/1150672535;o=1';
+        $exporter = $this->prophesize(ExporterInterface::class);
+        $tracer = Tracer::start($exporter->reveal(), [
+            'skipReporting' => true,
+            'headers' => [
+                'HTTP_X_CLOUD_TRACE_CONTEXT' => $traceContextHeader
+            ]
+        ]);
 
-            $tracer->onExit();
+        $server->start();
 
-            $spans = $tracer->tracer()->spans();
-            $this->assertCount(2, $spans);
+        $response = $this->client->get($server->getUrl());
+        $this->assertEquals(200, $response->getStatusCode());
 
-            $curlSpan = $spans[1];
-            $this->assertEquals('GuzzleHttp::request', $curlSpan->name());
-            $this->assertEquals('GET', $curlSpan->attributes()['method']);
-            $this->assertEquals($server->getUrl(), $curlSpan->attributes()['uri']);
-        });
-    }
+        $server->stop();
 
-    private function withServer($server, $callback)
-    {
-        $pid = pcntl_fork();
-        if ($pid === -1) {
-            $this->fail('Error forking thread.');
-        } elseif ($pid) {
-            // The fork allows to run the HTTP server in background.
-            $server->start();
-            pcntl_waitpid($pid, $status);
-        } else {
-            // We are in the child process
-            $server->waitForReady();
+        $tracer->onExit();
 
-            try {
-                call_user_func($callback, $server);
-            } finally {
-                $server->stop();
-            }
+        $spans = $tracer->tracer()->spans();
+        $this->assertCount(2, $spans);
 
-            exit;
-        }
+        $curlSpan = $spans[1];
+        $this->assertEquals('GuzzleHttp::request', $curlSpan->name());
+        $this->assertEquals('GET', $curlSpan->attributes()['method']);
+        $this->assertEquals($server->getUrl(), $curlSpan->attributes()['uri']);
     }
 }
