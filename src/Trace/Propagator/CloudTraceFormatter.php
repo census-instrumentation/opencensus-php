@@ -106,8 +106,7 @@ class CloudTraceFormatter implements FormatterInterface
         do {
             $divide = 0;
             $newlen = 0;
-            for ($i = 0; $i < $length; $i++)
-            {
+            for ($i = 0; $i < $length; $i++) {
                 $divide = $divide * $fromBase + $number[$i];
                 if ($divide >= $toBase) {
                     $number[$newlen++] = (int)($divide / $toBase);
