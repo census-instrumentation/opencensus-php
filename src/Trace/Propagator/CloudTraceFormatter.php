@@ -42,7 +42,7 @@ class CloudTraceFormatter implements FormatterInterface
             return new SpanContext(
                 strtolower($matches[1]),
                 array_key_exists(2, $matches) && !empty($matches[2])
-                    ? dechex((int)($matches[2]))
+                    ? $this->baseConvert($matches[2], 10, 16)
                     : null,
                 array_key_exists(3, $matches) ? $matches[3] == '1' : null,
                 true
@@ -61,11 +61,43 @@ class CloudTraceFormatter implements FormatterInterface
     {
         $ret = '' . $context->traceId();
         if ($context->spanId()) {
-            $ret .= '/' . hexdec($context->spanId());
+            $ret .= '/' . $this->baseConvert($context->spanId(), 16, 10);
         }
         if ($context->enabled() !== null) {
             $ret .= ';o=' . ($context->enabled() ? '1' : '0');
         }
         return $ret;
+    }
+
+    private function baseConvert($numstring, $fromBase, $toBase)
+    {
+        $chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+        $newstring = substr($chars, 0, $toBase);
+
+        $length = strlen($numstring);
+        $result = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $number[$i] = strpos($chars, $numstring{$i});
+        }
+
+        do {
+            $divide = 0;
+            $newlen = 0;
+            for ($i = 0; $i < $length; $i++)
+            {
+                $divide = $divide * $fromBase + $number[$i];
+                if ($divide >= $toBase) {
+                    $number[$newlen++] = (int)($divide / $toBase);
+                    $divide = $divide % $toBase;
+                } elseif ($newlen > 0) {
+                    $number[$newlen++] = 0;
+                }
+            }
+            $length = $newlen;
+            $result = $newstring{$divide} . $result;
+        } while ($newlen != 0);
+
+        return $result;
     }
 }
