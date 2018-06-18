@@ -71,10 +71,11 @@ class CloudTraceFormatter implements FormatterInterface
 
     private function decToHex($numstring)
     {
-        if ($this->isBigNum((int) $numstring)) {
+        $int = (int) $numstring;
+        if ($this->isBigNum($int)) {
             return $this->baseConvert($numstring, 10, 16);
         }
-        return dechex($numstring);
+        return dechex($int);
     }
 
     private function hexToDec($numstring)
