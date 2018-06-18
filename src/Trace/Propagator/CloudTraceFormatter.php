@@ -42,7 +42,7 @@ class CloudTraceFormatter implements FormatterInterface
             return new SpanContext(
                 strtolower($matches[1]),
                 array_key_exists(2, $matches) && !empty($matches[2])
-                    ? $this->baseConvert($matches[2], 10, 16)
+                    ? $this->decToHex($matches[2])
                     : null,
                 array_key_exists(3, $matches) ? $matches[3] == '1' : null,
                 true
@@ -61,12 +61,34 @@ class CloudTraceFormatter implements FormatterInterface
     {
         $ret = '' . $context->traceId();
         if ($context->spanId()) {
-            $ret .= '/' . $this->baseConvert($context->spanId(), 16, 10);
+            $ret .= '/' . $this->hexToDec($context->spanId());
         }
         if ($context->enabled() !== null) {
             $ret .= ';o=' . ($context->enabled() ? '1' : '0');
         }
         return $ret;
+    }
+
+    private function decToHex($numstring)
+    {
+        if ($this->isBigNum((int) $numstring)) {
+            return $this->baseConvert($numstring, 10, 16);
+        }
+        return dechex($numstring);
+    }
+
+    private function hexToDec($numstring)
+    {
+        $dec = hexdec($numstring);
+        if ($this->isBigNum($dec)) {
+            return $this->baseConvert($numstring, 16, 10);
+        }
+        return $dec;
+    }
+
+    private function isBigNum($numstring)
+    {
+        return $numstring >= PHP_INT_MAX;
     }
 
     private function baseConvert($numstring, $fromBase, $toBase)
