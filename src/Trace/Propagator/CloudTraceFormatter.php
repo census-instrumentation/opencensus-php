@@ -86,9 +86,9 @@ class CloudTraceFormatter implements FormatterInterface
         return $dec;
     }
 
-    private function isBigNum($numstring)
+    private function isBigNum($number)
     {
-        return $numstring >= PHP_INT_MAX;
+        return $number >= PHP_INT_MAX;
     }
 
     private function baseConvert($numstring, $fromBase, $toBase)
