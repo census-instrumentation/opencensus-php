@@ -261,8 +261,9 @@ class RequestHandler
 
     public function addCommonRequestAttributes(array $headers)
     {
-        $responseCode = http_response_code();
-        $this->rootSpan->setStatus($responseCode, "HTTP status code: $responseCode");
+        if ($responseCode = http_response_code()) {
+            $this->rootSpan->setStatus($responseCode, "HTTP status code: $responseCode");
+        }
         $this->tracer->addAttribute(Span::ATTRIBUTE_STATUS_CODE, $responseCode, [
             'spanId' => $this->rootSpan->spanId()
         ]);
