@@ -144,7 +144,7 @@ void opencensus_trace_annotation_free(opencensus_trace_annotation_t *annotation)
         zend_string_release(annotation->description);
     }
     if (Z_TYPE(annotation->options) != IS_NULL) {
-        ZVAL_DESTRUCTOR(&annotation->options);
+        zval_dtor(&annotation->options);
     }
     efree(annotation);
 }
