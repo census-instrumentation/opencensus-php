@@ -263,10 +263,10 @@ class RequestHandler
     {
         if ($responseCode = http_response_code()) {
             $this->rootSpan->setStatus($responseCode, "HTTP status code: $responseCode");
+            $this->tracer->addAttribute(Span::ATTRIBUTE_STATUS_CODE, $responseCode, [
+                'spanId' => $this->rootSpan->spanId()
+            ]);
         }
-        $this->tracer->addAttribute(Span::ATTRIBUTE_STATUS_CODE, $responseCode, [
-            'spanId' => $this->rootSpan->spanId()
-        ]);
         foreach (self::ATTRIBUTE_MAP as $attributeKey => $headerKeys) {
             if ($val = $this->detectKey($headerKeys, $headers)) {
                 $this->tracer->addAttribute($attributeKey, $val, [

@@ -687,6 +687,7 @@ class RequestHandlerTest extends TestCase
         $this->assertInstanceOf(SpanData::class, $spanData);
         $this->assertNotEmpty($spanData->endTime());
         $this->assertEquals('main', $spanData->name());
+        $this->assertEquals([], $spanData->attributes());
         $this->assertNull($spanData->status());
     }
 
@@ -709,7 +710,13 @@ class RequestHandlerTest extends TestCase
         $this->assertInstanceOf(SpanData::class, $spanData);
         $this->assertNotEmpty($spanData->endTime());
         $this->assertEquals('main', $spanData->name());
-        $this->assertInstanceOf(Status::class, $spanData->status());
-        $this->assertEquals(200, $spanData->status()->code());
+        $this->assertEquals([Span::ATTRIBUTE_STATUS_CODE => 200], $spanData->attributes());
+
+        if (extension_loaded('opencensus')) {
+            $this->assertNull($spanData->status());
+        } else {
+            $this->assertInstanceOf(Status::class, $spanData->status());
+            $this->assertEquals(200, $spanData->status()->code());
+        }
     }
 }
