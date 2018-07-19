@@ -17,17 +17,21 @@
 
 namespace OpenCensus\Tests\Unit\Trace;
 
+require_once __DIR__ . '/mock_http_response_code.php';
+
 use OpenCensus\Trace\Annotation;
 use OpenCensus\Trace\Link;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\SpanData;
+use OpenCensus\Trace\Status;
 use OpenCensus\Trace\RequestHandler;
 use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Sampler\SamplerInterface;
 use OpenCensus\Trace\Tracer\NullTracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
+use OpenCensus\Trace\MockHttpResponseCode;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -662,5 +666,57 @@ class RequestHandlerTest extends TestCase
         $this->assertEquals('message-id', $messageEvent->id());
         $this->assertEquals(123, $messageEvent->compressedSize());
         $this->assertEquals(234, $messageEvent->uncompressedSize());
+    }
+
+    public function testNoStatusOfRootSpanOnExitWithoutHttpResponse()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        MockHttpResponseCode::$status = false;
+        $rt->onExit();
+        $spans = $rt->tracer()->spans();
+        $this->assertCount(1, $spans);
+        $spanData = $spans[0];
+        $this->assertInstanceOf(SpanData::class, $spanData);
+        $this->assertNotEmpty($spanData->endTime());
+        $this->assertEquals('main', $spanData->name());
+        $this->assertEquals([], $spanData->attributes());
+        $this->assertNull($spanData->status());
+    }
+
+    public function testSetsStatusOfRootSpanOnExitWithHttpResponse()
+    {
+        $this->sampler->shouldSample()->willReturn(true);
+        $rt = new RequestHandler(
+            $this->exporter->reveal(),
+            $this->sampler->reveal(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true
+            ]
+        );
+        MockHttpResponseCode::$status = 200;
+        $rt->onExit();
+        $spans = $rt->tracer()->spans();
+        $this->assertCount(1, $spans);
+        $spanData = $spans[0];
+        $this->assertInstanceOf(SpanData::class, $spanData);
+        $this->assertNotEmpty($spanData->endTime());
+        $this->assertEquals('main', $spanData->name());
+        $this->assertEquals([Span::ATTRIBUTE_STATUS_CODE => 200], $spanData->attributes());
+
+        if (extension_loaded('opencensus')) {
+            $this->assertNull($spanData->status());
+        } else {
+            $this->assertInstanceOf(Status::class, $spanData->status());
+            $this->assertEquals(200, $spanData->status()->code());
+        }
     }
 }
