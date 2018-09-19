@@ -52,7 +52,7 @@ class NullTracer implements TracerInterface
      */
     public function startSpan(array $spanOptions)
     {
-        return new Span();
+        return new Span($spanOptions);
     }
 
     /**
