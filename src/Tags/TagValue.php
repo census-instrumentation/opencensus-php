@@ -17,9 +17,15 @@
 
 namespace OpenCensus\Tags;
 
+/**
+ * A key to a value stored in a TagContext
+ *
+ * Each TagValue has a string value. Values have a maximum length of 255 and
+ * contain only printable ASCII characters.
+ */
 class TagValue
 {
-    use OpenCensus\Utils\Printable;
+    use \OpenCensus\Utils\PrintableTrait;
 
     /**
      * The maximum length for a tag value.
@@ -27,46 +33,47 @@ class TagValue
     const MAX_LENGTH = 255;
 
     /**
-     * @var string
+     * @var string TagValue payload
      */
-    private $value;
+    private $name;
 
-    private function __contruct(string $value)
+    private final function __construct(string $value)
     {
-        $this->$value = $value;
+        $this->value = $value;
     }
 
     /**
      * Constructs a TagValue with the given string payload.
      *
-     * The value must meet the following requirements:
+     * The name must meet the following requirements:
      * <ol>
-     *   <li>It cannot be longer than TagKey::MAX_LENGTH
+     *   <li>It cannot be longer than TagValue::MAX_LENGTH
      *   <li>It can only contain printable ASCII characters.
      * </ol>
      *
      * @param string $value the value payload.
+     *
+     * @throws \Exception if name is not valid.
+     *
      * @return TagValue
-     * @throws \Exception if value is not valid.
      */
-    public static function create($value)
+    public static function create(string $value): TagValue
     {
         if (
-            !is_string($value) || strlen($value) > TagValue::MAX_LENGTH ||
-            !self::isPrintable($value)
+            strlen($value) > self::MAX_LENGTH || !self::isPrintable($value)
         ) {
-            throw new \Exception("Invalid TagValue: ". $value);
+            throw new \Exception("Invalid TagValue: $value");
         }
         return new self($value);
     }
 
     /**
-      * Returns the value of the TagValue.
-      *
-      * @return string
-      */
-    public final function asString()
+     * Returns the payload of the TagValue.
+     *
+     * @return string
+     */
+    public final function getValue(): string
     {
-        return $this->$value;
+        return $this->value;
     }
 }

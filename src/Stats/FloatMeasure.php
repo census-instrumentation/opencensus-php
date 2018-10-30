@@ -19,10 +19,12 @@ namespace OpenCensus\Stats;
 
 class FloatMeasure extends Measure
 {
-    use \OpenCensus\Utils\Printable;
+    use \OpenCensus\Utils\PrintableTrait;
     use MeasureHandleTrait;
 
-    protected function __construct($name, $description, $unit) {}
+    protected final function __construct(string $name, string $description, string $unit) {
+        parent::__construct($name, $description, $unit);
+    }
 
     /**
      * Constructs a new FloatMeasure
@@ -33,13 +35,21 @@ class FloatMeasure extends Measure
      * @return FloatMeasure
      * @throws \Exception on invalid measure name.
      */
-    public static final function create(string $name, string $description = "", string $unit = Units::Dimensionless)
+    public static final function create(
+        string $name, string $description = "", string $unit = Units::Dimensionless
+    ): FloatMeasure
     {
         return self::registerMeasureHandle($name, $description, $unit);
     }
 
-    public function M(float $measurement)
+    public final function M(float $value): Measurement
     {
-        // TODO: send measurement to Daemon
+        return new class($this, $value) extends Measurement
+        {
+            public function __construct(Measure &$measure, float $value)
+            {
+                parent::__construct($measure, $value);
+            }
+        };
     }
 }

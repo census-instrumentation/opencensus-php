@@ -20,7 +20,7 @@ namespace OpenCensus\Utils;
 /**
  * Internal utility methods for working with tag keys, tag values, and metric names.
  */
-trait Printable {
+trait PrintableTrait {
     /**
      * Determines whether the string contains only printable characters.
      *

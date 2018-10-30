@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Stats;
+namespace OpenCensus;
 
-/* Units are encoded according to the case-sensitive abbreviations from the
- * Unified Code for Units of Measure: http://unitsofmeasure.org/ucum.html
- */
-class Units
+use OpenCensus\Trace\Tracer;
+use OpenCensus\Trace\Exporter\ExporterInterface as TraceExporter;
+use OpenCensus\Stats\Stats;
+use OpenCensus\Stats\Exporter\ExporterInterface as StatsExporter;
+
+class OpenCensus
 {
-    /**
-     * @var string measurement is dimensionless
-     */
-    const Dimensionless = "1";
-    /**
-     * @var string measurement in bytes
-     */
-    const Bytes         = "By";
-    /**
-     * @var string measurement in milliseconds
-     */
-    const Milliseconds  = "ms";
+    public static function init(
+        TraceExporter $traceReporter = null,
+        StatsExporter $statsReporter = null,
+        array $options = []
+    ) {
+        if ($traceReporter !== null) {
+            Tracer::start($traceReporter, $options);
+        }
+        if ($statsReporter !== null) {
+            Stats::getInstance()->setExporter($statsReporter);
+        }
+    }
 }

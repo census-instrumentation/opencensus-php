@@ -18,7 +18,7 @@
 namespace OpenCensus\Stats;
 
 trait MeasureHandleTrait {
-    protected static function registerMeasureHandle($name, $description, $unit)
+    protected static function registerMeasureHandle(string $name, string $description, string $unit)
     {
         if (array_key_exists($name, parent::$map)) {
             if (!(parent::$map[$name] instanceof self)) {

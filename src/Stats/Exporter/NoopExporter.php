@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Stats;
+namespace OpenCensus\Stats\Exporter;
 
-/* Units are encoded according to the case-sensitive abbreviations from the
- * Unified Code for Units of Measure: http://unitsofmeasure.org/ucum.html
- */
-class Units
+use OpenCensus\Stats\Exporter\ExporterInterface;
+use \OpenCensus\Tags\TagContext;
+use \OpenCensus\Stats\Measurements;
+
+class NoopExporter implements ExporterInterface
 {
-    /**
-     * @var string measurement is dimensionless
-     */
-    const Dimensionless = "1";
-    /**
-     * @var string measurement in bytes
-     */
-    const Bytes         = "By";
-    /**
-     * @var string measurement in milliseconds
-     */
-    const Milliseconds  = "ms";
+    public static function init(array $options = []) {}
+
+    public static function recordStats(array $ms, TagContext $tags, array $attachments)
+    {
+        return true;
+    }
 }

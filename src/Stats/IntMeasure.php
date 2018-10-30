@@ -19,10 +19,12 @@ namespace OpenCensus\Stats;
 
 class IntMeasure extends Measure
 {
-    use \OpenCensus\Utils\Printable;
+    use \OpenCensus\Utils\PrintableTrait;
     use MeasureHandleTrait;
 
-    protected function __construct($name, $description, $unit) {}
+    protected final function __construct(string $name, string $description, string $unit) {
+        parent::__construct($name, $description, $unit);
+    }
 
     /**
      * Constructs a new IntMeasure
@@ -33,14 +35,21 @@ class IntMeasure extends Measure
      * @return IntMeasure
      * @throws \Exception on invalid measure name.
      */
-    public static final function create(string $name, string $description = "", string $unit = Units::Dimensionless)
+    public static final function create(
+        string $name, string $description = "", string $unit = Units::Dimensionless
+    ): IntMeasure
     {
         return self::registerMeasureHandle($name, $description, $unit);
     }
 
-    public function M(int $v)
+    public final function M(int $value): Measurement
     {
-        // TODO: send to Daemon
-
+        return new class($this, $value) extends Measurement
+        {
+            public function __construct(Measure &$measure, int $value)
+            {
+                parent::__construct($measure, $value);
+            }
+        };
     }
 }

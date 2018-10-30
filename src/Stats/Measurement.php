@@ -17,10 +17,10 @@
 
 namespace OpenCensus\Stats;
 
-class Measurement
+abstract class Measurement
 {
     /**
-     * @var float the value of the measurement
+     * @var float|integer the value of the measurement
      */
     private $v;
 
@@ -28,4 +28,20 @@ class Measurement
      * @var Measure the measure from which this measurement was created
      */
     private $m;
+
+    protected function __construct(Measure &$measure, $value)
+    {
+        $this->m = $measure;
+        $this->v = $v;
+    }
+
+    public function getValue()
+    {
+        return $this->v;
+    }
+
+    public function getMeasure(): Measure
+    {
+        return $this->m;
+    }
 }

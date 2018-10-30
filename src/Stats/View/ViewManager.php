@@ -15,23 +15,13 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Stats;
+ namespace OpenCensus\Stats\View;
 
-/* Units are encoded according to the case-sensitive abbreviations from the
- * Unified Code for Units of Measure: http://unitsofmeasure.org/ucum.html
- */
-class Units
-{
-    /**
-     * @var string measurement is dimensionless
-     */
-    const Dimensionless = "1";
-    /**
-     * @var string measurement in bytes
-     */
-    const Bytes         = "By";
-    /**
-     * @var string measurement in milliseconds
-     */
-    const Milliseconds  = "ms";
-}
+ class ViewManager
+ {
+     use \OpenCensus\Utils\PrintableTrait;
+
+     // *var array $views map of views to make sure view names are unique.
+     private static $views = array();
+
+ }

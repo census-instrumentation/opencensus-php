@@ -29,20 +29,23 @@ namespace OpenCensus\Stats;
  * measure, there is very little cost in recording it.
  */
 abstract class Measure {
-    use \OpenCensus\Utils\Printable;
+    use \OpenCensus\Utils\PrintableTrait;
 
     protected const NAME_MAX_LENGTH = 255;
+    protected const EX_NAME_EXISTS  = "Different Measure Type with same name already exists.";
     protected const EX_INVALID_NAME = "Name should be a ASCII string with a length " .
         "no greater than " . self::NAME_MAX_LENGTH . " characters.";
-    protected const EX_NAME_EXISTS = "Different Measure Type with same name already exists.";
 
+    /** @var array $map contains our initialized *Measure's */
     protected static $map = array();
-
+    /** @var string $name holds our measure's name. */
     protected $name;
+    /** @var string $description holds our measure's human readable description. */
     protected $description;
+    /** @var string $unit holds the unit type of the value this measure takes on. */
     protected $unit;
 
-    protected function __construct($name, $description, $unit)
+    protected function __construct(string $name, string $description, string $unit)
     {
         $this->name = $name;
         $this->description = $description;
@@ -57,12 +60,12 @@ abstract class Measure {
      * We recommend prefixing the measure name with a domain name relevant to
      * your project or application.
      *
-     * Measure names are never sent over the wire or exported to backends.
+     * Measure names are never exported to backends.
      * They are only used to create Views.
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -72,7 +75,7 @@ abstract class Measure {
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -85,8 +88,8 @@ abstract class Measure {
      *
      * @return string
      */
-    public function getUnit()
+    public function getUnit(): string
     {
-        return $this->$unit;
+        return $this->unit;
     }
 }
