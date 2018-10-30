@@ -18,48 +18,49 @@
 namespace OpenCensus\Tags;
 
 /**
- * Tag is a key value pair that can be propagated on the wire.
+ * A tag is a key-value pair.
+ *
+ * Tags are values propagated through the Context subsystem inside a process
+ * and among processes by any transport (e.g RPC, HTTP, etc.). For example tags
+ * are used by the Stats component to break down measurements by arbitrary
+ * metadata set in the current process or propagated from a remote caller.
  */
 class Tag
 {
-    /**
-     * @var TagKey
-     */
+    /** @var TagKey $key */
     private $key;
 
-    /**
-     * @var TagValue
-     */
+    /** @var TagValue $value */
     private $value;
 
     /**
-     * Create Tag from the given key and value.
+     * Creates a Tag out of a TagKey and TagValue.
      *
-     * @param TagKey $key
-     * @param TagValue $value
+     * @param TagKey $key The TagKey.
+     * @param TagValue $value The TagValue.
      */
-    public function __contruct(TagKey $key, TagValue $value)
+    public final function __construct(TagKey $key, TagValue $value)
     {
         $this->key = $key;
-        $this->value = $balue;
+        $this->value = $value;
     }
 
     /**
-     * Returns the Tag's key.
-     *
-     * @return TagKey
-     */
-    public final function getKey()
+      * Returns the TagKey.
+      *
+      * @return TagKey
+      */
+    public final function getKey(): TagKey
     {
         return $this->key;
     }
 
     /**
-     * Returns the Tag's value.
-     *
-     * @return TagValue
-     */
-    public final function getValue()
+      * Returns the TagValue.
+      *
+      * @return TagValue
+      */
+    public final function getValue(): TagValue
     {
         return $this->value;
     }

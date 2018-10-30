@@ -17,30 +17,63 @@
 
 namespace OpenCensus\Stats;
 
+/**
+ * IntMeasure is a Measure for Int values.
+ */
 class IntMeasure extends Measure
 {
-    use \OpenCensus\Utils\Printable;
+    use \OpenCensus\Utils\PrintableTrait;
     use MeasureHandleTrait;
 
-    protected function __construct($name, $description, $unit) {}
+    /**
+     * Called by registerMeasureHandle if needed.
+     * @internal
+     *
+     * @param string $name The name of the IntMeasure.
+     * @param string $description The description of the IntMeasure.
+     * @param string $unit The unit type of the IntMeasure.
+     */
+    protected final function __construct(string $name, string $description, string $unit) {
+        parent::__construct($name, $description, $unit);
+    }
 
     /**
-     * Constructs a new IntMeasure
+     * Constructs a new IntMeasure.
      *
-     * @param string $name
-     * @param string $description
-     * @param string $unit
+     * @param string $name Unique name of the Measure.
+     * @param string $description Human readable discription of the Measure.
+     * @param string $unit Unit of the Measure. See
+     *     <a href="http://unitsofmeasure.org/ucum.html">Unified Code for Units of Measure</a>
      * @return IntMeasure
-     * @throws \Exception on invalid measure name.
+     * @throws \Exception Throws on invalid measure name.
      */
-    public static final function create(string $name, string $description = "", string $unit = Units::Dimensionless)
+    public static final function create(
+        string $name, string $description = "", string $unit = Measure::DIMENSIONLESS
+    ): IntMeasure
     {
         return self::registerMeasureHandle($name, $description, $unit);
     }
 
-    public function M(int $v)
+    /**
+     * Creates a Measurement of provided value.
+     *
+     * @param int $value the measurement value.
+     * @return Measurement Returns a Measurement object which can be recorded.
+     */
+    public final function M(int $value): Measurement
     {
-        // TODO: send to Daemon
-
+        return new class($this, $value) extends Measurement
+        {
+            /**
+             * @internal
+             *
+             * @param Measure $measure The Measure.
+             * @param int $value The Measurement value.
+             */
+            public function __construct(Measure &$measure, int $value)
+            {
+                parent::__construct($measure, $value);
+            }
+        };
     }
 }

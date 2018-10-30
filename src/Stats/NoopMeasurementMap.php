@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Utils;
+namespace OpenCensus\Stats;
+
+use OpenCensus\Core\Context;
+use OpenCensus\Tags\TagContext;
 
 /**
- * Internal utility methods for working with tag keys, tag values, and metric names.
+ * NoopMeasurementMap is a Noop implementation for Measurement recording.
  */
-trait Printable {
-    /**
-     * Determines whether the string contains only printable characters.
-     *
-     * @param string $str
-     * @return bool
-     */
-    private static function isPrintable($str) {
-        for ($i = 0; $i < strlen($str); $i++) {
-            if (!($str[$i] >= ' ' && $str[$i] <= '~')) {
-                return false;
-            }
-        }
+class NoopMeasurementMap implements MeasurementInterface
+{
+    public function put(Measurement $measurement): MeasurementInterface
+    {
+        return $this;
+    }
+
+    public function putAttachment(string $key, string $value): MeasurementInterface
+    {
+        return $this;
+    }
+
+    public function record(Context $ctx = null, TagContext $tags = null): bool
+    {
         return true;
     }
 }

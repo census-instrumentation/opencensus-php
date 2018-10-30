@@ -22,25 +22,18 @@ namespace OpenCensus\Tags;
  *
  * Each TagKey has a string name. Names have a maximum length of 255 and contain
  * only printable ASCII characters.
- *
- * TagKey is designed to be used as constants. Declaring each key as a constant
- * prevents key names from being validated multiple times.
  */
 class TagKey
 {
-    use OpenCensus\Utils\Printable;
+    use \OpenCensus\Utils\PrintableTrait;
 
-    /**
-     * The maximum length for a tag key name.
-     */
+    /** The maximum length for a tag key name. */
     const MAX_LENGTH = 255;
 
-    /**
-     * @var string
-     */
+    /** @var string TagKey name */
     private $name;
 
-    private function __contruct(string $name)
+    private final function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -50,7 +43,7 @@ class TagKey
      *
      * The name must meet the following requirements:
      * <ol>
-     *   <li> It cannot be empty
+     *   <li>It cannot be empty
      *   <li>It cannot be longer than TagKey::MAX_LENGTH
      *   <li>It can only contain printable ASCII characters.
      * </ol>
@@ -59,11 +52,11 @@ class TagKey
      * @return TagKey
      * @throws \Exception if name is not valid.
      */
-    public static function create($name)
+    public static function create(string $name): TagKey
     {
         if (
-            !is_string($name) || strlen($name) == 0 ||
-            strlen($name) > TagKey::MAX_LENGTH || !self::isPrintable($name)
+            strlen($name) == 0 || strlen($name) > self::MAX_LENGTH ||
+            !self::isPrintable($name)
         ) {
             throw new \Exception("Invalid TagKey name: ". $name);
         }
@@ -75,7 +68,7 @@ class TagKey
      *
      * @return string
      */
-    public final function getName()
+    public final function getName(): string
     {
         return $this->name;
     }

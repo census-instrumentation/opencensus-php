@@ -47,6 +47,7 @@ class Scope
      * Creates a new Scope
      *
      * @param callable $callback
+     * @param array $args
      */
     public function __construct(callable $callback, $args = [])
     {

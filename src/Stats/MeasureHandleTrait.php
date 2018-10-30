@@ -17,8 +17,11 @@
 
 namespace OpenCensus\Stats;
 
+/**
+ * Trait which handles Measure creation. Takes care of name validation and deduplication.
+ */
 trait MeasureHandleTrait {
-    protected static function registerMeasureHandle($name, $description, $unit)
+    private static function registerMeasureHandle(string $name, string $description, string $unit)
     {
         if (array_key_exists($name, parent::$map)) {
             if (!(parent::$map[$name] instanceof self)) {
@@ -31,6 +34,10 @@ trait MeasureHandleTrait {
             throw new \Exception(parent::EX_INVALID_NAME);
         }
 
-        return parent::$map[$name] = new self($name, $description, $unit);
+        if ($description === '') $description = $name;
+
+        $m = new self($name, $description, $unit);
+        Stats::getInstance()->getExporter()->createMeasure($m);
+        return parent::$map[$name] = $m;
     }
 }

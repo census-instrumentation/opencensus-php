@@ -15,14 +15,24 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Stats;
+namespace OpenCensus\Utils;
 
-/* Units are encoded according to the case-sensitive abbreviations from the
- * Unified Code for Units of Measure: http://unitsofmeasure.org/ucum.html
+/**
+ * Internal utility methods for working with tag keys, tag values, and metric names.
  */
-class Units
-{
-    const Dimensionless = "1";
-    const Bytes         = "By";
-    const Milliseconds  = "ms";
+trait PrintableTrait {
+    /**
+     * Determines whether the string contains only printable characters.
+     *
+     * @param string $str string to test.
+     * @return bool returns true if string is printable.
+     */
+    private static function isPrintable($str) {
+        for ($i = 0; $i < strlen($str); $i++) {
+            if (!($str[$i] >= ' ' && $str[$i] <= '~')) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
