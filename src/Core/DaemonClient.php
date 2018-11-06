@@ -19,7 +19,11 @@ namespace OpenCensus\Core;
 
 use \OpenCensus\Trace\SpanData;
 use \OpenCensus\Tags\TagContext;
-use \OpenCensus\Stats\Measurements;
+use \OpenCensus\Stats\Measure;
+use \OpenCensus\Stats\IntMeasure;
+use \OpenCensus\Stats\FloatMeasure;
+use \OpenCensus\Stats\Measurement;
+use \OpenCensus\View\View;
 use \OpenCensus\Trace\Exporter\ExporterInterface as TraceExporter;
 use \OpenCensus\Stats\Exporter\ExporterInterface as StatsExporter;
 
@@ -34,7 +38,7 @@ class DaemonClient implements StatsExporter, TraceExporter
     use \OpenCensus\Utils\VarintTrait;
 
     const DEFAULT_SOCKET_PATH = "ocdaemon.sock";
-    const DEFAULT_MAX_TIME    = 0.005; // default 5 ms.
+    const DEFAULT_MAX_SEND_TIME = 0.005; // default 5 ms.
 
     const PROT_VERSION = "\x01"; // allows for protocol upgrading
 
@@ -64,13 +68,16 @@ class DaemonClient implements StatsExporter, TraceExporter
     private static $instance;
 
     /** @var float $maxSendTime maximum time allowed to send data over the wire */
-    private $maxSendTime = self::DEFAULT_MAX_TIME;
+    private $maxSendTime = self::DEFAULT_MAX_SEND_TIME;
 
     /** @var resource $sock unix socket for communicating with OC Daemon */
     private $sock = self::DEFAULT_SOCKET_PATH;
 
     /** @var bool $tid true if zend thread safety is enabled */
     private $tid;
+
+    /** @var int $seqnr sequence number of last message sent to daemon. */
+    private $seqnr = 0;
 
     private function __construct($sock)
     {
@@ -84,7 +91,6 @@ class DaemonClient implements StatsExporter, TraceExporter
         $msg = self::PROT_VERSION;
         $msg .= self::encodeString(\phpversion());
         $msg .= self::encodeString(\zend_version());
-
         $this->send(self::MSG_REQ_INIT, $msg);
         register_shutdown_function([$this, 'onExit']);
     }
@@ -94,6 +100,14 @@ class DaemonClient implements StatsExporter, TraceExporter
         $this->send(self::MSG_REQ_SHUTDOWN);
     }
 
+    /**
+     * Initialize our DaemonClient for Stats and/or Trace reporting to the
+     * OpenCensus PHP Daemon service.
+     *
+     * @param array $options
+     * @throws \Exception on inability to communicate with the PHP Daemon.
+     * @return DaemonClient on successful initialization.
+     */
     public static function init(array $options = [])
     {
         if (array_key_exists('maxSendTime', $options) && \is_float($options['maxSendTime'])) {
@@ -106,7 +120,7 @@ class DaemonClient implements StatsExporter, TraceExporter
             return self::$instance;
         }
 
-        $sock = \pfsockopen("unix://$socketPath", -1, $errno, $errstr, 0);
+        $sock = @\pfsockopen("unix://$socketPath", -1, $errno, $errstr, 0);
         if ($sock === false) {
             throw new \Exception("$errstr [$errno]");
         }
@@ -115,23 +129,115 @@ class DaemonClient implements StatsExporter, TraceExporter
     }
 
     /**
+     * Register a new Measure.
+     *
+     * @param Measure $measure the measure to register.
+     * @return bool on successful registration
+     */
+    public static function createMeasure(Measure $measure): bool
+    {
+        $msg = '';
+        switch(true) {
+            case $measure instanceof IntMeasure:
+                $msg .= self::MS_TYPE_INT;
+                break;
+            case $measure instanceof FloatMeasure:
+                $msg .= self::MS_TYPE_FLOAT;
+                break;
+            default:
+                $msg .= self::MS_TYPE_UNKNOWN;
+                break;
+        }
+        $msg .= self::encodeString($measure->getName());
+        $msg .= self::encodeString($measure->getDescription());
+        $msg .= self::encodeString($measure->getUnit());
+        return self::$instance->send(self::MSG_MEASURE_CREATE, $msg);
+    }
+
+    /**
+     * Adjust the stats reporting period of the Daemom.
+     *
+     * @param int $interval reporting interval of the daemon in seconds.
+     * @return bool on success.
+     */
+    public static function setReportingPeriod(float $interval): bool
+    {
+        if ($interval < 0) {
+            return false;
+        }
+        $msg = pack('E', $interval);
+        return self::$instance->send(self::MSG_VIEW_REPORTING_PERIOD, $msg);
+    }
+
+    /**
+     * Register views.
+     *
+     * @param View[] ...$views views to register.
+     * @return bool true on successful send operation.
+     */
+    public static function registerView(View ...$views)
+    {
+
+        $msg = '';
+        self::encodeUnsigned($msg, count($views));
+        foreach ($views as $view) {
+            $msg .= self::encodeString($view->getName());
+            $msg .= self::encodeString($view->getDescription());
+            $tagKeys = $view->getTagKeys();
+            self::encodeUnsigned($msg, count($tagKeys));
+            foreach ($tagKeys as $tagKey) {
+                $msg .= self::encodeString($tagKey->getName());
+            }
+            $measure = $view->getMeasure();
+            $msg .= self::encodeString($view->getName());
+            $msg .= self::encodeString($view->getDescription());
+            $msg .= self::encodeString($view->getUnit());
+            $aggregation = $view->getAggregation();
+            self::encodeUnsigned($aggregation->getType());
+            if ($aggregation->getType() === Aggregation::DISTRIBUTION) {
+                $bucketBoundaries = $aggregation->getBucketBoundaries();
+                self::encodeUnsigned($msg, count($bucketBoundaries));
+                foreach ($bucketBoundaries as $bucketBoundary) {
+                    $msg .= pack('E', $bucketBoundary);
+                }
+            }
+        }
+        return self::$instance->send(self::MSG_VIEW_REGISTER, $msg);
+    }
+
+    /**
+     * Unregister views.
+     * @param View[] ...$views views to unregister.
+     * @return bool true on successful send operation.
+     */
+    public static function unregisterView(View ...$views): bool
+    {
+        $msg = '';
+        self::encodeUnsigned($msg, count($views));
+        foreach ($views as $view) {
+            $msg .= self::encodeString($view->getName());
+        }
+        return self::$instance->send(self::MSG_VIEW_UNREGISTER, $msg);
+        return true;
+    }
+
+    /**
      * Record the provided Measurements, Attachments and Tags.
      *
-     * @param array $ms array of Measurements.
      * @param TagContext $tagContext tags to record with our Measurements.
      * @param array $attachments key-value pairs to use for exemplar annotation.
+     * @param Measurement[] ...$ms one or more measurements to record.
+     * @return bool
      */
-    public static function recordStats(array $ms, TagContext $tagContext, array $attachments)
+    public static function recordStats(TagContext $tagContext, array $attachments, Measurement ...$ms): bool
     {
         // bail out if we don't have measurements
         if (count($ms) === 0) return true;
 
         $msg = '';
         self::encodeUnsigned($msg, count($ms));
-        /** @var Measurement $ms */
         foreach ($ms as $m) {
             $measure = $m->getMeasure();
-            var_dump($measure);
             $msg .= self::encodeString($measure->getName());
             if ($measure instanceof MeasureInt) {
                 $msg .= self::MS_TYPE_INT;
@@ -188,20 +294,41 @@ class DaemonClient implements StatsExporter, TraceExporter
         return self::$instance->send(self::MSG_TRACE_EXPORT, $len . $spanData);
     }
 
+    /**
+     * Send message to daemon
+     *
+     * Message layout:
+     *   MSG_PREFIX  : 32 bit (0 value to aide in recovery from message truncation)
+     *   MESSAGE_TYPE: byte
+     *   SEQUENCE_NR : varint
+     *   PROCESS_ID  : varint
+     *   THREAD_ID   : varint (0 in most PHP deployments - (ZTS disabled))
+     *   START_TIME  : float (measured in microseconds, 32 or 64 bit depending on env.)
+     *   MSG_LEN     : varint (length of message payload)
+     *   MSG         : encoded message of size MSG_LEN
+     *
+     * @param string $type the message type (1 byte)
+     * @param string $msg the message payload
+     * @return bool returns true on successful operation
+     */
     private final function send(string $type, string $msg = ''): bool
     {
         $start = microtime(true);
         $maxEnd = $start + $this->maxSendTime;
-        $type = self::START_OF_MSG . $type;
-        self::encodeUnsigned($type, \getmypid());
-        self::encodeUnsigned($type, $this->getmytid());
-        $msg = $type . pack('E', $start) . $msg;
 
-        $remaining = strlen($msg);
-        while ($remaining > 0 && microtime(true) < ($start + 0.001)) {
-            $c = \fwrite($this->sock, $msg, $remaining);
+        $buf = self::START_OF_MSG;
+        self::encodeUnsigned($buf, ++$this->seqnr);
+        self::encodeUnsigned($buf, \getmypid());
+        self::encodeUnsigned($buf, $this->getmytid());
+        $buf .= pack('E', $start);
+        self::encodeUnsigned($buf, strlen($msg));
+        $buf .= $msg;
+
+        $remaining = strlen($buf);
+        while ($remaining > 0 && microtime(true) < ($start + self::DEFAULT_MAX_SEND_TIME)) {
+            $c = \fwrite($this->sock, $buf, $remaining);
             $remaining -= $c;
-            $msg = substr($msg, $c);
+            $buf = substr($buf, $c);
         }
         return ($remaining === 0);
     }
