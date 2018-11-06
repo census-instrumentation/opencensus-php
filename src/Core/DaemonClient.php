@@ -23,7 +23,7 @@ use \OpenCensus\Stats\Measure;
 use \OpenCensus\Stats\IntMeasure;
 use \OpenCensus\Stats\FloatMeasure;
 use \OpenCensus\Stats\Measurement;
-use \OpenCensus\View\View;
+use \OpenCensus\Stats\View\View;
 use \OpenCensus\Trace\Exporter\ExporterInterface as TraceExporter;
 use \OpenCensus\Stats\Exporter\ExporterInterface as StatsExporter;
 
@@ -140,7 +140,7 @@ class DaemonClient implements StatsExporter, TraceExporter
      * Register a new Measure.
      *
      * @param Measure $measure the measure to register.
-     * @return bool on successful registration
+     * @return bool on successful send operation.
      */
     public static function createMeasure(Measure $measure): bool
     {
@@ -166,7 +166,7 @@ class DaemonClient implements StatsExporter, TraceExporter
      * Adjust the stats reporting period of the Daemom.
      *
      * @param int $interval reporting interval of the daemon in seconds.
-     * @return bool on success.
+     * @return bool on successful send operation.
      */
     public static function setReportingPeriod(float $interval): bool
     {
@@ -183,7 +183,7 @@ class DaemonClient implements StatsExporter, TraceExporter
      * @param View[] ...$views views to register.
      * @return bool true on successful send operation.
      */
-    public static function registerView(View ...$views)
+    public static function registerView(View ...$views): bool
     {
 
         $msg = '';
@@ -235,7 +235,7 @@ class DaemonClient implements StatsExporter, TraceExporter
      * @param TagContext $tagContext tags to record with our Measurements.
      * @param array $attachments key-value pairs to use for exemplar annotation.
      * @param Measurement[] ...$ms one or more measurements to record.
-     * @return bool
+     * @return bool true on successful send operation.
      */
     public static function recordStats(TagContext $tagContext, array $attachments, Measurement ...$ms): bool
     {
@@ -272,10 +272,10 @@ class DaemonClient implements StatsExporter, TraceExporter
     }
 
     /**
-     * Export the provided SpanData
+     * Export the provided SpanData.
      *
-     * @param SpanData[] $spans
-     * @return bool
+     * @param SpanData[] $spans array of Spans to export.
+     * @return bool true on successful send operation.
      */
     public function export(array $spans)
     {
@@ -317,7 +317,7 @@ class DaemonClient implements StatsExporter, TraceExporter
      *
      * @param string $type the message type (1 byte)
      * @param string $msg the message payload
-     * @return bool returns true on successful operation
+     * @return bool returns true on successful operation.
      */
     private final function send(string $type, string $msg = ''): bool
     {
@@ -341,6 +341,12 @@ class DaemonClient implements StatsExporter, TraceExporter
         return ($remaining === 0);
     }
 
+    /**
+     * Encodes message payload by prefixing the message length as unsigned varint.
+     *
+     * @param string $data the message payload to prefix.
+     * @return string returns the with unsigned varint length prefixed payload.
+     */
     private static final function encodeString(string $data): string
     {
         $buf = '';
@@ -348,6 +354,9 @@ class DaemonClient implements StatsExporter, TraceExporter
         return $buf . $data;
     }
 
+    /**
+     * Returns the Thread ID of this PHP request run if ZTS is enabled
+     */
     private final function getmytid(): int
     {
         if ($this->tid === true) {
