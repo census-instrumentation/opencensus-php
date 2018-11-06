@@ -37,7 +37,7 @@ class DaemonClient implements StatsExporter, TraceExporter
 {
     use \OpenCensus\Utils\VarintTrait;
 
-    const DEFAULT_SOCKET_PATH = "ocdaemon.sock";
+    const DEFAULT_SOCKET_PATH   = "ocdaemon.sock";
     const DEFAULT_MAX_SEND_TIME = 0.005; // default 5 ms.
 
     const PROT_VERSION = "\x01"; // allows for protocol upgrading
@@ -71,7 +71,7 @@ class DaemonClient implements StatsExporter, TraceExporter
     private $maxSendTime = self::DEFAULT_MAX_SEND_TIME;
 
     /** @var resource $sock unix socket for communicating with OC Daemon */
-    private $sock = self::DEFAULT_SOCKET_PATH;
+    private $sock;
 
     /** @var bool $tid true if zend thread safety is enabled */
     private $tid;
@@ -79,10 +79,14 @@ class DaemonClient implements StatsExporter, TraceExporter
     /** @var int $seqnr sequence number of last message sent to daemon. */
     private $seqnr = 0;
 
-    private function __construct($sock)
+    private function __construct($sock, int $maxSendTime = null)
     {
         $this->sock = $sock;
         \stream_set_blocking($this->sock, false);
+
+        if (\is_float($maxSendTime) & $maxSendTime >= 0.001) {
+            $this->maxSendTime = $maxSendTime;
+        }
 
         if (function_exists('zend_thread_id')) {
             $this->tid = true;
@@ -110,14 +114,18 @@ class DaemonClient implements StatsExporter, TraceExporter
      */
     public static function init(array $options = [])
     {
+        if (self::$instance instanceof DaemonClient) {
+            return self::$instance;
+        }
+
         if (array_key_exists('maxSendTime', $options) && \is_float($options['maxSendTime'])) {
             $maxSendTime = $options['maxSendTime'];
         }
+
         if (array_key_exists('socketPath', $options)) {
             $socketPath = $options['socketPath'];
-        }
-        if (self::$instance instanceof Daemon) {
-            return self::$instance;
+        } else {
+            $socketPath = self::DEFAULT_SOCKET_PATH;
         }
 
         $sock = @\pfsockopen("unix://$socketPath", -1, $errno, $errstr, 0);
@@ -125,7 +133,7 @@ class DaemonClient implements StatsExporter, TraceExporter
             throw new \Exception("$errstr [$errno]");
         }
 
-        return self::$instance = new DaemonClient($sock);
+        return self::$instance = new DaemonClient($sock, $maxSendTime);
     }
 
     /**
