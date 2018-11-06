@@ -76,6 +76,16 @@ class Stats
     }
 
     /**
+     * Return a new TagContext object.
+     *
+     * @return TagContext
+     */
+    public static function newTagContext(): TagContext
+    {
+        return new TagContext();
+    }
+
+    /**
      * Retrieve a new MeasurementInterface for recording Measurements
      *
      * @return MeasurementInterface

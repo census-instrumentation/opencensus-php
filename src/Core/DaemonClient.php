@@ -37,7 +37,7 @@ class DaemonClient implements StatsExporter, TraceExporter
 {
     use \OpenCensus\Utils\VarintTrait;
 
-    const DEFAULT_SOCKET_PATH   = "ocdaemon.sock";
+    const DEFAULT_SOCKET_PATH   = "/tmp/ocdaemon.sock";
     const DEFAULT_MAX_SEND_TIME = 0.005; // default 5 ms.
 
     const PROT_VERSION = "\x01"; // allows for protocol upgrading
