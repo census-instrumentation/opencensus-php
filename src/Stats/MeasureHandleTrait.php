@@ -31,6 +31,10 @@ trait MeasureHandleTrait {
             throw new \Exception(parent::EX_INVALID_NAME);
         }
 
-        return parent::$map[$name] = new self($name, $description, $unit);
+        if ($description === '') $description = $name;
+
+        $m = new self($name, $description, $unit);
+        Stats::getInstance()->getExporter()->createMeasure($m);
+        return parent::$map[$name] = $m;
     }
 }

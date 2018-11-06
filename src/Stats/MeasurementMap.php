@@ -80,6 +80,6 @@ class MeasurementMap implements MeasurementInterface
             }
         }
 
-        return Stats::exporter()->recordStats($this->measurements, $recordTags, $this->attachments);
+        return Stats::getExporter()->recordStats($recordTags, $this->attachments, ...$this->measurements);
     }
 }

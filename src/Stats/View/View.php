@@ -34,16 +34,49 @@ class View
     private $measure;
     private $aggregation;
 
-    protected function __construct(
-        string $name = '', string $description = '', array $tagKeys,
-        Measure $measure, Aggregation &$aggregation)
+    public final function __construct(
+        string $name, string $description, Measure $measure,
+        Aggregation &$aggregation, TagKey ...$tagKeys
+    )
     {
         if ($name === '') {
             $name = $measure->getName();
         }
+
         if ($description === '') {
             $description = $measure->getDescription();
         }
         ksort($tagKeys);
+
+        $this->name        = $name;
+        $this->description = $description;
+        $this->tagKeys     = $tagKeys;
+        $this->measure     = $measure;
+        $this->aggregation = $aggregation;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function getTagKeys(): array
+    {
+        return $this->tagKeys;
+    }
+
+    public function getMeasure(): Measure
+    {
+        return $this->measure;
+    }
+
+    public function getAggregation(): Aggregation
+    {
+        return $this->aggregation;
     }
 }

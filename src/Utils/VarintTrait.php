@@ -18,15 +18,15 @@
 namespace OpenCensus\Utils;
 
 /**
-  * Varint encoding and decoding methods inspired by Go encoding/binary package.
-  * @see https://golang.org/src/encoding/binary/varint.go
-  */
+ * Varint encoding and decoding methods inspired by Go encoding/binary package.
+ * @see <a href="https://golang.org/src/encoding/binary/varint.go">encoding/binary/varint</a>
+ */
 trait VarintTrait
 {
     /**
-     * Varint encode unsigned integer
+     * Varint encode unsigned integer.
      *
-     * @param string $buf bytestring holding varint encoding of $x.
+     * @param string $buf bytestring to hold varint encoding of $x.
      * @param int $x the unsigned integer to varint encode.
      * @return int number of bytes written to buf.
      */
@@ -42,9 +42,9 @@ trait VarintTrait
     }
 
     /**
-     * Varint encode signed integer
+     * Varint encode signed integer.
      *
-     * @param string $buf bytestring holding varint encoding of $x.
+     * @param string $buf bytestring to hold varint encoding of $x.
      * @param int $x the signed integer to varint encode.
      * @return int number of bytes written to buf.
      */
@@ -58,10 +58,11 @@ trait VarintTrait
     }
 
     /**
-     * Varint decode to unsigned integer
+     * Varint decode to unsigned integer.
      *
-     * @param string $s bytestring holding varint encoding.
-     * @return int unsigned integer
+     * @param string $buf bytestring holding varint encoding.
+     * @param int $x integer to receive the decoded value.
+     * @return int number of bytes read from buf.
      */
     public static function decodeUnsigned(string $buf, int &$x): int
     {
@@ -86,10 +87,11 @@ trait VarintTrait
     }
 
     /**
-     * Varint decode to signed integer
+     * Varint decode to signed integer.
      *
-     * @param string $s bytestring holding varint encoding.
-     * @return int signed integer
+     * @param string $buf bytestring holding varint encoding.
+     * @param int $x integer to receive the decoded value.
+     * @return int number of bytes read from buf.
      */
     public static function decodeSigned(string $buf, int &$x): int
     {

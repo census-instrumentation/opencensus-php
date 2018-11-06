@@ -19,13 +19,24 @@ namespace OpenCensus\Stats\Exporter;
 
 use OpenCensus\Stats\Exporter\ExporterInterface;
 use \OpenCensus\Tags\TagContext;
-use \OpenCensus\Stats\Measurements;
+use \OpenCensus\Stats\Measure;
+use \OpenCensus\Stats\Measurement;
 
 class NoopExporter implements ExporterInterface
 {
     public static function init(array $options = []) {}
 
-    public static function recordStats(array $ms, TagContext $tags, array $attachments)
+    public static function createMeasure(Measure $measure): bool
+    {
+        return true;
+    }
+
+    public static function setReportingPeriod(float $interval): bool
+    {
+     return true;
+    }
+
+    public static function recordStats(TagContext $tags, array $attachments, Measurement ...$ms): bool
     {
         return true;
     }

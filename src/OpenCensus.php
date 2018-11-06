@@ -22,8 +22,26 @@ use OpenCensus\Trace\Exporter\ExporterInterface as TraceExporter;
 use OpenCensus\Stats\Stats;
 use OpenCensus\Stats\Exporter\ExporterInterface as StatsExporter;
 
+/**
+ * OpenCensus configuration bootstrapping class.
+ */
 class OpenCensus
 {
+    /**
+     * Initializes OpenCensus with the provided reporters.
+     *
+     * @param TraceExporter $traceReporter Set the reporter to use for Tracing data.
+     * @param StatsExporter $statsReporter Set the handler to use for Stats data.
+     * @param array $options Configuration options. See
+     *        <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
+     *        for the other available options.
+     *
+     *      @type SamplerInterface $sampler Sampler that defines the sampling rules.
+     *            **Defaults to** a new `AlwaysSampleSampler`.
+     *      @type PropagatorInterface $propagator SpanContext propagator. **Defaults to**
+     *            a new `HttpHeaderPropagator` instance
+     *      @type array $headers Optional array of headers to use in place of $_SERVER
+     */
     public static function init(
         TraceExporter $traceReporter = null,
         StatsExporter $statsReporter = null,

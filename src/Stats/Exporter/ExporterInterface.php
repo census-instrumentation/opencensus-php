@@ -18,7 +18,8 @@
 namespace OpenCensus\Stats\Exporter;
 
 use \OpenCensus\Tags\TagContext;
-use \OpenCensus\Stats\Measurements;
+use \OpenCensus\Stats\Measure;
+use \OpenCensus\Stats\Measurement;
 
 /**
  * The ExporterInterface allows you to swap out the Stats reporting mechanism
@@ -34,12 +35,28 @@ interface ExporterInterface
     public static function init(array $options = []);
 
     /**
+     * Register a new Measure.
+     *
+     * @param Measure $measure the measure to register.
+     * @return bool on successful registration
+     */
+    public static function createMeasure(Measure $measure): bool;
+
+    /**
+     * Adjust the stats reporting period of the Daemom.
+     *
+     * @param int $interval reporting interval of the daemon in seconds
+     * @return bool on success
+     */
+    public static function setReportingPeriod(float $interval): bool;
+
+    /**
      * Record Measurements together with TagContext and Exemplars
      *
-     * @param Measurement[] $ms measurements to record.
      * @param TagContext $tags explicit TagContext items to upsert into Tags found in Context.
      * @param array $attachments key value pairs to annotate for Examplar.
+     * @param Measurement[] ...$ms one or more measurements to record.
      * @return bool on successful export returns true
      */
-    public static function recordStats(array $ms, TagContext $tags, array $attachments);
+    public static function recordStats(TagContext $tags, array $attachments, Measurement ...$ms): bool;
 }

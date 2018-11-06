@@ -26,6 +26,7 @@ use OpenCensus\Stats\Measurement;
 use OpenCensus\Stats\MeasurementInterface;
 use OpenCensus\Stats\Exporter\ExporterInterface;
 use OpenCensus\Stats\Exporter\NoopExporter;
+use OpenCensus\Stats\Views\ViewManager;
 
 class Stats
 {
@@ -38,7 +39,7 @@ class Stats
     private function __construct() {}
 
     /**
-      * retrieve Stats instance
+      * Retrieve Stats instance.
       *
       * @return Stats
       */
@@ -50,12 +51,12 @@ class Stats
         }
         self::$instance = new Stats();
         self::$instance->exporter = new NoopExporter();
-        
+
         return self::$instance;
     }
 
     /**
-     * set the ExporterInterface to use by the Stats components
+     * Set the ExporterInterface to use by the Stats components.
      *
      * @param ExporterInterface $exporter
      */
@@ -65,17 +66,17 @@ class Stats
     }
 
     /**
-     * retrieve our ExporterInterface
+     * Retrieve our ExporterInterface.
      *
      * @return ExporterInterface
      */
-    public static function exporter(): ExporterInterface
+    public static function getExporter(): ExporterInterface
     {
         return self::getInstance()->exporter;
     }
 
     /**
-     * retrieve a new MeasurementInterface for recording Measurements
+     * Retrieve a new MeasurementInterface for recording Measurements
      *
      * @return MeasurementInterface
      */
@@ -86,4 +87,27 @@ class Stats
         }
         return new MeasurementMap();
     }
+
+    /**
+     * Register one or multiple views.
+     *
+     * @param View[] ...$views the views to register.
+     * @return bool
+     */
+    public static function registerView(View ...$views): bool
+    {
+        return self::getInstance()->exporter->registerView($views);
+    }
+
+    /**
+     * Unregister one or multiple views.
+     *
+     * @param View[] ...$views the views to unregister.
+     * @return bool
+     */
+    public static function unregisterView(View ...$views): bool
+    {
+        return self::getInstance()->exporter->unregisterView($views);
+    }
+
 }

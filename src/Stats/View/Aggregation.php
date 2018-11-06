@@ -40,6 +40,16 @@ class Aggregation
          $this->bounds = $bounds;
      }
 
+     public final function getType(): int
+     {
+         return $this->type;
+     }
+
+     public final function getBucketBoundaries(): array
+     {
+         return $this->bounds;
+     }
+
      /**
       * Returns a new Count Aggregation
       *

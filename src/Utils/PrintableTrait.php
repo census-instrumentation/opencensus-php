@@ -24,8 +24,8 @@ trait PrintableTrait {
     /**
      * Determines whether the string contains only printable characters.
      *
-     * @param string $str
-     * @return bool
+     * @param string $str string to test.
+     * @return bool returns true if string is printable.
      */
     private static function isPrintable($str) {
         for ($i = 0; $i < strlen($str); $i++) {

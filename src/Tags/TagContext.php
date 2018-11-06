@@ -104,8 +104,8 @@ class TagContext
      * Insert or Update a Tag into TagContext given provided TagKey with
      * provided string value.
      *
-     * @param TagKey $k key of the Tag.
-     * @param TagValue $v value of the Tag.
+     * @param TagKey $key key of the Tag.
+     * @param TagValue $value value of the Tag.
      *
      * @throws \Exception on invalid tag value.
      */
@@ -117,7 +117,7 @@ class TagContext
     /**
      * Deletes Tag from TagContext identified by its TagKey.
      *
-     * @param TagKey $k
+     * @param TagKey $key
      * @return bool returns true if Tag was found and deleted.
      */
     public final function delete(TagKey $key): bool
