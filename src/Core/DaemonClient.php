@@ -24,59 +24,61 @@ use \OpenCensus\Stats\IntMeasure;
 use \OpenCensus\Stats\FloatMeasure;
 use \OpenCensus\Stats\Measurement;
 use \OpenCensus\Stats\View\View;
+use \OpenCensus\Stats\View\Aggregation;
 use \OpenCensus\Trace\Exporter\ExporterInterface as TraceExporter;
 use \OpenCensus\Stats\Exporter\ExporterInterface as StatsExporter;
 
 /**
- * DaemonClient is the OpenCensus client interface to the OpenCensus PHP Daemon
- * application. It allows to quickly move both Tracing and Stats data handling
- * out of band and provide metrics persistence outside of PHP request oriented
- * runtime.
+ * This class is a client to the OpenCensus PHP Daemon application.
+ *
+ * It allows to quickly move both Tracing and Stats data handling out of band
+ * and provide metrics persistence outside of PHP request oriented runtime.
  */
 class DaemonClient implements StatsExporter, TraceExporter
 {
     use \OpenCensus\Utils\VarintTrait;
 
     const DEFAULT_SOCKET_PATH   = "/tmp/ocdaemon.sock";
-    const DEFAULT_MAX_SEND_TIME = 0.005; // default 5 ms.
+    const DEFAULT_MAX_SEND_TIME = 0.005; // float defaults to 5 ms.
 
-    const PROT_VERSION = "\x01"; // allows for protocol upgrading
+    private const PROT_VERSION = "\x01"; // allows for protocol upgrading
 
-    const START_OF_MSG = "\x00\x00\x00\x00"; // allows for recovery from truncated messages
+    private const START_OF_MSG = "\x00\x00\x00\x00"; // allows for recovery from truncated messages
 
     // message types (1 - 19)
-    const MSG_PROC_INIT     = "\x01";
-    const MSG_PROC_SHUTDOWN = "\x02";
-    const MSG_REQ_INIT      = "\x03";
-    const MSG_REQ_SHUTDOWN  = "\x04";
+    private const MSG_PROC_INIT     = "\x01";
+    private const MSG_PROC_SHUTDOWN = "\x02";
+    private const MSG_REQ_INIT      = "\x03";
+    private const MSG_REQ_SHUTDOWN  = "\x04";
 
     // trace type (20 - 39)
-    const MSG_TRACE_EXPORT = "\x14";
+    private const MSG_TRACE_EXPORT = "\x14";
 
     // stats types (40 - ...)
-    const MSG_MEASURE_CREATE        = "\x28";
-    const MSG_VIEW_REPORTING_PERIOD = "\x29";
-    const MSG_VIEW_REGISTER         = "\x2a";
-    const MSG_VIEW_UNREGISTER       = "\x2b";
-    const MSG_STATS_RECORD          = "\x2c";
+    private const MSG_MEASURE_CREATE        = "\x28";
+    private const MSG_VIEW_REPORTING_PERIOD = "\x29";
+    private const MSG_VIEW_REGISTER         = "\x2a";
+    private const MSG_VIEW_UNREGISTER       = "\x2b";
+    private const MSG_STATS_RECORD          = "\x2c";
 
     // measurement value types
-    const MS_TYPE_INT     = "\x01";
-    const MS_TYPE_FLOAT   = "\x02";
-    const MS_TYPE_UNKNOWN = "\xff";
+    private const MS_TYPE_INT     = "\x01";
+    private const MS_TYPE_FLOAT   = "\x02";
+    private const MS_TYPE_UNKNOWN = "\xff";
 
+    /** @var DaemonClient $instance Our singleton instance of DaemonClient. */
     private static $instance;
 
-    /** @var float $maxSendTime maximum time allowed to send data over the wire */
+    /** @var float $maxSendTime Holds the maximum time allowed to send data over the wire. */
     private $maxSendTime = self::DEFAULT_MAX_SEND_TIME;
 
-    /** @var resource $sock unix socket for communicating with OC Daemon */
+    /** @var resource $sock The used unix socket for communicating with OC Daemon. */
     private $sock;
 
-    /** @var bool $tid true if zend thread safety is enabled */
+    /** @var bool $tid Set to true when zend thread safety is enabled. */
     private $tid;
 
-    /** @var int $seqnr sequence number of last message sent to daemon. */
+    /** @var int $seqnr The sequence number of the last message sent to daemon. */
     private $seqnr = 0;
 
     private function __construct($sock, int $maxSendTime = null)
@@ -96,23 +98,25 @@ class DaemonClient implements StatsExporter, TraceExporter
         $msg .= self::encodeString(\phpversion());
         $msg .= self::encodeString(\zend_version());
         $this->send(self::MSG_REQ_INIT, $msg);
-        register_shutdown_function([$this, 'onExit']);
-    }
 
-    public function onExit()
-    {
-        $this->send(self::MSG_REQ_SHUTDOWN);
+        // on shutdown... send shutdown message to daemon
+        register_shutdown_function(function() {
+            $this->send(self::MSG_REQ_SHUTDOWN);
+        });
     }
 
     /**
      * Initialize our DaemonClient for Stats and/or Trace reporting to the
      * OpenCensus PHP Daemon service.
      *
-     * @param array $options
-     * @throws \Exception on inability to communicate with the PHP Daemon.
-     * @return DaemonClient on successful initialization.
+     * @param array $options Configuration options.
+     *
+     *     @type string $socketPath Path of the Unix socket to communicate over.
+     *     @type float $maxSendTime The maximum send time for a message payload in seconds.
+     * @throws \Exception Throws on the inability to communicate with the PHP Daemon.
+     * @return DaemonClient Returns the DaemonClient object on successful initialization.
      */
-    public static function init(array $options = [])
+    public static function init(array $options = []): DaemonClient
     {
         if (self::$instance instanceof DaemonClient) {
             return self::$instance;
@@ -136,12 +140,6 @@ class DaemonClient implements StatsExporter, TraceExporter
         return self::$instance = new DaemonClient($sock, $maxSendTime);
     }
 
-    /**
-     * Register a new Measure.
-     *
-     * @param Measure $measure the measure to register.
-     * @return bool on successful send operation.
-     */
     public static function createMeasure(Measure $measure): bool
     {
         $msg = '';
@@ -162,12 +160,6 @@ class DaemonClient implements StatsExporter, TraceExporter
         return self::$instance->send(self::MSG_MEASURE_CREATE, $msg);
     }
 
-    /**
-     * Adjust the stats reporting period of the Daemom.
-     *
-     * @param int $interval reporting interval of the daemon in seconds.
-     * @return bool on successful send operation.
-     */
     public static function setReportingPeriod(float $interval): bool
     {
         if ($interval < 0) {
@@ -177,12 +169,6 @@ class DaemonClient implements StatsExporter, TraceExporter
         return self::$instance->send(self::MSG_VIEW_REPORTING_PERIOD, $msg);
     }
 
-    /**
-     * Register views.
-     *
-     * @param View[] ...$views views to register.
-     * @return bool true on successful send operation.
-     */
     public static function registerView(View ...$views): bool
     {
 
@@ -197,11 +183,11 @@ class DaemonClient implements StatsExporter, TraceExporter
                 $msg .= self::encodeString($tagKey->getName());
             }
             $measure = $view->getMeasure();
-            $msg .= self::encodeString($view->getName());
-            $msg .= self::encodeString($view->getDescription());
-            $msg .= self::encodeString($view->getUnit());
+            $msg .= self::encodeString($measure->getName());
+            $msg .= self::encodeString($measure->getDescription());
+            $msg .= self::encodeString($measure->getUnit());
             $aggregation = $view->getAggregation();
-            self::encodeUnsigned($aggregation->getType());
+            self::encodeUnsigned($msg, $aggregation->getType());
             if ($aggregation->getType() === Aggregation::DISTRIBUTION) {
                 $bucketBoundaries = $aggregation->getBucketBoundaries();
                 self::encodeUnsigned($msg, count($bucketBoundaries));
@@ -213,11 +199,6 @@ class DaemonClient implements StatsExporter, TraceExporter
         return self::$instance->send(self::MSG_VIEW_REGISTER, $msg);
     }
 
-    /**
-     * Unregister views.
-     * @param View[] ...$views views to unregister.
-     * @return bool true on successful send operation.
-     */
     public static function unregisterView(View ...$views): bool
     {
         $msg = '';
@@ -229,14 +210,6 @@ class DaemonClient implements StatsExporter, TraceExporter
         return true;
     }
 
-    /**
-     * Record the provided Measurements, Attachments and Tags.
-     *
-     * @param TagContext $tagContext tags to record with our Measurements.
-     * @param array $attachments key-value pairs to use for exemplar annotation.
-     * @param Measurement[] ...$ms one or more measurements to record.
-     * @return bool true on successful send operation.
-     */
     public static function recordStats(TagContext $tagContext, array $attachments, Measurement ...$ms): bool
     {
         // bail out if we don't have measurements
@@ -271,12 +244,6 @@ class DaemonClient implements StatsExporter, TraceExporter
         return self::$instance->send(self::MSG_STATS_RECORD, $msg);
     }
 
-    /**
-     * Export the provided SpanData.
-     *
-     * @param SpanData[] $spans array of Spans to export.
-     * @return bool true on successful send operation.
-     */
     public function export(array $spans)
     {
         $spanData = json_encode(array_map(function (SpanData $span) {
@@ -315,9 +282,9 @@ class DaemonClient implements StatsExporter, TraceExporter
      *   MSG_LEN     : varint (length of message payload)
      *   MSG         : encoded message of size MSG_LEN
      *
-     * @param string $type the message type (1 byte)
-     * @param string $msg the message payload
-     * @return bool returns true on successful operation.
+     * @param string $type The message type (1 byte).
+     * @param string $msg The message payload.
+     * @return bool Returns true on successful operation.
      */
     private final function send(string $type, string $msg = ''): bool
     {
@@ -344,8 +311,8 @@ class DaemonClient implements StatsExporter, TraceExporter
     /**
      * Encodes message payload by prefixing the message length as unsigned varint.
      *
-     * @param string $data the message payload to prefix.
-     * @return string returns the with unsigned varint length prefixed payload.
+     * @param string $data The message payload to prefix.
+     * @return string returns The unsigned varint length prefixed payload.
      */
     private static final function encodeString(string $data): string
     {
@@ -355,7 +322,9 @@ class DaemonClient implements StatsExporter, TraceExporter
     }
 
     /**
-     * Returns the Thread ID of this PHP request run if ZTS is enabled
+     * Returns the Thread ID of this PHP request run if ZTS is enabled.
+     *
+     * @return int Thread id of our PHP script run.
      */
     private final function getmytid(): int
     {

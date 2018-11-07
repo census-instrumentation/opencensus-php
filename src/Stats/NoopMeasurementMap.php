@@ -17,34 +17,23 @@
 
 namespace OpenCensus\Stats;
 
+use OpenCensus\Stats\MeasurementInterface;
+
+/**
+ * NoopMeasurementMap is a Noop implementation for Measurement recording.
+ */
 class NoopMeasurementMap implements MeasurementInterface
 {
-    /**
-     * Add a Measurement to our map.
-     *
-     * @param Measurement
-     * @return void
-     */
-    public function put(Measurement $measurement) {}
+    public function put(Measurement $measurement): MeasurementInterface
+    {
+        return $this;
+    }
 
-    /**
-     * Add an Exemplar Attachment to our map. If the key already exists, the
-     * existing Attachment in the map will be overriden with the new value.
-     *
-     * @param string $key Attachment key.
-     * @param string $value Attachment value.
-     */
-    public function putAttachment(string $key, string $value) {}
+    public function putAttachment(string $key, string $value): MeasurementInterface
+    {
+        return $this;
+    }
 
-
-    /**
-     * Record the Measurements, Attachments and Tags found in the map.
-     * If Context is not explicitly provided, the current Context is used.
-     * If a TagContext object is explicitly provided, all tags found are
-     * inserted into the TagContext object found in Context. If a Tag with the
-     * same key already exists in the implicit TagContext object, the explicit
-     * Tag key value pair is used.
-     */
     public function record(Context $ctx = null, TagContext $tags = null): bool
     {
         return true;

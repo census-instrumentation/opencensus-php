@@ -17,6 +17,9 @@
 
 namespace OpenCensus\Stats;
 
+/**
+ * Base clase for Measurements.
+ */
 abstract class Measurement
 {
     /**
@@ -29,17 +32,30 @@ abstract class Measurement
      */
     private $m;
 
+    /**
+     * Extended by the various Measurement classes to hold their payload.
+     */
     protected function __construct(Measure &$measure, $value)
     {
         $this->m = $measure;
         $this->v = $v;
     }
 
+    /**
+     * Retrieves the value of the Measurement.
+     *
+     * @return mixed
+     */
     public function getValue()
     {
         return $this->v;
     }
 
+    /**
+     * Retrieves the Measure this measurement applies to.
+     *
+     * @return Measure
+     */
     public function getMeasure(): Measure
     {
         return $this->m;

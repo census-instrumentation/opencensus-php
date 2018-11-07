@@ -23,48 +23,49 @@ use \OpenCensus\Stats\Measurement;
 use \OpenCensus\Stats\View\View;
 
 /**
- * The ExporterInterface allows you to swap out the Stats reporting mechanism
+ * The ExporterInterface allows you to swap out the Stats reporting mechanism.
  */
 interface ExporterInterface
 {
     /**
      * Register a new Measure.
      *
-     * @param Measure $measure the measure to register.
-     * @return bool on successful registration
+     * @param Measure $measure The measure to register.
+     * @return bool Returns true on successful send operation.
      */
     public static function createMeasure(Measure $measure): bool;
 
     /**
-     * Adjust the stats reporting period of the Daemon.
+     * Adjust the stats reporting period of the Daemom.
      *
-     * @param int $interval reporting interval of the daemon in seconds
-     * @return bool on success
+     * @param float $interval Reporting interval of the daemon in seconds.
+     * @return bool Returns true on successful send operation.
      */
     public static function setReportingPeriod(float $interval): bool;
 
     /**
      * Register views.
      *
-     * @param View[] ...$views views to register.
-     * @return bool true on successful send operation.
+     * @param View[] ...$views One or more Views to register.
+     * @return bool Returns true on successful send operation.
      */
     public static function registerView(View ...$views): bool;
 
     /**
      * Unregister views.
-     * @param View[] ...$views views to unregister.
-     * @return bool true on successful send operation.
+     *
+     * @param View[] ...$views Views to unregister.
+     * @return bool Returns true on successful send operation.
      */
     public static function unregisterView(View ...$views): bool;
 
     /**
-     * Record Measurements together with TagContext and Exemplars.
+     * Record the provided Measurements, Attachments and Tags.
      *
-     * @param TagContext $tags explicit TagContext items to upsert into Tags found in Context.
-     * @param array $attachments key value pairs to annotate for Examplar.
-     * @param Measurement[] ...$ms one or more measurements to record.
-     * @return bool on successful export returns true
+     * @param TagContext $tagContext TagContext to record with our Measurements.
+     * @param array $attachments Key-value pairs to use for exemplar annotation.
+     * @param Measurement[] ...$ms One or more measurements to record.
+     * @return bool Returns true on successful send operation.
      */
-    public static function recordStats(TagContext $tags, array $attachments, Measurement ...$ms): bool;
+    public static function recordStats(TagContext $tagContext, array $attachments, Measurement ...$ms): bool;
 }

@@ -17,6 +17,11 @@
 
 namespace OpenCensus\Stats\View;
 
+/**
+ * Aggregation represents a data aggregation method.
+ * Use one of the static  methods count, sum, lastValue or distribution to
+ * construct an Aggregation.
+ */
 class Aggregation
 {
     const NONE         = 0;
@@ -25,11 +30,11 @@ class Aggregation
     const DISTRIBUTION = 3;
     const LAST_VALUE   = 4;
 
-    /** @var int $type aggragation type */
+    /** @var int $type Aggragation type */
     var $type = 0;
 
     /**
-     * @var float[] $bounds bucket boundaries if this Aggregation represents a
+     * @var float[] $bounds Bucket boundaries if this Aggregation represents a
      * distribution, see Distribution.
      */
      var $bounds;
@@ -40,13 +45,26 @@ class Aggregation
          $this->bounds = $bounds;
      }
 
+     /**
+      * Returns the type of the aggregation.
+      *
+      * @return int The Aggregation Type.
+      */
      public final function getType(): int
      {
          return $this->type;
      }
 
+     /**
+      * Returns the bucket boundaries of the Distribution Aggregation.
+      *
+      * @return float[] Returns the bucket boundaries.
+      */
      public final function getBucketBoundaries(): array
      {
+         if ($this->type !== self::DISTRIBUTION) {
+             return array();
+         }
          return $this->bounds;
      }
 
@@ -64,10 +82,8 @@ class Aggregation
       * Returns a new Distribution Aggregation with the provided Bucket Boundaries.
       * Bucket Boundaries needs to be an array of integer and/or floats.
       *
-      * @param float[] $bounds bucket boundaries for distribution aggregation.
-      *
-      * @throws \Exception on invalid bucket boundaries.
-      *
+      * @param float[] $bounds The bucket boundaries for distribution aggregation.
+      * @throws \Exception Throws on invalid bucket boundaries.
       * @return Aggregation
       */
      public static final function distribution(array $bounds): Aggregation
@@ -84,7 +100,7 @@ class Aggregation
      }
 
      /**
-      * Returns a new LastValue Aggregation
+      * Returns a new LastValue Aggregation.
       *
       * @return Aggregation
       */
@@ -94,7 +110,7 @@ class Aggregation
      }
 
      /**
-      * Returns a new Sum Aggregation
+      * Returns a new Sum Aggregation.
       *
       * @return Aggregation
       */

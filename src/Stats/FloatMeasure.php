@@ -17,6 +17,9 @@
 
 namespace OpenCensus\Stats;
 
+/**
+ * FloatMeasure is a Measure for Float values.
+ */
 class FloatMeasure extends Measure
 {
     use \OpenCensus\Utils\PrintableTrait;
@@ -27,21 +30,28 @@ class FloatMeasure extends Measure
     }
 
     /**
-     * Constructs a new FloatMeasure
+     * Constructs a new FloatMeasure.
      *
-     * @param string $name
-     * @param string $description
-     * @param string $unit
+     * @param string $name Unique name of the Measure.
+     * @param string $description Human readable discription of the Measure.
+     * @param string $unit Unit of the Measure. See
+     *     <a href="http://unitsofmeasure.org/ucum.html">Unified Code for Units of Measure</a>
      * @return FloatMeasure
-     * @throws \Exception on invalid measure name.
+     * @throws \Exception Throws on invalid measure name.
      */
     public static final function create(
-        string $name, string $description = "", string $unit = Units::Dimensionless
+        string $name, string $description = "", string $unit = Measure::Dimensionless
     ): FloatMeasure
     {
         return self::registerMeasureHandle($name, $description, $unit);
     }
 
+    /**
+     * Creates a Measurement of provided value.
+     *
+     * @param float $value the measurement value.
+     * @return Measurement Returns a Measurement object which can be recorded.
+     */
     public final function M(float $value): Measurement
     {
         return new class($this, $value) extends Measurement

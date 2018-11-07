@@ -24,7 +24,7 @@ namespace OpenCensus\Utils;
 trait VarintTrait
 {
     /**
-     * Varint encode unsigned integer.
+     * Varint encode as unsigned integer.
      *
      * @param string $buf bytestring to hold varint encoding of $x.
      * @param int $x the unsigned integer to varint encode.
@@ -42,7 +42,7 @@ trait VarintTrait
     }
 
     /**
-     * Varint encode signed integer.
+     * Varint encode as signed integer.
      *
      * @param string $buf bytestring to hold varint encoding of $x.
      * @param int $x the signed integer to varint encode.
@@ -58,7 +58,7 @@ trait VarintTrait
     }
 
     /**
-     * Varint decode to unsigned integer.
+     * Varint decode an unsigned integer.
      *
      * @param string $buf bytestring holding varint encoding.
      * @param int $x integer to receive the decoded value.
@@ -87,7 +87,7 @@ trait VarintTrait
     }
 
     /**
-     * Varint decode to signed integer.
+     * Varint decode a signed integer.
      *
      * @param string $buf bytestring holding varint encoding.
      * @param int $x integer to receive the decoded value.

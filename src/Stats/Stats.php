@@ -26,8 +26,30 @@ use OpenCensus\Stats\Measurement;
 use OpenCensus\Stats\MeasurementInterface;
 use OpenCensus\Stats\Exporter\ExporterInterface;
 use OpenCensus\Stats\Exporter\NoopExporter;
-use OpenCensus\Stats\Views\ViewManager;
+use OpenCensus\Stats\View\View;
 
+/**
+ * This class provides static functions to give you access to the most common Stats actions.
+ * It's typically used to start the desired Stats exporter and get access to
+ * Stats recording, Tag management and View registration.
+ *
+ * Example:
+ * ```
+ * use OpenCensus\Core\DaemonClient;
+ * use OpenCensus\Stats\Stats;
+ *
+ * try {
+ *   $daemon = DaemonClient::init(array("socketPath" => "/tmp/ocdaemon.sock"));
+ *   Stats::setExporter($daemon);
+ * } catch (\Exception $e) {
+ *   // can't connect to the Daemon... reverting to Noop Stats.
+ *  ...
+ * }
+ *
+ * $tagCtx = Stats::newTagContext();
+ * $tagCtx =
+ * ```
+ */
 class Stats
 {
     /** @var Stats $instance */
@@ -106,7 +128,7 @@ class Stats
      */
     public static function registerView(View ...$views): bool
     {
-        return self::getInstance()->exporter->registerView($views);
+        return self::getInstance()->exporter->registerView(...$views);
     }
 
     /**
@@ -117,7 +139,7 @@ class Stats
      */
     public static function unregisterView(View ...$views): bool
     {
-        return self::getInstance()->exporter->unregisterView($views);
+        return self::getInstance()->exporter->unregisterView(...$views);
     }
 
 }

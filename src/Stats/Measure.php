@@ -18,8 +18,6 @@
 namespace OpenCensus\Stats;
 
 /**
- * The definition of the Measurement that is taken by OpenCensus library.
- *
  * Measure represents a single numeric value to be tracked and recorded.
  * For example, latency, request bytes, and response bytes could be measures
  * to collect from a server.
@@ -30,6 +28,13 @@ namespace OpenCensus\Stats;
  */
 abstract class Measure {
     use \OpenCensus\Utils\PrintableTrait;
+
+    /** @var string measurement is dimensionless */
+    public const DIMENSIONLESS = "1";
+    /** @var string measurement in bytes */
+    public const BYTES         = "By";
+    /** @var string measurement in milliseconds */
+    public const MILLISECONDS  = "ms";
 
     protected const NAME_MAX_LENGTH = 255;
     protected const EX_NAME_EXISTS  = "Different Measure Type with same name already exists.";
@@ -84,12 +89,42 @@ abstract class Measure {
      * Unit returns the units for the values this measure takes on.
      *
      * Units are encoded according to the case-sensitive abbreviations from the
-     * Unified Code for Units of Measure: http://unitsofmeasure.org/ucum.html
+     * <a href="http://unitsofmeasure.org/ucum.html">Unified Code for Units of Measure</a>.
      *
      * @return string
      */
     public function getUnit(): string
     {
         return $this->unit;
+    }
+
+    /**
+     * Constructs a new IntMeasure.
+     *
+     * @param string $name Unique name of the Measure.
+     * @param string $description Human readable discription of the Measure.
+     * @param string $unit Unit of the Measure. See
+     *     <a href="http://unitsofmeasure.org/ucum.html">Unified Code for Units of Measure</a>
+     * @return IntMeasure
+     * @throws \Exception Throws on invalid measure name.
+     */
+    public static function newIntMeasure(string $name, string $description, string $unit): IntMeasure
+    {
+        return IntMeasure::create($name, $description, $unit);
+    }
+
+    /**
+     * Constructs a new FloatMeasure.
+     *
+     * @param string $name Unique name of the Measure.
+     * @param string $description Human readable discription of the Measure.
+     * @param string $unit Unit of the Measure. See
+     *     <a href="http://unitsofmeasure.org/ucum.html">Unified Code for Units of Measure</a>
+     * @return FloatMeasure
+     * @throws \Exception Throws on invalid measure name.
+     */
+    public static function newFloatMeasure(string $name, string $description, string $unit): FloatMeasure
+    {
+        return FloatMeasure::create($name, $description, $unit);
     }
 }

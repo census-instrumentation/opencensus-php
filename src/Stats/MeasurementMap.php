@@ -24,6 +24,9 @@ use OpenCensus\Stats\Stats;
 use OpenCensus\Stats\Measurement;
 use OpenCensus\Stats\MeasurementInterface;
 
+/**
+ * MeasurementMap for recording Measurements.
+ */
 class MeasurementMap implements MeasurementInterface
 {
     /** @var Measurement[] $measurements array of Measurement */
@@ -35,24 +38,27 @@ class MeasurementMap implements MeasurementInterface
     /**
      * Add a Measurement to our map.
      *
-     * @param Measurement
-     * @return void
+     * @param Measurement The Measurement to add to our map.
+     * @return MeasurementInterface
      */
-    public function put(Measurement $measurement)
+    public function put(Measurement $measurement): MeasurementInterface
     {
         $this->measurements[] = $measurement;
+        return $this;
     }
 
     /**
      * Add an Exemplar Attachment to our map. If the key already exists, the
      * existing Attachment in the map will be overriden with the new value.
      *
-     * @param string $key Attachment key.
-     * @param string $value Attachment value.
+     * @param string $key The Attachment key.
+     * @param string $value The Attachment value.
+     * @return MeasurementInterface
      */
-    public function putAttachment(string $key, string $value)
+    public function putAttachment(string $key, string $value): MeasurementInterface
     {
         $this->attachments[$key] = $value;
+        return $this;
     }
 
     /**
@@ -62,6 +68,10 @@ class MeasurementMap implements MeasurementInterface
      * inserted into the TagContext object found in Context. If a Tag with the
      * same key already exists in the implicit TagContext object, the explicit
      * Tag key value pair is used.
+     *
+     * @param Context $ctx The Explicit Context object to use. Defaults to current Context.
+     * @param TagContext $tags The TagContext of Tags to add to the recorded Measurements.
+     * @return bool Returns true on success.
      */
     public function record(Context $ctx = null, TagContext $tags = null): bool
     {

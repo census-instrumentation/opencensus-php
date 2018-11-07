@@ -17,6 +17,9 @@
 
 namespace OpenCensus\Stats;
 
+/**
+ * IntMeasure is a Measure for Int values.
+ */
 class IntMeasure extends Measure
 {
     use \OpenCensus\Utils\PrintableTrait;
@@ -27,21 +30,28 @@ class IntMeasure extends Measure
     }
 
     /**
-     * Constructs a new IntMeasure
+     * Constructs a new IntMeasure.
      *
-     * @param string $name
-     * @param string $description
-     * @param string $unit
+     * @param string $name Unique name of the Measure.
+     * @param string $description Human readable discription of the Measure.
+     * @param string $unit Unit of the Measure. See
+     *     <a href="http://unitsofmeasure.org/ucum.html">Unified Code for Units of Measure</a>
      * @return IntMeasure
-     * @throws \Exception on invalid measure name.
+     * @throws \Exception Throws on invalid measure name.
      */
     public static final function create(
-        string $name, string $description = "", string $unit = Units::Dimensionless
+        string $name, string $description = "", string $unit = Measure::Dimensionless
     ): IntMeasure
     {
         return self::registerMeasureHandle($name, $description, $unit);
     }
 
+    /**
+     * Creates a Measurement of provided value.
+     *
+     * @param int $value the measurement value.
+     * @return Measurement Returns a Measurement object which can be recorded.
+     */
     public final function M(int $value): Measurement
     {
         return new class($this, $value) extends Measurement
