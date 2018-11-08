@@ -27,14 +27,10 @@ class TagValue
 {
     use \OpenCensus\Utils\PrintableTrait;
 
-    /**
-     * The maximum length for a tag value.
-     */
+    /** The maximum length for a tag value. */
     const MAX_LENGTH = 255;
 
-    /**
-     * @var string TagValue payload
-     */
+    /** @var string TagValue payload */
     private $name;
 
     private final function __construct(string $value)
@@ -52,10 +48,8 @@ class TagValue
      * </ol>
      *
      * @param string $value the value payload.
-     *
-     * @throws \Exception if name is not valid.
-     *
      * @return TagValue
+     * @throws \Exception if name is not valid.
      */
     public static function create(string $value): TagValue
     {

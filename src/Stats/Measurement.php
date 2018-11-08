@@ -34,6 +34,7 @@ abstract class Measurement
 
     /**
      * Extended by the various Measurement classes to hold their payload.
+     * @internal
      */
     protected function __construct(Measure &$measure, $value)
     {

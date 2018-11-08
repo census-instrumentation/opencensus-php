@@ -27,14 +27,10 @@ class TagKey
 {
     use \OpenCensus\Utils\PrintableTrait;
 
-    /**
-     * The maximum length for a tag key name.
-     */
+    /** The maximum length for a tag key name. */
     const MAX_LENGTH = 255;
 
-    /**
-     * @var string TagKey name
-     */
+    /** @var string TagKey name */
     private $name;
 
     private final function __construct(string $name)
@@ -53,10 +49,8 @@ class TagKey
      * </ol>
      *
      * @param string $name the name of the key
-     *
-     * @throws \Exception if name is not valid.
-     *
      * @return TagKey
+     * @throws \Exception if name is not valid.
      */
     public static function create(string $name): TagKey
     {

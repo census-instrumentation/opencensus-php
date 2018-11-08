@@ -27,16 +27,19 @@ namespace OpenCensus\Tags;
  */
 class Tag
 {
-    /**
-     * @var TagKey $key
-     */
+    /** @var TagKey $key */
     private $key;
 
-    /**
-     * @var TagValue $value
-     */
+    /** @var TagValue $value */
     private $value;
 
+    /**
+     * Creates a Tag out of a TagKey and TagValue.
+     *
+     * @param TagKey $key The TagKey.
+     * @param TagValue $value The TagValue.
+     * @return Tag
+     */
     public final function __construct(TagKey $key, TagValue $value)
     {
         $this->key = $key;

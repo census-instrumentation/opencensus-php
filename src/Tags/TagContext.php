@@ -20,9 +20,10 @@ namespace OpenCensus\Tags;
 use OpenCensus\Core\Context;
 
 /**
- * TagContext represents a collection of tags. A TagContext can be used to label
- * anything that is associated with a specific operation, such as an HTTP
- * request. Each tag is composed of a key (TagKey), and a value (TagValue).
+ * TagContext represents a collection of tags.
+ * A TagContext can be used to label anything that is associated with a specific
+ * operation, such as an HTTP request. Each tag is composed of a key (TagKey),
+ * and a value (TagValue).
  * A TagContext represents a map from keys to values, i.e., each key is
  * associated with exactly one value, but multiple keys can be associated with
  * the same value. TagContext is serializable, and it represents all of the
@@ -32,19 +33,13 @@ class TagContext
 {
     use \OpenCensus\Utils\PrintableTrait;
 
-    /**
-     * The key used for storing and retrieving a TagContext object from Context.
-     */
+    /** The key used for storing and retrieving a TagContext object from Context. */
     private const CTX_KEY = '__OCTagContext__';
 
-    /**
-     * The maximum length for a serialized TagContext.
-     */
+    /** The maximum length for a serialized TagContext. */
     const MAX_LENGTH = 8192;
 
-    /**
-     * Invalid Context Error message
-     */
+    /** Invalid Context Error message */
     const EX_INVALID_CONTEXT = "Serialized context should be a string " .
         "with a length no greater than " . self::MAX_LENGTH . " characters.";
 
@@ -52,6 +47,8 @@ class TagContext
      * @var Tag[] $m TagContext content.
      */
     private $m = array();
+
+    private function __construct() {}
 
     /**
      * Returns the value for the key if a value for the key exists.
@@ -156,9 +153,21 @@ class TagContext
     }
 
     /**
-     * Extract a TagContext from the provided Context object. If Context is not
-     * provided, the current Context is used. If no TagContext is found, a new
-     * empty TagContext is returned.
+     * Returns an empty YagContext object.
+     *
+     * @return TagContext
+     */
+    public static final function empty(): TagContext
+    {
+        return new self();
+    }
+    /**
+     * Extract a TagContext from the provided Context object.
+     * If Context is not provided, the current Context is used. If no TagContext
+     * is found, a new empty TagContext is returned.
+     *
+     * @param Context $ctx The Context to extract the TagContext from.
+     * @return TagContext
      */
     public static final function fromContext(Context $ctx = null): TagContext
     {
@@ -169,10 +178,25 @@ class TagContext
     }
 
     /**
-     * Creates a new Context with our TagContext attached. To propagate a TagContext to
-     * dowstream methods and downstream RPCs, add a TagContext to the current
-     * Context. If there is already a TagContext in the current context, it will
-     * be replaced with this TagContext.
+     * Copy and return the TagContext as found in the provided Context object.
+     * If Context is not provided, the current Context is used. If no TagContext
+     * is found, a new empty TagContext is returned.
+     *
+     * @param Context $ctx The Context to extract and copy the TagContext from.
+     * @return TagContext
+     */
+    public static final function new(Context $ctx = null): TagContext
+    {
+        return clone self::fromContext($ctx);
+    }
+    /**
+     * Creates a new Context with our TagContext attached.
+     * To propagate a TagContext to dowstream methods and downstream RPCs, add a
+     * TagContext to the current Context. If there is already a TagContext in
+     * the current context, it will be replaced with this TagContext.
+     *
+     * @param Context $ctx The source context to copy.
+     * @return Context The target context with our TagContext added.
      */
     public final function newContext(Context $ctx = null): Context
     {

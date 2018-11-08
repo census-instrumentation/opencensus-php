@@ -24,20 +24,25 @@ namespace OpenCensus\Stats\View;
  */
 class Aggregation
 {
+    /** No or unknown Aggregation type. */
     const NONE         = 0;
+    /** Count Aggregation type. */
     const COUNT        = 1;
+    /** Sum Aggregation type. */
     const SUM          = 2;
+    /** Distribution Aggregation type. */
     const DISTRIBUTION = 3;
+    /** LastValue Aggregation type. */
     const LAST_VALUE   = 4;
 
     /** @var int $type Aggragation type */
-    var $type = 0;
+    private $type = 0;
 
     /**
      * @var float[] $bounds Bucket boundaries if this Aggregation represents a
      * distribution, see Distribution.
      */
-     var $bounds;
+     private $bounds;
 
      private final function __construct(int $type, array $bounds = null)
      {

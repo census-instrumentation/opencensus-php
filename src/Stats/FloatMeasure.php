@@ -25,6 +25,11 @@ class FloatMeasure extends Measure
     use \OpenCensus\Utils\PrintableTrait;
     use MeasureHandleTrait;
 
+    /**
+     * Called by registerMeasureHandle if needed.
+     *
+     * @internal
+     */
     protected final function __construct(string $name, string $description, string $unit) {
         parent::__construct($name, $description, $unit);
     }
@@ -56,6 +61,7 @@ class FloatMeasure extends Measure
     {
         return new class($this, $value) extends Measurement
         {
+            /** @internal */
             public function __construct(Measure &$measure, float $value)
             {
                 parent::__construct($measure, $value);

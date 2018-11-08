@@ -36,18 +36,45 @@ use OpenCensus\Stats\View\View;
  * Example:
  * ```
  * use OpenCensus\Core\DaemonClient;
+ * use OpenCensus\Trace\Tracer;
+ * use OpenCensus\Tags\TagKey;
+ * use OpenCensus\Tags\TagValue;
+ * use OpenCensus\Tags\TagContext;
  * use OpenCensus\Stats\Stats;
+ * use OpenCensus\Stats\Measure;
+ * use OpenCensus\Stats\View\View;
+ * use OpenCensus\Stats\View\Aggregation;
  *
  * try {
- *   $daemon = DaemonClient::init(array("socketPath" => "/tmp/ocdaemon.sock"));
- *   Stats::setExporter($daemon);
+ *     $daemon = DaemonClient::init(array("socketPath" => "/tmp/ocdaemon.sock"));
+ *     Tracer::start($daemon);
+ *     Stats::setExporter($daemon);
+ *     $daemon->setReportingPeriod(2.0);
  * } catch (\Exception $e) {
- *   // can't connect to the Daemon... reverting to Noop Stats.
- *  ...
+ *     // Unable to set Stats Exporter, proceeding as Noop
  * }
  *
- * $tagCtx = Stats::newTagContext();
- * $tagCtx =
+ * $frontendKey = TagKey::create("example.com/keys/frontend");
+ *
+ * $videoSize = Measure::newIntMeasure("example.com/measure/video_size", "size of processed videos", Measure::BYTES);
+ *
+ * Stats::registerView(new View(
+ *     "example.com/views/video_size",
+ *     "processed video size over time",
+ *     $videoSize,
+ *     Aggregation::distribution([0, 1<<16, 1<<32]),
+ *     $frontendKey
+ * ));
+ *
+ * Tracer::inSpan(['name' => 'example.com/ProcessVideo'], function () use ($frontendKey, $videoSize) {
+ *     // process video
+ *     $tagCtx = TagContext::fromContext();
+ *     $tagCtx->insert($frontendKey, TagValue::create("mobile-ios9.3.5"));
+ *     sleep(1);
+ *     Stats::newMeasurementMap()
+ *         ->put($videoSize->M(25648))
+ *         ->record();
+ * });
  * ```
  */
 class Stats
@@ -141,5 +168,4 @@ class Stats
     {
         return self::getInstance()->exporter->unregisterView(...$views);
     }
-
 }

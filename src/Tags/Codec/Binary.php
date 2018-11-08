@@ -22,6 +22,10 @@ use OpenCensus\Tags\TagKey;
 use OpenCensus\Tags\TagValue;
 use OpenCensus\Tags\TagContext;
 
+/**
+ * This class implements the (de)serialization of TagContext using the binary
+ * wire format.
+ */
 class Binary {
     use \OpenCensus\Utils\VarintTrait;
 
@@ -58,6 +62,13 @@ class Binary {
         return $str;
     }
 
+    /**
+     * Decode the provided TagContext from the binary wire format.
+     *
+     * @param string $str The bytestring holding our encoded TagContext.
+     * @return TagContext
+     * @throws \Exception Throws on deserialization errors and size constraints.
+     */
     public static function decode(string $str, \Exception &$err = null): TagContext
     {
         $tagContext = new TagContext();

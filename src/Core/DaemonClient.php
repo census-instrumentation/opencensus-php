@@ -38,12 +38,17 @@ class DaemonClient implements StatsExporter, TraceExporter
 {
     use \OpenCensus\Utils\VarintTrait;
 
-    const DEFAULT_SOCKET_PATH   = "/tmp/ocdaemon.sock";
-    const DEFAULT_MAX_SEND_TIME = 0.005; // float defaults to 5 ms.
-
-    private const PROT_VERSION = "\x01"; // allows for protocol upgrading
-
-    private const START_OF_MSG = "\x00\x00\x00\x00"; // allows for recovery from truncated messages
+    /**
+     * Default socket path to use.
+     * @var $DEFAULT_SOCKET_PATH = /tmp/ocdaemon.sock
+     */
+    const DEFAULT_SOCKET_PATH   = '/tmp/ocdaemon.sock';
+    /** Default send timeout in seconds as float. */
+    const DEFAULT_MAX_SEND_TIME = 0.005;
+    /** Protocol version this client supports. */
+    private const PROT_VERSION = "\x01";
+    /** Start of message delimiter, allowing for recovery from truncated messages */
+    private const START_OF_MSG = "\x00\x00\x00\x00";
 
     // message types (1 - 19)
     private const MSG_PROC_INIT     = "\x01";

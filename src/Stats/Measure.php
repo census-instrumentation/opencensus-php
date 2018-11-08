@@ -29,11 +29,11 @@ namespace OpenCensus\Stats;
 abstract class Measure {
     use \OpenCensus\Utils\PrintableTrait;
 
-    /** @var string measurement is dimensionless */
+    /** measurement is dimensionless */
     public const DIMENSIONLESS = "1";
-    /** @var string measurement in bytes */
+    /** measurement in bytes */
     public const BYTES         = "By";
-    /** @var string measurement in milliseconds */
+    /** measurement in milliseconds */
     public const MILLISECONDS  = "ms";
 
     protected const NAME_MAX_LENGTH = 255;
@@ -41,15 +41,31 @@ abstract class Measure {
     protected const EX_INVALID_NAME = "Name should be a ASCII string with a length " .
         "no greater than " . self::NAME_MAX_LENGTH . " characters.";
 
-    /** @var array $map contains our initialized *Measure's */
+    /**
+     * Contains our initialized Measure's
+     * @var array $map
+     */
     protected static $map = array();
-    /** @var string $name holds our measure's name. */
+    /**
+     * Holds our Measure's name.
+     * @var string $name
+     */
     protected $name;
-    /** @var string $description holds our measure's human readable description. */
+    /**
+     * Holds our measure's human readable description.
+     * @var string $description
+     */
     protected $description;
-    /** @var string $unit holds the unit type of the value this measure takes on. */
+    /**
+     * Holds the unit type of the value this measure takes on.
+     * @var string $unit
+     */
     protected $unit;
 
+    /**
+     * Called by our descendants.
+     * @internal
+     */
     protected function __construct(string $name, string $description, string $unit)
     {
         $this->name = $name;
