@@ -86,6 +86,9 @@ class DaemonClient implements StatsExporter, TraceExporter
     /** @var int $seqnr The sequence number of the last message sent to daemon. */
     private $seqnr = 0;
 
+    /** @var bool $float32 set to true will signal floats being encoded in 32 bit */
+    private $float32;
+
     private function __construct($sock, int $maxSendTime = null)
     {
         $this->sock = $sock;
@@ -97,6 +100,10 @@ class DaemonClient implements StatsExporter, TraceExporter
 
         if (function_exists('zend_thread_id')) {
             $this->tid = true;
+        }
+
+        if (strlen(pack('E', 1.0)) === 4) {
+            $this->float32 = true;
         }
 
         $msg = self::PROT_VERSION;
@@ -296,11 +303,16 @@ class DaemonClient implements StatsExporter, TraceExporter
         $start = microtime(true);
         $maxEnd = $start + $this->maxSendTime;
 
-        $buf = self::START_OF_MSG;
+        $buf = self::START_OF_MSG . $type;
         self::encodeUnsigned($buf, ++$this->seqnr);
         self::encodeUnsigned($buf, \getmypid());
         self::encodeUnsigned($buf, $this->getmytid());
-        $buf .= pack('E', $start);
+        if ($this->float32) {
+            // pad with nulls on both sides (easy to detect on other size)
+            $buf .= "\x00\x00" . pack('E', $start) . "\x00\x00";
+        } else {
+            $buf .= pack('E', $start);
+        }
         self::encodeUnsigned($buf, strlen($msg));
         $buf .= $msg;
 
