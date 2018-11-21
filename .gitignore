@@ -1,8 +1,9 @@
 # OS X
 .DS_Store
 
-# VSCode
+# VSCode and other IDE's
 .vscode/
+.idea/
 
 # Composer
 build/
