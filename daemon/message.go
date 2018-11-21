@@ -15,8 +15,8 @@ type measurementType int
 
 // php process / request types (1 - 19)
 const (
-	phpProcInit msgType = iota + 1
-	phpProcShutdown
+	phpProcessInit msgType = iota + 1
+	phpProcessShutdown
 	phpRequestInit
 	phpRequestShutdown
 )
@@ -55,19 +55,19 @@ type message struct {
 	rawPayload  []byte
 }
 
-type procInit struct {
+type processInit struct {
 	message
 }
 
-type procShutdown struct {
+type processShutdown struct {
 	message
 }
 
 type requestInit struct {
 	message
-	ProcVersion int
-	PHPVersion  string
-	ZendVersion string
+	ProtocolVersion int
+	PHPVersion      string
+	ZendVersion     string
 }
 
 type requestShutdown struct {
@@ -77,19 +77,19 @@ type requestShutdown struct {
 type exportedSpans struct {
 	message
 	Spans struct {
-		TraceID          trace.TraceID
-		SpanID           trace.SpanID
-		ParentSpanID     trace.SpanID
-		Name             string
-		Kind             int
-		StackTrace       interface{}
-		StartTime        time.Time
-		EndTime          time.Time
-		Status           trace.Status
-		Attributes       []trace.Attribute
-		TimeEvents       []trace.MessageEvent
-		Links            []trace.Link
-		SameProcAsParent bool
+		TraceID             trace.TraceID
+		SpanID              trace.SpanID
+		ParentSpanID        trace.SpanID
+		Name                string
+		Kind                int
+		StackTrace          interface{}
+		StartTime           time.Time
+		EndTime             time.Time
+		Status              trace.Status
+		Attributes          []trace.Attribute
+		TimeEvents          []trace.MessageEvent
+		Links               []trace.Link
+		SameProcessAsParent bool
 	}
 }
 
@@ -125,12 +125,12 @@ func (mh message) ParseMessage() Message {
 	mh.ReceiveTime = time.Now()
 
 	switch mh.Type {
-	case phpProcInit:
-		return &procInit{
+	case phpProcessInit:
+		return &processInit{
 			message: mh,
 		}
-	case phpProcShutdown:
-		return &procShutdown{
+	case phpProcessShutdown:
+		return &processShutdown{
 			message: mh,
 		}
 	case phpRequestInit:

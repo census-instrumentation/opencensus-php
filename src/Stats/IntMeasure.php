@@ -28,6 +28,10 @@ class IntMeasure extends Measure
     /**
      * Called by registerMeasureHandle if needed.
      * @internal
+     *
+     * @param string $name The name of the IntMeasure.
+     * @param string $description The description of the IntMeasure.
+     * @param string $unit The unit type of the IntMeasure.
      */
     protected final function __construct(string $name, string $description, string $unit) {
         parent::__construct($name, $description, $unit);
@@ -44,7 +48,7 @@ class IntMeasure extends Measure
      * @throws \Exception Throws on invalid measure name.
      */
     public static final function create(
-        string $name, string $description = "", string $unit = Measure::Dimensionless
+        string $name, string $description = "", string $unit = Measure::DIMENSIONLESS
     ): IntMeasure
     {
         return self::registerMeasureHandle($name, $description, $unit);
@@ -60,7 +64,12 @@ class IntMeasure extends Measure
     {
         return new class($this, $value) extends Measurement
         {
-            /** @internal */
+            /**
+             * @internal
+             *
+             * @param Measure $measure The Measure.
+             * @param int $value The Measurement value.
+             */
             public function __construct(Measure &$measure, int $value)
             {
                 parent::__construct($measure, $value);

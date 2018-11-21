@@ -17,7 +17,6 @@
 
 namespace OpenCensus\Stats\Exporter;
 
-use OpenCensus\Stats\Exporter\ExporterInterface;
 use \OpenCensus\Tags\TagContext;
 use \OpenCensus\Stats\Measure;
 use \OpenCensus\Stats\Measurement;

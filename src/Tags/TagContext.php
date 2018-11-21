@@ -103,8 +103,6 @@ class TagContext
      *
      * @param TagKey $key key of the Tag.
      * @param TagValue $value value of the Tag.
-     *
-     * @throws \Exception on invalid tag value.
      */
     public final function upsert(TagKey $key, TagValue $value)
     {
@@ -132,14 +130,15 @@ class TagContext
      * @return string
      * @throws \Exception on failure to serialize.
      */
-    public final function toString(): string
+    public final function __toString(): string
     {
         ksort($this->m);
         $buf = '{ ';
-        foreach ($this->m as $key => &$value) {
-            $buf .= '{'.$key.' '.$value.'}';
+        foreach ($this->m as $key => &$tag) {
+            $buf .= '{' . $key . ' ' . $tag->getValue()->getValue() . '}';
         }
         $buf .= ' }';
+        return $buf;
     }
 
     /**

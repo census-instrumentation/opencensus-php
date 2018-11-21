@@ -38,7 +38,6 @@ class Tag
      *
      * @param TagKey $key The TagKey.
      * @param TagValue $value The TagValue.
-     * @return Tag
      */
     public final function __construct(TagKey $key, TagValue $value)
     {

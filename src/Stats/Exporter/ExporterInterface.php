@@ -46,7 +46,7 @@ interface ExporterInterface
     /**
      * Register views.
      *
-     * @param View[] ...$views One or more Views to register.
+     * @param View ...$views One or more Views to register.
      * @return bool Returns true on successful send operation.
      */
     public static function registerView(View ...$views): bool;
@@ -54,7 +54,7 @@ interface ExporterInterface
     /**
      * Unregister views.
      *
-     * @param View[] ...$views Views to unregister.
+     * @param View ...$views Views to unregister.
      * @return bool Returns true on successful send operation.
      */
     public static function unregisterView(View ...$views): bool;
@@ -64,7 +64,7 @@ interface ExporterInterface
      *
      * @param TagContext $tagContext TagContext to record with our Measurements.
      * @param array $attachments Key-value pairs to use for exemplar annotation.
-     * @param Measurement[] ...$ms One or more measurements to record.
+     * @param Measurement ...$ms One or more measurements to record.
      * @return bool Returns true on successful send operation.
      */
     public static function recordStats(TagContext $tagContext, array $attachments, Measurement ...$ms): bool;

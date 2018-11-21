@@ -19,7 +19,6 @@ namespace OpenCensus\Stats\View;
 
 use OpenCensus\Tags\TagKey;
 use OpenCensus\Stats\Measure;
-use OpenCensus\Stats\View\Aggregation;
 
 /**
  * View allows users to aggregate the recorded stats.Measurements.
@@ -51,8 +50,7 @@ class View
      * @param string $description The human readable description of the view.
      * @param Measure $measure The measure this View aggregates.
      * @param Aggregation $aggregation The Aggregation used for this view.
-     * @param TagKey[] ...$tagKeys The TagKeys that describe the grouping of this view.
-     * @return View
+     * @param TagKey ...$tagKeys The TagKeys that describe the grouping of this view.
      */
     public final function __construct(
         string $name, string $description, Measure $measure,

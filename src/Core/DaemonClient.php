@@ -136,6 +136,8 @@ class DaemonClient implements StatsExporter, TraceExporter
 
         if (array_key_exists('maxSendTime', $options) && \is_float($options['maxSendTime'])) {
             $maxSendTime = $options['maxSendTime'];
+        } else{
+            $maxSendTime = self::DEFAULT_MAX_SEND_TIME;
         }
 
         if (array_key_exists('socketPath', $options)) {
@@ -219,7 +221,6 @@ class DaemonClient implements StatsExporter, TraceExporter
             $msg .= self::encodeString($view->getName());
         }
         return self::$instance->send(self::MSG_VIEW_UNREGISTER, $msg);
-        return true;
     }
 
     public static function recordStats(TagContext $tagContext, array $attachments, Measurement ...$ms): bool
@@ -232,12 +233,12 @@ class DaemonClient implements StatsExporter, TraceExporter
         foreach ($ms as $m) {
             $measure = $m->getMeasure();
             $msg .= self::encodeString($measure->getName());
-            if ($measure instanceof MeasureInt) {
+            if ($measure instanceof IntMeasure) {
                 $msg .= self::MS_TYPE_INT;
-                self::encodeUnsigned($msg, $measure->getValue());
-            } else if ($measure instanceof MeasureFloat){
+                self::encodeUnsigned($msg, $m->getValue());
+            } else if ($measure instanceof FloatMeasure){
                 $msg .= self::MS_TYPE_FLOAT;
-                $msg .= pack('E', $measure->getValue());
+                $msg .= pack('E', $m->getValue());
             } else {
                 $msg .= self::MS_TYPE_UNKNOWN;
             }
@@ -251,7 +252,7 @@ class DaemonClient implements StatsExporter, TraceExporter
         self::encodeUnsigned($msg, count($attachments));
         foreach ($attachments as $key => $value) {
             $msg .= self::encodeString($key);
-            $msg .= self::encodeString($attachments);
+            $msg .= self::encodeString($value);
         }
         return self::$instance->send(self::MSG_STATS_RECORD, $msg);
     }
@@ -317,7 +318,7 @@ class DaemonClient implements StatsExporter, TraceExporter
         $buf .= $msg;
 
         $remaining = strlen($buf);
-        while ($remaining > 0 && microtime(true) < ($start + self::DEFAULT_MAX_SEND_TIME)) {
+        while ($remaining > 0 && microtime(true) < ($maxEnd)) {
             $c = \fwrite($this->sock, $buf, $remaining);
             $remaining -= $c;
             $buf = substr($buf, $c);

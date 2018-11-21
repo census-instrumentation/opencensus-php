@@ -66,12 +66,12 @@ class Binary {
      * Decode the provided TagContext from the binary wire format.
      *
      * @param string $str The bytestring holding our encoded TagContext.
+     * @param \Exception $err Set on deserialization errors and size constraints.
      * @return TagContext
-     * @throws \Exception Throws on deserialization errors and size constraints.
      */
     public static function decode(string $str, \Exception &$err = null): TagContext
     {
-        $tagContext = new TagContext();
+        $tagContext = TagContext::empty();
         $strLen = strlen($str);
         if ($strLen == 0) {
             return $tagContext;
@@ -89,7 +89,7 @@ class Binary {
             // read keytype
             if ($str[$idx] != self::KEYTYPE_STRING) {
                 $err = new \Exception("cannot decode: invalid key type: " . ord($str[$idx]));
-                return new TagContext();
+                return TagContext::empty();
             }
             $idx++;
 
@@ -102,7 +102,7 @@ class Binary {
             $cnt = self::decodeUnsigned(substr($str, $idx), $keyLen);
             if ($cnt <= 0 || $keyLen == 0) {
                 $err = new \Exception("cannot decode: key length varint");
-                return new TagContext();
+                return TagContext::empty();
             }
             $idx += $cnt;
 
@@ -110,13 +110,13 @@ class Binary {
             $valueEnd = $idx + $keyLen;
             if ($valueEnd > $strLen) {
                 $err = new \Exception("malformed encoding: length: $keyLen, upper: $valueEnd, maxLength: $strLen");
-                return new TagContext();
+                return TagContext::empty();
             }
             try {
                 $key = TagKey::create(substr($str, $idx, $keyLen));
             } catch (\Exception $e) {
                 $err = $e;
-                return TagContext();
+                return TagContext::empty();
             }
             $idx = $valueEnd;
 
@@ -125,7 +125,7 @@ class Binary {
             $cnt = self::decodeUnsigned(substr($str, $idx), $valLen);
             if ($cnt <= 0 || $keyLen == 0) {
                 $err = new \Exception("cannot decode: value length varint");
-                return new TagContext();
+                return TagContext::empty();
             }
 
             // Total size of all Tag key + value strings excluding serialization
@@ -135,7 +135,7 @@ class Binary {
             $tagsLen += $keyLen + $valLen;
             if ($tagsLen > TagContext::MAX_LENGTH) {
                 $err = new \Exception(TagContext::EX_INVALID_CONTEXT);
-                return new TagContext();
+                return TagContext::empty();
             }
 
             $idx += $cnt;
@@ -144,13 +144,13 @@ class Binary {
             $valueEnd = $idx + $valLen;
             if ($valueEnd > $strLen) {
                 $err = new \Exception("malformed encoding: length: $valLen, upper: $valueEnd, maxLength: $strLen");
-                return new TagContext();
+                return TagContext::empty();
             }
             try {
                 $value = TagValue::create(substr($str, $idx, $valLen));
             } catch (\Exception $e) {
                 $err = $e;
-                return new TagContext();
+                return TagContext::empty();
             }
             $idx = $valueEnd;
 

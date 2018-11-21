@@ -17,13 +17,7 @@
 
 namespace OpenCensus\Stats;
 
-use OpenCensus\Core\Context;
 use OpenCensus\Tags\TagContext;
-use OpenCensus\Stats\MeasurementMap;
-use OpenCensus\Stats\NoopMeasurementMap;
-use OpenCensus\Stats\Stats;
-use OpenCensus\Stats\Measurement;
-use OpenCensus\Stats\MeasurementInterface;
 use OpenCensus\Stats\Exporter\ExporterInterface;
 use OpenCensus\Stats\Exporter\NoopExporter;
 use OpenCensus\Stats\View\View;
@@ -131,7 +125,7 @@ class Stats
      */
     public static function newTagContext(): TagContext
     {
-        return new TagContext();
+        return TagContext::new();
     }
 
     /**
@@ -150,7 +144,7 @@ class Stats
     /**
      * Register one or multiple views.
      *
-     * @param View[] ...$views the views to register.
+     * @param View ...$views the views to register.
      * @return bool
      */
     public static function registerView(View ...$views): bool
@@ -161,7 +155,7 @@ class Stats
     /**
      * Unregister one or multiple views.
      *
-     * @param View[] ...$views the views to unregister.
+     * @param View ...$views the views to unregister.
      * @return bool
      */
     public static function unregisterView(View ...$views): bool

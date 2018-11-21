@@ -35,11 +35,14 @@ abstract class Measurement
     /**
      * Extended by the various Measurement classes to hold their payload.
      * @internal
+     *
+     * @param Measure $measure The measure this measurement belongs to.
+     * @param mixed $value The value of the measurement.
      */
     protected function __construct(Measure &$measure, $value)
     {
         $this->m = $measure;
-        $this->v = $v;
+        $this->v = $value;
     }
 
     /**

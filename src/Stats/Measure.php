@@ -65,6 +65,10 @@ abstract class Measure {
     /**
      * Called by our descendants.
      * @internal
+     *
+     * @param string $name The name of our Measure.
+     * @param string $description The description of our Measure.
+     * @param string $unit The unit type of our Measure.
      */
     protected function __construct(string $name, string $description, string $unit)
     {

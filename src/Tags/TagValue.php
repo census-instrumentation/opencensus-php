@@ -31,7 +31,7 @@ class TagValue
     const MAX_LENGTH = 255;
 
     /** @var string TagValue payload */
-    private $name;
+    private $value;
 
     private final function __construct(string $value)
     {

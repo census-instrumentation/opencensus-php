@@ -18,11 +18,7 @@
 namespace OpenCensus\Stats;
 
 use OpenCensus\Core\Context;
-use OpenCensus\Core\DaemonClient;
 use OpenCensus\Tags\TagContext;
-use OpenCensus\Stats\Stats;
-use OpenCensus\Stats\Measurement;
-use OpenCensus\Stats\MeasurementInterface;
 
 /**
  * MeasurementMap for recording Measurements.
@@ -85,8 +81,8 @@ class MeasurementMap implements MeasurementInterface
         // the record time only Tags as found in the provided $tags.
         $recordTags = clone TagContext::fromContext($ctx);
         if ($tags !== null) {
-            foreach($tags as $key => $value) {
-                $recordTags->upsert($key, $value);
+            foreach($tags->tags() as &$tag) {
+                $recordTags->upsert($tag->getKey(), $tag->getValue());
             }
         }
 

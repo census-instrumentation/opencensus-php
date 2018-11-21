@@ -17,7 +17,8 @@
 
 namespace OpenCensus\Stats;
 
-use OpenCensus\Stats\MeasurementInterface;
+use OpenCensus\Core\Context;
+use OpenCensus\Tags\TagContext;
 
 /**
  * NoopMeasurementMap is a Noop implementation for Measurement recording.

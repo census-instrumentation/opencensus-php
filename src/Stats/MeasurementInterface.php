@@ -19,7 +19,6 @@ namespace OpenCensus\Stats;
 
 use OpenCensus\Core\Context;
 use OpenCensus\Tags\TagContext;
-use OpenCensus\Stats\Measurement;
 
 /**
  * Interface for handling a Measurement Map.
