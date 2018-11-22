@@ -15,6 +15,7 @@ import (
 	"go.opencensus.io/zpages"
 
 	"github.com/census-instrumentation/opencensus-php/daemon"
+	"github.com/census-instrumentation/opencensus-php/daemon/processor/local"
 	"github.com/census-instrumentation/opencensus-php/daemon/unixsocket"
 )
 
@@ -25,7 +26,7 @@ const (
 	logInfo
 	logDebug
 
-	defaultOCAgentAddr      = "localhost:55678"
+	// defaultOCAgentAddr      = "localhost:55678"
 	defaultUnixSocketPath   = "/tmp/ocdaemon.sock"
 	defaultLogLevel         = logError
 	defaultMsgBufSize       = 1000
@@ -50,7 +51,7 @@ func main() {
 		flagUnixSocketPath   = fs.String("socket.path", defaultUnixSocketPath, "unix socket path to listen on")
 		flagVersion          = fs.Bool("version", false, "show version information")
 
-		processor      *daemon.Processor
+		processor      daemon.Processor
 		closeRequested bool
 	)
 
@@ -125,10 +126,8 @@ func main() {
 		if *flagMsgBufSize < 100 {
 			*flagMsgBufSize = 1000
 		}
-		processor = &daemon.Processor{
-			Logger:   logger,
-			Messages: make(chan *Message, *flagMsgBufSize),
-		}
+		processor = local.New(*flagMsgBufSize, logger)
+
 		g.Add(func() error {
 			return processor.Run()
 		}, func(error) {
@@ -143,7 +142,7 @@ func main() {
 		g.Add(func() error {
 			return uss.ListenAndServe()
 		}, func(error) {
-			uss.Close()
+			_ = uss.Close()
 		})
 	}
 	{

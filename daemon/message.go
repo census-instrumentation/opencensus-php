@@ -5,31 +5,31 @@ import (
 	"time"
 )
 
-type messageType int
+type MessageType int
 
-func (m messageType) String() string {
+func (m MessageType) String() string {
 	switch m {
-	case phpProcessInit:
+	case PHPProcessInit:
 		return "process init"
-	case phpProcessShutdown:
+	case PHPProcessShutdown:
 		return "process shutdown"
-	case phpRequestInit:
+	case PHPRequestInit:
 		return "request init"
-	case phpRequestShutdown:
+	case PHPRequestShutdown:
 		return "request shutdown"
 
-	case traceExport:
+	case TraceExport:
 		return "trace export"
 
-	case measureCreate:
+	case MeasureCreate:
 		return "create measure"
-	case viewReportingPeriod:
+	case ViewReportingPeriod:
 		return "reporting period"
-	case viewRegister:
+	case ViewRegister:
 		return "register view"
-	case viewUnregister:
+	case ViewUnregister:
 		return "unregister view"
-	case statsRecord:
+	case StatsRecord:
 		return "record stats"
 
 	default:
@@ -37,47 +37,47 @@ func (m messageType) String() string {
 	}
 }
 
-type measurementType int
+type MeasurementType int
 
 // php process / request types (1 - 19)
 const (
-	phpProcessInit messageType = iota + 1
-	phpProcessShutdown
-	phpRequestInit
-	phpRequestShutdown
+	PHPProcessInit MessageType = iota + 1
+	PHPProcessShutdown
+	PHPRequestInit
+	PHPRequestShutdown
 )
 
 // trace types (20 - 39)
 const (
-	traceExport messageType = iota + 20
+	TraceExport MessageType = iota + 20
 )
 
 // stats types (40 - ...)
 const (
-	measureCreate messageType = iota + 40
-	viewReportingPeriod
-	viewRegister
-	viewUnregister
-	statsRecord
+	MeasureCreate MessageType = iota + 40
+	ViewReportingPeriod
+	ViewRegister
+	ViewUnregister
+	StatsRecord
 )
 
 // measurement value types
 const (
-	typeInt measurementType = iota + 1
-	typeFloat
-	typeUnknown = 255
+	TypeInt MeasurementType = iota + 1
+	TypeFloat
+	TypeUnknown = 255
 )
 
 // Message holds an incoming message header and raw data payload.
 type Message struct {
-	Type        messageType
+	Type        MessageType
 	SequenceNr  uint64
 	ProcessID   uint64
 	ThreadID    uint64
 	StartTime   time.Time
 	ReceiveTime time.Time
 	MsgLen      uint64
-	rawPayload  []byte
+	RawPayload  []byte
 }
 
 // AppendData appends raw Message data to the internal Message buffer.
@@ -88,7 +88,7 @@ type Message struct {
 func (mh *Message) AppendData(data []byte) int {
 	var (
 		msgLen    = int(mh.MsgLen)
-		offset    = len(mh.rawPayload)
+		offset    = len(mh.RawPayload)
 		remainder = msgLen - offset - len(data)
 	)
 	if remainder < 0 {
@@ -96,9 +96,9 @@ func (mh *Message) AppendData(data []byte) int {
 		data = data[0 : msgLen-offset]
 	}
 
-	// re-slice rawPayload to fit additional data
-	mh.rawPayload = mh.rawPayload[0 : offset+len(data)]
-	copy(mh.rawPayload[offset:], data)
+	// re-slice RawPayload to fit additional data
+	mh.RawPayload = mh.RawPayload[0 : offset+len(data)]
+	copy(mh.RawPayload[offset:], data)
 
 	return remainder
 }

@@ -28,7 +28,7 @@ type Handler interface {
 // ConnectionHandler implements our Daemon protocol.
 type ConnectionHandler struct {
 	Logger    log.Logger
-	Processor *Processor
+	Processor Processor
 }
 
 // Handle implements Handler and can use a generic net.Conn network connection
@@ -49,7 +49,7 @@ type connection struct {
 	tid     uint64
 	float32 *bool
 	msg     *Message
-	proc    *Processor
+	proc    Processor
 }
 
 func (p *connection) handle(conn net.Conn) {
@@ -194,7 +194,7 @@ func (p *connection) parseHeader(buf []byte) (hdr *Message, n int) {
 		}
 	}()
 
-	hdr = &Message{Type: messageType(buf[idx])}
+	hdr = &Message{Type: MessageType(buf[idx])}
 	idx++
 
 	hdr.SequenceNr, n = binary.Uvarint(buf[idx:])
@@ -240,8 +240,8 @@ func (p *connection) parseHeader(buf []byte) (hdr *Message, n int) {
 	}
 	idx += n
 
-	// create rawPayload storage capacity
-	hdr.rawPayload = make([]byte, 0, hdr.MsgLen)
+	// create RawPayload storage capacity
+	hdr.RawPayload = make([]byte, 0, hdr.MsgLen)
 
 	return hdr, idx
 }
