@@ -25,32 +25,34 @@ type Handler interface {
 	Handle(net.Conn)
 }
 
-// ConnectionHandler implements our PHP Daemon protocol.
+// ConnectionHandler implements our Daemon protocol.
 type ConnectionHandler struct {
-	Logger log.Logger
+	Logger    log.Logger
+	Processor *Processor
 }
 
 // Handle implements Handler and can use a generic net.Conn network connection
-// to exchange data with PHP Daemon clients.
+// to exchange data with Daemon clients.
 func (c *ConnectionHandler) Handle(conn net.Conn) {
-	level.Info(c.Logger).Log("msg", "connected")
+	_ = level.Info(c.Logger).Log("msg", "connected")
 	defer func() {
-		level.Info(c.Logger).Log("msg", "disconnected")
+		_ = level.Info(c.Logger).Log("msg", "disconnected")
 	}()
 
-	hnd := phpConnection{l: c.Logger}
+	hnd := connection{l: c.Logger, proc: c.Processor}
 	hnd.handle(conn)
 }
 
-type phpConnection struct {
+type connection struct {
 	l       log.Logger
 	pid     uint64
 	tid     uint64
 	float32 *bool
-	msg     *message
+	msg     *Message
+	proc    *Processor
 }
 
-func (p *phpConnection) handle(conn net.Conn) {
+func (p *connection) handle(conn net.Conn) {
 	var (
 		buf    [bufSize]byte
 		offset int
@@ -61,7 +63,7 @@ func (p *phpConnection) handle(conn net.Conn) {
 		n, err := conn.Read(buf[offset:])
 		if err != nil {
 			if err != io.EOF {
-				level.Error(p.l).Log(
+				_ = level.Error(p.l).Log(
 					"pid", p.pid,
 					"tid", p.tid,
 					"msg", err.Error(),
@@ -71,10 +73,10 @@ func (p *phpConnection) handle(conn net.Conn) {
 		}
 
 		if offset > 0 && bytes.HasPrefix(buf[offset:], som) {
-			// we just received (the beginning of) a new message while having
-			// existing unfinished message data. We'll have to drop the existing
+			// we just received (the beginning of) a new Message while having
+			// existing unfinished Message data. We'll have to drop the existing
 			// payload as it won't be finished.
-			level.Warn(p.l).Log(
+			_ = level.Warn(p.l).Log(
 				"pid", p.pid,
 				"tid", p.tid,
 				"msg", "received new payload, previous payload incomplete",
@@ -112,11 +114,11 @@ func (p *phpConnection) handle(conn net.Conn) {
 	}
 }
 
-func (p *phpConnection) parseMessage(buf []byte) (int, bool) {
+func (p *connection) parseMessage(buf []byte) (int, bool) {
 	var idx, n int
 
 	if p.msg == nil {
-		// check if we have a lingering truncated message payload at the start
+		// check if we have a lingering truncated Message payload at the start
 		// of our buffer
 		idx = bytes.Index(buf, som)
 		switch idx {
@@ -130,16 +132,16 @@ func (p *phpConnection) parseMessage(buf []byte) (int, bool) {
 			}
 			return len(buf) - 4, true
 		case 0:
-			// at beginning of message
+			// at beginning of Message
 		default:
 			// we have lingering data
-			level.Warn(p.l).Log(
+			_ = level.Warn(p.l).Log(
 				"pid", p.pid,
 				"tid", p.tid,
 				"msg", "ignoring lingering data",
 			)
 			if len(buf)-idx < 17 {
-				// not enough data available for a message header, bail out.
+				// not enough data available for a Message header, bail out.
 				return idx, true
 			}
 		}
@@ -148,11 +150,11 @@ func (p *phpConnection) parseMessage(buf []byte) (int, bool) {
 		p.msg, n = p.parseHeader(buf[idx:])
 		switch {
 		case n < 0:
-			// decoding error, invalidate this message
-			level.Error(p.l).Log(
+			// decoding error, invalidate this Message
+			_ = level.Error(p.l).Log(
 				"pid", p.pid,
 				"tid", p.tid,
-				"msg", "error while decoding varint, invalidating message",
+				"msg", "error while decoding varint, invalidating Message",
 			)
 			return idx - n, false
 		case n == 0:
@@ -164,7 +166,7 @@ func (p *phpConnection) parseMessage(buf []byte) (int, bool) {
 		}
 	}
 
-	// try to read message payload
+	// try to read Message payload
 
 	remainder := p.msg.AppendData(buf[idx:])
 	if remainder > 0 {
@@ -173,16 +175,15 @@ func (p *phpConnection) parseMessage(buf []byte) (int, bool) {
 	}
 
 	// received full payload
-	m := p.msg.ParseMessage()
-	level.Debug(p.l).Log("payload", fmt.Sprintf("%q", m))
-	// spew.Dump(m)
+	p.proc.Process(p.msg)
+	_ = level.Debug(p.l).Log("payload", fmt.Sprintf("%q", p.msg))
 	p.msg = nil
 
 	return len(buf) + remainder, remainder == 0
 }
 
-func (p *phpConnection) parseHeader(buf []byte) (hdr *message, n int) {
-	// advance beyond start of message marker
+func (p *connection) parseHeader(buf []byte) (hdr *Message, n int) {
+	// advance beyond start of Message marker
 	idx := 4
 
 	defer func() {
@@ -193,7 +194,7 @@ func (p *phpConnection) parseHeader(buf []byte) (hdr *message, n int) {
 		}
 	}()
 
-	hdr = &message{Type: msgType(buf[idx])}
+	hdr = &Message{Type: messageType(buf[idx])}
 	idx++
 
 	hdr.SequenceNr, n = binary.Uvarint(buf[idx:])

@@ -1,21 +1,47 @@
 package daemon
 
 import (
+	"strconv"
 	"time"
-
-	"gitlab.xacte.com/platform/utils/tag"
-	"go.opencensus.io/exemplar"
-	"go.opencensus.io/stats"
-	"go.opencensus.io/stats/view"
-	"go.opencensus.io/trace"
 )
 
-type msgType int
+type messageType int
+
+func (m messageType) String() string {
+	switch m {
+	case phpProcessInit:
+		return "process init"
+	case phpProcessShutdown:
+		return "process shutdown"
+	case phpRequestInit:
+		return "request init"
+	case phpRequestShutdown:
+		return "request shutdown"
+
+	case traceExport:
+		return "trace export"
+
+	case measureCreate:
+		return "create measure"
+	case viewReportingPeriod:
+		return "reporting period"
+	case viewRegister:
+		return "register view"
+	case viewUnregister:
+		return "unregister view"
+	case statsRecord:
+		return "record stats"
+
+	default:
+		return strconv.Itoa(int(m))
+	}
+}
+
 type measurementType int
 
 // php process / request types (1 - 19)
 const (
-	phpProcessInit msgType = iota + 1
+	phpProcessInit messageType = iota + 1
 	phpProcessShutdown
 	phpRequestInit
 	phpRequestShutdown
@@ -23,12 +49,12 @@ const (
 
 // trace types (20 - 39)
 const (
-	traceExport msgType = iota + 20
+	traceExport messageType = iota + 20
 )
 
 // stats types (40 - ...)
 const (
-	measureCreate msgType = iota + 40
+	measureCreate messageType = iota + 40
 	viewReportingPeriod
 	viewRegister
 	viewUnregister
@@ -42,10 +68,9 @@ const (
 	typeUnknown = 255
 )
 
-type Message interface{}
-
-type message struct {
-	Type        msgType
+// Message holds an incoming message header and raw data payload.
+type Message struct {
+	Type        messageType
 	SequenceNr  uint64
 	ProcessID   uint64
 	ThreadID    uint64
@@ -55,127 +80,12 @@ type message struct {
 	rawPayload  []byte
 }
 
-type processInit struct {
-	message
-}
-
-type processShutdown struct {
-	message
-}
-
-type requestInit struct {
-	message
-	ProtocolVersion int
-	PHPVersion      string
-	ZendVersion     string
-}
-
-type requestShutdown struct {
-	message
-}
-
-type exportedSpans struct {
-	message
-	Spans struct {
-		TraceID             trace.TraceID
-		SpanID              trace.SpanID
-		ParentSpanID        trace.SpanID
-		Name                string
-		Kind                int
-		StackTrace          interface{}
-		StartTime           time.Time
-		EndTime             time.Time
-		Status              trace.Status
-		Attributes          []trace.Attribute
-		TimeEvents          []trace.MessageEvent
-		Links               []trace.Link
-		SameProcessAsParent bool
-	}
-}
-
-type measure struct {
-	message
-	Type    measurementType
-	Measure stats.Measure
-}
-
-type reportingPeriod struct {
-	message
-	Interval time.Duration
-}
-
-type registerView struct {
-	message
-	Views []view.View
-}
-
-type unregisterView struct {
-	message
-	Names []string
-}
-
-type recordStats struct {
-	message
-	Measurements []stats.Measurement
-	Tags         tag.Tags
-	Attachements exemplar.Attachments
-}
-
-func (mh message) ParseMessage() Message {
-	mh.ReceiveTime = time.Now()
-
-	switch mh.Type {
-	case phpProcessInit:
-		return &processInit{
-			message: mh,
-		}
-	case phpProcessShutdown:
-		return &processShutdown{
-			message: mh,
-		}
-	case phpRequestInit:
-		return &requestInit{
-			message: mh,
-		}
-	case phpRequestShutdown:
-		return &requestShutdown{
-			message: mh,
-		}
-	case traceExport:
-		return &exportedSpans{
-			message: mh,
-		}
-	case measureCreate:
-		return &measure{
-			message: mh,
-		}
-	case viewReportingPeriod:
-		return &reportingPeriod{
-			message: mh,
-		}
-	case viewRegister:
-		return &registerView{
-			message: mh,
-		}
-	case viewUnregister:
-		return &unregisterView{
-			message: mh,
-		}
-	case statsRecord:
-		return &recordStats{
-			message: mh,
-		}
-	default:
-		return nil
-	}
-}
-
-// AppendData appends raw message data to the internal message buffer.
+// AppendData appends raw Message data to the internal Message buffer.
 // It will return the remainder after the append action. A negative remainder
-// signals data holding more information than needed to complete the message. A
-// positive remainder signals the amount of data still needed to complete the
-// message.
-func (mh *message) AppendData(data []byte) int {
+// signals that the provided data holds more information than needed to complete
+// the Message. A positive remainder signals the amount of data still needed to
+// complete the Message.
+func (mh *Message) AppendData(data []byte) int {
 	var (
 		msgLen    = int(mh.MsgLen)
 		offset    = len(mh.rawPayload)
