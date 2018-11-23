@@ -173,7 +173,7 @@ class TagContext
         if ($ctx === null) {
             $ctx = Context::current();
         }
-        return $ctx->value(self::CTX_KEY, new TagContext());
+        return $ctx->value(self::CTX_KEY, new self());
     }
 
     /**
@@ -190,7 +190,7 @@ class TagContext
     }
     /**
      * Creates a new Context with our TagContext attached.
-     * To propagate a TagContext to dowstream methods and downstream RPCs, add a
+     * To propagate a TagContext to downstream methods and downstream RPCs, add a
      * TagContext to the current Context. If there is already a TagContext in
      * the current context, it will be replaced with this TagContext.
      *
