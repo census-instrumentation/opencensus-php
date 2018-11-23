@@ -37,8 +37,6 @@ func (m MessageType) String() string {
 	}
 }
 
-type MeasurementType int
-
 // php process / request types (1 - 19)
 const (
 	PHPProcessInit MessageType = iota + 1
@@ -61,11 +59,24 @@ const (
 	StatsRecord
 )
 
+type MeasurementType int
+
 // measurement value types
 const (
 	TypeInt MeasurementType = iota + 1
 	TypeFloat
 	TypeUnknown = 255
+)
+
+type AggregationType int
+
+// aggregation types
+const (
+	None AggregationType = iota
+	Count
+	Sum
+	Distribution
+	LastValue
 )
 
 // Message holds an incoming message header and raw data payload.
@@ -77,6 +88,7 @@ type Message struct {
 	StartTime   time.Time
 	ReceiveTime time.Time
 	MsgLen      uint64
+	Float32     bool
 	RawPayload  []byte
 }
 

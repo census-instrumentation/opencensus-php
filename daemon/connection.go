@@ -232,6 +232,7 @@ func (p *connection) parseHeader(buf []byte) (hdr *Message, n int) {
 		f := math.Float64frombits(binary.BigEndian.Uint64(startTime))
 		hdr.StartTime = time.Unix(int64(f), int64((f-math.Floor(f))*1e9))
 	}
+	hdr.Float32 = *p.float32
 	idx += 8
 
 	hdr.MsgLen, n = binary.Uvarint(buf[idx:])
