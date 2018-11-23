@@ -176,7 +176,7 @@ class DaemonClient implements StatsExporter, TraceExporter
 
     public static function setReportingPeriod(float $interval): bool
     {
-        if ($interval < 0) {
+        if ($interval < 1.0) {
             return false;
         }
         $msg = pack('E', $interval);
@@ -185,6 +185,8 @@ class DaemonClient implements StatsExporter, TraceExporter
 
     public static function registerView(View ...$views): bool
     {
+        // bail out if we don't have views
+        if (count($views) === 0) return true;
 
         $msg = '';
         self::encodeUnsigned($msg, count($views));
@@ -198,8 +200,6 @@ class DaemonClient implements StatsExporter, TraceExporter
             }
             $measure = $view->getMeasure();
             $msg .= self::encodeString($measure->getName());
-            $msg .= self::encodeString($measure->getDescription());
-            $msg .= self::encodeString($measure->getUnit());
             $aggregation = $view->getAggregation();
             self::encodeUnsigned($msg, $aggregation->getType());
             if ($aggregation->getType() === Aggregation::DISTRIBUTION) {
@@ -215,6 +215,9 @@ class DaemonClient implements StatsExporter, TraceExporter
 
     public static function unregisterView(View ...$views): bool
     {
+        // bail out if we don't have views
+        if (count($views) === 0) return true;
+
         $msg = '';
         self::encodeUnsigned($msg, count($views));
         foreach ($views as $view) {
