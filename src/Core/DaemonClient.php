@@ -280,7 +280,6 @@ class DaemonClient implements StatsExporter, TraceExporter
             ];
         }, $spans));
         $len = '';
-        self::encodeUnsigned($len, strlen($spanData));
 
         return self::$instance->send(self::MSG_TRACE_EXPORT, $len . $spanData);
     }
