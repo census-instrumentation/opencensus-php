@@ -1,8 +1,10 @@
 package local
 
 import (
+	"bytes"
 	"context"
 	"encoding/binary"
+	"encoding/json"
 	"math"
 	"sync"
 	"time"
@@ -10,9 +12,11 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"go.opencensus.io/exemplar"
+	"go.opencensus.io/plugin/ochttp/propagation/b3"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
+	"go.opencensus.io/trace"
 
 	"github.com/census-instrumentation/opencensus-php/daemon"
 )
@@ -23,12 +27,82 @@ type measurement struct {
 	val   interface{}
 }
 
+type span struct {
+	TraceID      string      `json:"traceId"`
+	SpanID       string      `json:"spanId"`
+	ParentSpanID string      `json:"parentSpanId"`
+	Name         string      `json:"name"`
+	Kind         string      `json:"kind"`
+	StackTrace   []string    `json:"stackTrace"`
+	StartTime    dateTime    `json:"startTime"`
+	EndTime      dateTime    `json:"endTime"`
+	Status       status      `json:"status"`
+	Attributes   attributes  `json:"attributes"`
+	TimeEvents   interface{} `json:"timeEvents"`
+	Links        []link      `json:"links"`
+	SameProcess  bool        `json:"sameProcessAsParentSpan"`
+}
+
+type dateTime time.Time
+
+func (dt *dateTime) UnmarshalJSON(data []byte) error {
+	if dt == nil {
+		return nil
+	}
+	pdt := &struct {
+		Date         string `json:"date"`
+		TimezoneType int    `json:"timezone_type"`
+		Timezone     string `json:"timezone"`
+	}{}
+	if err := json.Unmarshal(data, pdt); err != nil {
+		return err
+	}
+	gdt, err := time.Parse("2006-01-02 15:04:05.000000", pdt.Date)
+	if err != nil {
+		return err
+	}
+	*dt = dateTime(gdt)
+	return nil
+}
+
+type status struct {
+	Code    int32  `json:"code"`
+	Message string `json:"message"`
+}
+
+type attributes map[string]interface{}
+
+func (a *attributes) UnmarshalJSON(data []byte) error {
+	type alias map[string]interface{}
+	if a == nil {
+		return nil
+	}
+	if bytes.Equal(data, []byte("[]")) {
+		return nil
+	}
+	var val alias
+	err := json.Unmarshal(data, &val)
+	if err != nil {
+		return err
+	}
+	*a = map[string]interface{}(val)
+	return nil
+}
+
+type link struct {
+	TraceID    []byte            `json:"traceId"`
+	SpanID     []byte            `json:"spanId"`
+	Type       string            `json:"type"`
+	Attributes map[string]string `json:"attributes"`
+}
+
 type Processor struct {
 	mu       sync.RWMutex
 	logger   log.Logger
 	messages chan *daemon.Message
 
 	measures map[string]stats.Measure
+	traceExp []trace.Exporter
 }
 
 func New(msgBufSize int, l log.Logger) *Processor {
@@ -53,6 +127,8 @@ func (p *Processor) Run() error {
 			p.unregisterView(m)
 		case daemon.StatsRecord:
 			p.recordStats(m)
+		case daemon.TraceExport:
+			p.exportSpans(m)
 		}
 	}
 	return nil
@@ -395,6 +471,66 @@ func (p *Processor) recordStats(m *daemon.Message) bool {
 		return false
 	}
 
+	return true
+}
+
+func (p *Processor) exportSpans(m *daemon.Message) bool {
+	if len(p.traceExp) == 0 {
+		// no need to parse if not exported
+		return true
+	}
+
+	var spans []span
+	if err := json.Unmarshal(m.RawPayload, &spans); err != nil {
+		_ = level.Warn(p.logger).Log("msg", "invalid message payload encountered", "err", err)
+		return false
+	}
+	for _, span := range spans {
+		traceID, ok := b3.ParseTraceID(span.TraceID)
+		if !ok {
+			continue
+		}
+		spanID, ok := b3.ParseSpanID(span.SpanID)
+		if !ok {
+			continue
+		}
+		parentSpanID, _ := b3.ParseSpanID(span.ParentSpanID)
+
+		s := &trace.SpanData{
+			SpanContext: trace.SpanContext{
+				TraceID: traceID,
+				SpanID:  spanID,
+				// TODO: TraceOptions
+				// TODO: Tracestate
+			},
+			ParentSpanID: parentSpanID,
+			SpanKind:     trace.SpanKindUnspecified,
+			Name:         span.Name,
+			// TODO: optionally annotate with span.StackTrace
+			StartTime:  time.Time(span.StartTime),
+			EndTime:    time.Time(span.EndTime),
+			Attributes: make(map[string]interface{}),
+			// TODO: Annotations (timeEvents)
+			// TODO: MessageEvent
+			Status: trace.Status(span.Status),
+			// TODO: Links
+			HasRemoteParent: !span.SameProcess,
+		}
+		switch span.Kind {
+		case "CLIENT":
+			s.SpanKind = trace.SpanKindClient
+		case "SERVER":
+			s.SpanKind = trace.SpanKindServer
+		}
+		for key, val := range span.Attributes {
+			s.Attributes[key] = val
+		}
+
+		for _, exporter := range p.traceExp {
+			exporter.ExportSpan(s)
+		}
+
+	}
 	return true
 }
 
