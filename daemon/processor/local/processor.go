@@ -1,7 +1,6 @@
 package local
 
 import (
-	"bytes"
 	"context"
 	"encoding/binary"
 	"encoding/json"
@@ -21,100 +20,39 @@ import (
 	"github.com/census-instrumentation/opencensus-php/daemon"
 )
 
-type measurement struct {
-	name  string
-	mType daemon.MeasurementType
-	val   interface{}
-}
-
-type span struct {
-	TraceID      string      `json:"traceId"`
-	SpanID       string      `json:"spanId"`
-	ParentSpanID string      `json:"parentSpanId"`
-	Name         string      `json:"name"`
-	Kind         string      `json:"kind"`
-	StackTrace   []string    `json:"stackTrace"`
-	StartTime    dateTime    `json:"startTime"`
-	EndTime      dateTime    `json:"endTime"`
-	Status       status      `json:"status"`
-	Attributes   attributes  `json:"attributes"`
-	TimeEvents   interface{} `json:"timeEvents"`
-	Links        []link      `json:"links"`
-	SameProcess  bool        `json:"sameProcessAsParentSpan"`
-}
-
-type dateTime time.Time
-
-func (dt *dateTime) UnmarshalJSON(data []byte) error {
-	if dt == nil {
-		return nil
-	}
-	pdt := &struct {
-		Date         string `json:"date"`
-		TimezoneType int    `json:"timezone_type"`
-		Timezone     string `json:"timezone"`
-	}{}
-	if err := json.Unmarshal(data, pdt); err != nil {
-		return err
-	}
-	gdt, err := time.Parse("2006-01-02 15:04:05.000000", pdt.Date)
-	if err != nil {
-		return err
-	}
-	*dt = dateTime(gdt)
-	return nil
-}
-
-type status struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
-}
-
-type attributes map[string]interface{}
-
-func (a *attributes) UnmarshalJSON(data []byte) error {
-	type alias map[string]interface{}
-	if a == nil {
-		return nil
-	}
-	if bytes.Equal(data, []byte("[]")) {
-		return nil
-	}
-	var val alias
-	err := json.Unmarshal(data, &val)
-	if err != nil {
-		return err
-	}
-	*a = map[string]interface{}(val)
-	return nil
-}
-
-type link struct {
-	TraceID    []byte            `json:"traceId"`
-	SpanID     []byte            `json:"spanId"`
-	Type       string            `json:"type"`
-	Attributes map[string]string `json:"attributes"`
-}
-
 type Processor struct {
-	mu       sync.RWMutex
-	logger   log.Logger
-	messages chan *daemon.Message
+	mu             sync.RWMutex
+	droppedTimeout time.Time
+	messages       chan *daemon.Message
+	measures       map[string]stats.Measure
 
-	measures map[string]stats.Measure
+	logger   log.Logger
 	traceExp []trace.Exporter
 }
 
-func New(msgBufSize int, l log.Logger) *Processor {
+// New returns a new Processor.
+func New(msgBufSize int, exporters []trace.Exporter, l log.Logger) *Processor {
+	registerViews.Do(func() {
+		if err := view.Register(
+			viewProcLatency, viewLatency, viewReqCount, viewProcCount,
+			viewDropCount, viewMsgSize,
+		); err != nil {
+			l.Log("msg", "unable to register internal views", "err", err)
+		}
+	})
 	return &Processor{
 		logger:   l,
 		messages: make(chan *daemon.Message, msgBufSize),
 		measures: make(map[string]stats.Measure),
+		traceExp: exporters,
 	}
 }
 
+// Run watches for incoming messages on our internal channel and dispatches them
+// to the correct handler.
 func (p *Processor) Run() error {
 	for m := range p.messages {
+		m.StartTime = time.Now()
 		_ = level.Debug(p.logger).Log("msg", "processing message", "type", m.Type)
 		switch m.Type {
 		case daemon.MeasureCreate:
@@ -130,6 +68,14 @@ func (p *Processor) Run() error {
 		case daemon.TraceExport:
 			p.exportSpans(m)
 		}
+		ctx, _ := tag.New(context.Background(), tag.Insert(tagMsgType, m.Type.String()))
+		stats.Record(ctx,
+			msgReqCount.M(1),
+			msgProcCount.M(1),
+			msgSize.M(int64(m.MsgLen)),
+			procLatency.M(float64(time.Since(m.ReceiveTime))/float64(time.Millisecond)),
+			msgLatency.M(float64(time.Since(m.StartTime))/float64(time.Millisecond)),
+		)
 	}
 	return nil
 }
@@ -141,7 +87,18 @@ func (p *Processor) Process(m *daemon.Message) bool {
 	case p.messages <- m:
 		return true
 	default:
-		_ = level.Error(p.logger).Log("msg", "channel buffer full, dropping message")
+		ctx, _ := tag.New(context.Background(), tag.Insert(tagMsgType, m.Type.String()))
+		stats.Record(ctx,
+			msgReqCount.M(1),
+			msgDropCount.M(1),
+			msgSize.M(int64(m.MsgLen)),
+			msgLatency.M(float64(time.Since(m.StartTime))/float64(time.Millisecond)),
+		)
+		if time.Now().Add(10 * time.Second).After(p.droppedTimeout) {
+			// limit the amount of log entries generated on dropped daemon messages.
+			_ = level.Error(p.logger).Log("msg", "channel buffer full, dropping messages")
+			p.droppedTimeout = time.Now()
+		}
 		return false
 	}
 }
@@ -292,29 +249,39 @@ func (p *Processor) registerView(m *daemon.Message) bool {
 			return false
 		}
 
-		v.Aggregation = &view.Aggregation{}
 		aggregationType, n := binary.Uvarint(m.RawPayload[idx:])
 		if n < 1 {
 			_ = level.Warn(p.logger).Log("msg", "invalid message payload encountered")
 			return false
 		}
-		v.Aggregation.Type = view.AggType(aggregationType)
 		idx += n
 
-		if daemon.AggregationType(aggregationType) == daemon.Distribution {
+		switch view.AggType(aggregationType) {
+		case view.AggTypeCount:
+			v.Aggregation = view.Count()
+		case view.AggTypeSum:
+			v.Aggregation = view.Sum()
+		case view.AggTypeDistribution:
 			boundaryCount, n := binary.Uvarint(m.RawPayload[idx:])
 			if n < 1 {
 				_ = level.Warn(p.logger).Log("msg", "invalid message payload encountered")
 				return false
 			}
 			idx += n
-
+			var boundaries []float64
 			for k := uint64(0); k < boundaryCount; k++ {
 				boundary, n := decodeFloat(m, m.RawPayload[idx:])
-				v.Aggregation.Buckets = append(v.Aggregation.Buckets, boundary)
+				boundaries = append(boundaries, boundary)
 				idx += n
 			}
+			v.Aggregation = view.Distribution(boundaries...)
+		case view.AggTypeLastValue:
+			v.Aggregation = view.LastValue()
+		default:
+			_ = level.Warn(p.logger).Log("msg", "invalid message payload encountered")
+			return false
 		}
+
 		views = append(views, v)
 	}
 
@@ -322,6 +289,7 @@ func (p *Processor) registerView(m *daemon.Message) bool {
 		_ = level.Error(p.logger).Log("msg", "register views failed.", "err", err)
 		return false
 	}
+
 	return true
 }
 
@@ -367,7 +335,7 @@ func (p *Processor) recordStats(m *daemon.Message) bool {
 	}()
 
 	measurementCount, idx := binary.Uvarint(m.RawPayload)
-	if idx < 1 {
+	if idx < 1 || measurementCount == 0 {
 		_ = level.Warn(p.logger).Log("msg", "invalid message payload encountered")
 		return false
 	}
@@ -463,6 +431,7 @@ func (p *Processor) recordStats(m *daemon.Message) bool {
 
 	ms = p.processMeasurement(measurements)
 	if len(ms) == 0 {
+		_ = level.Error(p.logger).Log("msg", "invalid message payload encountered", "err", "no measurements recorded")
 		return false
 	}
 
@@ -543,17 +512,29 @@ func (p *Processor) processMeasurement(ms []*measurement) []stats.Measurement {
 	for _, m := range ms {
 		mm, ok := p.measures[m.name]
 		if !ok {
+			_ = level.Debug(p.logger).Log("msg", "measure not found", "name", m.name)
 			continue
 		}
+
 		switch m.mType {
 		case daemon.TypeInt:
-			if im, ok := mm.(stats.Int64Measure); ok {
-				measurements = append(measurements, im.M(m.val.(int64)))
+			if im, ok := mm.(*stats.Int64Measure); ok {
+				if val, ok := m.val.(uint64); ok {
+					measurements = append(measurements, im.M(int64(val)))
+					continue
+				}
 			}
+			_ = level.Debug(p.logger).Log("msg", "expected measurement or value type not found", "name", m.name)
 		case daemon.TypeFloat:
-			if fm, ok := mm.(stats.Float64Measure); ok {
-				measurements = append(measurements, fm.M(m.val.(float64)))
+			if fm, ok := mm.(*stats.Float64Measure); ok {
+				if val, ok := m.val.(float64); ok {
+					measurements = append(measurements, fm.M(val))
+					continue
+				}
 			}
+			_ = level.Debug(p.logger).Log("msg", "expected float measurement or value type not found", "name", m.name)
+		default:
+			_ = level.Debug(p.logger).Log("msg", "unknown measurement type", "type", m.mType)
 		}
 	}
 

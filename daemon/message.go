@@ -68,17 +68,6 @@ const (
 	TypeUnknown = 255
 )
 
-type AggregationType int
-
-// aggregation types
-const (
-	None AggregationType = iota
-	Count
-	Sum
-	Distribution
-	LastValue
-)
-
 // Message holds an incoming message header and raw data payload.
 type Message struct {
 	Type        MessageType

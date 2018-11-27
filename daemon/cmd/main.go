@@ -9,9 +9,12 @@ import (
 	"os/signal"
 	"syscall"
 
+	"contrib.go.opencensus.io/exporter/ocagent"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/oklog/run"
+	"go.opencensus.io/stats/view"
+	"go.opencensus.io/trace"
 	"go.opencensus.io/zpages"
 
 	"github.com/census-instrumentation/opencensus-php/daemon"
@@ -20,13 +23,9 @@ import (
 )
 
 const (
-	logNone = iota
-	logError
-	logWarn
-	logInfo
-	logDebug
+	serviceName = "OCDaemon-PHP"
 
-	// defaultOCAgentAddr      = "localhost:55678"
+	defaultOCAgentAddr      = "localhost:55678"
 	defaultUnixSocketPath   = "/tmp/ocdaemon.sock"
 	defaultLogLevel         = logError
 	defaultMsgBufSize       = 1000
@@ -34,22 +33,30 @@ const (
 	defaultZPagesPathPrefix = "/debug"
 )
 
+const (
+	logNone = iota
+	logError
+	logWarn
+	logInfo
+	logDebug
+)
+
 var (
-	serviceName  = "OCDaemon-PHP"
 	buildVersion string
 	buildDate    string
 )
 
 func main() {
 	var (
-		fs = flag.NewFlagSet("", flag.ExitOnError)
-		// flagOCAgentAddr    = fs.String("ocagent.addr", defaultOCAgentAddr, "host:port of the OC Agent service")
-		flagLogLevel         = fs.Int("log.level", defaultLogLevel, "logging level")
-		flagMsgBufSize       = fs.Int("msg.bufsize", defaultMsgBufSize, "size of buffered message channel")
+		fs                   = flag.NewFlagSet("", flag.ExitOnError)
+		flagOCAgentAddr      = fs.String("ocagent.addr", defaultOCAgentAddr, "Address of the OpenCensus Agent")
+		flagServiceName      = fs.String("php.servicename", os.Getenv("HOSTNAME"), "Name of our PHP service")
+		flagLogLevel         = fs.Int("log.level", defaultLogLevel, "Logging level to use")
+		flagMsgBufSize       = fs.Int("msg.bufsize", defaultMsgBufSize, "Size of buffered message channel")
 		flagZPagesAddr       = fs.String("zpages.addr", defaultZPagesAddr, "zPages bind address")
 		flagZPagesPathPrefix = fs.String("zpages.path", defaultZPagesPathPrefix, "zPages path prefix")
-		flagUnixSocketPath   = fs.String("socket.path", defaultUnixSocketPath, "unix socket path to listen on")
-		flagVersion          = fs.Bool("version", false, "show version information")
+		flagUnixSocketPath   = fs.String("socket.path", defaultUnixSocketPath, "Unix socket path to listen on")
+		flagVersion          = fs.Bool("version", false, "Show version information")
 
 		processor      daemon.Processor
 		closeRequested bool
@@ -86,8 +93,7 @@ func main() {
 		case logDebug:
 			logger = level.NewFilter(logger, level.AllowDebug())
 		default:
-			_, _ = fmt.Fprintf(os.Stderr, "invalid log level %d\n", *flagLogLevel)
-			os.Exit(1)
+			logger = level.NewFilter(logger, level.AllowError())
 		}
 		logger = log.With(logger,
 			"svc", serviceName,
@@ -97,7 +103,7 @@ func main() {
 
 	}
 
-	_ = level.Info(logger).Log("msg", "service started")
+	_ = level.Info(logger).Log("msg", "service started", "agent", *flagOCAgentAddr)
 	defer func() {
 		_ = level.Info(logger).Log("msg", "service ended")
 	}()
@@ -111,11 +117,13 @@ func main() {
 			mux = http.NewServeMux()
 		)
 		zpages.Handle(mux, *flagZPagesPathPrefix)
+		l, err = net.Listen("tcp", *flagZPagesAddr)
+
+		if err != nil {
+			_ = level.Error(logger).Log("msg", "failed to bind to requested zPages address", "err", err)
+			os.Exit(1)
+		}
 		g.Add(func() error {
-			l, err = net.Listen("tcp", *flagZPagesAddr)
-			if err != nil {
-				return err
-			}
 			return http.Serve(l, mux)
 		}, func(error) {
 			_ = l.Close()
@@ -126,12 +134,35 @@ func main() {
 		if *flagMsgBufSize < 100 {
 			*flagMsgBufSize = 1000
 		}
-		processor = local.New(*flagMsgBufSize, logger)
+
+		if *flagServiceName == "" {
+			*flagServiceName = serviceName
+		}
+
+		agentExporter, err := ocagent.NewExporter(
+			ocagent.WithInsecure(),
+			ocagent.WithAddress(*flagOCAgentAddr),
+			ocagent.WithServiceName(*flagServiceName),
+		)
+		if err != nil {
+			_ = level.Error(logger).Log("msg", "failed to create OCAgent exporter", "err", err)
+			os.Exit(1)
+		}
+
+		// enables Daemon internal traces
+		trace.RegisterExporter(agentExporter)
+
+		// enables Daemon and PHP Process Views
+		view.RegisterExporter(agentExporter)
+
+		// provide agent as exporter for proxied spans
+		processor = local.New(*flagMsgBufSize, []trace.Exporter{agentExporter}, logger)
 
 		g.Add(func() error {
 			return processor.Run()
 		}, func(error) {
 			_ = processor.Close()
+			agentExporter.Flush()
 		})
 	}
 	{
@@ -172,6 +203,6 @@ func main() {
 	err := g.Run()
 
 	if !closeRequested {
-		_ = level.Error(logger).Log("exit", err)
+		_ = level.Error(logger).Log("msg", "unexpected shutdown of service", "err", err)
 	}
 }
