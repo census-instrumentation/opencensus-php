@@ -19,6 +19,8 @@ import (
 	"time"
 )
 
+// MessageType holds the available Message Types that can be exchanged between
+// the PHP Daemon client and this Daemon.
 type MessageType int
 
 func (m MessageType) String() string {
@@ -73,6 +75,7 @@ const (
 	StatsRecord
 )
 
+// MeasurementType holds the available Measurement types.
 type MeasurementType int
 
 // measurement value types

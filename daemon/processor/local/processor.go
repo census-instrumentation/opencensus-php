@@ -34,6 +34,12 @@ import (
 	"github.com/census-instrumentation/opencensus-php/daemon"
 )
 
+// Processor implementation for converting incoming Daemon messages into
+// stats and spanData objects. This processor uses the OpenCensus Go stats
+// implementation to handle the PHP stats and converts the PHP span data into
+// Go's spanData objects. This allows PHP to have the same featureset as Go
+// applications without doing much processing in the critical path and
+// reuse Go's OpenCensus Agent Exporter for Stats and Traces.
 type Processor struct {
 	mu             sync.RWMutex
 	droppedTimeout time.Time

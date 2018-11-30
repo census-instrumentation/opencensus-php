@@ -40,6 +40,7 @@ func attachmentExtractor(ctx context.Context, a exemplar.Attachments) exemplar.A
 	return a
 }
 
+// AttachmentsToContext adds exemplar Attachments to context for later extraction.
 func AttachmentsToContext(ctx context.Context, a exemplar.Attachments) context.Context {
 	return context.WithValue(ctx, attachmentKey, a)
 }

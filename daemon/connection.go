@@ -17,7 +17,6 @@ package daemon
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"io"
 	"math"
 	"net"
@@ -190,7 +189,6 @@ func (p *connection) parseMessage(buf []byte) (int, bool) {
 
 	// received full payload
 	p.proc.Process(p.msg)
-	_ = level.Debug(p.l).Log("payload", fmt.Sprintf("%q", p.msg))
 	p.msg = nil
 
 	return len(buf) + remainder, remainder == 0
