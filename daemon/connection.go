@@ -26,7 +26,11 @@ import (
 	"github.com/go-kit/kit/log/level"
 )
 
-const bufSize = 8192
+const (
+	bufSize       = 8192 // size of our read buffer
+	somLen        = 4    // length of start of message identifier
+	minHeaderSize = 17   // minimum size of message header
+)
 
 var (
 	som = []byte("\x00\x00\x00\x00")
@@ -100,7 +104,7 @@ func (p *connection) handle(conn net.Conn) {
 
 		offset += n
 
-		if p.msg == nil && offset < 17 {
+		if p.msg == nil && offset < minHeaderSize {
 			// not enough data to satisfy smallest possible header
 			continue
 		}
@@ -127,7 +131,7 @@ func (p *connection) handle(conn net.Conn) {
 	}
 }
 
-func (p *connection) parseMessage(buf []byte) (int, bool) {
+func (p *connection) parseMessage(buf []byte) (consumed int, done bool) {
 	var idx, n int
 
 	if p.msg == nil {
@@ -136,14 +140,14 @@ func (p *connection) parseMessage(buf []byte) (int, bool) {
 		idx = bytes.Index(buf, som)
 		switch idx {
 		case -1:
-			// start marker not found, truncate up to potential beginning of
-			// the start marker
-			for i := len(buf); i > len(buf)-4; i-- {
+			// start marker not found, remove up to potential beginning of the
+			// next message's start marker
+			for i := len(buf); i > len(buf)-somLen; i-- {
 				if buf[i-1] != 0 {
 					return i, true
 				}
 			}
-			return len(buf) - 4, true
+			return len(buf) - somLen, true
 		case 0:
 			// at beginning of Message
 		default:
@@ -153,7 +157,7 @@ func (p *connection) parseMessage(buf []byte) (int, bool) {
 				"tid", p.tid,
 				"msg", "ignoring lingering data",
 			)
-			if len(buf)-idx < 17 {
+			if len(buf)-idx < minHeaderSize {
 				// not enough data available for a Message header, bail out.
 				return idx, true
 			}
@@ -180,7 +184,6 @@ func (p *connection) parseMessage(buf []byte) (int, bool) {
 	}
 
 	// try to read Message payload
-
 	remainder := p.msg.AppendData(buf[idx:])
 	if remainder > 0 {
 		// received partial payload.
@@ -196,7 +199,7 @@ func (p *connection) parseMessage(buf []byte) (int, bool) {
 
 func (p *connection) parseHeader(buf []byte) (hdr *Message, n int) {
 	// advance beyond start of Message marker
-	idx := 4
+	idx := somLen
 
 	defer func() {
 		if recover() != nil {

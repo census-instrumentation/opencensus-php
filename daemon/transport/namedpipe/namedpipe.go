@@ -12,48 +12,62 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package unixsocket
+// +build windows
+
+package namedpipe
 
 import (
+	"errors"
 	"net"
+	"sync/atomic"
+
+	"github.com/Microsoft/go-winio"
 
 	"github.com/census-instrumentation/opencensus-php/daemon"
 )
 
-// Server is our UnixSocket server.
+const bufSize = 65536
+
+var errAlreadyClosed = errors.New("already closed")
+
 type Server struct {
-	a *net.UnixAddr
-	l *net.UnixListener
-	h daemon.Handler
+	pipeName  string
+	ln        net.Listener
+	hnd       daemon.Handler
+	closeOnce int32
 }
 
-// New returns a new Unix Socket Server.
-func New(socketPath string, h daemon.Handler) *Server {
+// New returns a new Windows Named Pipe Server.
+func New(pipeName string, hnd daemon.Handler) *Server {
 	return &Server{
-		a: &net.UnixAddr{
-			Name: socketPath,
-			Net:  "unix",
-		},
-		h: h,
+		pipeName: pipeName,
+		hnd:      hnd,
 	}
 }
 
-// ListenAndServe on a Unix Socket.
+// ListenAndServe on a Windows named pipe..
 func (s *Server) ListenAndServe() (err error) {
-	s.l, err = net.ListenUnix("unix", s.a)
+	config := &winio.PipeConfig{
+		InputBufferSize:  bufSize,
+		OutputBufferSize: bufSize,
+	}
+	s.ln, err = winio.ListenPipe(s.pipeName, config)
 	if err != nil {
 		return err
 	}
 	for {
-		c, err := s.l.AcceptUnix()
+		c, err := s.ln.Accept()
 		if err != nil {
 			return err
 		}
-		go s.h.Handle(c)
+		go s.hnd.Handle(c)
 	}
 }
 
 // Close implements io.Closer
 func (s *Server) Close() error {
-	return s.l.Close()
+	if atomic.CompareAndSwapInt32(&s.closeOnce, 0, 1) {
+		return s.ln.Close()
+	}
+	return errAlreadyClosed
 }

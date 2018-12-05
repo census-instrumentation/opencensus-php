@@ -39,10 +39,15 @@ class DaemonClient implements StatsExporter, TraceExporter
     use \OpenCensus\Utils\VarintTrait;
 
     /**
-     * Default socket path to use.
-     * @var $DEFAULT_SOCKET_PATH = /tmp/ocdaemon.sock
+     * Default socket path to use. (Unix)
+     * @var $DEFAULT_SOCKET_PATH = /tmp/oc-daemon.sock
      */
-    const DEFAULT_SOCKET_PATH   = '/tmp/ocdaemon.sock';
+    const DEFAULT_SOCKET_PATH   = '/tmp/oc-daemon.sock';
+    /**
+     * Default named pipe to use. (Windows)
+     * @var DEFAULT_NAMED_PIPE_PATH = \\.\\pipe\\oc-daemon
+     */
+    const DEFAULT_NAMED_PIPE_PATH = '\\\\.\\pipe\\oc-daemon';
     /** Default send timeout in seconds as float. */
     const DEFAULT_MAX_SEND_TIME = 0.005;
     /** Protocol version this client supports. */
@@ -77,8 +82,8 @@ class DaemonClient implements StatsExporter, TraceExporter
     /** @var float $maxSendTime Holds the maximum time allowed to send data over the wire. */
     private $maxSendTime = self::DEFAULT_MAX_SEND_TIME;
 
-    /** @var resource $sock The used unix socket for communicating with OC Daemon. */
-    private $sock;
+    /** @var resource $stream The used unix socket or named pipe for communicating with OC Daemon. */
+    private $stream;
 
     /** @var bool $tid Set to true when zend thread safety is enabled. */
     private $tid;
@@ -89,10 +94,10 @@ class DaemonClient implements StatsExporter, TraceExporter
     /** @var bool $float32 set to true will signal floats being encoded in 32 bit */
     private $float32;
 
-    private function __construct($sock, int $maxSendTime = null)
+    private function __construct($stream, int $maxSendTime = null)
     {
-        $this->sock = $sock;
-        \stream_set_blocking($this->sock, false);
+        $this->stream = $stream;
+        \stream_set_blocking($this->stream, false);
 
         if (\is_float($maxSendTime) & $maxSendTime >= 0.001) {
             $this->maxSendTime = $maxSendTime;
@@ -145,10 +150,26 @@ class DaemonClient implements StatsExporter, TraceExporter
         } else {
             $socketPath = self::DEFAULT_SOCKET_PATH;
         }
+        if (array_key_exists('namedPipePath', $options)) {
+            $namedPipePath = $options['namedPipePath'];
+        } else {
+            $namedPipePath = self::DEFAULT_NAMED_PIPE_PATH;
+        }
 
-        $sock = @\pfsockopen("unix://$socketPath", -1, $errno, $errstr, 0);
-        if ($sock === false) {
-            throw new \Exception("$errstr [$errno]");
+        if (substr_compare(PHP_OS, 'WIN', 0, 3, true) === 0) {
+            // Windows defaults to named pipes
+            $sock = @\fopen($namedPipePath, "w");
+            if ($sock === false) {
+                throw new \Exception("unable to connect to named pipe: " . $namedPipePath);
+            }
+        } else {
+            // Unix defaults to unix sockets
+            $errno = 0;
+            $errstr = '';
+            $sock = @\pfsockopen("unix://$socketPath", -1, $errno, $errstr, 0);
+            if ($sock === false) {
+                throw new \Exception("$errstr [$errno]");
+            }
         }
 
         return self::$instance = new DaemonClient($sock, $maxSendTime);
@@ -321,7 +342,7 @@ class DaemonClient implements StatsExporter, TraceExporter
 
         $remaining = strlen($buf);
         while ($remaining > 0 && microtime(true) < ($maxEnd)) {
-            $c = \fwrite($this->sock, $buf, $remaining);
+            $c = \fwrite($this->stream, $buf, $remaining);
             $remaining -= $c;
             $buf = substr($buf, $c);
         }

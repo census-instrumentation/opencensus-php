@@ -51,17 +51,17 @@ type Processor struct {
 }
 
 // New returns a new Processor.
-func New(msgBufSize int, exporters []trace.Exporter, l log.Logger) *Processor {
+func New(msgBufSize int, exporters []trace.Exporter, logger log.Logger) *Processor {
 	registerViews.Do(func() {
 		if err := view.Register(
 			viewProcLatency, viewLatency, viewReqCount, viewProcCount,
 			viewDropCount, viewMsgSize,
 		); err != nil {
-			l.Log("msg", "unable to register internal views", "err", err)
+			_ = level.Error(logger).Log("msg", "unable to register internal views", "err", err)
 		}
 	})
 	return &Processor{
-		logger:   l,
+		logger:   logger,
 		messages: make(chan *daemon.Message, msgBufSize),
 		measures: make(map[string]stats.Measure),
 		traceExp: exporters,
@@ -215,7 +215,8 @@ func (p *Processor) registerView(m *daemon.Message) bool {
 	}
 
 	for i := uint64(0); i < viewCount; i++ {
-		v := &view.View{}
+		var v view.View
+
 		v.Name, n = decodeString(m.RawPayload[idx:])
 		if n < 1 {
 			_ = level.Warn(p.logger).Log("msg", "invalid message payload encountered")
@@ -302,7 +303,7 @@ func (p *Processor) registerView(m *daemon.Message) bool {
 			return false
 		}
 
-		views = append(views, v)
+		views = append(views, &v)
 	}
 
 	if err := view.Register(views...); err != nil {
@@ -565,8 +566,8 @@ func decodeString(buf []byte) (string, int) {
 	if len(buf) < 1 {
 		return "", -1
 	}
-	l, n := binary.Uvarint(buf)
-	i := int(l) + n
+	size, n := binary.Uvarint(buf)
+	i := int(size) + n
 	if n < 1 || len(buf) < i {
 		return "", -1
 	}

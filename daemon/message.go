@@ -82,7 +82,6 @@ type MeasurementType int
 const (
 	TypeInt MeasurementType = iota + 1
 	TypeFloat
-	TypeUnknown = 255
 )
 
 // Message holds an incoming message header and raw data payload.

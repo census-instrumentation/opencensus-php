@@ -54,7 +54,7 @@ class View
      */
     public final function __construct(
         string $name, string $description, Measure $measure,
-        Aggregation &$aggregation, TagKey ...$tagKeys
+        Aggregation $aggregation, TagKey ...$tagKeys
     )
     {
         if ($name === '') {

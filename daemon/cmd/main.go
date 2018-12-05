@@ -33,14 +33,12 @@ import (
 
 	"github.com/census-instrumentation/opencensus-php/daemon"
 	"github.com/census-instrumentation/opencensus-php/daemon/processor/local"
-	"github.com/census-instrumentation/opencensus-php/daemon/unixsocket"
 )
 
 const (
 	serviceName = "OCDaemon-PHP"
 
 	defaultOCAgentAddr      = "localhost:55678"
-	defaultUnixSocketPath   = "/tmp/ocdaemon.sock"
 	defaultLogLevel         = logError
 	defaultMsgBufSize       = 1000
 	defaultZPagesAddr       = ":8888"
@@ -55,6 +53,7 @@ const (
 	logDebug
 )
 
+// build values injected at compile time (see Makefile)
 var (
 	buildVersion string
 	buildDate    string
@@ -69,11 +68,8 @@ func main() {
 		flagMsgBufSize       = fs.Int("msg.bufsize", defaultMsgBufSize, "Size of buffered message channel")
 		flagZPagesAddr       = fs.String("zpages.addr", defaultZPagesAddr, "zPages bind address")
 		flagZPagesPathPrefix = fs.String("zpages.path", defaultZPagesPathPrefix, "zPages path prefix")
-		flagUnixSocketPath   = fs.String("socket.path", defaultUnixSocketPath, "Unix socket path to listen on")
 		flagVersion          = fs.Bool("version", false, "Show version information")
-
-		processor      daemon.Processor
-		closeRequested bool
+		flagTransportPath    = addTransportPath(fs) // transport path flag conditional on target platform
 	)
 
 	// parse our command line override flags
@@ -92,131 +88,140 @@ func main() {
 		os.Exit(0)
 	}
 
-	var logger log.Logger
-	{
-		logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
-		switch *flagLogLevel {
-		case logNone:
-			logger = log.NewNopLogger()
-		case logError:
-			logger = level.NewFilter(logger, level.AllowError())
-		case logWarn:
-			logger = level.NewFilter(logger, level.AllowWarn())
-		case logInfo:
-			logger = level.NewFilter(logger, level.AllowInfo())
-		case logDebug:
-			logger = level.NewFilter(logger, level.AllowDebug())
-		default:
-			logger = level.NewFilter(logger, level.AllowError())
-		}
-		logger = log.With(logger,
-			"svc", serviceName,
-			"ts", log.DefaultTimestampUTC,
-			"clr", log.DefaultCaller,
-		)
-
-	}
-
+	// set-up our structured logger
+	logger := initLogger(*flagLogLevel)
 	_ = level.Info(logger).Log("msg", "service started", "agent", *flagOCAgentAddr)
 	defer func() {
 		_ = level.Info(logger).Log("msg", "service ended")
 	}()
 
-	var g run.Group
-	if *flagZPagesAddr != "" {
-		// set-up zPages
-		var (
-			l   net.Listener
-			err error
-			mux = http.NewServeMux()
-		)
-		zpages.Handle(mux, *flagZPagesPathPrefix)
-		l, err = net.Listen("tcp", *flagZPagesAddr)
+	// Use a goroutine lifecycle manager for our services.
+	// See: https://github.com/oklog/run
+	g := &run.Group{}
 
-		if err != nil {
-			_ = level.Error(logger).Log("msg", "failed to bind to requested zPages address", "err", err)
-			os.Exit(1)
-		}
-		g.Add(func() error {
-			return http.Serve(l, mux)
-		}, func(error) {
-			_ = l.Close()
-		})
-	}
-	{
-		// set-up the message processor
-		if *flagMsgBufSize < 100 {
-			*flagMsgBufSize = 1000
-		}
-
-		if *flagServiceName == "" {
-			*flagServiceName = serviceName
-		}
-
-		agentExporter, err := ocagent.NewExporter(
-			ocagent.WithInsecure(),
-			ocagent.WithAddress(*flagOCAgentAddr),
-			ocagent.WithServiceName(*flagServiceName),
-		)
-		if err != nil {
-			_ = level.Error(logger).Log("msg", "failed to create OCAgent exporter", "err", err)
-			os.Exit(1)
-		}
-
-		// enables Daemon internal traces
-		trace.RegisterExporter(agentExporter)
-
-		// enables Daemon and PHP Process Views
-		view.RegisterExporter(agentExporter)
-
-		// provide agent as exporter for proxied spans
-		processor = local.New(*flagMsgBufSize, []trace.Exporter{agentExporter}, logger)
-
-		g.Add(func() error {
-			return processor.Run()
-		}, func(error) {
-			_ = processor.Close()
-			agentExporter.Flush()
-		})
-	}
-	{
-		// set-up the unix socket service
-		hnd := &daemon.ConnectionHandler{Logger: logger, Processor: processor}
-		uss := unixsocket.New(*flagUnixSocketPath, hnd)
-
-		g.Add(func() error {
-			return uss.ListenAndServe()
-		}, func(error) {
-			_ = uss.Close()
-		})
-	}
-	{
-		// set-up our signal handler
-		var (
-			cIntr = make(chan struct{})
-			cSig  = make(chan os.Signal, 2)
-		)
-		defer close(cSig)
-
-		g.Add(func() error {
-			signal.Notify(cSig, syscall.SIGINT, syscall.SIGTERM)
-			select {
-			case sig := <-cSig:
-				closeRequested = true
-				_ = level.Info(logger).Log("msg", "shutdown requested", "signal", sig)
-				return fmt.Errorf("received signal %s", sig)
-			case <-cIntr:
-				return nil
-			}
-		}, func(error) {
-			close(cIntr)
-		})
+	// initialize and register our zPages service
+	if err := svcZPages(g, *flagZPagesAddr, *flagZPagesPathPrefix); err != nil {
+		_ = level.Error(logger).Log("msg", "unable to start zPages", "err", err)
 	}
 
-	// spawn the run group goroutines and wait for shutdown
-	err := g.Run()
+	// initialize and add our daemon message processing service
+	hnd, err := svcProcessor(g, *flagMsgBufSize, *flagServiceName, *flagOCAgentAddr, logger)
+	if err != nil {
+		_ = level.Error(logger).Log("msg", "failed to create OCAgent exporter", "err", err)
+		os.Exit(1)
+	}
 
-	if !closeRequested {
+	// initialize and add our transport service
+	// linux/darwin: unix_socket & windows: named pipes
+	svcTransport(g, hnd, *flagTransportPath)
+
+	// initialize our signal handler for enabling graceful shutdown
+	signalHandler(g, logger)
+
+	// spawn our service goroutines and wait for shutdown
+	if err := g.Run(); err != nil {
 		_ = level.Error(logger).Log("msg", "unexpected shutdown of service", "err", err)
 	}
+}
+
+func initLogger(lvl int) (logger log.Logger) {
+	logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
+	logger = log.With(logger, "svc", serviceName, "ts", log.DefaultTimestampUTC, "clr", log.DefaultCaller)
+
+	switch lvl {
+	case logNone:
+		logger = log.NewNopLogger()
+	case logError:
+		logger = level.NewFilter(logger, level.AllowError())
+	case logWarn:
+		logger = level.NewFilter(logger, level.AllowWarn())
+	case logInfo:
+		logger = level.NewFilter(logger, level.AllowInfo())
+	case logDebug:
+		logger = level.NewFilter(logger, level.AllowDebug())
+	default:
+		logger = level.NewFilter(logger, level.AllowError())
+	}
+	return
+}
+
+func svcProcessor(g *run.Group, msgBufSize int, svcName, ocAgentAddr string, logger log.Logger) (daemon.Handler, error) {
+	if msgBufSize < 100 {
+		msgBufSize = defaultMsgBufSize
+	}
+
+	if svcName == "" {
+		svcName = serviceName
+	}
+
+	agentExporter, err := ocagent.NewExporter(
+		ocagent.WithInsecure(),
+		ocagent.WithAddress(ocAgentAddr),
+		ocagent.WithServiceName(svcName),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// enables Daemon internal traces
+	trace.RegisterExporter(agentExporter)
+
+	// enables Daemon and PHP Process Views
+	view.RegisterExporter(agentExporter)
+
+	// provide agent as exporter for proxied spans
+	processor := local.New(msgBufSize, []trace.Exporter{agentExporter}, logger)
+
+	g.Add(func() error {
+		return processor.Run()
+	}, func(error) {
+		_ = processor.Close()
+		agentExporter.Flush()
+	})
+
+	return &daemon.ConnectionHandler{Logger: logger, Processor: processor}, nil
+}
+
+func svcZPages(g *run.Group, bindAddr string, pathPrefix string) error {
+	if bindAddr == "" {
+		// without a bind address we disable zPages
+		return nil
+	}
+
+	mux := http.NewServeMux()
+	zpages.Handle(mux, pathPrefix)
+
+	l, err := net.Listen("tcp", bindAddr)
+	if err != nil {
+		return err
+	}
+
+	g.Add(func() error {
+		return http.Serve(l, mux)
+	}, func(error) {
+		_ = l.Close()
+	})
+
+	return nil
+}
+
+func signalHandler(g *run.Group, logger log.Logger) {
+	var (
+		cInt = make(chan struct{})
+		cSig = make(chan os.Signal, 2)
+	)
+
+	g.Add(func() error {
+		signal.Notify(cSig, syscall.SIGINT, syscall.SIGTERM)
+		select {
+		case sig := <-cSig:
+			_ = level.Info(logger).Log("msg", "shutdown requested", "signal", sig)
+			return nil
+		case <-cInt:
+			return nil
+		}
+	}, func(error) {
+		close(cInt)
+		close(cSig)
+	})
 }

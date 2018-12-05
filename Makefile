@@ -18,9 +18,9 @@ vet:
 	go vet ./daemon/...
 
 build:
-	GOOS=linux   GOARCH=amd64 go build -i -ldflags "-X \"main.buildVersion=${BUILD} (Linux)\"   -X \"main.buildDate=${BUILD_DATE}\"" -o build/oc-daemon-linux   daemon/cmd/main.go
-	GOOS=windows GOARCH=amd64 go build -i -ldflags "-X \"main.buildVersion=${BUILD} (Windows)\" -X \"main.buildDate=${BUILD_DATE}\"" -o build/oc-daemon-windows daemon/cmd/main.go
-	GOOS=darwin  GOARCH=amd64 go build -i -ldflags "-X \"main.buildVersion=${BUILD} (OS X)\"    -X \"main.buildDate=${BUILD_DATE}\"" -o build/oc-daemon-osx     daemon/cmd/main.go
+	GOOS=linux   GOARCH=amd64 go build -i -ldflags "-X \"main.buildVersion=${BUILD} (Linux)\"   -X \"main.buildDate=${BUILD_DATE}\"" -o build/oc-daemon-linux ./daemon/cmd
+	GOOS=darwin  GOARCH=amd64 go build -i -ldflags "-X \"main.buildVersion=${BUILD} (OS X)\"    -X \"main.buildDate=${BUILD_DATE}\"" -o build/oc-daemon-osx   ./daemon/cmd
+	GOOS=windows GOARCH=amd64 go build -i -ldflags "-X \"main.buildVersion=${BUILD} (Windows)\" -X \"main.buildDate=${BUILD_DATE}\"" -o build/oc-daemon.exe   ./daemon/cmd
 
 clean:
 	@rm -rf build

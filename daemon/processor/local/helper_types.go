@@ -50,12 +50,10 @@ func (dt *dateTime) UnmarshalJSON(data []byte) error {
 	if dt == nil {
 		return nil
 	}
-	pdt := &struct {
-		Date         string `json:"date"`
-		TimezoneType int    `json:"timezone_type"`
-		Timezone     string `json:"timezone"`
-	}{}
-	if err := json.Unmarshal(data, pdt); err != nil {
+	var pdt struct {
+		Date string `json:"date"`
+	}
+	if err := json.Unmarshal(data, &pdt); err != nil {
 		return err
 	}
 	gdt, err := time.Parse("2006-01-02 15:04:05.000000", pdt.Date)
@@ -78,7 +76,7 @@ func (a *attributes) UnmarshalJSON(data []byte) error {
 	if a == nil {
 		return nil
 	}
-	if bytes.Equal(data, []byte("[]")) {
+	if bytes.Equal(data, []byte("[]")) || bytes.Equal(data, []byte("null")) {
 		return nil
 	}
 	var val alias
