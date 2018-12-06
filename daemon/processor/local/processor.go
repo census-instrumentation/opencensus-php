@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"math"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/go-kit/kit/log"
@@ -48,6 +49,10 @@ type Processor struct {
 
 	logger   log.Logger
 	traceExp []trace.Exporter
+
+	closeNotifier chan struct{}
+	bufSize       int
+	dropCount     int32
 }
 
 // New returns a new Processor.
@@ -61,18 +66,60 @@ func New(msgBufSize int, exporters []trace.Exporter, logger log.Logger) *Process
 		}
 	})
 	return &Processor{
-		logger:   logger,
-		messages: make(chan *daemon.Message, msgBufSize),
-		measures: make(map[string]stats.Measure),
-		traceExp: exporters,
+		logger:        logger,
+		messages:      make(chan *daemon.Message, msgBufSize),
+		measures:      make(map[string]stats.Measure),
+		traceExp:      exporters,
+		closeNotifier: make(chan struct{}),
+		bufSize:       msgBufSize,
 	}
 }
 
-// Run watches for incoming messages on our internal channel and dispatches them
-// to the correct handler.
+// Run starts our message processor.
 func (p *Processor) Run() error {
+	var wg sync.WaitGroup
+
+	wg.Add(2)
+	go p.notifier(&wg)
+	go p.handleMessages(&wg)
+	wg.Wait()
+
+	return nil
+}
+
+func (p *Processor) notifier(wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	var (
+		dcTimeout time.Time
+		ticker    = time.NewTicker(1 * time.Second)
+	)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-p.closeNotifier:
+			return
+		case <-ticker.C:
+			if dc := atomic.LoadInt32(&p.dropCount); dc > 0 && time.Since(dcTimeout) >= 5*time.Second {
+				dcTimeout = time.Now()
+				_ = level.Error(p.logger).Log(
+					"msg", "buffer overflow occurred, dropped messages",
+					"dropped", dc,
+					"bufsize", p.bufSize,
+				)
+				atomic.AddInt32(&p.dropCount, -dc)
+			}
+		}
+	}
+}
+
+// handleMessages watches for incoming messages on our internal channel and
+// dispatches them to the correct handler.
+func (p *Processor) handleMessages(wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	for m := range p.messages {
-		m.StartTime = time.Now()
 		_ = level.Debug(p.logger).Log("msg", "processing message", "type", m.Type)
 		switch m.Type {
 		case daemon.MeasureCreate:
@@ -97,7 +144,6 @@ func (p *Processor) Run() error {
 			msgLatency.M(float64(time.Since(m.StartTime))/float64(time.Millisecond)),
 		)
 	}
-	return nil
 }
 
 // Process sends our Message on the internal channel to be processed.
@@ -114,17 +160,14 @@ func (p *Processor) Process(m *daemon.Message) bool {
 			msgSize.M(int64(m.MsgLen)),
 			msgLatency.M(float64(time.Since(m.StartTime))/float64(time.Millisecond)),
 		)
-		if time.Now().Add(10 * time.Second).After(p.droppedTimeout) {
-			// limit the amount of log entries generated on dropped daemon messages.
-			_ = level.Error(p.logger).Log("msg", "channel buffer full, dropping messages")
-			p.droppedTimeout = time.Now()
-		}
+		atomic.AddInt32(&p.dropCount, 1)
 		return false
 	}
 }
 
 // Close shuts down our Processor.
 func (p *Processor) Close() error {
+	close(p.closeNotifier)
 	close(p.messages)
 	return nil
 }

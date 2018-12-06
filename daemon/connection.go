@@ -191,6 +191,7 @@ func (p *connection) parseMessage(buf []byte) (consumed int, done bool) {
 	}
 
 	// received full payload
+	p.msg.ReceiveTime = time.Now()
 	p.proc.Process(p.msg)
 	p.msg = nil
 
