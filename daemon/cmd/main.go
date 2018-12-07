@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 	"time"
 
@@ -42,7 +43,7 @@ const (
 
 	defaultOCAgentAddr      = "localhost:55678"
 	defaultLogLevel         = logError
-	defaultMsgBufSize       = 1000
+	defaultMsgBufSize       = 10000
 	defaultZPagesAddr       = ":8888"
 	defaultZPagesPathPrefix = "/debug"
 )
@@ -68,6 +69,7 @@ func main() {
 		flagServiceName      = fs.String("php.servicename", os.Getenv("HOSTNAME"), "Name of our PHP service")
 		flagLogLevel         = fs.Int("log.level", defaultLogLevel, "Logging level to use")
 		flagMsgBufSize       = fs.Int("msg.bufsize", defaultMsgBufSize, "Size of buffered message channel")
+		flagMsgProcCount     = fs.Int("msg.processors", runtime.NumCPU(), "Amount of message processing routines to use")
 		flagZPagesAddr       = fs.String("zpages.addr", defaultZPagesAddr, "zPages bind address")
 		flagZPagesPathPrefix = fs.String("zpages.path", defaultZPagesPathPrefix, "zPages path prefix")
 		flagVersion          = fs.Bool("version", false, "Show version information")
@@ -114,7 +116,10 @@ func main() {
 	}
 
 	// initialize and add our daemon message processing service
-	hnd, err := svcProcessor(g, *flagMsgBufSize, *flagServiceName, *flagOCAgentAddr, *flagStackDriverProject, logger)
+	hnd, err := svcProcessor(g,
+		*flagMsgBufSize, *flagMsgProcCount, *flagServiceName, *flagOCAgentAddr,
+		*flagStackDriverProject, logger,
+	)
 	if err != nil {
 		_ = level.Error(logger).Log("msg", "failed to create OCAgent exporter", "err", err)
 		os.Exit(1)
@@ -154,9 +159,13 @@ func initLogger(lvl int) (logger log.Logger) {
 	return
 }
 
-func svcProcessor(g *run.Group, msgBufSize int, svcName, ocAgentAddr, stackdriverProjectID string, logger log.Logger) (daemon.Handler, error) {
+func svcProcessor(g *run.Group, msgBufSize, msgProcCount int, svcName, ocAgentAddr, stackdriverProjectID string, logger log.Logger) (daemon.Handler, error) {
 	if msgBufSize < 100 {
 		msgBufSize = defaultMsgBufSize
+	}
+
+	if msgProcCount < 1 {
+		msgProcCount = runtime.NumCPU()
 	}
 
 	if svcName == "" {
@@ -198,7 +207,7 @@ func svcProcessor(g *run.Group, msgBufSize int, svcName, ocAgentAddr, stackdrive
 	view.RegisterExporter(exporter)
 
 	// provide agent as exporter for proxied spans
-	processor := local.New(msgBufSize, []trace.Exporter{exporter}, logger)
+	processor := local.New(msgBufSize, msgProcCount, []trace.Exporter{exporter}, logger)
 
 	g.Add(func() error {
 		return processor.Run()

@@ -35,6 +35,8 @@ import (
 	"github.com/census-instrumentation/opencensus-php/daemon"
 )
 
+const ms = float64(time.Millisecond)
+
 // Processor implementation for converting incoming Daemon messages into
 // stats and spanData objects. This processor uses the OpenCensus Go stats
 // implementation to handle the PHP stats and converts the PHP span data into
@@ -52,15 +54,17 @@ type Processor struct {
 
 	closeNotifier chan struct{}
 	bufSize       int
+	procRoutines  int
 	dropCount     int32
+
+	procCount int32
 }
 
 // New returns a new Processor.
-func New(msgBufSize int, exporters []trace.Exporter, logger log.Logger) *Processor {
+func New(msgBufSize, msgProcRoutines int, exporters []trace.Exporter, logger log.Logger) *Processor {
 	registerViews.Do(func() {
 		if err := view.Register(
-			viewProcLatency, viewLatency, viewReqCount, viewProcCount,
-			viewDropCount, viewMsgSize,
+			viewLatency, viewReqCount, viewProcCount, viewDropCount, viewMsgSize,
 		); err != nil {
 			_ = level.Error(logger).Log("msg", "unable to register internal views", "err", err)
 		}
@@ -71,6 +75,7 @@ func New(msgBufSize int, exporters []trace.Exporter, logger log.Logger) *Process
 		measures:      make(map[string]stats.Measure),
 		traceExp:      exporters,
 		closeNotifier: make(chan struct{}),
+		procRoutines:  msgProcRoutines,
 		bufSize:       msgBufSize,
 	}
 }
@@ -79,9 +84,11 @@ func New(msgBufSize int, exporters []trace.Exporter, logger log.Logger) *Process
 func (p *Processor) Run() error {
 	var wg sync.WaitGroup
 
-	wg.Add(2)
+	wg.Add(1 + p.procRoutines)
 	go p.notifier(&wg)
-	go p.handleMessages(&wg)
+	for i := 0; i < p.procRoutines; i++ {
+		go p.handleMessages(&wg)
+	}
 	wg.Wait()
 
 	return nil
@@ -120,6 +127,15 @@ func (p *Processor) handleMessages(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for m := range p.messages {
+		procTime := time.Now()
+		msgType := tag.Insert(tagKeyMsgType, m.Type.String())
+		_ = stats.RecordWithTags(context.Background(),
+			[]tag.Mutator{
+				msgType,
+				tag.Insert(tagKeyPhase, "queue"),
+			},
+			msgLatency.M(float64(procTime.Sub(m.ReceiveTime))/ms),
+		)
 		_ = level.Debug(p.logger).Log("msg", "processing message", "type", m.Type)
 		switch m.Type {
 		case daemon.MeasureCreate:
@@ -135,13 +151,14 @@ func (p *Processor) handleMessages(wg *sync.WaitGroup) {
 		case daemon.TraceExport:
 			p.exportSpans(m)
 		}
-		ctx, _ := tag.New(context.Background(), tag.Insert(tagMsgType, m.Type.String()))
-		stats.Record(ctx,
-			msgReqCount.M(1),
+		atomic.AddInt32(&p.procCount, 1)
+		_ = stats.RecordWithTags(context.Background(),
+			[]tag.Mutator{
+				msgType,
+				tag.Insert(tagKeyPhase, "process"),
+			},
 			msgProcCount.M(1),
-			msgSize.M(int64(m.MsgLen)),
-			procLatency.M(float64(time.Since(m.ReceiveTime))/float64(time.Millisecond)),
-			msgLatency.M(float64(time.Since(m.StartTime))/float64(time.Millisecond)),
+			msgLatency.M(float64(time.Since(procTime))/ms),
 		)
 	}
 }
@@ -149,16 +166,22 @@ func (p *Processor) handleMessages(wg *sync.WaitGroup) {
 // Process sends our Message on the internal channel to be processed.
 // Returns true on successful ingestion, false on high water mark.
 func (p *Processor) Process(m *daemon.Message) bool {
+	_ = stats.RecordWithTags(context.Background(),
+		[]tag.Mutator{
+			tag.Insert(tagKeyMsgType, m.Type.String()),
+			tag.Insert(tagKeyPhase, "transport"),
+		},
+		msgReqCount.M(1),
+		msgSize.M(int64(m.MsgLen)),
+		msgLatency.M(float64(m.ReceiveTime.Sub(m.StartTime))/ms),
+	)
 	select {
 	case p.messages <- m:
 		return true
 	default:
-		ctx, _ := tag.New(context.Background(), tag.Insert(tagMsgType, m.Type.String()))
-		stats.Record(ctx,
-			msgReqCount.M(1),
+		_ = stats.RecordWithTags(context.Background(),
+			[]tag.Mutator{tag.Insert(tagKeyMsgType, m.Type.String())},
 			msgDropCount.M(1),
-			msgSize.M(int64(m.MsgLen)),
-			msgLatency.M(float64(time.Since(m.StartTime))/float64(time.Millisecond)),
 		)
 		atomic.AddInt32(&p.dropCount, 1)
 		return false
