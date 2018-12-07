@@ -95,7 +95,11 @@ func main() {
 
 	// set-up our structured logger
 	logger := initLogger(*flagLogLevel)
-	_ = level.Info(logger).Log("msg", "service started", "agent", *flagOCAgentAddr, "stackdriver.project", *flagStackDriverProject)
+	if *flagStackDriverProject != "" {
+		_ = level.Info(logger).Log("msg", "service started", "stackdriver.project", *flagStackDriverProject)
+	} else {
+		_ = level.Info(logger).Log("msg", "service started", "agent", *flagOCAgentAddr)
+	}
 	defer func() {
 		_ = level.Info(logger).Log("msg", "service ended")
 	}()
