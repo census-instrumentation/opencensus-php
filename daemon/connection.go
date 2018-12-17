@@ -36,7 +36,7 @@ var (
 	som = []byte("\x00\x00\x00\x00")
 )
 
-// Handler interface allows for plugable net.Conn compatible stream oriented
+// Handler interface allows for pluggable net.Conn compatible stream oriented
 // network transports.
 type Handler interface {
 	Handle(net.Conn)
