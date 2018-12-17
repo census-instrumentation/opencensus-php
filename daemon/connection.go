@@ -27,9 +27,9 @@ import (
 )
 
 const (
-	bufSize       = 8192 // size of our read buffer
-	somLen        = 4    // length of start of message identifier
-	minHeaderSize = 17   // minimum size of message header
+	bufSize       = 65535 // size of our read buffer
+	somLen        = 4     // length of start of message identifier
+	minHeaderSize = 17    // minimum size of message header
 )
 
 var (
@@ -89,6 +89,7 @@ func (p *connection) handle(conn net.Conn) {
 			return
 		}
 
+
 		if offset > 0 && bytes.HasPrefix(buf[offset:], som) {
 			// we just received (the beginning of) a new Message while having
 			// existing unfinished Message data. We'll have to drop the existing
@@ -111,22 +112,28 @@ func (p *connection) handle(conn net.Conn) {
 
 		// try to parse messages
 		var (
-			start int
-			done  bool
+			start     int
+			processed int
+			done      bool
 		)
+
+		// consume all available and complete messages
 		for !done {
-			start, done = p.parseMessage(buf[start:offset])
-			if done && start == offset {
-				// consumed all data...
-				offset = 0
-				continue
-			}
-			if start > 0 {
-				// purge handled data
-				copy(buf[:], buf[start:offset])
-				offset -= start
-				start = 0
-			}
+			processed, done = p.parseMessage(buf[start:offset])
+			start += processed
+		}
+
+		// test buffer remainder
+		if start == offset {
+			// consumed all data...
+			offset = 0
+			continue
+		}
+		if start > 0 {
+			// purge processed data and move beginning of new message to front
+			copy(buf[:], buf[start:offset])
+			offset -= start
+			start = 0
 		}
 	}
 }
@@ -142,12 +149,16 @@ func (p *connection) parseMessage(buf []byte) (consumed int, done bool) {
 		case -1:
 			// start marker not found, remove up to potential beginning of the
 			// next message's start marker
-			for i := len(buf); i > len(buf)-somLen; i-- {
+			minTestPos := len(buf)-somLen
+			if minTestPos < 0 {
+				minTestPos = len(buf)
+			}
+			for i := len(buf); i > minTestPos; i-- {
 				if buf[i-1] != 0 {
 					return i, true
 				}
 			}
-			return len(buf) - somLen, true
+			return minTestPos, true
 		case 0:
 			// at beginning of Message
 		default:
