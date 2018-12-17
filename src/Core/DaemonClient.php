@@ -342,7 +342,10 @@ class DaemonClient implements StatsExporter, TraceExporter
 
         $remaining = strlen($buf);
         while ($remaining > 0 && microtime(true) < ($maxEnd)) {
-            $c = \fwrite($this->stream, $buf, $remaining);
+            $c = @\fwrite($this->stream, $buf, $remaining);
+            if ($c == false) {
+                return false;
+            }
             $remaining -= $c;
             $buf = substr($buf, $c);
         }
