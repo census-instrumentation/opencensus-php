@@ -97,9 +97,9 @@ class DaemonClient implements StatsExporter, TraceExporter
     private function __construct($stream, int $maxSendTime = null)
     {
         $this->stream = $stream;
-        \stream_set_blocking($this->stream, false);
+        stream_set_blocking($this->stream, false);
 
-        if (\is_float($maxSendTime) & $maxSendTime >= 0.001) {
+        if (is_float($maxSendTime) & $maxSendTime >= 0.001) {
             $this->maxSendTime = $maxSendTime;
         }
 
@@ -112,8 +112,8 @@ class DaemonClient implements StatsExporter, TraceExporter
         }
 
         $msg = self::PROT_VERSION;
-        $msg .= self::encodeString(\phpversion());
-        $msg .= self::encodeString(\zend_version());
+        $msg .= self::encodeString(phpversion());
+        $msg .= self::encodeString(zend_version());
         $this->send(self::MSG_REQ_INIT, $msg);
 
         // on shutdown... send shutdown message to daemon
@@ -139,7 +139,7 @@ class DaemonClient implements StatsExporter, TraceExporter
             return self::$instance;
         }
 
-        if (array_key_exists('maxSendTime', $options) && \is_float($options['maxSendTime'])) {
+        if (array_key_exists('maxSendTime', $options) && is_float($options['maxSendTime'])) {
             $maxSendTime = $options['maxSendTime'];
         } else{
             $maxSendTime = self::DEFAULT_MAX_SEND_TIME;
@@ -158,7 +158,7 @@ class DaemonClient implements StatsExporter, TraceExporter
 
         if (substr_compare(PHP_OS, 'WIN', 0, 3, true) === 0) {
             // Windows defaults to named pipes
-            $sock = @\fopen($namedPipePath, "w");
+            $sock = @fopen($namedPipePath, "w");
             if ($sock === false) {
                 throw new \Exception("unable to connect to named pipe: " . $namedPipePath);
             }
@@ -166,7 +166,7 @@ class DaemonClient implements StatsExporter, TraceExporter
             // Unix defaults to unix sockets
             $errno = 0;
             $errstr = '';
-            $sock = @\pfsockopen("unix://$socketPath", -1, $errno, $errstr, 0);
+            $sock = @pfsockopen("unix://$socketPath", -1, $errno, $errstr, 0);
             if ($sock === false) {
                 throw new \Exception("$errstr [$errno]");
             }
@@ -342,7 +342,7 @@ class DaemonClient implements StatsExporter, TraceExporter
 
         $remaining = strlen($buf);
         while ($remaining > 0 && microtime(true) < ($maxEnd)) {
-            $c = @\fwrite($this->stream, $buf, $remaining);
+            $c = @fwrite($this->stream, $buf, $remaining);
             if ($c == false) {
                 return false;
             }
@@ -373,7 +373,7 @@ class DaemonClient implements StatsExporter, TraceExporter
     private final function getmytid(): int
     {
         if ($this->tid === true) {
-            return \zend_thread_id();
+            return zend_thread_id();
         }
         return 0;
     }
