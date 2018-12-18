@@ -147,7 +147,7 @@ void opencensus_trace_link_free(opencensus_trace_link_t *link)
         zend_string_release(link->span_id);
     }
     if (Z_TYPE(link->options) != IS_NULL) {
-        ZVAL_DESTRUCTOR(&link->options);
+        zval_dtor(&link->options);
     }
     efree(link);
 }
