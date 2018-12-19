@@ -3,7 +3,7 @@ OpenCensus Trace: Basic Class Static Method Callback
 --FILE--
 <?php
 
-require_once(__DIR__ . '/common.php');
+require_once(__DIR__ . '/common.inc');
 
 // Scope should not be available for a static method
 opencensus_trace_function("Foo::plus", function ($x, $y) {

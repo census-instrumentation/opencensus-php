@@ -3,7 +3,7 @@ OpenCensus Trace: Set span kind
 --FILE--
 <?php
 
-require_once(__DIR__ . '/common.php');
+require_once(__DIR__ . '/common.inc');
 
 opencensus_trace_begin('/', [
     'startTime' => 0.1,

@@ -3,7 +3,7 @@ OpenCensus Trace: Span Class Test
 --FILE--
 <?php
 
-require_once(__DIR__ . '/common.php');
+require_once(__DIR__ . '/common.inc');
 
 $span = new OpenCensus\Trace\Ext\Span([
     'spanId' => 1234,

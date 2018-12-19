@@ -3,7 +3,7 @@ OpenCensus Trace: Closure exception should not segfault
 --FILE--
 <?php
 
-require_once(__DIR__ . '/common.php');
+require_once(__DIR__ . '/common.inc');
 
 opencensus_trace_function("foo", function ($x) {
     // should be an exception

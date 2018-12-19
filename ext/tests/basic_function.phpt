@@ -3,7 +3,7 @@ OpenCensus Trace: Basic Function Test
 --FILE--
 <?php
 
-require_once(__DIR__ . '/common.php');
+require_once(__DIR__ . '/common.inc');
 
 // 1: Sanity test a simple profile run
 opencensus_trace_function("bar");

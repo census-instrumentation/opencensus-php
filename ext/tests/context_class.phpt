@@ -3,7 +3,7 @@ OpenCensus Trace: Context Class Test
 --FILE--
 <?php
 
-require_once(__DIR__ . '/common.php');
+require_once(__DIR__ . '/common.inc');
 
 if (class_exists('OpenCensus\Trace\Ext\SpanContext')) {
     echo "OpenCensus\\Trace\\Ext\SpanContext class is defined.\n";
