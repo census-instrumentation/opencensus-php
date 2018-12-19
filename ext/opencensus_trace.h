@@ -34,9 +34,4 @@ PHP_FUNCTION(opencensus_trace_add_annotation);
 PHP_FUNCTION(opencensus_trace_add_link);
 PHP_FUNCTION(opencensus_trace_add_message_event);
 
-// Extension lifecycle hooks
-int opencensus_minit(INIT_FUNC_ARGS);
-int opencensus_rinit(TSRMLS_D);
-int opencensus_rshutdown(TSRMLS_D);
-
 #endif /* PHP_OPENCENSUS_TRACE_H */

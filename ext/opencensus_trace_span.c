@@ -639,8 +639,8 @@ int opencensus_trace_span_to_zval(opencensus_trace_span_t *trace_span, zval *spa
     zend_update_property_str(opencensus_trace_span_ce, span, "spanId", sizeof("spanId") - 1, trace_span->span_id);
     if (trace_span->parent) {
         zend_update_property_str(opencensus_trace_span_ce, span, "parentSpanId", sizeof("parentSpanId") - 1, trace_span->parent->span_id);
-    } else if (OPENCENSUS_TRACE_G(trace_parent_span_id)) {
-        zend_update_property_str(opencensus_trace_span_ce, span, "parentSpanId", sizeof("parentSpanId") - 1, OPENCENSUS_TRACE_G(trace_parent_span_id));
+    } else if (OPENCENSUS_G(trace_parent_span_id)) {
+        zend_update_property_str(opencensus_trace_span_ce, span, "parentSpanId", sizeof("parentSpanId") - 1, OPENCENSUS_G(trace_parent_span_id));
     }
     zend_update_property_str(opencensus_trace_span_ce, span, "name", sizeof("name") - 1, trace_span->name);
     zend_update_property_double(opencensus_trace_span_ce, span, "startTime", sizeof("startTime") - 1, trace_span->start);
