@@ -15,21 +15,8 @@
  */
 
 #include "php_opencensus.h"
+#include "ext/standard/info.h"
 
-extern void span_dtor(zval *zv);
-
-/**
- * True globals for storing the original zend_execute_ex and
- * zend_execute_internal function pointers
- */
-static void (*opencensus_original_zend_execute_ex) (zend_execute_data *execute_data);
-static void (*opencensus_original_zend_execute_internal) (zend_execute_data *execute_data, zval *return_value);
-
-/* Constructor used for creating the opencensus globals */
-static void php_opencensus_globals_ctor(void *pDest TSRMLS_DC)
-{
-    zend_opencensus_globals *opencensus_global = (zend_opencensus_globals *) pDest;
-}
 
 ZEND_DECLARE_MODULE_GLOBALS(opencensus)
 
@@ -125,6 +112,12 @@ ZEND_TSRMLS_CACHE_DEFINE()
 ZEND_GET_MODULE(opencensus)
 #endif
 
+/* Constructor used for creating the opencensus globals */
+static void php_opencensus_globals_ctor(void *pDest TSRMLS_DC)
+{
+    zend_opencensus_globals *opencensus_global = (zend_opencensus_globals *) pDest;
+}
+
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(opencensus)
@@ -136,16 +129,7 @@ PHP_MINIT_FUNCTION(opencensus)
     php_opencensus_globals_ctor(&php_opencensus_globals_ctor);
 #endif
 
-    /**
-     * Save original zend execute functions and use our own to instrument
-     * function calls
-     */
-    opencensus_original_zend_execute_ex = zend_execute_ex;
-    zend_execute_ex = opencensus_trace_execute_ex;
-
-    opencensus_original_zend_execute_internal = zend_execute_internal;
-    zend_execute_internal = opencensus_trace_execute_internal;
-
+    opencensus_trace_minit();
     opencensus_trace_span_minit(INIT_FUNC_ARGS_PASSTHRU);
     opencensus_trace_context_minit(INIT_FUNC_ARGS_PASSTHRU);
     opencensus_trace_annotation_minit(INIT_FUNC_ARGS_PASSTHRU);
@@ -160,9 +144,7 @@ PHP_MINIT_FUNCTION(opencensus)
  */
 PHP_MSHUTDOWN_FUNCTION(opencensus)
 {
-    /* Put the original zend execute function back */
-    zend_execute_ex = opencensus_original_zend_execute_ex;
-    zend_execute_internal = opencensus_original_zend_execute_internal;
+	opencensus_trace_mshutdown();
 
     return SUCCESS;
 }
@@ -222,3 +204,4 @@ double opencensus_now()
 
 
 
+;

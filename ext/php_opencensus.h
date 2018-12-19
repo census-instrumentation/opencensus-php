@@ -64,11 +64,6 @@ extern ZEND_DECLARE_MODULE_GLOBALS(opencensus)
 #define OPENCENSUS_G(v) (opencensus_globals.v)
 #endif
 
-// Extension lifecycle hooks
-int opencensus_minit(INIT_FUNC_ARGS);
-int opencensus_rinit(TSRMLS_D);
-int opencensus_rshutdown(TSRMLS_D);
-
-extern double opencensus_now();
+double opencensus_now();
 
 #endif /* PHP_OPENCENSUS_H */

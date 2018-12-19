@@ -16,22 +16,35 @@
 
 #include "php_opencensus.h"
 #include "opencensus_trace.h"
-#include "opencensus_trace_span.h"
-#include "opencensus_trace_context.h"
-#include "opencensus_trace_annotation.h"
-#include "opencensus_trace_link.h"
-#include "opencensus_trace_message_event.h"
 #include "Zend/zend_builtin_functions.h"
-#include "Zend/zend_compile.h"
-#include "Zend/zend_closures.h"
 #include "Zend/zend_exceptions.h"
-#include "zend_extensions.h"
 #include "standard/php_math.h"
 #include "standard/php_rand.h"
-#include "ext/standard/info.h"
 
-extern void (*opencensus_original_zend_execute_ex) (zend_execute_data *execute_data);
-extern void (*opencensus_original_zend_execute_internal) (zend_execute_data *execute_data, zval *return_value);
+/**
+ * True globals for storing the original zend_execute_ex and
+ * zend_execute_internal function pointers
+ */
+static void (*opencensus_original_zend_execute_ex) (zend_execute_data *execute_data);
+static void (*opencensus_original_zend_execute_internal) (zend_execute_data *execute_data, zval *return_value);
+
+void opencensus_trace_minit() {
+    /**
+     * Save original zend execute functions and use our own to instrument
+     * function calls
+     */
+    opencensus_original_zend_execute_ex = zend_execute_ex;
+    zend_execute_ex = opencensus_trace_execute_ex;
+
+    opencensus_original_zend_execute_internal = zend_execute_internal;
+    zend_execute_internal = opencensus_trace_execute_internal;
+}
+
+void opencensus_trace_mshutdown() {
+    /* Put the original zend execute function back */
+    zend_execute_ex = opencensus_original_zend_execute_ex;
+    zend_execute_internal = opencensus_original_zend_execute_internal;
+}
 
 /**
  * Fetch the spanId zend_string value from the provided array.
@@ -430,7 +443,7 @@ void span_dtor(zval *zv)
  * Reset the list of spans and free any allocated memory used.
  * If reset is set, reallocate request globals so we can start capturing spans.
  */
-static void opencensus_trace_clear(int reset TSRMLS_DC)
+void opencensus_trace_clear(int reset TSRMLS_DC)
 {
     /* free the hashtable */
     zend_hash_destroy(OPENCENSUS_G(spans));
