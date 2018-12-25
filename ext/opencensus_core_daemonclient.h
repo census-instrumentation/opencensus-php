@@ -17,4 +17,23 @@
 #ifndef PHP_OPENCENSUS_CORE_DAEMONCLIENT_H
 #define PHP_OPENCENSUS_CORE_DAEMONCLIENT_H 1
 
+#define opencensus_client_path "opencensus.client.path"
+
+#ifdef PHP_WIN32
+#define opencensus_client_path_val "\\.\\pipe\\oc-daemon"
+#else
+#define opencensus_client_path_val "/tmp/oc-daemon.sock"
+#endif
+
+typedef struct {
+	char *data;
+	size_t len;
+	size_t cap;
+} daemon_msg;
+
+void opencensus_core_daemonclient_minit(INIT_FUNC_ARGS);
+void opencensus_core_daemonclient_mshutdown(SHUTDOWN_FUNC_ARGS);
+void opencensus_core_daemonclient_rinit();
+void opencensus_core_daemonclient_rshutdown();
+
 #endif //PHP_OPENCENSUS_CORE_DAEMONCLIENT_H

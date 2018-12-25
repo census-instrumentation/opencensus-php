@@ -28,7 +28,8 @@
 static void (*opencensus_original_zend_execute_ex) (zend_execute_data *execute_data);
 static void (*opencensus_original_zend_execute_internal) (zend_execute_data *execute_data, zval *return_value);
 
-void opencensus_trace_minit() {
+void opencensus_trace_ginit()
+{
     /**
      * Save original zend execute functions and use our own to instrument
      * function calls
@@ -40,10 +41,37 @@ void opencensus_trace_minit() {
     zend_execute_internal = opencensus_trace_execute_internal;
 }
 
-void opencensus_trace_mshutdown() {
+void opencensus_trace_gshutdown()
+{
     /* Put the original zend execute function back */
     zend_execute_ex = opencensus_original_zend_execute_ex;
     zend_execute_internal = opencensus_original_zend_execute_internal;
+}
+
+void opencensus_trace_rinit()
+{
+	/* initialize storage for user traced functions - per request basis */
+    ALLOC_HASHTABLE(OPENCENSUS_G(user_traced_functions));
+    zend_hash_init(OPENCENSUS_G(user_traced_functions), 16, NULL, ZVAL_PTR_DTOR, 0);
+
+    /* initialize storage for recorded spans - per request basis */
+    ALLOC_HASHTABLE(OPENCENSUS_G(spans));
+    zend_hash_init(OPENCENSUS_G(spans), 16, NULL, span_dtor, 0);
+
+    OPENCENSUS_G(current_span) = NULL;
+    OPENCENSUS_G(trace_id) = NULL;
+    OPENCENSUS_G(trace_parent_span_id) = NULL;
+}
+
+void opencensus_trace_rshutdown()
+{
+    /* cleanup user_traced_functions zvals that we copied when registing */
+    zend_hash_destroy(OPENCENSUS_G(user_traced_functions));
+    FREE_HASHTABLE(OPENCENSUS_G(user_traced_functions));
+
+	/* cleanup recorded spans */
+	opencensus_trace_clear(0 TSRMLS_CC);
+
 }
 
 /**

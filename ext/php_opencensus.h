@@ -15,7 +15,7 @@
  */
 
 #ifndef PHP_OPENCENSUS_H
-#define PHP_OPENCENSUS_H 1
+#define PHP_OPENCENSUS_H
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -23,8 +23,9 @@
 
 #include "php.h"
 #include "opencensus_trace.h"
+#include "opencensus_core_daemonclient.h"
 
-#ifdef _WIN32
+#ifdef PHP_WIN32
 #include "win32/time.h"
 #else
 #include <sys/time.h>
@@ -35,13 +36,6 @@
 
 extern zend_module_entry opencensus_module_entry;
 #define phpext_opencensus_ptr &opencensus_module_entry
-
-PHP_MINIT_FUNCTION(opencensus);
-PHP_MSHUTDOWN_FUNCTION(opencensus);
-PHP_RINIT_FUNCTION(opencensus);
-PHP_RSHUTDOWN_FUNCTION(opencensus);
-
-PHP_FUNCTION(opencensus_version);
 
 ZEND_BEGIN_MODULE_GLOBALS(opencensus)
     // map of functions we're tracing to callbacks
@@ -56,13 +50,8 @@ ZEND_BEGIN_MODULE_GLOBALS(opencensus)
     HashTable *spans;
 ZEND_END_MODULE_GLOBALS(opencensus)
 
-extern ZEND_DECLARE_MODULE_GLOBALS(opencensus)
-
-#ifdef ZTS
-#define OPENCENSUS_G(v) TSRMG(opencensus_globals_id, zend_opencensus_globals *, v)
-#else
-#define OPENCENSUS_G(v) (opencensus_globals.v)
-#endif
+ZEND_EXTERN_MODULE_GLOBALS(opencensus)
+#define OPENCENSUS_G(v) ZEND_MODULE_GLOBALS_ACCESSOR(opencensus, v)
 
 double opencensus_now();
 
