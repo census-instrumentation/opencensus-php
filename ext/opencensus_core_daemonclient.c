@@ -18,17 +18,22 @@
 
 #include <pthread.h>
 #include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <stdatomic.h>
+#include "zend_interfaces.h"
+#include "zend_types.h"
 #include "php_opencensus.h"
 #include "opencensus_core_daemonclient.h"
 #include "varint.h"
 
+const char protocol_version = 1;
+
 #define varint_max_len 10
 
-#if SIZEOF_ZEND_LONG > 4
-#define swap_long(x) \
+#define swap_uint64_t(x) \
     ((uint64_t)((((uint64_t)(x) & 0xff00000000000000ULL) >> 56) | \
                 (((uint64_t)(x) & 0x00ff000000000000ULL) >> 40) | \
                 (((uint64_t)(x) & 0x0000ff0000000000ULL) >> 24) | \
@@ -37,14 +42,18 @@
                 (((uint64_t)(x) & 0x0000000000ff0000ULL) << 24) | \
                 (((uint64_t)(x) & 0x000000000000ff00ULL) << 40) | \
                 (((uint64_t)(x) & 0x00000000000000ffULL) << 56)))
-#else
-#define swap_long(x) \
+
+#define swap_uint32_t(x) \
     ((uint32_t)((((uint32_t)(x) & 0xff000000) >> 24) | \
                 (((uint32_t)(x) & 0x00ff0000) >>  8) | \
                 (((uint32_t)(x) & 0x0000ff00) <<  8) | \
                 (((uint32_t)(x) & 0x000000ff) << 24)))
-#endif
 
+typedef struct {
+	char *data;
+	size_t len;
+	size_t cap;
+} daemon_msg;
 
 typedef enum msg_type {
 	// PHP lifecycle events (1-19)
@@ -64,88 +73,156 @@ typedef enum msg_type {
 
 typedef struct node {
 	struct node *next;
-	daemon_msg msg;
+	daemon_msg  header;
+	daemon_msg  msg;
 } node;
 
-typedef struct daemon_client {
-	atomic_bool disabled;
-	atomic_int seq_nr;
-	int sockfd;
-	char pid[varint_max_len];
-	size_t pid_len;
+typedef struct daemonclient {
+	atomic_bool        enabled;
+	atomic_int         seq_nr;
+	int                sockfd;
+	char               pid[varint_max_len];
+	size_t             pid_len;
 	struct sockaddr_un addr;
-	pthread_t pt_process;
-	pthread_mutex_t mu;
-	node *head;
-	node *tail;
-	pthread_cond_t has_data;
+	node               *head;
+	node               *tail;
+	pthread_t          thread_id;
+	pthread_mutex_t    mu;
+	pthread_cond_t     has_data;
 
-} daemon_client;
+} daemonclient;
 
 /* true process global */
-static daemon_client *dc;
+static daemonclient *mdc = NULL;
 
-static void *process(void *arg);
-static int send_msg(daemon_client *dc, msg_type type, char *msg, size_t len);
-static void *clear_msg_list(void *arg);
-inline void encode_double(daemon_msg *msg, double d);
-inline int encode_uint64(daemon_msg *msg, uint64_t i);
-inline int encode_string(daemon_msg *msg, char *str, size_t len);
-
-daemon_client *daemon_client_create(char *socket_path)
+static inline int check_buffer(daemon_msg *msg, size_t min_req_size)
 {
-	int len;
-	daemon_client *dc = malloc(sizeof(daemon_client));
-
-
-	if ((dc->sockfd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
-		free(dc);
-		return NULL;
+	min_req_size += msg->len;
+	if (min_req_size > msg->cap) {
+		msg->data = realloc(msg->data, min_req_size + 1024);
+		if (!msg->data) {
+			return false;
+		}
+		msg->cap = min_req_size + 1024;
 	}
-
-	dc->addr.sun_family = AF_UNIX;
-	strncpy(dc->addr.sun_path, socket_path, sizeof(dc->addr.sun_path));
-	len = strlen(dc->addr.sun_path) + sizeof(dc->addr.sun_family);
-
-	if (connect(dc->sockfd, (struct sockaddr *)&dc->addr, len) == -1) {
-		free(dc);
-		return NULL;
-	}
-
-	pthread_cond_init(&dc->has_data, NULL);
-	pthread_create(&dc->pt_process, NULL, process, (void *)dc);
-
-	dc->pid_len = uvarint_encode(dc->pid, varint_max_len, getpid());
-	atomic_init(&dc->disabled, false);
-	atomic_init(&dc->seq_nr, 1);
-
-	return dc;
+	return true;
 }
 
-void daemon_client_destroy(daemon_client *dc)
+static inline void msg_destroy(daemon_msg *msg)
 {
-	if (dc != NULL) {
-		atomic_store(&dc->disabled, true);
-		pthread_cond_signal(&dc->has_data);
-		pthread_join(dc->pt_process, NULL);
-		pthread_cond_destroy (&dc->has_data);
-		close(dc->sockfd);
-		clear_msg_list(&dc->head);
-		free(dc);
+	if (msg->cap > 0) {
+		free(msg->data);
+		msg->cap = 0;
+		msg->len = 0;
 	}
+}
+
+static void *clear_msg_list(node **head)
+{
+	node *old;
+	node *n = *head;
+	*head = NULL;
+
+	while (n != NULL) {
+		old = n;
+		n = n->next;
+		msg_destroy(&old->header);
+		msg_destroy(&old->msg);
+		free(old);
+	}
+
+	return NULL;
+}
+
+static inline int encode_double(daemon_msg *msg, double d)
+{
+	if (!check_buffer(msg, 8)) {
+		return false;
+	}
+
+
+#if SIZEOF_ZEND_LONG < 8
+	union f32 {
+		float f;
+		uint32_t i;
+	} m = { (float) d };
+#ifndef WORDS_BIGENDIAN
+	m.i = swap_uint32_t(m.i);
+#endif // WORDS_BIGENDIAN
+	memset(msg->data+msg->len, 0, 8);
+	memcpy(msg->data+msg->len+2, &m.f, sizeof(float));
+#else // SIZEOF_ZEND_LONG
+	union d64 {
+		double d;
+		uint64_t i;
+	} m = { d };
+#ifndef WORDS_BIGENDIAN
+	m.i = swap_uint64_t(m.i);
+#endif // WORDS_BIGENDIAN
+	memcpy(msg->data+msg->len, &m.d, sizeof(double));
+#endif // SIZEOF_ZEND_LONG
+	msg->len += 8;
+	return true;
+}
+
+static inline int encode_uint64(daemon_msg *msg, uint64_t i)
+{
+	if (!check_buffer(msg, varint_max_len)) {
+		return false;
+	}
+
+	size_t ilen = uvarint_encode(msg->data+msg->len, varint_max_len, i);
+	if (ilen <= 0) {
+		return false;
+	}
+	msg->len += ilen;
+
+	return true;
+}
+
+static inline int encode_string(daemon_msg *msg, char *str, size_t len)
+{
+	if (!check_buffer(msg, varint_max_len + len)) {
+		return false;
+	}
+
+	size_t ilen = uvarint_encode(msg->data+msg->len, varint_max_len, len);
+	if (ilen <= 0) {
+		return false;
+	}
+	msg->len += ilen;
+
+	strncpy(msg->data+msg->len, str, len);
+	msg->len += len;
+
+	return true;
+}
+
+static inline int write_msg(daemonclient *dc, daemon_msg msg)
+{
+	while (msg.len > 0) {
+		int sent = send(dc->sockfd, msg.data, msg.len, 0);
+		if (sent == -1) {
+			return false;
+		}
+		msg.data += sent;
+		msg.len  -= sent;
+	}
+	return true;
 }
 
 static void *process(void *arg)
 {
-	node *n;
-	daemon_client *dc = (daemon_client *)arg;
+	node *n, *old;
+	daemonclient *dc = (daemonclient *)arg;
 
-	while (!atomic_load(&dc->disabled)) {
+	while (atomic_load(&dc->enabled)) {
 		pthread_mutex_lock(&dc->mu);
 
-		while (dc->head == NULL && !atomic_load(&dc->disabled)) {
+		while (dc->head == NULL && atomic_load(&dc->enabled)) {
 			pthread_cond_wait(&dc->has_data, &dc->mu);
 		}
+
 		n = dc->head;
 		dc->head = NULL;
 		dc->tail = NULL;
@@ -153,24 +230,16 @@ static void *process(void *arg)
 		pthread_mutex_unlock(&dc->mu);
 
 		while (n != NULL) {
-			int remainder = n->msg.len;
-			char *data    = n->msg.data;
-
-			while (remainder > 0) {
-				int sent = send(dc->sockfd, data, remainder, 0);
-				if (sent == -1) {
-					// error while sending data...
-					atomic_store(&dc->disabled, true);
-					php_error_docref(NULL, E_ERROR, "%s", "unix_socket error: unable to send OpenCensus data");
-					clear_msg_list(&n);
-					return NULL;
-				}
-				data      += sent;
-				remainder -= sent;
+			if (!write_msg(dc, n->header) || !write_msg(dc, n->msg)) {
+				atomic_store(&dc->enabled, false);
+				clear_msg_list(&n);
+				return NULL;
 			}
 
-			node *old = n;
+			old = n;
 			n = n->next;
+			msg_destroy(&old->header);
+			msg_destroy(&old->msg);
 			free(old);
 		}
 	}
@@ -178,69 +247,71 @@ static void *process(void *arg)
 	return NULL;
 }
 
-static void *clear_msg_list(void *arg)
+static int send_msg(daemonclient *dc, msg_type type, daemon_msg *msg)
 {
-	node *msg = *((node **) arg);
-	node *old;
-
-	while (msg != NULL) {
-		old = msg;
-		msg = msg->next;
-		free(old);
-	}
-
-	return NULL;
-}
-
-//static int create_measure(daemon_client *dc, )
-
-static int send_msg(daemon_client *dc, msg_type type, char *msg, size_t msg_len)
-{
-	if (atomic_load(&dc->disabled)) {
+	if (!atomic_load(&dc->enabled)) {
+		msg_destroy(msg);
 		return false;
 	}
 
-	node *n = malloc(sizeof(node));
-	// allocate enough memory for entire payload (header+data payload)
-	n->msg.data = malloc(msg_len + 80);
-	n->msg.cap  = msg_len+80;
+	daemon_msg header = { malloc(80), 0, 80 };
 
 	// write SOM (start of message)
-	memset(n->msg.data, 0, 4);
-	n->msg.len = 4;
+	memset(header.data, 0, 4);
+	header.len = 4;
 
 	// msg_type
-	*(n->msg.data + n->msg.len) = type;
-	n->msg.len++;
+	if (!encode_uint64(&header, type)) {
+		msg_destroy(&header);
+		msg_destroy(msg);
+		return false;
+	}
 
 	// seq_nr
-	if (!encode_uint64(&n->msg, atomic_fetch_add(&dc->seq_nr, 1))) {
-		free(n->msg.data);
-		free(n);
+	if (!encode_uint64(&header, atomic_fetch_add(&dc->seq_nr, 1))) {
+		msg_destroy(&header);
+		msg_destroy(msg);
 		return false;
 	}
 
 	// process id
-	memcpy(n->msg.data+n->msg.len, &dc->pid, dc->pid_len);
-	n->msg.len += dc->pid_len;
+	memcpy(header.data+header.len, &dc->pid, dc->pid_len);
+	header.len += dc->pid_len;
 
 	// thread id (0 if not in ZTS mode)
 #ifdef ZTS
-	if (!encode_uint64(&n->msg, (unsigned long long)pthread_self())) {
-		free(n->msg.data);
-		free(n);
+	if (!encode_uint64(&header, (unsigned long long)pthread_self())) {
+		msg_destroy(&header);
+		msg_destroy(msg);
 		return false;
 	}
 #else
-	*(n->msg.data+n->msg.len) = 0;
-	n->msg.len++;
+	*(header.data+header.len) = 0;
+	header.len++;
 #endif
 
 	// start time
-	encode_double(&n->msg, opencensus_now());
+	if (!encode_double(&header, opencensus_now())) {
+		msg_destroy(&header);
+		msg_destroy(msg);
+		return false;
+	}
 
-	// add msg payload
-	encode_string(&n->msg, msg, msg_len);
+	if (!encode_uint64(&header, msg->len)) {
+		msg_destroy(&header);
+		msg_destroy(msg);
+		return false;
+	}
+
+	// create our node to hand off our message to the processing thread
+	node *n = malloc(sizeof(node));
+	n->next   = NULL;
+	n->header = header;
+	n->msg    = *msg;
+	// empty out msg (node has taken responsibility over the payload)
+	msg->data = NULL;
+	msg->len  = 0;
+	msg->cap  = 0;
 
 	pthread_mutex_lock(&dc->mu);
 
@@ -260,86 +331,102 @@ static int send_msg(daemon_client *dc, msg_type type, char *msg, size_t msg_len)
 
 #endif
 
-inline void encode_double(daemon_msg *msg, double d)
+daemonclient *daemonclient_create(char *socket_path)
 {
-#ifndef WORDS_BIGENDIAN
-	d = swap_long(d);
-#endif // WORDS_BIGENDIAN
+	daemonclient *dc = malloc(sizeof(daemonclient));
+	pthread_mutex_init(&dc->mu, NULL);
+	pthread_cond_init(&dc->has_data, NULL);
+	dc->head = NULL;
+	dc->tail = NULL;
 
-#if SIZEOF_ZEND_LONG > 4
-	memcpy(msg->data, (const void *)&d, 8);
-#else // SIZEOF_ZEND_LONG
-	memset(msg->data, 0, 8);
-	memcpy(msg->data+2, d, 4);
-#endif // SIZEOF_ZEND_LONG
-	msg->len += 8;
+	if ((dc->sockfd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+		return dc;
+	}
+
+	dc->addr.sun_family = AF_UNIX;
+	strncpy(dc->addr.sun_path, socket_path, sizeof(dc->addr.sun_path));
+
+	if (connect(dc->sockfd, (struct sockaddr *)&dc->addr, SUN_LEN(&dc->addr)) == -1) {
+		return dc;
+	}
+
+	atomic_init(&dc->enabled, true);
+
+	if (pthread_create(&dc->thread_id, NULL, process, dc) != 0) {
+		atomic_init(&dc->enabled, false);
+		return dc;
+	}
+
+	dc->pid_len = uvarint_encode(dc->pid, varint_max_len, getpid());
+	atomic_init(&dc->seq_nr, 1);
+
+	return dc;
 }
 
-
-inline int encode_uint64(daemon_msg *msg, uint64_t i)
+void daemonclient_destroy(daemonclient *dc)
 {
-	size_t min_req_size = msg->len + varint_max_len + 1024;
-
-	if (min_req_size > msg->cap) {
-		msg->data = realloc(msg->data, min_req_size);
-		if (!msg->data) {
-			return false;
-		}
-		msg->cap = min_req_size;
+	if (dc != NULL) {
+		atomic_store(&dc->enabled, false);
+		pthread_cond_signal(&dc->has_data);
+		pthread_join(dc->thread_id, NULL);
+		pthread_cond_destroy(&dc->has_data);
+		pthread_mutex_destroy(&dc->mu);
+		close(dc->sockfd);
+		clear_msg_list(&dc->head);
+		free(dc);
+		dc = NULL;
 	}
-
-	size_t ilen = uvarint_encode(msg->data+msg->len, varint_max_len, i);
-	if (ilen <= 0) {
-		return false;
-	}
-	msg->cap = min_req_size;
-
-	return true;
 }
 
-inline int encode_string(daemon_msg *msg, char *str, size_t len)
+PHP_FUNCTION(opencensus_core_send_to_daemonclient)
 {
-	size_t min_req_size = msg->len + len + 1024;
+	uint64_t    msg_type;
+	zend_string *msg_data;
 
-	if (min_req_size > msg->cap) {
-		msg->data = realloc(msg->data, min_req_size);
-		if (!msg->data) {
-			return false;
-		}
-		msg->cap = min_req_size;
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "lS", &msg_type, &msg_data) == FAILURE) {
+		return;
 	}
 
-	size_t ilen = uvarint_encode(msg->data+msg->len, varint_max_len, len);
-	if (ilen <= 0) {
-		return false;
+	daemon_msg msg = { malloc(ZSTR_LEN(msg_data)), ZSTR_LEN(msg_data), ZSTR_LEN(msg_data) };
+	memcpy(msg.data, ZSTR_VAL(msg_data), ZSTR_LEN(msg_data));
+
+	if (!send_msg(mdc, msg_type, &msg)) {
+		RETURN_FALSE;
 	}
-	msg->len += ilen;
 
-	strncpy(msg->data+msg->len, str, len);
-	msg->len += len;
-
-	return true;
+	RETURN_TRUE;
 }
-
 
 void opencensus_core_daemonclient_minit(INIT_FUNC_ARGS)
 {
-	dc = daemon_client_create(INI_STR(opencensus_client_path));
-	// TODO: send MSG_PROC_INIT
+	mdc = daemonclient_create(INI_STR(opencensus_client_path));
+
+	daemon_msg msg = { NULL, 0, 0 } ;
+	encode_uint64(&msg, protocol_version);
+	encode_string(&msg, PHP_VERSION, strlen(PHP_VERSION));
+	encode_string(&msg, ZEND_VERSION, strlen(ZEND_VERSION));
+	send_msg(mdc, MSG_PROC_INIT, &msg);
 }
 
 void opencensus_core_daemonclient_mshutdown(SHUTDOWN_FUNC_ARGS)
 {
-	// TODO: send MSG_PROC_SHUTDOWN
-	daemon_client_destroy(dc);
+	daemon_msg msg = { NULL, 0, 0 } ;
+	send_msg(mdc, MSG_PROC_SHUTDOWN, &msg);
+
+	daemonclient_destroy(mdc);
 }
 
 void opencensus_core_daemonclient_rinit()
 {
-	// TODO: send MSG_REQ_INIT
+	daemon_msg msg = { NULL, 0, 0 } ;
+	encode_uint64(&msg, protocol_version);
+	encode_string(&msg, PHP_VERSION, strlen(PHP_VERSION));
+	encode_string(&msg, ZEND_VERSION, strlen(ZEND_VERSION));
+	send_msg(mdc, MSG_REQ_INIT, &msg);
 }
 
 void opencensus_core_daemonclient_rshutdown()
 {
-	// TODO: send MSG_REQ_SHUTDOWN
+	daemon_msg msg = { NULL, 0, 0 } ;
+	send_msg(mdc, MSG_REQ_SHUTDOWN, &msg);
 }

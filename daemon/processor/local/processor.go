@@ -56,8 +56,6 @@ type Processor struct {
 	bufSize       int
 	procRoutines  int
 	dropCount     int32
-
-	procCount int32
 }
 
 // New returns a new Processor.
@@ -151,7 +149,6 @@ func (p *Processor) handleMessages(wg *sync.WaitGroup) {
 		case daemon.TraceExport:
 			p.exportSpans(m)
 		}
-		atomic.AddInt32(&p.procCount, 1)
 		_ = stats.RecordWithTags(context.Background(),
 			[]tag.Mutator{
 				msgType,

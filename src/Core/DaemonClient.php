@@ -94,8 +94,17 @@ class DaemonClient implements StatsExporter, TraceExporter
     /** @var bool $float32 set to true will signal floats being encoded in 32 bit */
     private $float32;
 
+    /** @var bool $useExtension will be set to true if the OpenCensus extension is available for sending data. */
+    private $useExtension = false;
+
     private function __construct($stream, int $maxSendTime = null)
     {
+        if ($stream === false) {
+            // stream handled by php extension
+            $this->useExtension = true;
+            return;
+        }
+
         $this->stream = $stream;
         stream_set_blocking($this->stream, false);
 
@@ -164,14 +173,16 @@ class DaemonClient implements StatsExporter, TraceExporter
             }
         } else {
             // Unix defaults to unix sockets
-            $errno = 0;
-            $errstr = '';
-            $sock = @pfsockopen("unix://$socketPath", -1, $errno, $errstr, 0);
-            if ($sock === false) {
-                throw new \Exception("$errstr [$errno]");
+            $sock = false;
+            if (!function_exists("opencensus_core_send_to_daemonclient")) {
+                $errno = 0;
+                $errstr = '';
+                $sock = @pfsockopen("unix://$socketPath", -1, $errno, $errstr, 0);
+                if ($sock === false) {
+                    throw new \Exception("$errstr [$errno]");
+                }
             }
         }
-
         return self::$instance = new DaemonClient($sock, $maxSendTime);
     }
 
@@ -324,6 +335,9 @@ class DaemonClient implements StatsExporter, TraceExporter
      */
     private final function send(string $type, string $msg = ''): bool
     {
+        if ($this->useExtension) {
+            return opencensus_core_send_to_daemonclient(ord($type), $msg);
+        }
         $start = microtime(true);
         $maxEnd = $start + $this->maxSendTime;
 

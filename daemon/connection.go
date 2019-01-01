@@ -89,7 +89,6 @@ func (p *connection) handle(conn net.Conn) {
 			return
 		}
 
-
 		if offset > 0 && bytes.HasPrefix(buf[offset:], som) {
 			// we just received (the beginning of) a new Message while having
 			// existing unfinished Message data. We'll have to drop the existing
@@ -149,7 +148,7 @@ func (p *connection) parseMessage(buf []byte) (consumed int, done bool) {
 		case -1:
 			// start marker not found, remove up to potential beginning of the
 			// next message's start marker
-			minTestPos := len(buf)-somLen
+			minTestPos := len(buf) - somLen
 			if minTestPos < 0 {
 				minTestPos = len(buf)
 			}
