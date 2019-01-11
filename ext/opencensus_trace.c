@@ -475,6 +475,19 @@ static zend_string *opencensus_trace_add_scope_name(zend_string *function_name, 
     return result;
 }
 
+/* Get location of the file where this function is defiend */
+static zend_string *opencensus_trace_file_name(zend_class_entry *scope)
+{
+    zend_string *result;
+
+    if (scope && &scope->info != NULL && &scope->info.user != NULL) {
+        result = zend_string_copy(scope->info.user.filename);
+    } else{
+        return NULL;
+    }
+    return result;
+}
+
 /**
  * Start a new trace span
  *
@@ -619,6 +632,10 @@ void opencensus_trace_execute_ex (zend_execute_data *execute_data TSRMLS_DC) {
         EG(current_execute_data)->func->common.function_name,
         EG(current_execute_data)->func->common.scope
     );
+    zend_string *file_name = opencensus_trace_file_name(
+        EG(current_execute_data)->func->common.scope
+    );
+
     zval *trace_handler;
     opencensus_trace_span_t *span;
     zend_string *callback_name = NULL;
@@ -660,6 +677,10 @@ void opencensus_trace_execute_ex (zend_execute_data *execute_data TSRMLS_DC) {
         }
     }
     zend_string_release(callback_name);
+    if (file_name != NULL) {
+        opencensus_trace_span_add_attribute_str(span, "file", file_name);
+        zend_string_release(file_name);
+    }
     opencensus_trace_finish();
 }
 
@@ -686,6 +707,10 @@ void opencensus_trace_execute_internal(INTERNAL_FUNCTION_PARAMETERS)
         execute_data->func->internal_function.function_name,
         execute_data->func->internal_function.scope
     );
+    zend_string *file_name = opencensus_trace_file_name(
+        execute_data->func->internal_function.scope
+    );
+
     zval *trace_handler;
     opencensus_trace_span_t *span;
     zend_string *callback_name = NULL;
@@ -725,6 +750,10 @@ void opencensus_trace_execute_internal(INTERNAL_FUNCTION_PARAMETERS)
         if (Z_TYPE_P(trace_handler) == IS_ARRAY) {
             opencensus_trace_span_apply_span_options(span, trace_handler);
         }
+    }
+    if (file_name != NULL) {
+        opencensus_trace_span_add_attribute_str(span, "file", file_name);
+        zend_string_release(file_name);
     }
     zend_string_release(callback_name);
     opencensus_trace_finish();
