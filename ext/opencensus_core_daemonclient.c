@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <stdbool.h>
 #include <stdatomic.h>
 #include "zend_interfaces.h"
 #include "zend_types.h"
