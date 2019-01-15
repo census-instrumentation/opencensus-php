@@ -42,46 +42,46 @@ class Aggregation
      * @var float[] $bounds Bucket boundaries if this Aggregation represents a
      * distribution, see Distribution.
      */
-     private $bounds;
+    private $bounds;
 
-     private final function __construct(int $type, array $bounds = null)
-     {
-         $this->type = $type;
-         $this->bounds = $bounds;
-     }
+    final private function __construct(int $type, array $bounds = null)
+    {
+        $this->type = $type;
+        $this->bounds = $bounds;
+    }
 
      /**
       * Returns the type of the aggregation.
       *
       * @return int The Aggregation Type.
       */
-     public final function getType(): int
-     {
-         return $this->type;
-     }
+    final public function getType(): int
+    {
+        return $this->type;
+    }
 
      /**
       * Returns the bucket boundaries of the Distribution Aggregation.
       *
       * @return float[] Returns the bucket boundaries.
       */
-     public final function getBucketBoundaries(): array
-     {
-         if ($this->type !== self::DISTRIBUTION) {
-             return array();
-         }
-         return $this->bounds;
-     }
+    final public function getBucketBoundaries(): array
+    {
+        if ($this->type !== self::DISTRIBUTION) {
+            return array();
+        }
+        return $this->bounds;
+    }
 
      /**
       * Returns a new Count Aggregation
       *
       * @return Aggregation
       */
-     public static final function count(): Aggregation
-     {
-         return new self(self::COUNT);
-     }
+    final public static function count(): Aggregation
+    {
+        return new self(self::COUNT);
+    }
 
      /**
       * Returns a new Distribution Aggregation with the provided Bucket Boundaries.
@@ -91,36 +91,36 @@ class Aggregation
       * @throws \Exception Throws on invalid bucket boundaries.
       * @return Aggregation
       */
-     public static final function distribution(array $bounds): Aggregation
-     {
-         foreach ($bounds as &$value) {
-             if (!is_float($value) && !is_integer($value)) {
-                 throw new \Exception("provided bucket boundaries need to be of type float");
-             }
-             $value = (float) $value;
-         }
-         sort($bounds);
+    final public static function distribution(array $bounds): Aggregation
+    {
+        foreach ($bounds as &$value) {
+            if (!is_float($value) && !is_integer($value)) {
+                throw new \Exception("provided bucket boundaries need to be of type float");
+            }
+            $value = (float) $value;
+        }
+        sort($bounds);
 
-         return new self(self::DISTRIBUTION, $bounds);
-     }
+        return new self(self::DISTRIBUTION, $bounds);
+    }
 
      /**
       * Returns a new LastValue Aggregation.
       *
       * @return Aggregation
       */
-     public static final function lastValue(): Aggregation
-     {
-         return new self(self::LAST_VALUE);
-     }
+    final public static function lastValue(): Aggregation
+    {
+        return new self(self::LAST_VALUE);
+    }
 
      /**
       * Returns a new Sum Aggregation.
       *
       * @return Aggregation
       */
-     public static final function sum(): Aggregation
-     {
-         return new self(self::SUM);
-     }
+    final public static function sum(): Aggregation
+    {
+        return new self(self::SUM);
+    }
 }

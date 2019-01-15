@@ -126,7 +126,7 @@ class DaemonClient implements StatsExporter, TraceExporter
         $this->send(self::MSG_REQ_INIT, $msg);
 
         // on shutdown... send shutdown message to daemon
-        register_shutdown_function(function() {
+        register_shutdown_function(function () {
             $this->send(self::MSG_REQ_SHUTDOWN);
         });
     }
@@ -150,7 +150,7 @@ class DaemonClient implements StatsExporter, TraceExporter
 
         if (array_key_exists('maxSendTime', $options) && is_float($options['maxSendTime'])) {
             $maxSendTime = $options['maxSendTime'];
-        } else{
+        } else {
             $maxSendTime = self::DEFAULT_MAX_SEND_TIME;
         }
 
@@ -189,7 +189,7 @@ class DaemonClient implements StatsExporter, TraceExporter
     public static function createMeasure(Measure $measure): bool
     {
         $msg = '';
-        switch(true) {
+        switch (true) {
             case $measure instanceof IntMeasure:
                 $msg .= self::MS_TYPE_INT;
                 break;
@@ -218,7 +218,9 @@ class DaemonClient implements StatsExporter, TraceExporter
     public static function registerView(View ...$views): bool
     {
         // bail out if we don't have views
-        if (count($views) === 0) return true;
+        if (count($views) === 0) {
+            return true;
+        }
 
         $msg = '';
         self::encodeUnsigned($msg, count($views));
@@ -248,7 +250,9 @@ class DaemonClient implements StatsExporter, TraceExporter
     public static function unregisterView(View ...$views): bool
     {
         // bail out if we don't have views
-        if (count($views) === 0) return true;
+        if (count($views) === 0) {
+            return true;
+        }
 
         $msg = '';
         self::encodeUnsigned($msg, count($views));
@@ -261,7 +265,9 @@ class DaemonClient implements StatsExporter, TraceExporter
     public static function recordStats(TagContext $tagContext, array $attachments, Measurement ...$ms): bool
     {
         // bail out if we don't have measurements
-        if (count($ms) === 0) return true;
+        if (count($ms) === 0) {
+            return true;
+        }
 
         $msg = '';
         self::encodeUnsigned($msg, count($ms));
@@ -271,7 +277,7 @@ class DaemonClient implements StatsExporter, TraceExporter
             if ($measure instanceof IntMeasure) {
                 $msg .= self::MS_TYPE_INT;
                 self::encodeUnsigned($msg, $m->getValue());
-            } else if ($measure instanceof FloatMeasure){
+            } elseif ($measure instanceof FloatMeasure) {
                 $msg .= self::MS_TYPE_FLOAT;
                 $msg .= pack('E', $m->getValue());
             } else {
@@ -333,7 +339,7 @@ class DaemonClient implements StatsExporter, TraceExporter
      * @param string $msg The message payload.
      * @return bool Returns true on successful operation.
      */
-    private final function send(string $type, string $msg = ''): bool
+    final private function send(string $type, string $msg = ''): bool
     {
         if ($this->useExtension) {
             return opencensus_core_send_to_daemonclient(ord($type), $msg);
@@ -372,7 +378,7 @@ class DaemonClient implements StatsExporter, TraceExporter
      * @param string $data The message payload to prefix.
      * @return string returns The unsigned varint length prefixed payload.
      */
-    private static final function encodeString(string $data): string
+    final private static function encodeString(string $data): string
     {
         $buf = '';
         self::encodeUnsigned($buf, strlen($data));
@@ -384,7 +390,7 @@ class DaemonClient implements StatsExporter, TraceExporter
      *
      * @return int Thread id of our PHP script run.
      */
-    private final function getmytid(): int
+    final private function getmytid(): int
     {
         if ($this->tid === true) {
             return zend_thread_id();

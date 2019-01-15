@@ -20,14 +20,16 @@ namespace OpenCensus\Utils;
 /**
  * Internal utility methods for working with tag keys, tag values, and metric names.
  */
-trait PrintableTrait {
+trait PrintableTrait
+{
     /**
      * Determines whether the string contains only printable characters.
      *
      * @param string $str string to test.
      * @return bool returns true if string is printable.
      */
-    private static function isPrintable($str) {
+    private static function isPrintable($str)
+    {
         for ($i = 0; $i < strlen($str); $i++) {
             if (!($str[$i] >= ' ' && $str[$i] <= '~')) {
                 return false;

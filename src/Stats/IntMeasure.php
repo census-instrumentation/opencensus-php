@@ -33,7 +33,8 @@ class IntMeasure extends Measure
      * @param string $description The description of the IntMeasure.
      * @param string $unit The unit type of the IntMeasure.
      */
-    protected final function __construct(string $name, string $description, string $unit) {
+    final protected function __construct(string $name, string $description, string $unit)
+    {
         parent::__construct($name, $description, $unit);
     }
 
@@ -47,10 +48,11 @@ class IntMeasure extends Measure
      * @return IntMeasure
      * @throws \Exception Throws on invalid measure name.
      */
-    public static final function create(
-        string $name, string $description = "", string $unit = Measure::DIMENSIONLESS
-    ): IntMeasure
-    {
+    final public static function create(
+        string $name,
+        string $description = "",
+        string $unit = Measure::DIMENSIONLESS
+    ): IntMeasure {
         return self::registerMeasureHandle($name, $description, $unit);
     }
 
@@ -60,7 +62,7 @@ class IntMeasure extends Measure
      * @param int $value the measurement value.
      * @return Measurement Returns a Measurement object which can be recorded.
      */
-    public final function M(int $value): Measurement
+    final public function m(int $value): Measurement
     {
         return new class($this, $value) extends Measurement
         {

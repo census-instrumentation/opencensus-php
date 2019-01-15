@@ -52,11 +52,14 @@ class View
      * @param Aggregation $aggregation The Aggregation used for this view.
      * @param TagKey ...$tagKeys The TagKeys that describe the grouping of this view.
      */
-    public final function __construct(
-        string $name, string $description, Measure $measure,
-        Aggregation $aggregation, TagKey ...$tagKeys
-    )
-    {
+    final public function __construct(
+        string $name,
+        string $description,
+        Measure $measure,
+        Aggregation $aggregation,
+        TagKey ...$tagKeys
+    ) {
+    
         if ($name === '') {
             $name = $measure->getName();
         }

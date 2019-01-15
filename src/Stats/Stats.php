@@ -79,7 +79,9 @@ class Stats
     /** @var ExporterInterface $exporter */
     private $exporter;
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     /**
       * Retrieve Stats instance.
@@ -88,8 +90,7 @@ class Stats
       */
     public static function getInstance(): Stats
     {
-        if (self::$instance instanceof Stats)
-        {
+        if (self::$instance instanceof Stats) {
             return self::$instance;
         }
         self::$instance = new Stats();

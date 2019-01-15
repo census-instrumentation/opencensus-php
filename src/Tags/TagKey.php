@@ -32,8 +32,7 @@ class TagKey
 
     /** @var string TagKey name */
     private $name;
-
-    private final function __construct(string $name)
+    final private function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -54,10 +53,7 @@ class TagKey
      */
     public static function create(string $name): TagKey
     {
-        if (
-            strlen($name) == 0 || strlen($name) > self::MAX_LENGTH ||
-            !self::isPrintable($name)
-        ) {
+        if (strlen($name) == 0 || strlen($name) > self::MAX_LENGTH || !self::isPrintable($name)) {
             throw new \Exception("Invalid TagKey name: ". $name);
         }
         return new self($name);
@@ -68,7 +64,7 @@ class TagKey
      *
      * @return string
      */
-    public final function getName(): string
+    final public function getName(): string
     {
         return $this->name;
     }

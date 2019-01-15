@@ -102,7 +102,7 @@ Tracer::inSpan(
 
         // record our stats and attach our span identifiers.
         Stats::newMeasurementMap()
-            ->put($videoSize->M($processedVideoSize))
+            ->put($videoSize->m($processedVideoSize))
             ->putAttachment('traceId', $ctx->value('traceId'))
             ->putAttachment('spanId' , $ctx->value('spanId'))
             ->record();

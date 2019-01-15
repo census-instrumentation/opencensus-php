@@ -48,7 +48,9 @@ class TagContext
      */
     private $m = array();
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     /**
      * Returns the value for the key if a value for the key exists.
@@ -56,7 +58,7 @@ class TagContext
      * @param TagKey $key The key to retrieve the value for.
      * @return string
      */
-    public final function value(TagKey $key): string
+    final public function value(TagKey $key): string
     {
         return $this->m[$key->getName()]->getValue();
     }
@@ -69,7 +71,7 @@ class TagContext
      * @param TagValue $value the value of the Tag.
      * @return bool returns true on successful insert.
      */
-    public final function insert(TagKey $key, TagValue $value): bool
+    final public function insert(TagKey $key, TagValue $value): bool
     {
         if (\array_key_exists($key->getName(), $this->m)) {
             return false;
@@ -87,7 +89,7 @@ class TagContext
      * @param TagValue $value the value of the Tag.
      * @return bool returns true on successful update.
      */
-    public final function update(TagKey $key, TagValue $value): bool
+    final public function update(TagKey $key, TagValue $value): bool
     {
         if (!\array_key_exists($key->getName(), $this->m)) {
             return false;
@@ -104,7 +106,7 @@ class TagContext
      * @param TagKey $key key of the Tag.
      * @param TagValue $value value of the Tag.
      */
-    public final function upsert(TagKey $key, TagValue $value)
+    final public function upsert(TagKey $key, TagValue $value)
     {
         $this->m[$key->getName()] = new Tag($key, $value);
     }
@@ -115,7 +117,7 @@ class TagContext
      * @param TagKey $key
      * @return bool returns true if Tag was found and deleted.
      */
-    public final function delete(TagKey $key): bool
+    final public function delete(TagKey $key): bool
     {
         if (!\array_key_exists($key->getName(), $this->m)) {
             return false;
@@ -130,7 +132,7 @@ class TagContext
      * @return string
      * @throws \Exception on failure to serialize.
      */
-    public final function __toString(): string
+    final public function __toString(): string
     {
         ksort($this->m);
         $buf = '{ ';
@@ -146,7 +148,7 @@ class TagContext
      *
      * @return Tag[]
      */
-    public final function tags(): array
+    final public function tags(): array
     {
         return array_values($this->m);
     }
@@ -156,7 +158,7 @@ class TagContext
      *
      * @return TagContext
      */
-    public static final function empty(): TagContext
+    final public static function empty(): TagContext
     {
         return new self();
     }
@@ -168,7 +170,7 @@ class TagContext
      * @param Context $ctx The Context to extract the TagContext from.
      * @return TagContext
      */
-    public static final function fromContext(Context $ctx = null): TagContext
+    final public static function fromContext(Context $ctx = null): TagContext
     {
         if ($ctx === null) {
             $ctx = Context::current();
@@ -184,7 +186,7 @@ class TagContext
      * @param Context $ctx The Context to extract and copy the TagContext from.
      * @return TagContext
      */
-    public static final function new(Context $ctx = null): TagContext
+    final public static function new(Context $ctx = null): TagContext
     {
         return clone self::fromContext($ctx);
     }
@@ -197,7 +199,7 @@ class TagContext
      * @param Context $ctx The source context to copy.
      * @return Context The target context with our TagContext added.
      */
-    public final function newContext(Context $ctx = null): Context
+    final public function newContext(Context $ctx = null): Context
     {
         if ($ctx === null) {
             $ctx = Context::current();

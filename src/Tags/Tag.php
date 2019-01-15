@@ -39,7 +39,7 @@ class Tag
      * @param TagKey $key The TagKey.
      * @param TagValue $value The TagValue.
      */
-    public final function __construct(TagKey $key, TagValue $value)
+    final public function __construct(TagKey $key, TagValue $value)
     {
         $this->key = $key;
         $this->value = $value;
@@ -50,7 +50,7 @@ class Tag
       *
       * @return TagKey
       */
-    public final function getKey(): TagKey
+    final public function getKey(): TagKey
     {
         return $this->key;
     }
@@ -60,7 +60,7 @@ class Tag
       *
       * @return TagValue
       */
-    public final function getValue(): TagValue
+    final public function getValue(): TagValue
     {
         return $this->value;
     }

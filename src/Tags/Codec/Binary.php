@@ -26,7 +26,8 @@ use OpenCensus\Tags\TagContext;
  * This class implements the (de)serialization of TagContext using the binary
  * wire format.
  */
-class Binary {
+class Binary
+{
     use \OpenCensus\Utils\VarintTrait;
 
     /** Binary Encoding Version number */

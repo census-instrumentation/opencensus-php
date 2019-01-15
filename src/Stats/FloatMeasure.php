@@ -34,7 +34,8 @@ class FloatMeasure extends Measure
      * @param string $description The description of the FloatMeasure.
      * @param string $unit The unit of the FloatMeasure.
      */
-    protected final function __construct(string $name, string $description, string $unit) {
+    final protected function __construct(string $name, string $description, string $unit)
+    {
         parent::__construct($name, $description, $unit);
     }
 
@@ -48,10 +49,11 @@ class FloatMeasure extends Measure
      * @return FloatMeasure
      * @throws \Exception Throws on invalid measure name.
      */
-    public static final function create(
-        string $name, string $description = "", string $unit = Measure::DIMENSIONLESS
-    ): FloatMeasure
-    {
+    final public static function create(
+        string $name,
+        string $description = "",
+        string $unit = Measure::DIMENSIONLESS
+    ): FloatMeasure {
         return self::registerMeasureHandle($name, $description, $unit);
     }
 
@@ -61,7 +63,7 @@ class FloatMeasure extends Measure
      * @param float $value the measurement value.
      * @return Measurement Returns a Measurement object which can be recorded.
      */
-    public final function M(float $value): Measurement
+    final public function m(float $value): Measurement
     {
         return new class($this, $value) extends Measurement
         {

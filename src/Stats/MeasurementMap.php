@@ -72,7 +72,9 @@ class MeasurementMap implements MeasurementInterface
     public function record(Context $ctx = null, TagContext $tags = null): bool
     {
         // without measurements we can bail out immediately
-        if (count($this->measurements) === 0) return true;
+        if (count($this->measurements) === 0) {
+            return true;
+        }
 
         if ($ctx === null) {
             $ctx = Context::current();
@@ -81,7 +83,7 @@ class MeasurementMap implements MeasurementInterface
         // the record time only Tags as found in the provided $tags.
         $recordTags = clone TagContext::fromContext($ctx);
         if ($tags !== null) {
-            foreach($tags->tags() as &$tag) {
+            foreach ($tags->tags() as &$tag) {
                 $recordTags->upsert($tag->getKey(), $tag->getValue());
             }
         }

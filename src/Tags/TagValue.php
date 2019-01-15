@@ -33,7 +33,7 @@ class TagValue
     /** @var string TagValue payload */
     private $value;
 
-    private final function __construct(string $value)
+    final private function __construct(string $value)
     {
         $this->value = $value;
     }
@@ -53,9 +53,7 @@ class TagValue
      */
     public static function create(string $value): TagValue
     {
-        if (
-            strlen($value) > self::MAX_LENGTH || !self::isPrintable($value)
-        ) {
+        if (strlen($value) > self::MAX_LENGTH || !self::isPrintable($value)) {
             throw new \Exception("Invalid TagValue: $value");
         }
         return new self($value);
@@ -66,7 +64,7 @@ class TagValue
      *
      * @return string
      */
-    public final function getValue(): string
+    final public function getValue(): string
     {
         return $this->value;
     }

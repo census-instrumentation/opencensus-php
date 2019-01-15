@@ -26,7 +26,8 @@ namespace OpenCensus\Stats;
  * the measure needs to be used in a View. If no Views are defined over a
  * measure, there is very little cost in recording it.
  */
-abstract class Measure {
+abstract class Measure
+{
     use \OpenCensus\Utils\PrintableTrait;
 
     /** measurement is dimensionless */
