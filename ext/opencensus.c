@@ -22,8 +22,7 @@
 ZEND_DECLARE_MODULE_GLOBALS(opencensus)
 
 /* {{{ arginfo */
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_opencensus_core_send_to_daemon, 0, 2, _IS_BOOL, 0)
-//ZEND_BEGIN_ARG_INFO_EX(arginfo_opencensus_core_send_to_daemon, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_opencensus_core_send_to_daemon, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, msgType, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, msgData, IS_STRING, 0)
 ZEND_END_ARG_INFO()
