@@ -47,9 +47,11 @@ size_t varint_encode(char *buf, size_t len, long long x)
 
 size_t uvarint_decode(char *buf, size_t len, unsigned long long *x)
 {
-	*x = 0;
 	unsigned char s = 0;
-	for (size_t i = 0; i < len; i++) {
+	size_t i;
+	*x = 0;
+
+	for (i = 0; i < len; i++) {
 		unsigned long long b = *(buf++);
 		if (b < 0x80) {
 			if (i > 9 || (i == 9 && b > 1)) {
