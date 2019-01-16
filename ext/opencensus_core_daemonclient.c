@@ -279,8 +279,6 @@ static int send_msg(daemonclient *dc, msg_type type, daemon_msg *msg)
 	memcpy(header.data+header.len, &dc->pid, dc->pid_len);
 	header.len += dc->pid_len;
 
-	return false;
-
 	// thread id (0 if not in ZTS mode)
 #ifdef ZTS
 	if (!encode_uint64(&header, (unsigned long long)pthread_self())) {
