@@ -337,6 +337,7 @@ daemonclient *daemonclient_create(char *socket_path)
 	daemonclient *dc = malloc(sizeof(daemonclient));
 	pthread_mutex_init(&dc->mu, NULL);
 	pthread_cond_init(&dc->has_data, NULL);
+	dc->thread_id = 0;
 	dc->head = NULL;
 	dc->tail = NULL;
 
@@ -369,7 +370,9 @@ void daemonclient_destroy(daemonclient *dc)
 	if (dc != NULL) {
 		atomic_store(&dc->enabled, false);
 		pthread_cond_signal(&dc->has_data);
-		pthread_join(dc->thread_id, NULL);
+		if (dc->thread_id > 0) {
+			pthread_join(dc->thread_id, NULL);
+		}
 		pthread_cond_destroy(&dc->has_data);
 		pthread_mutex_destroy(&dc->mu);
 		close(dc->sockfd);
