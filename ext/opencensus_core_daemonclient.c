@@ -250,7 +250,7 @@ static void *process(void *arg)
 
 static int send_msg(daemonclient *dc, msg_type type, daemon_msg *msg)
 {
-	if (!atomic_load(&dc->enabled)) {
+	if (dc == NULL || !atomic_load(&dc->enabled)) {
 		msg_destroy(msg);
 		return false;
 	}
@@ -278,6 +278,8 @@ static int send_msg(daemonclient *dc, msg_type type, daemon_msg *msg)
 	// process id
 	memcpy(header.data+header.len, &dc->pid, dc->pid_len);
 	header.len += dc->pid_len;
+
+	return false;
 
 	// thread id (0 if not in ZTS mode)
 #ifdef ZTS
@@ -337,6 +339,9 @@ daemonclient *daemonclient_create(char *socket_path)
 	daemonclient *dc = malloc(sizeof(daemonclient));
 	pthread_mutex_init(&dc->mu, NULL);
 	pthread_cond_init(&dc->has_data, NULL);
+	dc->pid_len = uvarint_encode(dc->pid, varint_max_len, getpid());
+	atomic_init(&dc->enabled, false);
+	atomic_init(&dc->seq_nr, 1);
 	dc->thread_id = 0;
 	dc->head = NULL;
 	dc->tail = NULL;
@@ -358,9 +363,6 @@ daemonclient *daemonclient_create(char *socket_path)
 		atomic_init(&dc->enabled, false);
 		return dc;
 	}
-
-	dc->pid_len = uvarint_encode(dc->pid, varint_max_len, getpid());
-	atomic_init(&dc->seq_nr, 1);
 
 	return dc;
 }
