@@ -23,10 +23,8 @@ import (
 	"os/signal"
 	"runtime"
 	"syscall"
-	"time"
 
 	"contrib.go.opencensus.io/exporter/ocagent"
-	"contrib.go.opencensus.io/exporter/stackdriver"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/oklog/run"
@@ -74,9 +72,6 @@ func main() {
 		flagZPagesPathPrefix = fs.String("zpages.path", defaultZPagesPathPrefix, "zPages path prefix")
 		flagVersion          = fs.Bool("version", false, "Show version information")
 		flagTransportPath    = addTransportPath(fs) // transport path flag conditional on target platform
-
-		// TODO: remove flagStackDriverProject once we have a fully functional OC-Service.
-		flagStackDriverProject = fs.String("stackdriver.project", "", "Enable TEMPORARY Stackdriver Exporter by providing the GCP Project-ID")
 	)
 
 	// parse our command line override flags
@@ -97,11 +92,7 @@ func main() {
 
 	// set-up our structured logger
 	logger := initLogger(*flagLogLevel)
-	if *flagStackDriverProject != "" {
-		_ = level.Info(logger).Log("msg", "service started", "stackdriver.project", *flagStackDriverProject)
-	} else {
-		_ = level.Info(logger).Log("msg", "service started", "agent", *flagOCAgentAddr)
-	}
+	_ = level.Info(logger).Log("msg", "service started", "agent", *flagOCAgentAddr)
 	defer func() {
 		_ = level.Info(logger).Log("msg", "service ended")
 	}()
@@ -117,8 +108,7 @@ func main() {
 
 	// initialize and add our daemon message processing service
 	hnd, err := svcProcessor(g,
-		*flagMsgBufSize, *flagMsgProcCount, *flagServiceName, *flagOCAgentAddr,
-		*flagStackDriverProject, logger,
+		*flagMsgBufSize, *flagMsgProcCount, *flagServiceName, *flagOCAgentAddr, logger,
 	)
 	if err != nil {
 		_ = level.Error(logger).Log("msg", "failed to create OCAgent exporter", "err", err)
@@ -159,7 +149,7 @@ func initLogger(lvl int) (logger log.Logger) {
 	return
 }
 
-func svcProcessor(g *run.Group, msgBufSize, msgProcCount int, svcName, ocAgentAddr, stackdriverProjectID string, logger log.Logger) (daemon.Handler, error) {
+func svcProcessor(g *run.Group, msgBufSize, msgProcCount int, svcName, ocAgentAddr string, logger log.Logger) (daemon.Handler, error) {
 	if msgBufSize < 100 {
 		msgBufSize = defaultMsgBufSize
 	}
@@ -180,21 +170,11 @@ func svcProcessor(g *run.Group, msgBufSize, msgProcCount int, svcName, ocAgentAd
 		}
 	)
 
-	if stackdriverProjectID != "" {
-		exporter, err = stackdriver.NewExporter(
-			stackdriver.Options{
-				ProjectID: stackdriverProjectID,
-			},
-		)
-		view.SetReportingPeriod(80 * time.Second)
-		level.Error(logger).Log("msg", "temporary exporter stackdriver enabled, agent disabled")
-	} else {
-		exporter, err = ocagent.NewExporter(
-			ocagent.WithInsecure(),
-			ocagent.WithAddress(ocAgentAddr),
-			ocagent.WithServiceName(svcName),
-		)
-	}
+	exporter, err = ocagent.NewExporter(
+		ocagent.WithInsecure(),
+		ocagent.WithAddress(ocAgentAddr),
+		ocagent.WithServiceName(svcName),
+	)
 
 	if err != nil {
 		return nil, err
