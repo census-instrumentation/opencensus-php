@@ -1,0 +1,15 @@
+FROM php:7.3-apache
+
+COPY config.m4 opencensus*.* php_opencensus.h varint.* /tmp/opencensus/
+
+RUN cd /tmp/opencensus \
+    && phpize \
+    && ./configure --enable-opencensus \
+    && make -j "$(nproc)" \
+    && make install \
+    && cd ~ \
+    && rm -r /tmp/opencensus \
+    && docker-php-ext-enable opencensus
+
+VOLUME /tmp
+VOLUME /var/www/html
