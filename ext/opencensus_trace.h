@@ -17,10 +17,14 @@
 #ifndef PHP_OPENCENSUS_TRACE_H
 #define PHP_OPENCENSUS_TRACE_H 1
 
+#include "php_opencensus.h"
 #include "opencensus_trace_span.h"
 #include "opencensus_trace_context.h"
+#include "opencensus_trace_message_event.h"
+#include "opencensus_trace_annotation.h"
+#include "opencensus_trace_link.h"
 
-// Trace functions
+/* Trace functions */
 PHP_FUNCTION(opencensus_trace_function);
 PHP_FUNCTION(opencensus_trace_method);
 PHP_FUNCTION(opencensus_trace_list);
@@ -34,9 +38,13 @@ PHP_FUNCTION(opencensus_trace_add_annotation);
 PHP_FUNCTION(opencensus_trace_add_link);
 PHP_FUNCTION(opencensus_trace_add_message_event);
 
-// Extension lifecycle hooks
-int opencensus_minit(INIT_FUNC_ARGS);
-int opencensus_rinit(TSRMLS_D);
-int opencensus_rshutdown(TSRMLS_D);
+void opencensus_trace_ginit();
+void opencensus_trace_gshutdown();
+void opencensus_trace_rinit();
+void opencensus_trace_rshutdown();
+void opencensus_trace_clear(int reset TSRMLS_DC);
+void opencensus_trace_execute_ex (zend_execute_data *execute_data TSRMLS_DC);
+void opencensus_trace_execute_internal(INTERNAL_FUNCTION_PARAMETERS);
+void span_dtor(zval *zv);
 
 #endif /* PHP_OPENCENSUS_TRACE_H */

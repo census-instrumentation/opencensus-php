@@ -3,7 +3,7 @@ OpenCensus Trace: Callback returning a non-array response should yield a warning
 --FILE--
 <?php
 
-require_once(__DIR__ . '/common.php');
+require_once(__DIR__ . '/common.inc');
 
 opencensus_trace_function("foo", function ($x) {
     return $x;

@@ -3,7 +3,7 @@ OpenCensus Trace: Customize the trace span options for a method
 --FILE--
 <?php
 
-require_once(__DIR__ . '/common.php');
+require_once(__DIR__ . '/common.inc');
 
 // 1: Sanity test a simple profile run
 opencensus_trace_method("Foo", "bar", ['name' => 'foo', 'startTime' => 0.1, 'attributes' => ['asdf' => 'qwer']]);

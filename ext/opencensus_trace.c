@@ -16,19 +16,10 @@
 
 #include "php_opencensus.h"
 #include "opencensus_trace.h"
-#include "opencensus_trace_span.h"
-#include "opencensus_trace_context.h"
-#include "opencensus_trace_annotation.h"
-#include "opencensus_trace_link.h"
-#include "opencensus_trace_message_event.h"
 #include "Zend/zend_builtin_functions.h"
-#include "Zend/zend_compile.h"
-#include "Zend/zend_closures.h"
 #include "Zend/zend_exceptions.h"
-#include "zend_extensions.h"
 #include "standard/php_math.h"
 #include "standard/php_rand.h"
-#include "ext/standard/info.h"
 
 /**
  * True globals for storing the original zend_execute_ex and
@@ -37,103 +28,50 @@
 static void (*opencensus_original_zend_execute_ex) (zend_execute_data *execute_data);
 static void (*opencensus_original_zend_execute_internal) (zend_execute_data *execute_data, zval *return_value);
 
-ZEND_DECLARE_MODULE_GLOBALS(opencensus)
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_opencensus_trace_function, 0, 0, 1)
-    ZEND_ARG_TYPE_INFO(0, functionName, IS_STRING, 0)
-    ZEND_ARG_INFO(0, handler)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_opencensus_trace_method, 0, 0, 2)
-    ZEND_ARG_TYPE_INFO(0, className, IS_STRING, 0)
-    ZEND_ARG_TYPE_INFO(0, methodName, IS_STRING, 0)
-    ZEND_ARG_INFO(0, handler)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_opencensus_trace_begin, 0, 0, 1)
-    ZEND_ARG_TYPE_INFO(0, spanName, IS_STRING, 0)
-    ZEND_ARG_ARRAY_INFO(0, spanOptions, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_opencensus_trace_set_context, 0, 0, 1)
-    ZEND_ARG_TYPE_INFO(0, traceId, IS_STRING, 0)
-    ZEND_ARG_TYPE_INFO(0, parentSpanId, IS_STRING, 1)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_opencensus_trace_add_attribute, 0, 0, 2)
-    ZEND_ARG_TYPE_INFO(0, key, IS_STRING, 0)
-    ZEND_ARG_TYPE_INFO(0, value, IS_STRING, 0)
-    ZEND_ARG_ARRAY_INFO(0, options, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_opencensus_trace_add_annotation, 0, 0, 1)
-    ZEND_ARG_TYPE_INFO(0, description, IS_STRING, 0)
-    ZEND_ARG_ARRAY_INFO(0, options, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_opencensus_trace_add_link, 0, 0, 2)
-    ZEND_ARG_TYPE_INFO(0, traceId, IS_STRING, 0)
-    ZEND_ARG_TYPE_INFO(0, spanId, IS_STRING, 0)
-    ZEND_ARG_ARRAY_INFO(0, options, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_opencensus_trace_add_message_event, 0, 0, 2)
-    ZEND_ARG_TYPE_INFO(0, type, IS_STRING, 0)
-    ZEND_ARG_TYPE_INFO(0, id, IS_STRING, 0)
-    ZEND_ARG_ARRAY_INFO(0, options, 0)
-ZEND_END_ARG_INFO()
-
-/* List of functions provided by this extension */
-static zend_function_entry opencensus_functions[] = {
-    PHP_FE(opencensus_version, NULL)
-    PHP_FE(opencensus_trace_function, arginfo_opencensus_trace_function)
-    PHP_FE(opencensus_trace_method, arginfo_opencensus_trace_method)
-    PHP_FE(opencensus_trace_list, NULL)
-    PHP_FE(opencensus_trace_begin, arginfo_opencensus_trace_begin)
-    PHP_FE(opencensus_trace_finish, NULL)
-    PHP_FE(opencensus_trace_clear, NULL)
-    PHP_FE(opencensus_trace_set_context, arginfo_opencensus_trace_set_context)
-    PHP_FE(opencensus_trace_context, NULL)
-    PHP_FE(opencensus_trace_add_attribute, arginfo_opencensus_trace_add_attribute)
-    PHP_FE(opencensus_trace_add_annotation, arginfo_opencensus_trace_add_annotation)
-    PHP_FE(opencensus_trace_add_link, arginfo_opencensus_trace_add_link)
-    PHP_FE(opencensus_trace_add_message_event, arginfo_opencensus_trace_add_message_event)
-    PHP_FE_END
-};
-
-PHP_MINFO_FUNCTION(opencensus)
+void opencensus_trace_ginit()
 {
-    php_info_print_table_start();
-    php_info_print_table_row(2, "OpenCensus support", "enabled");
-    php_info_print_table_row(2, "OpenCensus module version", PHP_OPENCENSUS_VERSION);
-    php_info_print_table_end();
-    DISPLAY_INI_ENTRIES();
+    /**
+     * Save original zend execute functions and use our own to instrument
+     * function calls
+     */
+    opencensus_original_zend_execute_ex = zend_execute_ex;
+    zend_execute_ex = opencensus_trace_execute_ex;
+
+    opencensus_original_zend_execute_internal = zend_execute_internal;
+    zend_execute_internal = opencensus_trace_execute_internal;
 }
 
-/* Registers the lifecycle hooks for this extension */
-zend_module_entry opencensus_module_entry = {
-    STANDARD_MODULE_HEADER,
-    PHP_OPENCENSUS_EXTNAME,
-    opencensus_functions,
-    PHP_MINIT(opencensus),
-    PHP_MSHUTDOWN(opencensus),
-    PHP_RINIT(opencensus),
-    PHP_RSHUTDOWN(opencensus),
-    PHP_MINFO(opencensus),
-    PHP_OPENCENSUS_VERSION,
-    STANDARD_MODULE_PROPERTIES
-};
-
-ZEND_GET_MODULE(opencensus)
-
-/**
- * Return the current version of the opencensus extension
- *
- * @return string
- */
-PHP_FUNCTION(opencensus_version)
+void opencensus_trace_gshutdown()
 {
-    RETURN_STRING(PHP_OPENCENSUS_VERSION);
+    /* Put the original zend execute function back */
+    zend_execute_ex = opencensus_original_zend_execute_ex;
+    zend_execute_internal = opencensus_original_zend_execute_internal;
+}
+
+void opencensus_trace_rinit()
+{
+	/* initialize storage for user traced functions - per request basis */
+    ALLOC_HASHTABLE(OPENCENSUS_G(user_traced_functions));
+    zend_hash_init(OPENCENSUS_G(user_traced_functions), 16, NULL, ZVAL_PTR_DTOR, 0);
+
+    /* initialize storage for recorded spans - per request basis */
+    ALLOC_HASHTABLE(OPENCENSUS_G(spans));
+    zend_hash_init(OPENCENSUS_G(spans), 16, NULL, span_dtor, 0);
+
+    OPENCENSUS_G(current_span) = NULL;
+    OPENCENSUS_G(trace_id) = NULL;
+    OPENCENSUS_G(trace_parent_span_id) = NULL;
+}
+
+void opencensus_trace_rshutdown()
+{
+    /* cleanup user_traced_functions zvals that we copied when registing */
+    zend_hash_destroy(OPENCENSUS_G(user_traced_functions));
+    FREE_HASHTABLE(OPENCENSUS_G(user_traced_functions));
+
+	/* cleanup recorded spans */
+	opencensus_trace_clear(0 TSRMLS_CC);
+
 }
 
 /**
@@ -182,7 +120,7 @@ static opencensus_trace_span_t *span_from_options(zval *options)
 
     span_id = span_id_from_options(Z_ARR_P(options));
     if (span_id != NULL) {
-        span = (opencensus_trace_span_t *)zend_hash_find_ptr(OPENCENSUS_TRACE_G(spans), span_id);
+        span = (opencensus_trace_span_t *)zend_hash_find_ptr(OPENCENSUS_G(spans), span_id);
         zend_string_release(span_id);
     }
 
@@ -208,7 +146,7 @@ PHP_FUNCTION(opencensus_trace_add_attribute)
 
     span = span_from_options(options);
     if (span == NULL) {
-        span = OPENCENSUS_TRACE_G(current_span);
+        span = OPENCENSUS_G(current_span);
     }
 
     if (span == NULL) {
@@ -241,7 +179,7 @@ PHP_FUNCTION(opencensus_trace_add_annotation)
 
     span = span_from_options(options);
     if (span == NULL) {
-        span = OPENCENSUS_TRACE_G(current_span);
+        span = OPENCENSUS_G(current_span);
     }
 
     if (span == NULL) {
@@ -275,7 +213,7 @@ PHP_FUNCTION(opencensus_trace_add_link)
 
     span = span_from_options(options);
     if (span == NULL) {
-        span = OPENCENSUS_TRACE_G(current_span);
+        span = OPENCENSUS_G(current_span);
     }
 
     if (span == NULL) {
@@ -309,7 +247,7 @@ PHP_FUNCTION(opencensus_trace_add_message_event)
 
     span = span_from_options(options);
     if (span == NULL) {
-        span = OPENCENSUS_TRACE_G(current_span);
+        span = OPENCENSUS_G(current_span);
     }
 
     if (span == NULL) {
@@ -344,7 +282,7 @@ static void opencensus_free_args(zval *args, int num_args)
 {
     int i;
     for (i = 0; i < num_args; i++) {
-        ZVAL_DESTRUCTOR(&args[i]);
+        zval_dtor(&args[i]);
     }
     efree(args);
 }
@@ -411,14 +349,14 @@ static opencensus_trace_span_t *opencensus_trace_begin(zend_string *name, zend_e
         span->span_id = generate_span_id();
     }
 
-    if (OPENCENSUS_TRACE_G(current_span)) {
-        span->parent = OPENCENSUS_TRACE_G(current_span);
+    if (OPENCENSUS_G(current_span)) {
+        span->parent = OPENCENSUS_G(current_span);
     }
 
-    OPENCENSUS_TRACE_G(current_span) = span;
+    OPENCENSUS_G(current_span) = span;
 
     /* add the span to the list of spans */
-    zend_hash_add_ptr(OPENCENSUS_TRACE_G(spans), span->span_id, span);
+    zend_hash_add_ptr(OPENCENSUS_G(spans), span->span_id, span);
 
     return span;
 }
@@ -429,7 +367,7 @@ static opencensus_trace_span_t *opencensus_trace_begin(zend_string *name, zend_e
  */
 static int opencensus_trace_finish()
 {
-    opencensus_trace_span_t *span = OPENCENSUS_TRACE_G(current_span);
+    opencensus_trace_span_t *span = OPENCENSUS_G(current_span);
 
     if (!span) {
         return FAILURE;
@@ -438,7 +376,7 @@ static int opencensus_trace_finish()
     /* set current time for now */
     span->stop = opencensus_now();
 
-    OPENCENSUS_TRACE_G(current_span) = span->parent;
+    OPENCENSUS_G(current_span) = span->parent;
 
     return SUCCESS;
 }
@@ -496,7 +434,7 @@ PHP_FUNCTION(opencensus_trace_begin)
         array_init(&default_span_options);
         span = opencensus_trace_begin(function_name, execute_data, NULL TSRMLS_CC);
         opencensus_trace_span_apply_span_options(span, &default_span_options);
-        ZVAL_DESTRUCTOR(&default_span_options);
+        zval_dtor(&default_span_options);
     } else {
         span_id = span_id_from_options(Z_ARR_P(span_options));
         span = opencensus_trace_begin(function_name, execute_data, span_id TSRMLS_CC);
@@ -522,7 +460,7 @@ PHP_FUNCTION(opencensus_trace_finish)
     RETURN_FALSE;
 }
 
-static void span_dtor(zval *zv)
+void span_dtor(zval *zv)
 {
     opencensus_trace_span_t *span = Z_PTR_P(zv);
     opencensus_trace_span_free(span);
@@ -533,27 +471,27 @@ static void span_dtor(zval *zv)
  * Reset the list of spans and free any allocated memory used.
  * If reset is set, reallocate request globals so we can start capturing spans.
  */
-static void opencensus_trace_clear(int reset TSRMLS_DC)
+void opencensus_trace_clear(int reset TSRMLS_DC)
 {
     /* free the hashtable */
-    zend_hash_destroy(OPENCENSUS_TRACE_G(spans));
-    FREE_HASHTABLE(OPENCENSUS_TRACE_G(spans));
+    zend_hash_destroy(OPENCENSUS_G(spans));
+    FREE_HASHTABLE(OPENCENSUS_G(spans));
 
     /* reallocate and setup the hashtable for captured spans */
     if (reset) {
-        ALLOC_HASHTABLE(OPENCENSUS_TRACE_G(spans));
-        zend_hash_init(OPENCENSUS_TRACE_G(spans), 16, NULL, span_dtor, 0);
+        ALLOC_HASHTABLE(OPENCENSUS_G(spans));
+        zend_hash_init(OPENCENSUS_G(spans), 16, NULL, span_dtor, 0);
     }
 
-    OPENCENSUS_TRACE_G(current_span) = NULL;
-    if (OPENCENSUS_TRACE_G(trace_id)) {
-        zend_string_release(OPENCENSUS_TRACE_G(trace_id));
-        OPENCENSUS_TRACE_G(trace_id) = NULL;
+    OPENCENSUS_G(current_span) = NULL;
+    if (OPENCENSUS_G(trace_id)) {
+        zend_string_release(OPENCENSUS_G(trace_id));
+        OPENCENSUS_G(trace_id) = NULL;
     }
 
-    if (OPENCENSUS_TRACE_G(trace_parent_span_id)) {
-        zend_string_release(OPENCENSUS_TRACE_G(trace_parent_span_id));
-        OPENCENSUS_TRACE_G(trace_parent_span_id) = NULL;
+    if (OPENCENSUS_G(trace_parent_span_id)) {
+        zend_string_release(OPENCENSUS_G(trace_parent_span_id));
+        OPENCENSUS_G(trace_parent_span_id) = NULL;
     }
 }
 
@@ -581,9 +519,9 @@ PHP_FUNCTION(opencensus_trace_set_context)
         RETURN_FALSE;
     }
 
-    OPENCENSUS_TRACE_G(trace_id) = zend_string_copy(trace_id);
+    OPENCENSUS_G(trace_id) = zend_string_copy(trace_id);
     if (parent_span_id) {
-        OPENCENSUS_TRACE_G(trace_parent_span_id) = zend_string_copy(parent_span_id);
+        OPENCENSUS_G(trace_parent_span_id) = zend_string_copy(parent_span_id);
     }
 
     RETURN_TRUE;
@@ -596,16 +534,16 @@ PHP_FUNCTION(opencensus_trace_set_context)
  */
 PHP_FUNCTION(opencensus_trace_context)
 {
-    opencensus_trace_span_t *span = OPENCENSUS_TRACE_G(current_span);
+    opencensus_trace_span_t *span = OPENCENSUS_G(current_span);
     object_init_ex(return_value, opencensus_trace_context_ce);
 
     if (span) {
         zend_update_property_str(opencensus_trace_context_ce, return_value, "spanId", sizeof("spanId") - 1, span->span_id);
-    } else if (OPENCENSUS_TRACE_G(trace_parent_span_id)) {
-        zend_update_property_str(opencensus_trace_context_ce, return_value, "spanId", sizeof("spanId") - 1, OPENCENSUS_TRACE_G(trace_parent_span_id));
+    } else if (OPENCENSUS_G(trace_parent_span_id)) {
+        zend_update_property_str(opencensus_trace_context_ce, return_value, "spanId", sizeof("spanId") - 1, OPENCENSUS_G(trace_parent_span_id));
     }
-    if (OPENCENSUS_TRACE_G(trace_id)) {
-        zend_update_property_str(opencensus_trace_context_ce, return_value, "traceId", sizeof("traceId") - 1, OPENCENSUS_TRACE_G(trace_id));
+    if (OPENCENSUS_G(trace_id)) {
+        zend_update_property_str(opencensus_trace_context_ce, return_value, "traceId", sizeof("traceId") - 1, OPENCENSUS_G(trace_id));
     }
 }
 
@@ -629,7 +567,7 @@ void opencensus_trace_execute_ex (zend_execute_data *execute_data TSRMLS_DC) {
         return;
     }
 
-    trace_handler = zend_hash_find(OPENCENSUS_TRACE_G(user_traced_functions), function_name);
+    trace_handler = zend_hash_find(OPENCENSUS_G(user_traced_functions), function_name);
 
     /* Function is not registered for execution - continue normal execution */
     if (trace_handler == NULL) {
@@ -651,7 +589,7 @@ void opencensus_trace_execute_ex (zend_execute_data *execute_data TSRMLS_DC) {
             opencensus_trace_span_apply_span_options(span, &callback_result);
         }
         opencensus_free_args(args, num_args);
-        ZVAL_DESTRUCTOR(&callback_result);
+        zval_dtor(&callback_result);
     } else {
         /* Registered handler is span options array */
         opencensus_original_zend_execute_ex(execute_data TSRMLS_CC);
@@ -696,7 +634,7 @@ void opencensus_trace_execute_internal(INTERNAL_FUNCTION_PARAMETERS)
         return;
     }
 
-    trace_handler = zend_hash_find(OPENCENSUS_TRACE_G(user_traced_functions), function_name);
+    trace_handler = zend_hash_find(OPENCENSUS_G(user_traced_functions), function_name);
 
     /* Function is not registered for execution - continue normal execution */
     if (trace_handler == NULL) {
@@ -718,7 +656,7 @@ void opencensus_trace_execute_internal(INTERNAL_FUNCTION_PARAMETERS)
             opencensus_trace_span_apply_span_options(span, &callback_result);
         }
         opencensus_free_args(args, num_args);
-        ZVAL_DESTRUCTOR(&callback_result);
+        zval_dtor(&callback_result);
     } else {
         /* Registered handler is span options array */
         resume_execute_internal(INTERNAL_FUNCTION_PARAM_PASSTHRU);
@@ -754,7 +692,7 @@ PHP_FUNCTION(opencensus_trace_function)
         ZVAL_COPY(&h, handler);
     }
 
-    zend_hash_update(OPENCENSUS_TRACE_G(user_traced_functions), function_name, &h);
+    zend_hash_update(OPENCENSUS_G(user_traced_functions), function_name, &h);
     RETURN_TRUE;
 }
 
@@ -784,7 +722,7 @@ PHP_FUNCTION(opencensus_trace_method)
     }
 
     key = opencensus_trace_generate_class_name(class_name, function_name);
-    zend_hash_update(OPENCENSUS_TRACE_G(user_traced_functions), key, &h);
+    zend_hash_update(OPENCENSUS_G(user_traced_functions), key, &h);
     zend_string_release(key);
 
     RETURN_FALSE;
@@ -802,91 +740,10 @@ PHP_FUNCTION(opencensus_trace_list)
 
     array_init(return_value);
 
-    ZEND_HASH_FOREACH_PTR(OPENCENSUS_TRACE_G(spans), trace_span) {
+    ZEND_HASH_FOREACH_PTR(OPENCENSUS_G(spans), trace_span) {
         zval span;
         opencensus_trace_span_to_zval(trace_span, &span);
         add_next_index_zval(return_value, &span TSRMLS_CC);
     } ZEND_HASH_FOREACH_END();
 }
 
-/* Constructor used for creating the opencensus globals */
-static void php_opencensus_globals_ctor(void *pDest TSRMLS_DC)
-{
-    zend_opencensus_globals *opencensus_global = (zend_opencensus_globals *) pDest;
-}
-
-/* {{{ PHP_MINIT_FUNCTION
- */
-PHP_MINIT_FUNCTION(opencensus)
-{
-    /* allocate global request variables */
-#ifdef ZTS
-    ts_allocate_id(&opencensus_globals_id, sizeof(zend_opencensus_globals), php_opencensus_globals_ctor, NULL);
-#else
-    php_opencensus_globals_ctor(&php_opencensus_globals_ctor);
-#endif
-
-    /**
-     * Save original zend execute functions and use our own to instrument
-     * function calls
-     */
-    opencensus_original_zend_execute_ex = zend_execute_ex;
-    zend_execute_ex = opencensus_trace_execute_ex;
-
-    opencensus_original_zend_execute_internal = zend_execute_internal;
-    zend_execute_internal = opencensus_trace_execute_internal;
-
-    opencensus_trace_span_minit(INIT_FUNC_ARGS_PASSTHRU);
-    opencensus_trace_context_minit(INIT_FUNC_ARGS_PASSTHRU);
-    opencensus_trace_annotation_minit(INIT_FUNC_ARGS_PASSTHRU);
-    opencensus_trace_link_minit(INIT_FUNC_ARGS_PASSTHRU);
-    opencensus_trace_message_event_minit(INIT_FUNC_ARGS_PASSTHRU);
-
-    return SUCCESS;
-}
-/* }}} */
-
-/* {{{ PHP_MSHUTDOWN_FUNCTION
- */
-PHP_MSHUTDOWN_FUNCTION(opencensus)
-{
-    /* Put the original zend execute function back */
-    zend_execute_ex = opencensus_original_zend_execute_ex;
-    zend_execute_internal = opencensus_original_zend_execute_internal;
-
-    return SUCCESS;
-}
-/* }}} */
-
-/* {{{ PHP_RINIT_FUNCTION
- */
-PHP_RINIT_FUNCTION(opencensus)
-{
-    /* initialize storage for user traced functions - per request basis */
-    ALLOC_HASHTABLE(OPENCENSUS_TRACE_G(user_traced_functions));
-    zend_hash_init(OPENCENSUS_TRACE_G(user_traced_functions), 16, NULL, ZVAL_PTR_DTOR, 0);
-
-    /* initialize storage for recorded spans - per request basis */
-    ALLOC_HASHTABLE(OPENCENSUS_TRACE_G(spans));
-    zend_hash_init(OPENCENSUS_TRACE_G(spans), 16, NULL, span_dtor, 0);
-
-    OPENCENSUS_TRACE_G(current_span) = NULL;
-    OPENCENSUS_TRACE_G(trace_id) = NULL;
-    OPENCENSUS_TRACE_G(trace_parent_span_id) = NULL;
-
-    return SUCCESS;
-}
-
-/* {{{ PHP_RSHUTDOWN_FUNCTION
- */
-PHP_RSHUTDOWN_FUNCTION(opencensus)
-{
-    opencensus_trace_clear(0 TSRMLS_CC);
-
-    /* cleanup user_traced_functions zvals that we copied when registing */
-    zend_hash_destroy(OPENCENSUS_TRACE_G(user_traced_functions));
-    FREE_HASHTABLE(OPENCENSUS_TRACE_G(user_traced_functions));
-
-    return SUCCESS;
-}
-/* }}} */

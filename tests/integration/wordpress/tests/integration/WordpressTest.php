@@ -67,7 +67,8 @@ class WordpressTest extends TestCase
         $this->assertNotEmpty($spansByName['load_textdomain']);
         $this->assertNotEmpty($spansByName['get_header']);
         $this->assertNotEmpty($spansByName['load_template']);
-        $this->assertNotEmpty($spansByName['get_sidebar']);
+        // commented out as twentynineteen theme does not have sidebar
+        // $this->assertNotEmpty($spansByName['get_sidebar']);
         $this->assertNotEmpty($spansByName['get_footer']);
     }
 }

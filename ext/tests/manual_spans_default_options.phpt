@@ -3,7 +3,7 @@ OpenCensus Trace: Customize the trace span options for a function
 --FILE--
 <?php
 
-require_once(__DIR__ . '/common.php');
+require_once(__DIR__ . '/common.inc');
 
 opencensus_trace_begin('/');
 

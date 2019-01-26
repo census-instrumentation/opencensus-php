@@ -173,7 +173,7 @@ void opencensus_trace_message_event_free(opencensus_trace_message_event_t *messa
         zend_string_release(message_event->id);
     }
     if (Z_TYPE(message_event->options) != IS_NULL) {
-        ZVAL_DESTRUCTOR(&message_event->options);
+        zval_dtor(&message_event->options);
     }
     efree(message_event);
 }

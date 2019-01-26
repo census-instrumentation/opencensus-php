@@ -14,13 +14,13 @@ the code is currently executing within. Whenever a span is created, it's parent
 is set the the current span, and this new span becomes the current trace span
 context.
 
-## Compatibilty
+## Compatibility
 
 This extension has been built and tested on the following PHP versions:
 
-* 7.0.x
 * 7.1.x
 * 7.2.x
+* 7.3.x
 
 ## Installation
 
