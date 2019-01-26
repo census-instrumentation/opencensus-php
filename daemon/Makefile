@@ -20,13 +20,13 @@ vet:
 build: build-linux build-darwin build-windows
 
 build-linux:
-	GOOS=linux   GOARCH=amd64 go build -i -ldflags "-X \"main.buildVersion=${BUILD} (Linux)\"   -X \"main.buildDate=${BUILD_DATE}\"" -o build/oc-daemon-linux ./cmd
+	GO111MODULE=on GOOS=linux   GOARCH=amd64 go build -i -ldflags "-X \"main.buildVersion=${BUILD} (Linux)\"   -X \"main.buildDate=${BUILD_DATE}\"" -o build/oc-daemon-linux ./cmd
 
 build-darwin:
-	GOOS=darwin  GOARCH=amd64 go build -i -ldflags "-X \"main.buildVersion=${BUILD} (OS X)\"    -X \"main.buildDate=${BUILD_DATE}\"" -o build/oc-daemon-osx   ./cmd
+	GO111MODULE=on GOOS=darwin  GOARCH=amd64 go build -i -ldflags "-X \"main.buildVersion=${BUILD} (OS X)\"    -X \"main.buildDate=${BUILD_DATE}\"" -o build/oc-daemon-osx   ./cmd
 
 build-windows:
-	GOOS=windows GOARCH=amd64 go build -i -ldflags "-X \"main.buildVersion=${BUILD} (Windows)\" -X \"main.buildDate=${BUILD_DATE}\"" -o build/oc-daemon.exe   ./cmd
+	GO111MODULE=on GOOS=windows GOARCH=amd64 go build -i -ldflags "-X \"main.buildVersion=${BUILD} (Windows)\" -X \"main.buildDate=${BUILD_DATE}\"" -o build/oc-daemon.exe   ./cmd
 
 docker:
 	docker build --rm --no-cache -f Dockerfile -t oc-daemon . 

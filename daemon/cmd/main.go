@@ -42,7 +42,7 @@ const (
 	defaultOCAgentAddr      = "localhost:55678"
 	defaultLogLevel         = logError
 	defaultMsgBufSize       = 10000
-	defaultZPagesAddr       = ":8888"
+	defaultZPagesAddr       = ""
 	defaultZPagesPathPrefix = "/debug"
 )
 

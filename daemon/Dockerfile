@@ -14,7 +14,7 @@ WORKDIR $GOPATH/src/github.com/census-instrumentation/opencensus-php/daemon
 
 RUN mkdir /newtmp && chown opencensus /newtmp && chmod 777 /newtmp
 
-RUN go get -d -v ./... && CGO_ENABLED=0 make build-linux
+RUN CGO_ENABLED=0 make build-linux
 
 #
 # build image from scratch
