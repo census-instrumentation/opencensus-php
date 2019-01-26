@@ -1,6 +1,6 @@
 FROM php:7.3-apache
 
-COPY config.m4 opencensus*.* php_opencensus.h varint.* /tmp/opencensus/
+COPY config.m4 opencensus*.c opencensus*.h php_opencensus.h varint.* /tmp/opencensus/
 
 RUN cd /tmp/opencensus \
     && phpize \
