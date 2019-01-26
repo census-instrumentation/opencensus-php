@@ -25,4 +25,4 @@ size_t uvarint_decode(char *buf, size_t len, unsigned long long *x);
 size_t varint_decode(char *buf, size_t len, long long *x);
 
 
-#endif // PHP_VARINT_H
+#endif /* PHP_VARINT_H */

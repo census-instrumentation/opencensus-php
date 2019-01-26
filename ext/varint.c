@@ -55,7 +55,7 @@ size_t uvarint_decode(char *buf, size_t len, unsigned long long *x)
 		unsigned long long b = *(buf++);
 		if (b < 0x80) {
 			if (i > 9 || (i == 9 && b > 1)) {
-				// overflow
+				/* overflow */
 				*x = 0;
 				return -(i+1);
 			}

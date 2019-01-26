@@ -38,15 +38,15 @@ extern zend_module_entry opencensus_module_entry;
 #define phpext_opencensus_ptr &opencensus_module_entry
 
 ZEND_BEGIN_MODULE_GLOBALS(opencensus)
-    // map of functions we're tracing to callbacks
+    /* map of functions we're tracing to callbacks */
     HashTable *user_traced_functions;
 
-    // Trace context
+    /* Trace context */
     opencensus_trace_span_t *current_span;
     zend_string *trace_id;
     zend_string *trace_parent_span_id;
 
-    // List of collected spans
+    /* List of collected spans */
     HashTable *spans;
 ZEND_END_MODULE_GLOBALS(opencensus)
 

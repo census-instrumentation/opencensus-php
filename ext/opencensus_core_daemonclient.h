@@ -26,14 +26,15 @@
 #else
 #define opencensus_client_path_val "/tmp/oc-daemon.sock"
 
-// TODO: make daemon client compatible with Windows named pipes
+/* TODO: make daemon client compatible with Windows named pipes */
 PHP_FUNCTION(opencensus_core_send_to_daemonclient);
 
-void opencensus_core_daemonclient_minit(INIT_FUNC_ARGS);
+void opencensus_core_daemonclient_minit();
+void opencensus_core_daemonclient_forker();
 void opencensus_core_daemonclient_mshutdown(SHUTDOWN_FUNC_ARGS);
 void opencensus_core_daemonclient_rinit();
 void opencensus_core_daemonclient_rshutdown();
 
 #endif
 
-#endif //PHP_OPENCENSUS_CORE_DAEMONCLIENT_H
+#endif /* PHP_OPENCENSUS_CORE_DAEMONCLIENT_H */

@@ -57,14 +57,14 @@ typedef struct {
 } daemon_msg;
 
 typedef enum msg_type {
-	// PHP lifecycle events (1-19)
+	/* PHP lifecycle events (1-19) */
 	MSG_PROC_INIT             = 1,
 	MSG_PROC_SHUTDOWN,
 	MSG_REQ_INIT,
 	MSG_REQ_SHUTDOWN,
-	// trace types (20-39)
+	/* trace types (20-39) */
 	MSG_TRACE_EXPORT          = 20,
-	// stats types (40-...)
+	/* stats types (40-...) */
 	MSG_MEASURE_CREATE        = 40,
 	MSG_VIEW_REPORTING_PERIOD,
 	MSG_VIEW_REGISTER,
@@ -149,19 +149,19 @@ static inline int encode_double(daemon_msg *msg, double d)
 	} m = { (float) d };
 #ifndef WORDS_BIGENDIAN
 	m.i = swap_uint32_t(m.i);
-#endif // WORDS_BIGENDIAN
+#endif /* WORDS_BIGENDIAN */
 	memset(msg->data+msg->len, 0, 8);
 	memcpy(msg->data+msg->len+2, &m.f, sizeof(float));
-#else // SIZEOF_ZEND_LONG
+#else /* SIZEOF_ZEND_LONG */
 	union d64 {
 		double d;
 		uint64_t i;
 	} m = { d };
 #ifndef WORDS_BIGENDIAN
 	m.i = swap_uint64_t(m.i);
-#endif // WORDS_BIGENDIAN
+#endif /* WORDS_BIGENDIAN */
 	memcpy(msg->data+msg->len, &m.d, sizeof(double));
-#endif // SIZEOF_ZEND_LONG
+#endif /* SIZEOF_ZEND_LONG */
 	msg->len += 8;
 	return true;
 }
@@ -257,29 +257,29 @@ static int send_msg(daemonclient *dc, msg_type type, daemon_msg *msg)
 
 	daemon_msg header = { malloc(80), 0, 80 };
 
-	// write SOM (start of message)
+	/* write SOM (start of message) */
 	memset(header.data, 0, 4);
 	header.len = 4;
 
-	// msg_type
+	/* msg_type */
 	if (!encode_uint64(&header, type)) {
 		msg_destroy(&header);
 		msg_destroy(msg);
 		return false;
 	}
 
-	// seq_nr
+	/* seq_nr */
 	if (!encode_uint64(&header, atomic_fetch_add(&dc->seq_nr, 1))) {
 		msg_destroy(&header);
 		msg_destroy(msg);
 		return false;
 	}
 
-	// process id
+	/* process id */
 	memcpy(header.data+header.len, &dc->pid, dc->pid_len);
 	header.len += dc->pid_len;
 
-	// thread id (0 if not in ZTS mode)
+	/* thread id (0 if not in ZTS mode) */
 #ifdef ZTS
 	if (!encode_uint64(&header, (unsigned long long)pthread_self())) {
 		msg_destroy(&header);
@@ -291,7 +291,7 @@ static int send_msg(daemonclient *dc, msg_type type, daemon_msg *msg)
 	header.len++;
 #endif
 
-	// start time
+	/* start time */
 	if (!encode_double(&header, opencensus_now())) {
 		msg_destroy(&header);
 		msg_destroy(msg);
@@ -304,12 +304,12 @@ static int send_msg(daemonclient *dc, msg_type type, daemon_msg *msg)
 		return false;
 	}
 
-	// create our node to hand off our message to the processing thread
+	/* create our node to hand off our message to the processing thread */
 	node *n = malloc(sizeof(node));
 	n->next   = NULL;
 	n->header = header;
 	n->msg    = *msg;
-	// empty out msg (node has taken responsibility over the payload)
+	/* empty out msg (node has taken responsibility over the payload) */
 	msg->data = NULL;
 	msg->len  = 0;
 	msg->cap  = 0;
@@ -401,7 +401,7 @@ PHP_FUNCTION(opencensus_core_send_to_daemonclient)
 	RETURN_TRUE;
 }
 
-void opencensus_core_daemonclient_minit(INIT_FUNC_ARGS)
+void opencensus_core_daemonclient_minit()
 {
 	mdc = daemonclient_create(INI_STR(opencensus_client_path));
 
@@ -411,6 +411,18 @@ void opencensus_core_daemonclient_minit(INIT_FUNC_ARGS)
 	encode_string(&msg, ZEND_VERSION, strlen(ZEND_VERSION));
 	send_msg(mdc, MSG_PROC_INIT, &msg);
 }
+
+/*
+    If we are part of a server that forks the PHP process after MINIT
+    (e.g. Apache MPM Prefork) we will need to start a new processing thread
+    and reinitialize our daemonclient per child process.
+    We use pthread_atfork for this...
+*/
+void opencensus_core_daemonclient_forker()
+{
+    pthread_atfork(NULL, NULL, &opencensus_core_daemonclient_minit);
+}
+
 
 void opencensus_core_daemonclient_mshutdown(SHUTDOWN_FUNC_ARGS)
 {

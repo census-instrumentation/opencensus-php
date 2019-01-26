@@ -24,7 +24,7 @@
 #include "opencensus_trace_annotation.h"
 #include "opencensus_trace_link.h"
 
-// Trace functions
+/* Trace functions */
 PHP_FUNCTION(opencensus_trace_function);
 PHP_FUNCTION(opencensus_trace_method);
 PHP_FUNCTION(opencensus_trace_list);

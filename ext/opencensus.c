@@ -173,7 +173,11 @@ PHP_MINIT_FUNCTION(opencensus)
 #endif
 	REGISTER_INI_ENTRIES();
 
-	opencensus_core_daemonclient_minit(INIT_FUNC_ARGS_PASSTHRU);
+#ifndef PHP_WIN32
+	/* daemonclient currently not available for WIN32 */
+	opencensus_core_daemonclient_minit();
+	opencensus_core_daemonclient_forker();
+#endif
     opencensus_trace_span_minit(INIT_FUNC_ARGS_PASSTHRU);
     opencensus_trace_context_minit(INIT_FUNC_ARGS_PASSTHRU);
     opencensus_trace_annotation_minit(INIT_FUNC_ARGS_PASSTHRU);
@@ -235,4 +239,3 @@ double opencensus_now()
 
     return (double) (tv.tv_sec + tv.tv_usec / 1000000.00);
 }
-
