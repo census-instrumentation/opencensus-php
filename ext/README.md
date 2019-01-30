@@ -48,7 +48,7 @@ This extension has been built and tested on the following PHP versions:
 
    ```bash
    phpize
-   configure --enable-opencensus
+   ./configure --enable-opencensus
    make
    make test
    make install
@@ -337,7 +337,7 @@ work-in-progress and are more likely to get backwards-incompatible updates.
 
 Contributions to this library are always welcome and highly encouraged.
 
-See [CONTRIBUTING](CONTRIBUTING.md) for more information on how to get started.
+See [CONTRIBUTING](../CONTRIBUTING.md) for more information on how to get started.
 
 ## License
 
