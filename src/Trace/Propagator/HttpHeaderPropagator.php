@@ -25,7 +25,7 @@ use OpenCensus\Trace\SpanContext;
  */
 class HttpHeaderPropagator implements PropagatorInterface
 {
-    const DEFAULT_HEADER = 'HTTP_X_CLOUD_TRACE_CONTEXT';
+    const DEFAULT_HEADER = 'X-Cloud-Trace-Context';
 
     /**
      * @var FormatterInterface
@@ -61,21 +61,12 @@ class HttpHeaderPropagator implements PropagatorInterface
 
     public function inject(SpanContext $context, &$container): void
     {
-        $header = $this->key();
+        $header = $this->header;
         $value = $this->formatter->serialize($context);
+
         if (!headers_sent()) {
             header("$header: $value");
         }
         $container[$header] = $value;
-    }
-
-    public function formatter()
-    {
-        return $this->formatter;
-    }
-
-    public function key()
-    {
-        return str_replace('_', '-', preg_replace('/^HTTP_/', '', $this->header));
     }
 }

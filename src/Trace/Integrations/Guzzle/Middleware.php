@@ -70,10 +70,11 @@ class Middleware
         return function (RequestInterface $request, $options) use ($handler) {
             $context = Tracer::spanContext();
             if ($context->enabled()) {
-                $request = $request->withHeader(
-                    $this->propagator->key(),
-                    $this->propagator->formatter()->serialize($context)
-                );
+                $this->propagator->inject($context, $headers) ;
+
+                foreach ($headers as $headerName => $headerValue) {
+                    $request = $request->withHeader($headerName, $headerValue);
+                }
             }
             return Tracer::inSpan([
                 'name' => 'GuzzleHttp::request',

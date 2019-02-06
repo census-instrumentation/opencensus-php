@@ -51,8 +51,9 @@ class SpanContext
      */
     private $enabled;
 
+
     /**
-     * @var bool Indicator if the span was generated from headers
+     * @var bool Whether or not this context was detected from a request header.
      */
     private $fromHeader;
 

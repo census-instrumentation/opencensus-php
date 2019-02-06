@@ -87,7 +87,7 @@ class RequestHandlerTest extends TestCase
             new HttpHeaderPropagator(),
             [
                 'headers' => [
-                    'HTTP_X_CLOUD_TRACE_CONTEXT' => '12345678901234567890123456789012/5555;o=1'
+                    'X-Cloud-Trace-Context' => '12345678901234567890123456789012/5555;o=1'
                 ],
                 'skipReporting' => true
             ]
@@ -106,7 +106,7 @@ class RequestHandlerTest extends TestCase
             new HttpHeaderPropagator(),
             [
                 'headers' => [
-                    'HTTP_X_CLOUD_TRACE_CONTEXT' => '12345678901234567890123456789012;o=1'
+                    'X-Cloud-Trace-Context' => '12345678901234567890123456789012;o=1'
                 ],
                 'skipReporting' => true
             ]
@@ -124,7 +124,7 @@ class RequestHandlerTest extends TestCase
             new HttpHeaderPropagator(),
             [
                 'headers' => [
-                    'HTTP_X_CLOUD_TRACE_CONTEXT' => '12345678901234567890123456789012;o=0'
+                    'X-Cloud-Trace-Context' => '12345678901234567890123456789012;o=0'
                 ],
                 'skipReporting' => true
             ]
