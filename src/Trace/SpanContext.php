@@ -110,7 +110,7 @@ class SpanContext
     /**
      * Whether or not the request is being traced.
      *
-     * @return bool
+     * @return bool|null
      */
     public function enabled()
     {

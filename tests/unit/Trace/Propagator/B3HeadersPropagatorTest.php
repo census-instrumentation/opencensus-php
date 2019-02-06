@@ -25,6 +25,14 @@ class B3HeadersPropagatorTest extends TestCase
         $this->assertTrue($context->fromHeader());
     }
 
+    public function testExtractWithoutHeaders()
+    {
+        $propagator = new B3HeadersPropagator();
+        $context = $propagator->extract([]);
+        $this->assertNull($context->enabled());
+        $this->assertFalse($context->fromHeader());
+    }
+
     /**
      * @dataProvider traceMetadata
      */
