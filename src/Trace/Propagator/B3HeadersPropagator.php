@@ -27,6 +27,10 @@ class B3HeadersPropagator implements PropagatorInterface
         $sampled = $container[self::X_B3_SAMPLED] ?? null;
         $flags = $container[self::X_B3_FLAGS] ?? null;
 
+        if (!$traceId || !$spanId) {
+            return new SpanContext();
+        }
+
         $enabled = null;
 
         if ($sampled !== null) {
