@@ -34,12 +34,15 @@ class B3HeadersPropagatorTest extends TestCase
         $context = new SpanContext($traceId, $spanId, $enabled);
         $propagator->inject($context, $output);
 
-        if (array_key_exists('X-B3-Flags', $headers)) {
-            $headers['X-B3-Sampled'] = $headers['X-B3-Flags'];
-            unset($headers['X-B3-Flags']);
-        }
+        $this->assertArrayHasKey('X-B3-TraceId', $output);
+        $this->assertArrayHasKey('X-B3-SpanId', $output);
+        $this->assertArrayHasKey('X-B3-Sampled', $output);
 
-        $this->assertEquals($headers, $output);
+        $sampled = $enabled ? '1' : '0';
+
+        $this->assertEquals($traceId, $output['X-B3-TraceId']);
+        $this->assertEquals($spanId, $output['X-B3-SpanId']);
+        $this->assertEquals($sampled, $output['X-B3-Sampled']);
     }
 
     public function traceMetadata()
@@ -58,11 +61,31 @@ class B3HeadersPropagatorTest extends TestCase
             [
                 '463ac35c9f6413ad48485a3953bb6124',
                 'a2fb4a1d1a96d312',
+                true,
+                [
+                    'X-B3-TraceId' => '463ac35c9f6413ad48485a3953bb6124',
+                    'X-B3-SpanId' => 'a2fb4a1d1a96d312',
+                    'X-B3-Sampled' => 'true',
+                ],
+            ],
+            [
+                '463ac35c9f6413ad48485a3953bb6124',
+                'a2fb4a1d1a96d312',
                 false,
                 [
                     'X-B3-TraceId' => '463ac35c9f6413ad48485a3953bb6124',
                     'X-B3-SpanId' => 'a2fb4a1d1a96d312',
                     'X-B3-Sampled' => '0',
+                ],
+            ],
+            [
+                '463ac35c9f6413ad48485a3953bb6124',
+                'a2fb4a1d1a96d312',
+                false,
+                [
+                    'X-B3-TraceId' => '463ac35c9f6413ad48485a3953bb6124',
+                    'X-B3-SpanId' => 'a2fb4a1d1a96d312',
+                    'X-B3-Sampled' => 'false',
                 ],
             ],
             [
