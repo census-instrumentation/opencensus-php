@@ -30,7 +30,7 @@ class B3HeadersPropagator implements PropagatorInterface
         $enabled = null;
 
         if ($sampled !== null) {
-            $enabled = $sampled === '1';
+            $enabled = ($sampled === '1' || $sampled === 'true');
         }
 
         if ($flags === '1') {
