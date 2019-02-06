@@ -25,7 +25,7 @@ use OpenCensus\Trace\SpanContext;
  */
 class HttpHeaderPropagator implements PropagatorInterface
 {
-    const DEFAULT_HEADER = 'HTTP_X_CLOUD_TRACE_CONTEXT';
+    const DEFAULT_HEADER = 'X-Cloud-Trace-Context';
 
     /**
      * @var FormatterInterface
@@ -44,7 +44,7 @@ class HttpHeaderPropagator implements PropagatorInterface
      *        deserialize SpanContext. **Defaults to** a new
      *        CloudTraceFormatter.
      * @param string $key [optional] The header key to store/retrieve the
-     *        encoded SpanContext. **Defaults to** `HTTP_X_CLOUD_TRACE_CONTEXT`
+     *        encoded SpanContext. **Defaults to** `X-Cloud-Trace-Context`
      */
     public function __construct(FormatterInterface $formatter = null, $header = null)
     {
@@ -75,33 +75,11 @@ class HttpHeaderPropagator implements PropagatorInterface
      */
     public function inject(SpanContext $context, $container)
     {
-        $header = $this->key();
+        $header = $this->header;
         $value = $this->formatter->serialize($context);
-        if (!headers_sent()) {
-            header("$header: $value");
-        }
-        return [
-            $header => $value
-        ];
-    }
 
-    /**
-     * Returns the current formatter
-     *
-     * @return FormatterInterface
-     */
-    public function formatter()
-    {
-        return $this->formatter;
-    }
+        $container[$header] = $value;
 
-    /**
-     * Return the key used to propagate the SpanContext
-     *
-     * @return string
-     */
-    public function key()
-    {
-        return str_replace('_', '-', preg_replace('/^HTTP_/', '', $this->header));
+        return $container;
     }
 }

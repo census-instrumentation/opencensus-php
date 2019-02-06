@@ -78,24 +78,4 @@ class GrpcMetadataPropagator implements PropagatorInterface
         $metadata[$this->key] = $this->formatter->serialize($context);
         return $metadata;
     }
-
-    /**
-     * Fetch the formatter for propagating the SpanContext
-     *
-     * @return FormatterInterface
-     */
-    public function formatter()
-    {
-        return $this->formatter;
-    }
-
-    /**
-     * Return the key used to propagate the SpanContext
-     *
-     * @return string
-     */
-    public function key()
-    {
-        return $this->key;
-    }
 }
