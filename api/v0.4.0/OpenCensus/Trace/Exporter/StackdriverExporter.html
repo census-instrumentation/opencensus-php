@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>OpenCensus\Trace\Exporter\StackdriverExporter | OpenCensus PHP API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/sami.css">
+        <script src="../../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../../js/bootstrap.min.js"></script>
+        <script src="../../../js/typeahead.min.js"></script>
+        <script src="../../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:OpenCensus_Trace_Exporter_StackdriverExporter" data-root-path="../../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                    <form action="#" method="GET">
+                <select id="version-switcher" name="version">
+                                            <option value="../../../../v0.2.3/index.html" data-version="v0.2.3">v0.2.3</option>
+                                            <option value="../../../../v0.3.0/index.html" data-version="v0.3.0">v0.3.0</option>
+                                            <option value="../../../../v0.4.0/index.html" data-version="v0.4.0">v0.4.0</option>
+                                            <option value="../../../../v0.4.1/index.html" data-version="v0.4.1">v0.4.1</option>
+                                            <option value="../../../../v0.4.2/index.html" data-version="v0.4.2">v0.4.2</option>
+                                            <option value="../../../../v0.4.3/index.html" data-version="v0.4.3">v0.4.3</option>
+                                            <option value="../../../../v0.5.0/index.html" data-version="v0.5.0">v0.5.0</option>
+                                            <option value="../../../../v0.5.1/index.html" data-version="v0.5.1">v0.5.1</option>
+                                            <option value="../../../../v0.5.2/index.html" data-version="v0.5.2">v0.5.2</option>
+                                            <option value="../../../../master/index.html" data-version="master">master branch</option>
+                                    </select>
+            </form>
+                <script>
+            $('option[data-version="'+window.projectVersion+'"]').prop('selected', true);
+        </script>
+        <form id="search-form" action="../../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../../index.html">OpenCensus PHP API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../../classes.html">Classes</a></li>
+                                            <li><a href="../../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../../traits.html">Traits</a></li>
+                    <li><a href="../../../doc-index.html">Index</a></li>
+                    <li><a href="../../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                        <li><a href="../../../OpenCensus.html">OpenCensus</a></li><li class="backslash">\</li><li><a href="../../../OpenCensus/Trace.html">Trace</a></li><li class="backslash">\</li><li><a href="../../../OpenCensus/Trace/Exporter.html">Exporter</a></li><li class="backslash">\</li><li>StackdriverExporter</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>
+            StackdriverExporter
+                
+        </h1>
+    </div>
+
+    <p>    class
+    <strong>StackdriverExporter</strong>        implements
+        <a href="../../../OpenCensus/Trace/Exporter/ExporterInterface.html"><abbr title="OpenCensus\Trace\Exporter\ExporterInterface">ExporterInterface</abbr></a>
+</p>
+
+        
+    
+
+            <div class="description">
+            <p>This implementation of the ExporterInterface use the BatchRunner to provide
+reporting of Traces and their Spans to Google Cloud Stackdriver Trace.</p>            <p>Example:</p>
+
+<pre><code>use OpenCensus\Trace\Tracer;
+use OpenCensus\Trace\Exporter\StackdriverExporter;
+
+$reporter = new StackdriverExporter([
+  'clientConfig' =&gt; [
+     'projectId' =&gt; 'my-project'
+  ]
+]);
+Tracer::start($reporter);
+</code></pre>
+
+<p>The above configuration will synchronously report the traces to Google Cloud
+Stackdriver Trace. You can enable an experimental asynchronous reporting
+mechanism using
+<a href="https://github.com/GoogleCloudPlatform/google-cloud-php/tree/master/src/Core/Batch">BatchDaemon</a>.</p>
+
+<p>Example:</p>
+
+<pre><code>use OpenCensus\Trace\Tracer;
+use OpenCensus\Trace\Exporter\StackdriverExporter;
+
+$reporter = new StackdriverExporter([
+  'async' =&gt; true,
+  'clientConfig' =&gt; [
+     'projectId' =&gt; 'my-project'
+  ]
+]);
+Tracer::start($reporter);
+</code></pre>
+
+<p>Note that to use the <code>async</code> option, you will also need to set the
+<code>IS_BATCH_DAEMON_RUNNING</code> environment variable to <code>true</code>.</p>                    </div>
+    
+            <h2>Traits</h2>
+
+        
+    <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-6">
+                                            <abbr title="Google\Cloud\Core\Batch\BatchTrait">BatchTrait</abbr>
+                                            
+                </div>
+                <div class="col-md-6">
+                    
+                </div>
+            </div>
+            </div>
+    
+            <h2>Constants</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td>ATTRIBUTE_MAP</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+            </table>
+
+    
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___construct">__construct</a>(array $options = [])
+        
+                                            <p>Create a TraceExporter that utilizes background batching.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_export">export</a>(array $spans)
+        
+                                            <p>Report the provided Trace to a backend.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Google\Cloud\Trace\Span">Span</abbr>[]
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_convertSpans">convertSpans</a>(array $spans)
+        
+                                            <p>Convert spans into Stackdriver's expected JSON output format.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    array
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getCallback">getCallback</a>()
+        
+                                            <p>Returns an array representation of a callback which will be used to write
+batch items.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method___construct">
+        <div class="location">at         line 123</div>
+        <code>                    
+    <strong>__construct</strong>(array $options = [])
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Create a TraceExporter that utilizes background batching.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$options</td>
+                <td>[optional] Configuration options.</p>
+
+<pre><code>@type TraceClient $client A trace client used to instantiate traces
+      to be delivered to the batch queue.
+@type bool $debugOutput Whether or not to output debug information.
+      Please note debug output currently only applies in CLI based
+      applications. **Defaults to** `false`.
+@type array $batchOptions A set of options for a BatchJob. See
+      &lt;a href="https://github.com/GoogleCloudPlatform/google-cloud-php/blob/master/src/Core/Batch/BatchJob.php"&gt;\Google\Cloud\Core\Batch\BatchJob::__construct()&lt;/a&gt;
+      for more details.
+      **Defaults to** ['batchSize' =&gt; 1000,
+                       'callPeriod' =&gt; 2.0,
+                       'workerNum' =&gt; 2].
+@type array $clientConfig Configuration options for the Trace client
+      used to handle processing of batch items.
+      For valid options please see
+      &lt;a href="https://github.com/GoogleCloudPlatform/google-cloud-php/blob/master/src/Trace/TraceClient.php"&gt;\Google\Cloud\Trace\TraceClient::__construct()&lt;/a&gt;.
+@type BatchRunner $batchRunner A BatchRunner object. Mainly used for
+      the tests to inject a mock. **Defaults to** a newly created
+      BatchRunner.
+@type string $identifier An identifier for the batch job.
+      **Defaults to** `stackdriver-trace`.
+@type bool $async Whether we should try to use the batch runner.
+      **Defaults to** `false`.
+</code></pre>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_export">
+        <div class="location">at         line 141</div>
+        <code>                    bool
+    <strong>export</strong>(array $spans)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Report the provided Trace to a backend.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$spans</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_convertSpans">
+        <div class="location">at         line 177</div>
+        <code>                    <abbr title="Google\Cloud\Trace\Span">Span</abbr>[]
+    <strong>convertSpans</strong>(array $spans)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Convert spans into Stackdriver's expected JSON output format.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$spans</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Google\Cloud\Trace\Span">Span</abbr>[]</td>
+            <td>Representation of the collected trace spans ready for serialization</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getCallback">
+        <div class="location">at         line 215</div>
+        <code>            protected        array
+    <strong>getCallback</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns an array representation of a callback which will be used to write
+batch items.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>array</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>OpenCensus\Trace\Span | OpenCensus PHP API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/sami.css">
+        <script src="../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script src="../../js/typeahead.min.js"></script>
+        <script src="../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:OpenCensus_Trace_Span" data-root-path="../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                    <form action="#" method="GET">
+                <select id="version-switcher" name="version">
+                                            <option value="../../../v0.2.3/index.html" data-version="v0.2.3">v0.2.3</option>
+                                            <option value="../../../v0.3.0/index.html" data-version="v0.3.0">v0.3.0</option>
+                                            <option value="../../../v0.4.0/index.html" data-version="v0.4.0">v0.4.0</option>
+                                            <option value="../../../v0.4.1/index.html" data-version="v0.4.1">v0.4.1</option>
+                                            <option value="../../../v0.4.2/index.html" data-version="v0.4.2">v0.4.2</option>
+                                            <option value="../../../v0.4.3/index.html" data-version="v0.4.3">v0.4.3</option>
+                                            <option value="../../../v0.5.0/index.html" data-version="v0.5.0">v0.5.0</option>
+                                            <option value="../../../v0.5.1/index.html" data-version="v0.5.1">v0.5.1</option>
+                                            <option value="../../../v0.5.2/index.html" data-version="v0.5.2">v0.5.2</option>
+                                            <option value="../../../master/index.html" data-version="master">master branch</option>
+                                    </select>
+            </form>
+                <script>
+            $('option[data-version="'+window.projectVersion+'"]').prop('selected', true);
+        </script>
+        <form id="search-form" action="../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../index.html">OpenCensus PHP API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../classes.html">Classes</a></li>
+                                            <li><a href="../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../traits.html">Traits</a></li>
+                    <li><a href="../../doc-index.html">Index</a></li>
+                    <li><a href="../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                        <li><a href="../../OpenCensus.html">OpenCensus</a></li><li class="backslash">\</li><li><a href="../../OpenCensus/Trace.html">Trace</a></li><li class="backslash">\</li><li>Span</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>
+            Span
+                
+        </h1>
+    </div>
+
+    <p>    class
+    <strong>Span</strong>
+</p>
+
+        
+    
+
+            <div class="description">
+            <p>This plain PHP class represents a single timed event within a Trace. Spans can
+be nested and form a trace tree. Often, a trace contains a root span that
+describes the end-to-end latency of an operation and, optionally, one or more subspans
+for its suboperations. Spans do not need to be contiguous. There may be
+gaps between spans in a trace.</p>                                </div>
+    
+            <h2>Traits</h2>
+
+        
+    <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="../../OpenCensus/Trace/AttributeTrait.html"><abbr title="OpenCensus\Trace\AttributeTrait">AttributeTrait</abbr></a>
+                                            
+                </div>
+                <div class="col-md-6">
+                    
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="../../OpenCensus/Trace/DateFormatTrait.html"><abbr title="OpenCensus\Trace\DateFormatTrait">DateFormatTrait</abbr></a>
+                                            
+                </div>
+                <div class="col-md-6">
+                    Trait which provides helper methods for converting DateTime input formats.
+                </div>
+            </div>
+            </div>
+    
+            <h2>Constants</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td>ATTRIBUTE_HOST</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>ATTRIBUTE_PORT</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>ATTRIBUTE_METHOD</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>ATTRIBUTE_PATH</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>ATTRIBUTE_ROUTE</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>ATTRIBUTE_USER_AGENT</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>ATTRIBUTE_STATUS_CODE</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>KIND_UNSPECIFIED</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>KIND_SERVER</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>KIND_CLIENT</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+            </table>
+
+    
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_addAttributes">addAttributes</a>(array $attributes)
+        
+                                            <p>Attach attributes to this object.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../OpenCensus/Trace/AttributeTrait.html#method_addAttributes"><abbr title="OpenCensus\Trace\AttributeTrait">AttributeTrait</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_addAttribute">addAttribute</a>(string $attribute, mixed $value)
+        
+                                            <p>Attach a single attribute to this object.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../OpenCensus/Trace/AttributeTrait.html#method_addAttribute"><abbr title="OpenCensus\Trace\AttributeTrait">AttributeTrait</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    array
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_attributes">attributes</a>()
+        
+                                            <p>Return the list of attributes for this object.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../OpenCensus/Trace/AttributeTrait.html#method_attributes"><abbr title="OpenCensus\Trace\AttributeTrait">AttributeTrait</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___construct">__construct</a>(array $options = [])
+        
+                                            <p>Instantiate a new Span instance.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setStartTime">setStartTime</a>(<a target="_blank" href="http://php.net/DateTimeInterface">DateTimeInterface</a>|int|float $when = null)
+        
+                                            <p>Set the start time for this span.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setEndTime">setEndTime</a>(<a target="_blank" href="http://php.net/DateTimeInterface">DateTimeInterface</a>|int|float $when = null)
+        
+                                            <p>Set the end time for this span.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    string
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_spanId">spanId</a>()
+        
+                                            <p>Retrieve the ID of this span.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../OpenCensus/Trace/SpanData.html"><abbr title="OpenCensus\Trace\SpanData">SpanData</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_spanData">spanData</a>()
+        
+                                            <p>Return a read-only version of this span.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_addTimeEvents">addTimeEvents</a>(array $timeEvents)
+        
+                                            <p>Add time events to this span.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_addTimeEvent">addTimeEvent</a>(<a href="../../OpenCensus/Trace/TimeEvent.html"><abbr title="OpenCensus\Trace\TimeEvent">TimeEvent</abbr></a> $timeEvent)
+        
+                                            <p>Add a time event to this span.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_addLinks">addLinks</a>(array $links)
+        
+                                            <p>Add links to this span.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_addLink">addLink</a>(<a href="../../OpenCensus/Trace/Link.html"><abbr title="OpenCensus\Trace\Link">Link</abbr></a> $link)
+        
+                                            <p>Add a link to this span.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setStatus">setStatus</a>(int $code, string $message)
+        
+                                            <p>Set the status for this span.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method_addAttributes">
+        <div class="location">in <a href="../../OpenCensus/Trace/AttributeTrait.html#method_addAttributes"><abbr title="OpenCensus\Trace\AttributeTrait">AttributeTrait</abbr></a> at         line 32</div>
+        <code>                    
+    <strong>addAttributes</strong>(array $attributes)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Attach attributes to this object.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$attributes</td>
+                <td>Attributes in the form of $attribute => $value</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_addAttribute">
+        <div class="location">in <a href="../../OpenCensus/Trace/AttributeTrait.html#method_addAttribute"><abbr title="OpenCensus\Trace\AttributeTrait">AttributeTrait</abbr></a> at         line 45</div>
+        <code>                    
+    <strong>addAttribute</strong>(string $attribute, mixed $value)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Attach a single attribute to this object.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$attribute</td>
+                <td>The name of the attribute.</td>
+            </tr>
+                    <tr>
+                <td>mixed</td>
+                <td>$value</td>
+                <td>The value of the attribute. Will be cast to a string</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_attributes">
+        <div class="location">in <a href="../../OpenCensus/Trace/AttributeTrait.html#method_attributes"><abbr title="OpenCensus\Trace\AttributeTrait">AttributeTrait</abbr></a> at         line 55</div>
+        <code>                    array
+    <strong>attributes</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Return the list of attributes for this object.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>array</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method___construct">
+        <div class="location">at         line 169</div>
+        <code>                    
+    <strong>__construct</strong>(array $options = [])
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Instantiate a new Span instance.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$options</td>
+                <td>[optional] Configuration options.</p>
+
+<pre><code> @type string $spanId The ID of the span. If not provided,
+       one will be generated automatically for you.
+ @type string $name The name of the span.
+ @type \DateTimeInterface|int|float $startTime Start time of the span in nanoseconds.
+       If provided as an int or float, it is treated as a Unix timestamp.
+ @type \DateTimeInterface|int|float $endTime End time of the span in nanoseconds.
+       If provided as an int or float, it is treated as a Unix timestamp.
+ @type string $parentSpanId ID of the parent span if any.
+ @type array $attributes Associative array of $attribute =&gt; $value
+       to attach to this span.
+ @type Status $status The final status for this span.
+ @type bool $sameProcessAsParentSpan True when the parentSpanId
+       belongs to the same process as the current span.
+ @type string $kind The span's type.
+</code></pre>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setStartTime">
+        <div class="location">at         line 227</div>
+        <code>                    
+    <strong>setStartTime</strong>(<a target="_blank" href="http://php.net/DateTimeInterface">DateTimeInterface</a>|int|float $when = null)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Set the start time for this span.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/DateTimeInterface">DateTimeInterface</a>|int|float</td>
+                <td>$when</td>
+                <td>[optional] The start time of
+        this span. <strong>Defaults to</strong> now. If provided as an int or float,
+        it is expected to be a Unix timestamp.</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setEndTime">
+        <div class="location">at         line 239</div>
+        <code>                    
+    <strong>setEndTime</strong>(<a target="_blank" href="http://php.net/DateTimeInterface">DateTimeInterface</a>|int|float $when = null)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Set the end time for this span.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/DateTimeInterface">DateTimeInterface</a>|int|float</td>
+                <td>$when</td>
+                <td>[optional] The end time of
+        this span. <strong>Defaults to</strong> now. If provided as an int or float,
+        it is expected to be a Unix timestamp.</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_spanId">
+        <div class="location">at         line 249</div>
+        <code>                    string
+    <strong>spanId</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Retrieve the ID of this span.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>string</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_spanData">
+        <div class="location">at         line 259</div>
+        <code>                    <a href="../../OpenCensus/Trace/SpanData.html"><abbr title="OpenCensus\Trace\SpanData">SpanData</abbr></a>
+    <strong>spanData</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Return a read-only version of this span.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../OpenCensus/Trace/SpanData.html"><abbr title="OpenCensus\Trace\SpanData">SpanData</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_addTimeEvents">
+        <div class="location">at         line 285</div>
+        <code>                    
+    <strong>addTimeEvents</strong>(array $timeEvents)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Add time events to this span.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$timeEvents</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_addTimeEvent">
+        <div class="location">at         line 297</div>
+        <code>                    
+    <strong>addTimeEvent</strong>(<a href="../../OpenCensus/Trace/TimeEvent.html"><abbr title="OpenCensus\Trace\TimeEvent">TimeEvent</abbr></a> $timeEvent)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Add a time event to this span.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../OpenCensus/Trace/TimeEvent.html"><abbr title="OpenCensus\Trace\TimeEvent">TimeEvent</abbr></a></td>
+                <td>$timeEvent</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_addLinks">
+        <div class="location">at         line 307</div>
+        <code>                    
+    <strong>addLinks</strong>(array $links)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Add links to this span.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$links</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_addLink">
+        <div class="location">at         line 319</div>
+        <code>                    
+    <strong>addLink</strong>(<a href="../../OpenCensus/Trace/Link.html"><abbr title="OpenCensus\Trace\Link">Link</abbr></a> $link)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Add a link to this span.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../OpenCensus/Trace/Link.html"><abbr title="OpenCensus\Trace\Link">Link</abbr></a></td>
+                <td>$link</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setStatus">
+        <div class="location">at         line 330</div>
+        <code>                    
+    <strong>setStatus</strong>(int $code, string $message)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Set the status for this span.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>int</td>
+                <td>$code</td>
+                <td>The status code</td>
+            </tr>
+                    <tr>
+                <td>string</td>
+                <td>$message</td>
+                <td>A developer-facing error message</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

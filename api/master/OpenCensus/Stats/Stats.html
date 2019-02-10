@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>OpenCensus\Stats\Stats | OpenCensus PHP API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/sami.css">
+        <script src="../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script src="../../js/typeahead.min.js"></script>
+        <script src="../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:OpenCensus_Stats_Stats" data-root-path="../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                    <form action="#" method="GET">
+                <select id="version-switcher" name="version">
+                                            <option value="../../../v0.2.3/index.html" data-version="v0.2.3">v0.2.3</option>
+                                            <option value="../../../v0.3.0/index.html" data-version="v0.3.0">v0.3.0</option>
+                                            <option value="../../../v0.4.0/index.html" data-version="v0.4.0">v0.4.0</option>
+                                            <option value="../../../v0.4.1/index.html" data-version="v0.4.1">v0.4.1</option>
+                                            <option value="../../../v0.4.2/index.html" data-version="v0.4.2">v0.4.2</option>
+                                            <option value="../../../v0.4.3/index.html" data-version="v0.4.3">v0.4.3</option>
+                                            <option value="../../../v0.5.0/index.html" data-version="v0.5.0">v0.5.0</option>
+                                            <option value="../../../v0.5.1/index.html" data-version="v0.5.1">v0.5.1</option>
+                                            <option value="../../../v0.5.2/index.html" data-version="v0.5.2">v0.5.2</option>
+                                            <option value="../../../master/index.html" data-version="master">master branch</option>
+                                    </select>
+            </form>
+                <script>
+            $('option[data-version="'+window.projectVersion+'"]').prop('selected', true);
+        </script>
+        <form id="search-form" action="../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../index.html">OpenCensus PHP API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../classes.html">Classes</a></li>
+                                            <li><a href="../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../traits.html">Traits</a></li>
+                    <li><a href="../../doc-index.html">Index</a></li>
+                    <li><a href="../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                        <li><a href="../../OpenCensus.html">OpenCensus</a></li><li class="backslash">\</li><li><a href="../../OpenCensus/Stats.html">Stats</a></li><li class="backslash">\</li><li>Stats</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>
+            Stats
+                
+        </h1>
+    </div>
+
+    <p>    class
+    <strong>Stats</strong>
+</p>
+
+        
+    
+
+            <div class="description">
+            <p>This class provides static functions to give you access to the most common Stats actions.</p>            <p>It's typically used to start the desired Stats exporter and get access to
+Stats recording, Tag management and View registration.</p>
+
+<p>Example:</p>
+
+<pre><code>use OpenCensus\Core\DaemonClient;
+use OpenCensus\Trace\Tracer;
+use OpenCensus\Tags\TagKey;
+use OpenCensus\Tags\TagValue;
+use OpenCensus\Tags\TagContext;
+use OpenCensus\Stats\Stats;
+use OpenCensus\Stats\Measure;
+use OpenCensus\Stats\View\View;
+use OpenCensus\Stats\View\Aggregation;
+
+try {
+    $daemon = DaemonClient::init(array("socketPath" =&gt; "/tmp/ocdaemon.sock"));
+    Tracer::start($daemon);
+    Stats::setExporter($daemon);
+    $daemon-&gt;setReportingPeriod(2.0);
+} catch (\Exception $e) {
+    // Unable to set Stats Exporter, proceeding as Noop
+}
+
+$frontendKey = TagKey::create("example.com/keys/frontend");
+
+$videoSize = Measure::newIntMeasure("example.com/measure/video_size", "size of processed videos", Measure::BYTES);
+
+Stats::registerView(new View(
+    "example.com/views/video_size",
+    "processed video size over time",
+    $videoSize,
+    Aggregation::distribution([0, 1&lt;&lt;16, 1&lt;&lt;32]),
+    $frontendKey
+));
+
+Tracer::inSpan(['name' =&gt; 'example.com/ProcessVideo'], function () use ($frontendKey, $videoSize) {
+    // process video
+    $tagCtx = TagContext::fromContext();
+    $tagCtx-&gt;insert($frontendKey, TagValue::create("mobile-ios9.3.5"));
+    sleep(1);
+    Stats::newMeasurementMap()
+        -&gt;put($videoSize-&gt;M(25648))
+        -&gt;record();
+});
+</code></pre>
+</p>                    </div>
+    
+    
+    
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<a href="../../OpenCensus/Stats/Stats.html"><abbr title="OpenCensus\Stats\Stats">Stats</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getInstance">getInstance</a>()
+        
+                                            <p>Retrieve Stats instance.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setExporter">setExporter</a>(<a href="../../OpenCensus/Stats/Exporter/ExporterInterface.html"><abbr title="OpenCensus\Stats\Exporter\ExporterInterface">ExporterInterface</abbr></a> $exporter)
+        
+                                            <p>Set the ExporterInterface to use by the Stats components.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<a href="../../OpenCensus/Stats/Exporter/ExporterInterface.html"><abbr title="OpenCensus\Stats\Exporter\ExporterInterface">ExporterInterface</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getExporter">getExporter</a>()
+        
+                                            <p>Retrieve our ExporterInterface.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<a href="../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_newTagContext">newTagContext</a>()
+        
+                                            <p>Return a new TagContext object.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<a href="../../OpenCensus/Stats/MeasurementInterface.html"><abbr title="OpenCensus\Stats\MeasurementInterface">MeasurementInterface</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_newMeasurementMap">newMeasurementMap</a>()
+        
+                                            <p>Retrieve a new MeasurementInterface for recording Measurements</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_registerView">registerView</a>(<a href="../../OpenCensus/Stats/View/View.html"><abbr title="OpenCensus\Stats\View\View">View</abbr></a> ...$views)
+        
+                                            <p>Register one or multiple views.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_unregisterView">unregisterView</a>(<a href="../../OpenCensus/Stats/View/View.html"><abbr title="OpenCensus\Stats\View\View">View</abbr></a> ...$views)
+        
+                                            <p>Unregister one or multiple views.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method_getInstance">
+        <div class="location">at         line 91</div>
+        <code>        static            <a href="../../OpenCensus/Stats/Stats.html"><abbr title="OpenCensus\Stats\Stats">Stats</abbr></a>
+    <strong>getInstance</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Retrieve Stats instance.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../OpenCensus/Stats/Stats.html"><abbr title="OpenCensus\Stats\Stats">Stats</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setExporter">
+        <div class="location">at         line 107</div>
+        <code>        static            
+    <strong>setExporter</strong>(<a href="../../OpenCensus/Stats/Exporter/ExporterInterface.html"><abbr title="OpenCensus\Stats\Exporter\ExporterInterface">ExporterInterface</abbr></a> $exporter)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Set the ExporterInterface to use by the Stats components.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../OpenCensus/Stats/Exporter/ExporterInterface.html"><abbr title="OpenCensus\Stats\Exporter\ExporterInterface">ExporterInterface</abbr></a></td>
+                <td>$exporter</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getExporter">
+        <div class="location">at         line 117</div>
+        <code>        static            <a href="../../OpenCensus/Stats/Exporter/ExporterInterface.html"><abbr title="OpenCensus\Stats\Exporter\ExporterInterface">ExporterInterface</abbr></a>
+    <strong>getExporter</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Retrieve our ExporterInterface.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../OpenCensus/Stats/Exporter/ExporterInterface.html"><abbr title="OpenCensus\Stats\Exporter\ExporterInterface">ExporterInterface</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_newTagContext">
+        <div class="location">at         line 127</div>
+        <code>        static            <a href="../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a>
+    <strong>newTagContext</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Return a new TagContext object.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_newMeasurementMap">
+        <div class="location">at         line 137</div>
+        <code>        static            <a href="../../OpenCensus/Stats/MeasurementInterface.html"><abbr title="OpenCensus\Stats\MeasurementInterface">MeasurementInterface</abbr></a>
+    <strong>newMeasurementMap</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Retrieve a new MeasurementInterface for recording Measurements</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../OpenCensus/Stats/MeasurementInterface.html"><abbr title="OpenCensus\Stats\MeasurementInterface">MeasurementInterface</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_registerView">
+        <div class="location">at         line 151</div>
+        <code>        static            bool
+    <strong>registerView</strong>(<a href="../../OpenCensus/Stats/View/View.html"><abbr title="OpenCensus\Stats\View\View">View</abbr></a> ...$views)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Register one or multiple views.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../OpenCensus/Stats/View/View.html"><abbr title="OpenCensus\Stats\View\View">View</abbr></a></td>
+                <td>...$views</td>
+                <td>the views to register.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_unregisterView">
+        <div class="location">at         line 162</div>
+        <code>        static            bool
+    <strong>unregisterView</strong>(<a href="../../OpenCensus/Stats/View/View.html"><abbr title="OpenCensus\Stats\View\View">View</abbr></a> ...$views)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Unregister one or multiple views.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../OpenCensus/Stats/View/View.html"><abbr title="OpenCensus\Stats\View\View">View</abbr></a></td>
+                <td>...$views</td>
+                <td>the views to unregister.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

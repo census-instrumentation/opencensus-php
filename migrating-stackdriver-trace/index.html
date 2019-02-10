@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="generator" content="Hugo 0.30.2" />
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>Migrating to OpenCensus from Stackdriver Trace V1 &middot; OpenCensus for PHP</title>
+
+  
+  <link rel="stylesheet" href="https://opencensus.io/api/php/css/print.css" media="print">
+  <link rel="stylesheet" href="https://opencensus.io/api/php/css/poole.css">
+  <link rel="stylesheet" href="https://opencensus.io/api/php/css/syntax.css">
+  <link rel="stylesheet" href="https://opencensus.io/api/php/css/hyde.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="OpenCensus for PHP" />
+</head>
+
+  <body class=" ">
+  <div class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      <a href="https://opencensus.io/api/php/"><h1>OpenCensus for PHP</h1></a>
+      <p class="lead">
+        A stats collection and distributed tracing framework
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/api/php/"> OpenCensus for PHP </a></li><li><a href="/api/php/integrations/"> Integrations </a></li><li><a href="/api/php/migration-guide/"> Migration Guide </a></li><li><a href="/api/php/using-the-extension/"> PECL Extension </a></li><li><a href="/api/php/api"> API Documentation </a></li>
+      <li><a href="https://github.com/census-instrumentation/opencensus-php" class="fork"> Fork on GitHub</a></li>
+    </ul>
+  </div>
+</div>
+
+    <div class="content container">
+    <div class="post">
+  <h1>Migrating to OpenCensus from Stackdriver Trace V1</h1>
+  
+
+<p>The Stackdriver Trace library (<code>google/cloud-trace</code>) prior to v0.4.0 (v0.47.0
+for the umbrella <code>google/cloud</code> package) provided application tracing
+integration. Version v0.4.0 removed this capability and instead defers to the
+<code>opencensus/opencensus</code> package from application integration.</p>
+
+<h2 id="installation">Installation</h2>
+
+<ol>
+<li><p>Add OpenCensus to your package.json:</p>
+
+<pre><code>$ composer require opencensus/opencensus
+</code></pre></li>
+
+<li><p>Ensure <code>google/cloud-trace</code> is &gt;= v0.4.0 or <code>google/cloud</code> is &gt;= 0.47.0:</p>
+
+<pre><code>// in composer.json
+...
+&quot;require&quot;: {
+    &quot;google/cloud-trace&quot;: &quot;^0.4.0&quot;,
+    // OR
+    &quot;google/cloud&quot;: &quot;^0.47.0&quot;
+}
+...
+</code></pre></li>
+
+<li><p>Update your composer packages:</p>
+
+<pre><code>$ composer update
+</code></pre></li>
+</ol>
+
+<h2 id="renamed-components">Renamed Components</h2>
+
+<p>Between the Stackdriver Trace implementation and OpenCensus, most changes are
+simple renames.</p>
+
+<table>
+<thead>
+<tr>
+<th>Old Name</th>
+<th>New Name</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>Google\Cloud\Trace\RequestTracer</code></td>
+<td><code>OpenCensus\Trace\Tracer</code></td>
+</tr>
+
+<tr>
+<td><code>Google\Cloud\Trace\Sampler\AlwaysOffSampler</code></td>
+<td><code>OpenCensus\Trace\Sampler\NeverSampleSampler</code></td>
+</tr>
+
+<tr>
+<td><code>Google\Cloud\Trace\Sampler\AlwaysOnSampler</code></td>
+<td><code>OpenCensus\Trace\Sampler\AlwaysSampleSampler</code></td>
+</tr>
+
+<tr>
+<td><code>Google\Cloud\Trace\Sampler\QpsSampler</code></td>
+<td><code>OpenCensus\Trace\Sampler\QpsSampler</code></td>
+</tr>
+
+<tr>
+<td><code>Google\Cloud\Trace\Sampler\RandomSampler</code></td>
+<td><code>OpenCensus\Trace\Sampler\ProbabilitySampler</code></td>
+</tr>
+
+<tr>
+<td><code>Google\Cloud\Trace\Reporter\AsyncReporter</code></td>
+<td><code>OpenCensus\Trace\Exporter\StackdriverExporter</code></td>
+</tr>
+
+<tr>
+<td><code>Google\Cloud\Trace\Reporter\EchoReporter</code></td>
+<td><code>OpenCensus\Trace\Exporter\EchoExporter</code></td>
+</tr>
+
+<tr>
+<td><code>Google\Cloud\Trace\Reporter\FileReporter</code></td>
+<td><code>OpenCensus\Trace\Exporter\FileExporter</code></td>
+</tr>
+
+<tr>
+<td><code>Google\Cloud\Trace\Reporter\NullReporter</code></td>
+<td><code>OpenCensus\Trace\Exporter\NullExporter</code></td>
+</tr>
+
+<tr>
+<td><code>Google\Cloud\Trace\Reporter\SyncReporter</code></td>
+<td><code>OpenCensus\Trace\Exporter\StackdriverExporter</code></td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="setup">Setup</h2>
+
+<p>In Stackdriver Trace:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">Google\Cloud\Trace\TraceClient</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">Google\Cloud\Trace\RequestTracer</span>;
+
+$trace <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">TraceClient</span>();
+$reporter <span style="color:#f92672">=</span> $trace<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">reporter</span>();
+<span style="color:#a6e22e">RequestTracer</span><span style="color:#f92672">::</span><span style="color:#a6e22e">start</span>($reporter);</code></pre></div>
+<p>In OpenCensus:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">OpenCensus\Trace\Tracer</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">OpenCensus\Trace\Exporter\StackdriverExporter</span>;
+
+<span style="color:#a6e22e">Tracer</span><span style="color:#f92672">::</span><span style="color:#a6e22e">start</span>(<span style="color:#66d9ef">new</span> <span style="color:#a6e22e">StackdriverExporter</span>([<span style="color:#e6db74">&#39;async&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">true</span>]));</code></pre></div>
+<h2 id="configuration">Configuration</h2>
+
+<h3 id="sampler">Sampler</h3>
+
+<p>If you configure a sampler, you can no longer specify sampler configuration as
+an array &ndash; you can only provide a <code>SamplerInterface</code> instance.</p>
+
+<p>In Stackdriver Trace:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
+
+<span style="color:#a6e22e">RequestTracer</span><span style="color:#f92672">::</span><span style="color:#a6e22e">start</span>($reporter, [
+  <span style="color:#e6db74">&#39;sampler&#39;</span> <span style="color:#f92672">=&gt;</span> [
+    <span style="color:#e6db74">&#39;type&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;random&#39;</span>,
+    <span style="color:#e6db74">&#39;rate&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">0.2</span>
+  ]
+]);</code></pre></div>
+<p>In OpenCensus:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">OpenCensus\Trace\Sampler\ProbabilitySampler</span>;
+
+<span style="color:#a6e22e">Tracer</span><span style="color:#f92672">::</span><span style="color:#a6e22e">start</span>($reporter, [
+  <span style="color:#e6db74">&#39;sampler&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ProbabilitySampler</span>(<span style="color:#ae81ff">0.2</span>)
+]);</code></pre></div>
+</div>
+
+
+    </div>
+
+    
+  </body>
+</html>

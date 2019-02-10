@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>OpenCensus\Trace\Sampler\QpsSampler | OpenCensus PHP API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/sami.css">
+        <script src="../../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../../js/bootstrap.min.js"></script>
+        <script src="../../../js/typeahead.min.js"></script>
+        <script src="../../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:OpenCensus_Trace_Sampler_QpsSampler" data-root-path="../../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                    <form action="#" method="GET">
+                <select id="version-switcher" name="version">
+                                            <option value="../../../../v0.2.3/index.html" data-version="v0.2.3">v0.2.3</option>
+                                            <option value="../../../../v0.3.0/index.html" data-version="v0.3.0">v0.3.0</option>
+                                            <option value="../../../../v0.4.0/index.html" data-version="v0.4.0">v0.4.0</option>
+                                            <option value="../../../../v0.4.1/index.html" data-version="v0.4.1">v0.4.1</option>
+                                            <option value="../../../../v0.4.2/index.html" data-version="v0.4.2">v0.4.2</option>
+                                            <option value="../../../../v0.4.3/index.html" data-version="v0.4.3">v0.4.3</option>
+                                            <option value="../../../../v0.5.0/index.html" data-version="v0.5.0">v0.5.0</option>
+                                            <option value="../../../../v0.5.1/index.html" data-version="v0.5.1">v0.5.1</option>
+                                            <option value="../../../../v0.5.2/index.html" data-version="v0.5.2">v0.5.2</option>
+                                            <option value="../../../../master/index.html" data-version="master">master branch</option>
+                                    </select>
+            </form>
+                <script>
+            $('option[data-version="'+window.projectVersion+'"]').prop('selected', true);
+        </script>
+        <form id="search-form" action="../../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../../index.html">OpenCensus PHP API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../../classes.html">Classes</a></li>
+                                            <li><a href="../../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../../traits.html">Traits</a></li>
+                    <li><a href="../../../doc-index.html">Index</a></li>
+                    <li><a href="../../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                        <li><a href="../../../OpenCensus.html">OpenCensus</a></li><li class="backslash">\</li><li><a href="../../../OpenCensus/Trace.html">Trace</a></li><li class="backslash">\</li><li><a href="../../../OpenCensus/Trace/Sampler.html">Sampler</a></li><li class="backslash">\</li><li>QpsSampler</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>
+            QpsSampler
+                
+        </h1>
+    </div>
+
+    <p>    class
+    <strong>QpsSampler</strong>        implements
+        <a href="../../../OpenCensus/Trace/Sampler/SamplerInterface.html"><abbr title="OpenCensus\Trace\Sampler\SamplerInterface">SamplerInterface</abbr></a>
+</p>
+
+        
+    
+
+            <div class="description">
+            <p>This implementation of the SamplerInterface uses a cache to limit sampling to
+the a certain number of queries per second. It requires a PSR-6 cache implementation.</p>            <p>Example using cache/memcached-adapter:</p>
+
+<pre><code>// This example uses the  Memcached extension and requires the
+// cache/memcached-adapter composer package
+use OpenCensus\Trace\Sampler\QpsSampler;
+use Cache\Adapter\Memcached\MemcachedCachePool;
+use Cache\Adapter\Common\PhpCacheItem;
+
+$client = new \Memcached();
+$client-&gt;addServer('localhost', 11211);
+$cache = new Memcached\MemcachedCachePool($client);
+$sampler = new QpsSampler($cache, [
+    'cacheItemClass' =&gt; PhpCacheItem::class
+]);
+</code></pre>
+
+<p>You can find a list of PSR-6 cache implementations
+<a href="https://packagist.org/providers/psr/cache-implementation">here.</a></p>                    </div>
+    
+    
+            <h2>Constants</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td>DEFAULT_CACHE_KEY</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>DEFAULT_QPS_RATE</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+            </table>
+
+    
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___construct">__construct</a>(<abbr title="Psr\Cache\CacheItemPoolInterface">CacheItemPoolInterface</abbr> $cache = null, array $options = [])
+        
+                                            <p>Create a new QpsSampler. If the provided cache is shared between servers,
+the queries per second will be counted across servers. If the cache is shared
+between servers and you wish to sample independently on the servers, provide
+your own cache key that is different on each server.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_shouldSample">shouldSample</a>()
+        
+                                            <p>Returns whether or not the request should be sampled.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    float
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_rate">rate</a>()
+        
+                                            <p>Return the query-per-second rate</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method___construct">
+        <div class="location">at         line 91</div>
+        <code>                    
+    <strong>__construct</strong>(<abbr title="Psr\Cache\CacheItemPoolInterface">CacheItemPoolInterface</abbr> $cache = null, array $options = [])
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Create a new QpsSampler. If the provided cache is shared between servers,
+the queries per second will be counted across servers. If the cache is shared
+between servers and you wish to sample independently on the servers, provide
+your own cache key that is different on each server.</p>                    <p>There may be race conditions between simultaneous requests where they may
+both (all) be sampled.</p>                            </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Psr\Cache\CacheItemPoolInterface">CacheItemPoolInterface</abbr></td>
+                <td>$cache</td>
+                <td>The cache store to use</td>
+            </tr>
+                    <tr>
+                <td>array</td>
+                <td>$options</td>
+                <td>[optional] {
+    configuration options.</p>
+
+<pre><code>@type string $cacheItemClass The class of the item to use. This class must implement
+      CacheItemInterface.
+@type float $rate The number of queries per second to allow. Must be less than or equal to 1.
+      **Defaults to** `0.1`
+@type string $key The cache key to use. **Defaults to** `__opencensus_trace__`
+</code></pre>
+
+<p>}</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_shouldSample">
+        <div class="location">at         line 121</div>
+        <code>                    bool
+    <strong>shouldSample</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns whether or not the request should be sampled.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_rate">
+        <div class="location">at         line 161</div>
+        <code>                    float
+    <strong>rate</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Return the query-per-second rate</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>float</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

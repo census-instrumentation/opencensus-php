@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>OpenCensus for PHP</title>
+    <link>https://opencensus.io/api/php/</link>
+    <description>Recent content on OpenCensus for PHP</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 15 Dec 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://opencensus.io/api/php/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Migrating to OpenCensus from Stackdriver Trace V1</title>
+      <link>https://opencensus.io/api/php/migrating-stackdriver-trace/</link>
+      <pubDate>Fri, 15 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://opencensus.io/api/php/migrating-stackdriver-trace/</guid>
+      <description>The Stackdriver Trace library (google/cloud-trace) prior to v0.4.0 (v0.47.0 for the umbrella google/cloud package) provided application tracing integration. Version v0.4.0 removed this capability and instead defers to the opencensus/opencensus package from application integration.
+Installation  Add OpenCensus to your package.json:
+$ composer require opencensus/opencensus  Ensure google/cloud-trace is &amp;gt;= v0.4.0 or google/cloud is &amp;gt;= 0.47.0:
+// in composer.json ... &amp;quot;require&amp;quot;: { &amp;quot;google/cloud-trace&amp;quot;: &amp;quot;^0.4.0&amp;quot;, // OR &amp;quot;google/cloud&amp;quot;: &amp;quot;^0.47.0&amp;quot; } ...  Update your composer packages:</description>
+    </item>
+    
+    <item>
+      <title>Integrations</title>
+      <link>https://opencensus.io/api/php/integrations/</link>
+      <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://opencensus.io/api/php/integrations/</guid>
+      <description> Frameworks  Laravel Silex Symfony Wordpress  Tools  Guzzle  </description>
+    </item>
+    
+    <item>
+      <title>Migration Guide</title>
+      <link>https://opencensus.io/api/php/migration-guide/</link>
+      <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://opencensus.io/api/php/migration-guide/</guid>
+      <description>Migrating from Stackdriver Trace</description>
+    </item>
+    
+    <item>
+      <title>Integrating OpenCensus with Guzzle</title>
+      <link>https://opencensus.io/api/php/integrating-guzzle/</link>
+      <pubDate>Thu, 30 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://opencensus.io/api/php/integrating-guzzle/</guid>
+      <description>Integration with Guzzle using the following methods will:
+ Create spans for every outgoing HTTP request used by that Guzzle client. Propagate the span context to the remote endpoint for distributed tracing.  Guzzle 6 To add OpenCensus support for Guzzle 6 HTTP clients, we add a middleware to our Guzzle client:
+&amp;lt;?php use GuzzleHttp\Client; use GuzzleHttp\HandlerStack; use OpenCensus\Trace\Integrations\Guzzle\Middleware; $stack = new HandlerStack(); $stack-&amp;gt;setHandler(\GuzzleHttp\choose_handler()); $stack-&amp;gt;push(new Middleware()); $client = new Client([&amp;#39;handler&amp;#39; =&amp;gt; $stack]); You will want to set this up wherever your Guzzle client is created.</description>
+    </item>
+    
+    <item>
+      <title>Integrating OpenCensus with Laravel</title>
+      <link>https://opencensus.io/api/php/integrating-laravel/</link>
+      <pubDate>Thu, 30 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://opencensus.io/api/php/integrating-laravel/</guid>
+      <description>Laravel 5.5  To add OpenCensus to our Laravel application, we will create a ServiceProvider. In app/Providers/OpenCensusProvider.php:
+&amp;lt;?php namespace App\Providers; use Illuminate\Support\ServiceProvider; use OpenCensus\Trace\Exporter\StackdriverExporter; use OpenCensus\Trace\Tracer; use OpenCensus\Trace\Integrations\Laravel; use OpenCensus\Trace\Integrations\Mysql; use OpenCensus\Trace\Integrations\PDO; class OpenCensusProvider extends ServiceProvider { public function boot() { if (php_sapi_name() == &amp;#39;cli&amp;#39;) { return; } // Enable OpenCensus extension integrations  Laravel::load(); Mysql::load(); PDO::load(); // Start the request tracing for this request  $exporter = new StackdriverExporter(); Tracer::start($exporter); // Create a span that starts from when Laravel first boots (public/index.</description>
+    </item>
+    
+    <item>
+      <title>Integrating OpenCensus with Silex</title>
+      <link>https://opencensus.io/api/php/integrating-silex/</link>
+      <pubDate>Thu, 30 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://opencensus.io/api/php/integrating-silex/</guid>
+      <description>Silex 2.2 To add OpenCensus to our Silex application, we simply start the tracer at the beginning of our application. In web/index.php:
+&amp;lt;?php require_once __DIR__ . &amp;#39;/../vendor/autoload.php&amp;#39;; // Configure and start the OpenCensus Tracer $exporter = new OpenCensus\Trace\Exporter\StackdriverExporter(); OpenCensus\Trace\Tracer::start($exporter); $app = new Silex\Application(); // ... rest of the application In this example, we configured StackdriverExporter, but you can configure any exporter here. You can also enable any other integrations here.</description>
+    </item>
+    
+    <item>
+      <title>Integrating OpenCensus with Symfony</title>
+      <link>https://opencensus.io/api/php/integrating-symfony/</link>
+      <pubDate>Thu, 30 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://opencensus.io/api/php/integrating-symfony/</guid>
+      <description>Symfony 3.3  To add OpenCensus to our Symfony application, we will create a Bundle In src/AppBundle/OpenCensusBundle.php:
+&amp;lt;?php namespace AppBundle; use OpenCensus\Trace\Exporter\StackdriverExporter; use OpenCensus\Trace\Integrations\Mysql; use OpenCensus\Trace\Integrations\PDO; use OpenCensus\Trace\Integrations\Symfony; use OpenCensus\Trace\Tracer; use Symfony\Component\HttpKernel\Bundle\Bundle; class AppBundle extends Bundle { public function boot() { $this-&amp;gt;setupOpenCensus(); } private function setupOpenCensus() { if (php_sapi_name() == &amp;#39;cli&amp;#39;) { return; } // Enable OpenCensus extension integrations  Mysql::load(); PDO::load(); Symfony::load(); // Start the request tracing for this request  $exporter = new StackdriverExporter(); Tracer::start($exporter); } } In this example, we configured StackdriverExporter, but you can configure any exporter here.</description>
+    </item>
+    
+    <item>
+      <title>Integrating OpenCensus with WordPress</title>
+      <link>https://opencensus.io/api/php/integrating-wordpress/</link>
+      <pubDate>Thu, 30 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://opencensus.io/api/php/integrating-wordpress/</guid>
+      <description>To add OpenCensus to your WordPress installation, ensure that you can use composer with your instance of WordPress.
+In your wp-config.php:
+&amp;lt;?php // load composer dependencies require_once(&amp;#39;/path/to/vendor/autoload.php&amp;#39;); use OpenCensus\Trace\Exporter\StackdriverExporter; use OpenCensus\Trace\Tracer; OpenCensus\Trace\Integrations\Wordpress::load(); $exporter = new StackdriverExporter(); Tracer::start($exporter); In this example, we configured StackdriverExporter, but you can configure any exporter here. You can also enable any other integrations here.</description>
+    </item>
+    
+    <item>
+      <title>OpenCensus for PHP</title>
+      <link>https://opencensus.io/api/php/</link>
+      <pubDate>Thu, 30 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://opencensus.io/api/php/</guid>
+      <description>Installation  Install the opencensus/opencensus package using composer:
+$ composer require opencensus/opencensus [Optional]: Install the opencensus extension from PECL. See more information on using the extension.
+  Tracing Framework Integration  Laravel Silex Symfony Wordpress  Other Integrations  Guzzle  Stats Coming Soon!</description>
+    </item>
+    
+    <item>
+      <title>Using the OpenCensus Extension</title>
+      <link>https://opencensus.io/api/php/using-the-extension/</link>
+      <pubDate>Thu, 30 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://opencensus.io/api/php/using-the-extension/</guid>
+      <description>The OpenCensus for PHP extension allows you to &amp;ldquo;watch&amp;rdquo; class method and function calls in order to automatically collect nested spans (timing data).
+Installation You can install the opencensus extension from PECL:
+$ pecl install opencensus-alpha Enable the extension in your php.ini:
+extension=opencensus.so Usage The opencensus extension collects nested span data throughout the course of your application&amp;rsquo;s execution. You can collect spans in 2 ways, by watching for function/method invocations or by manually starting and stopping spans.</description>
+    </item>
+    
+  </channel>
+</rss>

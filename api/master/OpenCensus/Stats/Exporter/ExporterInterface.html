@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>OpenCensus\Stats\Exporter\ExporterInterface | OpenCensus PHP API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/sami.css">
+        <script src="../../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../../js/bootstrap.min.js"></script>
+        <script src="../../../js/typeahead.min.js"></script>
+        <script src="../../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:OpenCensus_Stats_Exporter_ExporterInterface" data-root-path="../../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                    <form action="#" method="GET">
+                <select id="version-switcher" name="version">
+                                            <option value="../../../../v0.2.3/index.html" data-version="v0.2.3">v0.2.3</option>
+                                            <option value="../../../../v0.3.0/index.html" data-version="v0.3.0">v0.3.0</option>
+                                            <option value="../../../../v0.4.0/index.html" data-version="v0.4.0">v0.4.0</option>
+                                            <option value="../../../../v0.4.1/index.html" data-version="v0.4.1">v0.4.1</option>
+                                            <option value="../../../../v0.4.2/index.html" data-version="v0.4.2">v0.4.2</option>
+                                            <option value="../../../../v0.4.3/index.html" data-version="v0.4.3">v0.4.3</option>
+                                            <option value="../../../../v0.5.0/index.html" data-version="v0.5.0">v0.5.0</option>
+                                            <option value="../../../../v0.5.1/index.html" data-version="v0.5.1">v0.5.1</option>
+                                            <option value="../../../../v0.5.2/index.html" data-version="v0.5.2">v0.5.2</option>
+                                            <option value="../../../../master/index.html" data-version="master">master branch</option>
+                                    </select>
+            </form>
+                <script>
+            $('option[data-version="'+window.projectVersion+'"]').prop('selected', true);
+        </script>
+        <form id="search-form" action="../../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../../index.html">OpenCensus PHP API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../../classes.html">Classes</a></li>
+                                            <li><a href="../../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../../traits.html">Traits</a></li>
+                    <li><a href="../../../doc-index.html">Index</a></li>
+                    <li><a href="../../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">interface</span></li>
+                        <li><a href="../../../OpenCensus.html">OpenCensus</a></li><li class="backslash">\</li><li><a href="../../../OpenCensus/Stats.html">Stats</a></li><li class="backslash">\</li><li><a href="../../../OpenCensus/Stats/Exporter.html">Exporter</a></li><li class="backslash">\</li><li>ExporterInterface</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>
+            ExporterInterface
+                
+        </h1>
+    </div>
+
+    <p>    interface
+    <strong>ExporterInterface</strong>
+</p>
+
+        
+    
+
+            <div class="description">
+            <p>The ExporterInterface allows you to swap out the Stats reporting mechanism.</p>                                </div>
+    
+    
+    
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_createMeasure">createMeasure</a>(<a href="../../../OpenCensus/Stats/Measure.html"><abbr title="OpenCensus\Stats\Measure">Measure</abbr></a> $measure)
+        
+                                            <p>Register a new Measure.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setReportingPeriod">setReportingPeriod</a>(float $interval)
+        
+                                            <p>Adjust the stats reporting period of the Daemom.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_registerView">registerView</a>(<a href="../../../OpenCensus/Stats/View/View.html"><abbr title="OpenCensus\Stats\View\View">View</abbr></a> ...$views)
+        
+                                            <p>Register views.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_unregisterView">unregisterView</a>(<a href="../../../OpenCensus/Stats/View/View.html"><abbr title="OpenCensus\Stats\View\View">View</abbr></a> ...$views)
+        
+                                            <p>Unregister views.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_recordStats">recordStats</a>(<a href="../../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a> $tagContext, array $attachments, <a href="../../../OpenCensus/Stats/Measurement.html"><abbr title="OpenCensus\Stats\Measurement">Measurement</abbr></a> ...$ms)
+        
+                                            <p>Record the provided Measurements, Attachments and Tags.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method_createMeasure">
+        <div class="location">at         line 36</div>
+        <code>        static            bool
+    <strong>createMeasure</strong>(<a href="../../../OpenCensus/Stats/Measure.html"><abbr title="OpenCensus\Stats\Measure">Measure</abbr></a> $measure)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Register a new Measure.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../OpenCensus/Stats/Measure.html"><abbr title="OpenCensus\Stats\Measure">Measure</abbr></a></td>
+                <td>$measure</td>
+                <td>The measure to register.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>Returns true on successful send operation.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setReportingPeriod">
+        <div class="location">at         line 44</div>
+        <code>        static            bool
+    <strong>setReportingPeriod</strong>(float $interval)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Adjust the stats reporting period of the Daemom.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>float</td>
+                <td>$interval</td>
+                <td>Reporting interval of the daemon in seconds.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>Returns true on successful send operation.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_registerView">
+        <div class="location">at         line 52</div>
+        <code>        static            bool
+    <strong>registerView</strong>(<a href="../../../OpenCensus/Stats/View/View.html"><abbr title="OpenCensus\Stats\View\View">View</abbr></a> ...$views)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Register views.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../OpenCensus/Stats/View/View.html"><abbr title="OpenCensus\Stats\View\View">View</abbr></a></td>
+                <td>...$views</td>
+                <td>One or more Views to register.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>Returns true on successful send operation.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_unregisterView">
+        <div class="location">at         line 60</div>
+        <code>        static            bool
+    <strong>unregisterView</strong>(<a href="../../../OpenCensus/Stats/View/View.html"><abbr title="OpenCensus\Stats\View\View">View</abbr></a> ...$views)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Unregister views.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../OpenCensus/Stats/View/View.html"><abbr title="OpenCensus\Stats\View\View">View</abbr></a></td>
+                <td>...$views</td>
+                <td>Views to unregister.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>Returns true on successful send operation.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_recordStats">
+        <div class="location">at         line 70</div>
+        <code>        static            bool
+    <strong>recordStats</strong>(<a href="../../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a> $tagContext, array $attachments, <a href="../../../OpenCensus/Stats/Measurement.html"><abbr title="OpenCensus\Stats\Measurement">Measurement</abbr></a> ...$ms)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Record the provided Measurements, Attachments and Tags.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a></td>
+                <td>$tagContext</td>
+                <td>TagContext to record with our Measurements.</td>
+            </tr>
+                    <tr>
+                <td>array</td>
+                <td>$attachments</td>
+                <td>Key-value pairs to use for exemplar annotation.</td>
+            </tr>
+                    <tr>
+                <td><a href="../../../OpenCensus/Stats/Measurement.html"><abbr title="OpenCensus\Stats\Measurement">Measurement</abbr></a></td>
+                <td>...$ms</td>
+                <td>One or more measurements to record.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>Returns true on successful send operation.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

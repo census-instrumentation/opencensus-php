@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>OpenCensus\Tags\TagContext | OpenCensus PHP API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/sami.css">
+        <script src="../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script src="../../js/typeahead.min.js"></script>
+        <script src="../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:OpenCensus_Tags_TagContext" data-root-path="../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                    <form action="#" method="GET">
+                <select id="version-switcher" name="version">
+                                            <option value="../../../v0.2.3/index.html" data-version="v0.2.3">v0.2.3</option>
+                                            <option value="../../../v0.3.0/index.html" data-version="v0.3.0">v0.3.0</option>
+                                            <option value="../../../v0.4.0/index.html" data-version="v0.4.0">v0.4.0</option>
+                                            <option value="../../../v0.4.1/index.html" data-version="v0.4.1">v0.4.1</option>
+                                            <option value="../../../v0.4.2/index.html" data-version="v0.4.2">v0.4.2</option>
+                                            <option value="../../../v0.4.3/index.html" data-version="v0.4.3">v0.4.3</option>
+                                            <option value="../../../v0.5.0/index.html" data-version="v0.5.0">v0.5.0</option>
+                                            <option value="../../../v0.5.1/index.html" data-version="v0.5.1">v0.5.1</option>
+                                            <option value="../../../v0.5.2/index.html" data-version="v0.5.2">v0.5.2</option>
+                                            <option value="../../../master/index.html" data-version="master">master branch</option>
+                                    </select>
+            </form>
+                <script>
+            $('option[data-version="'+window.projectVersion+'"]').prop('selected', true);
+        </script>
+        <form id="search-form" action="../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../index.html">OpenCensus PHP API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../classes.html">Classes</a></li>
+                                            <li><a href="../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../traits.html">Traits</a></li>
+                    <li><a href="../../doc-index.html">Index</a></li>
+                    <li><a href="../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                        <li><a href="../../OpenCensus.html">OpenCensus</a></li><li class="backslash">\</li><li><a href="../../OpenCensus/Tags.html">Tags</a></li><li class="backslash">\</li><li>TagContext</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>
+            TagContext
+                
+        </h1>
+    </div>
+
+    <p>    class
+    <strong>TagContext</strong>
+</p>
+
+        
+    
+
+            <div class="description">
+            <p>TagContext represents a collection of tags.</p>            <p>A TagContext can be used to label anything that is associated with a specific
+operation, such as an HTTP request. Each tag is composed of a key (TagKey),
+and a value (TagValue).
+A TagContext represents a map from keys to values, i.e., each key is
+associated with exactly one value, but multiple keys can be associated with
+the same value. TagContext is serializable, and it represents all of the
+information that must be propagated across process boundaries.</p>                    </div>
+    
+            <h2>Traits</h2>
+
+        
+    <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="../../OpenCensus/Utils/PrintableTrait.html"><abbr title="OpenCensus\Utils\PrintableTrait">PrintableTrait</abbr></a>
+                                            
+                </div>
+                <div class="col-md-6">
+                    Internal utility methods for working with tag keys, tag values, and metric names.
+                </div>
+            </div>
+            </div>
+    
+            <h2>Constants</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td>CTX_KEY</td>
+                <td class="last">
+                    <p><em>The key used for storing and retrieving a TagContext object from Context.</em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>MAX_LENGTH</td>
+                <td class="last">
+                    <p><em>The maximum length for a serialized TagContext.</em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>EX_INVALID_CONTEXT</td>
+                <td class="last">
+                    <p><em>Invalid Context Error message</em></p>
+                    <p></p>
+                </td>
+            </tr>
+            </table>
+
+    
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    string
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_value">value</a>(<a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a> $key)
+        
+                                            <p>Returns the value for the key if a value for the key exists.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_insert">insert</a>(<a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a> $key, <a href="../../OpenCensus/Tags/TagValue.html"><abbr title="OpenCensus\Tags\TagValue">TagValue</abbr></a> $value)
+        
+                                            <p>Insert a Tag into TagContext given provided TagKey and string value.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_update">update</a>(<a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a> $key, <a href="../../OpenCensus/Tags/TagValue.html"><abbr title="OpenCensus\Tags\TagValue">TagValue</abbr></a> $value)
+        
+                                            <p>Update a Tag into TagContext given provided TagKey with string value.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_upsert">upsert</a>(<a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a> $key, <a href="../../OpenCensus/Tags/TagValue.html"><abbr title="OpenCensus\Tags\TagValue">TagValue</abbr></a> $value)
+        
+                                            <p>Insert or Update a Tag into TagContext given provided TagKey with
+provided string value.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_delete">delete</a>(<a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a> $key)
+        
+                                            <p>Deletes Tag from TagContext identified by its TagKey.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    string
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___toString">__toString</a>()
+        
+                                            <p>Serializes the TagContext to a string representation.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    array
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_tags">tags</a>()
+        
+                                            <p>Returns an array of Tag objects this map holds.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<a href="../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_empty">empty</a>()
+        
+                                            <p>Returns an empty YagContext object.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<a href="../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_fromContext">fromContext</a>(<a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a> $ctx = null)
+        
+                                            <p>Extract a TagContext from the provided Context object.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<a href="../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_new">new</a>(<a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a> $ctx = null)
+        
+                                            <p>Copy and return the TagContext as found in the provided Context object.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_newContext">newContext</a>(<a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a> $ctx = null)
+        
+                                            <p>Creates a new Context with our TagContext attached.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method_value">
+        <div class="location">at         line 61</div>
+        <code>final                    string
+    <strong>value</strong>(<a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a> $key)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns the value for the key if a value for the key exists.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a></td>
+                <td>$key</td>
+                <td>The key to retrieve the value for.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>string</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_insert">
+        <div class="location">at         line 74</div>
+        <code>final                    bool
+    <strong>insert</strong>(<a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a> $key, <a href="../../OpenCensus/Tags/TagValue.html"><abbr title="OpenCensus\Tags\TagValue">TagValue</abbr></a> $value)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Insert a Tag into TagContext given provided TagKey and string value.</p>                    <p>If TagKey already exists in TagContext this method is a noop.</p>                            </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a></td>
+                <td>$key</td>
+                <td>the key of the Tag.</td>
+            </tr>
+                    <tr>
+                <td><a href="../../OpenCensus/Tags/TagValue.html"><abbr title="OpenCensus\Tags\TagValue">TagValue</abbr></a></td>
+                <td>$value</td>
+                <td>the value of the Tag.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>returns true on successful insert.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_update">
+        <div class="location">at         line 92</div>
+        <code>final                    bool
+    <strong>update</strong>(<a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a> $key, <a href="../../OpenCensus/Tags/TagValue.html"><abbr title="OpenCensus\Tags\TagValue">TagValue</abbr></a> $value)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Update a Tag into TagContext given provided TagKey with string value.</p>                    <p>If TagKey does not exist in TagContext this method is a noop.</p>                            </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a></td>
+                <td>$key</td>
+                <td>the key of the Tag.</td>
+            </tr>
+                    <tr>
+                <td><a href="../../OpenCensus/Tags/TagValue.html"><abbr title="OpenCensus\Tags\TagValue">TagValue</abbr></a></td>
+                <td>$value</td>
+                <td>the value of the Tag.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>returns true on successful update.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_upsert">
+        <div class="location">at         line 109</div>
+        <code>final                    
+    <strong>upsert</strong>(<a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a> $key, <a href="../../OpenCensus/Tags/TagValue.html"><abbr title="OpenCensus\Tags\TagValue">TagValue</abbr></a> $value)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Insert or Update a Tag into TagContext given provided TagKey with
+provided string value.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a></td>
+                <td>$key</td>
+                <td>key of the Tag.</td>
+            </tr>
+                    <tr>
+                <td><a href="../../OpenCensus/Tags/TagValue.html"><abbr title="OpenCensus\Tags\TagValue">TagValue</abbr></a></td>
+                <td>$value</td>
+                <td>value of the Tag.</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_delete">
+        <div class="location">at         line 120</div>
+        <code>final                    bool
+    <strong>delete</strong>(<a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a> $key)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Deletes Tag from TagContext identified by its TagKey.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../OpenCensus/Tags/TagKey.html"><abbr title="OpenCensus\Tags\TagKey">TagKey</abbr></a></td>
+                <td>$key</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>returns true if Tag was found and deleted.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method___toString">
+        <div class="location">at         line 135</div>
+        <code>final                    string
+    <strong>__toString</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Serializes the TagContext to a string representation.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>string</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception">Exception</a></td>
+                <td>on failure to serialize.</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_tags">
+        <div class="location">at         line 151</div>
+        <code>final                    array
+    <strong>tags</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns an array of Tag objects this map holds.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>array</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_empty">
+        <div class="location">at         line 161</div>
+        <code>final        static            <a href="../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a>
+    <strong>empty</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns an empty YagContext object.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_fromContext">
+        <div class="location">at         line 173</div>
+        <code>final        static            <a href="../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a>
+    <strong>fromContext</strong>(<a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a> $ctx = null)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Extract a TagContext from the provided Context object.</p>                    <p>If Context is not provided, the current Context is used. If no TagContext
+is found, a new empty TagContext is returned.</p>                            </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a></td>
+                <td>$ctx</td>
+                <td>The Context to extract the TagContext from.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_new">
+        <div class="location">at         line 189</div>
+        <code>final        static            <a href="../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a>
+    <strong>new</strong>(<a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a> $ctx = null)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Copy and return the TagContext as found in the provided Context object.</p>                    <p>If Context is not provided, the current Context is used. If no TagContext
+is found, a new empty TagContext is returned.</p>                            </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a></td>
+                <td>$ctx</td>
+                <td>The Context to extract and copy the TagContext from.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_newContext">
+        <div class="location">at         line 202</div>
+        <code>final                    <a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a>
+    <strong>newContext</strong>(<a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a> $ctx = null)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Creates a new Context with our TagContext attached.</p>                    <p>To propagate a TagContext to downstream methods and downstream RPCs, add a
+TagContext to the current Context. If there is already a TagContext in
+the current context, it will be replaced with this TagContext.</p>                            </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a></td>
+                <td>$ctx</td>
+                <td>The source context to copy.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../OpenCensus/Core/Context.html"><abbr title="OpenCensus\Core\Context">Context</abbr></a></td>
+            <td>The target context with our TagContext added.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

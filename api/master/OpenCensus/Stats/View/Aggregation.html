@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>OpenCensus\Stats\View\Aggregation | OpenCensus PHP API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/sami.css">
+        <script src="../../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../../js/bootstrap.min.js"></script>
+        <script src="../../../js/typeahead.min.js"></script>
+        <script src="../../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:OpenCensus_Stats_View_Aggregation" data-root-path="../../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                    <form action="#" method="GET">
+                <select id="version-switcher" name="version">
+                                            <option value="../../../../v0.2.3/index.html" data-version="v0.2.3">v0.2.3</option>
+                                            <option value="../../../../v0.3.0/index.html" data-version="v0.3.0">v0.3.0</option>
+                                            <option value="../../../../v0.4.0/index.html" data-version="v0.4.0">v0.4.0</option>
+                                            <option value="../../../../v0.4.1/index.html" data-version="v0.4.1">v0.4.1</option>
+                                            <option value="../../../../v0.4.2/index.html" data-version="v0.4.2">v0.4.2</option>
+                                            <option value="../../../../v0.4.3/index.html" data-version="v0.4.3">v0.4.3</option>
+                                            <option value="../../../../v0.5.0/index.html" data-version="v0.5.0">v0.5.0</option>
+                                            <option value="../../../../v0.5.1/index.html" data-version="v0.5.1">v0.5.1</option>
+                                            <option value="../../../../v0.5.2/index.html" data-version="v0.5.2">v0.5.2</option>
+                                            <option value="../../../../master/index.html" data-version="master">master branch</option>
+                                    </select>
+            </form>
+                <script>
+            $('option[data-version="'+window.projectVersion+'"]').prop('selected', true);
+        </script>
+        <form id="search-form" action="../../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../../index.html">OpenCensus PHP API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../../classes.html">Classes</a></li>
+                                            <li><a href="../../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../../traits.html">Traits</a></li>
+                    <li><a href="../../../doc-index.html">Index</a></li>
+                    <li><a href="../../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                        <li><a href="../../../OpenCensus.html">OpenCensus</a></li><li class="backslash">\</li><li><a href="../../../OpenCensus/Stats.html">Stats</a></li><li class="backslash">\</li><li><a href="../../../OpenCensus/Stats/View.html">View</a></li><li class="backslash">\</li><li>Aggregation</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>
+            Aggregation
+                
+        </h1>
+    </div>
+
+    <p>    class
+    <strong>Aggregation</strong>
+</p>
+
+        
+    
+
+            <div class="description">
+            <p>Aggregation represents a data aggregation method.</p>            <p>Use one of the static  methods count, sum, lastValue or distribution to
+construct an Aggregation.</p>                    </div>
+    
+    
+            <h2>Constants</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td>NONE</td>
+                <td class="last">
+                    <p><em>No or unknown Aggregation type.</em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>COUNT</td>
+                <td class="last">
+                    <p><em>Count Aggregation type.</em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>SUM</td>
+                <td class="last">
+                    <p><em>Sum Aggregation type.</em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>DISTRIBUTION</td>
+                <td class="last">
+                    <p><em>Distribution Aggregation type.</em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>LAST_VALUE</td>
+                <td class="last">
+                    <p><em>LastValue Aggregation type.</em></p>
+                    <p></p>
+                </td>
+            </tr>
+            </table>
+
+    
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    int
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getType">getType</a>()
+        
+                                            <p>Returns the type of the aggregation.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    array
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getBucketBoundaries">getBucketBoundaries</a>()
+        
+                                            <p>Returns the bucket boundaries of the Distribution Aggregation.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<a href="../../../OpenCensus/Stats/View/Aggregation.html"><abbr title="OpenCensus\Stats\View\Aggregation">Aggregation</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_count">count</a>()
+        
+                                            <p>Returns a new Count Aggregation</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<a href="../../../OpenCensus/Stats/View/Aggregation.html"><abbr title="OpenCensus\Stats\View\Aggregation">Aggregation</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_distribution">distribution</a>(array $bounds)
+        
+                                            <p>Returns a new Distribution Aggregation with the provided Bucket Boundaries.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<a href="../../../OpenCensus/Stats/View/Aggregation.html"><abbr title="OpenCensus\Stats\View\Aggregation">Aggregation</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_lastValue">lastValue</a>()
+        
+                                            <p>Returns a new LastValue Aggregation.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<a href="../../../OpenCensus/Stats/View/Aggregation.html"><abbr title="OpenCensus\Stats\View\Aggregation">Aggregation</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_sum">sum</a>()
+        
+                                            <p>Returns a new Sum Aggregation.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method_getType">
+        <div class="location">at         line 58</div>
+        <code>final                    int
+    <strong>getType</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns the type of the aggregation.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>int</td>
+            <td>The Aggregation Type.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getBucketBoundaries">
+        <div class="location">at         line 68</div>
+        <code>final                    array
+    <strong>getBucketBoundaries</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns the bucket boundaries of the Distribution Aggregation.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>array</td>
+            <td>Returns the bucket boundaries.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_count">
+        <div class="location">at         line 81</div>
+        <code>final        static            <a href="../../../OpenCensus/Stats/View/Aggregation.html"><abbr title="OpenCensus\Stats\View\Aggregation">Aggregation</abbr></a>
+    <strong>count</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns a new Count Aggregation</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../OpenCensus/Stats/View/Aggregation.html"><abbr title="OpenCensus\Stats\View\Aggregation">Aggregation</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_distribution">
+        <div class="location">at         line 94</div>
+        <code>final        static            <a href="../../../OpenCensus/Stats/View/Aggregation.html"><abbr title="OpenCensus\Stats\View\Aggregation">Aggregation</abbr></a>
+    <strong>distribution</strong>(array $bounds)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns a new Distribution Aggregation with the provided Bucket Boundaries.</p>                    <p>Bucket Boundaries needs to be an array of integer and/or floats.</p>                            </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$bounds</td>
+                <td>The bucket boundaries for distribution aggregation.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../OpenCensus/Stats/View/Aggregation.html"><abbr title="OpenCensus\Stats\View\Aggregation">Aggregation</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception">Exception</a></td>
+                <td>Throws on invalid bucket boundaries.</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_lastValue">
+        <div class="location">at         line 112</div>
+        <code>final        static            <a href="../../../OpenCensus/Stats/View/Aggregation.html"><abbr title="OpenCensus\Stats\View\Aggregation">Aggregation</abbr></a>
+    <strong>lastValue</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns a new LastValue Aggregation.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../OpenCensus/Stats/View/Aggregation.html"><abbr title="OpenCensus\Stats\View\Aggregation">Aggregation</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_sum">
+        <div class="location">at         line 122</div>
+        <code>final        static            <a href="../../../OpenCensus/Stats/View/Aggregation.html"><abbr title="OpenCensus\Stats\View\Aggregation">Aggregation</abbr></a>
+    <strong>sum</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns a new Sum Aggregation.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../OpenCensus/Stats/View/Aggregation.html"><abbr title="OpenCensus\Stats\View\Aggregation">Aggregation</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

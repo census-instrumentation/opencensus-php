@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>OpenCensus\Tags\Codec\Binary | OpenCensus PHP API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/sami.css">
+        <script src="../../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../../js/bootstrap.min.js"></script>
+        <script src="../../../js/typeahead.min.js"></script>
+        <script src="../../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:OpenCensus_Tags_Codec_Binary" data-root-path="../../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                    <form action="#" method="GET">
+                <select id="version-switcher" name="version">
+                                            <option value="../../../../v0.2.3/index.html" data-version="v0.2.3">v0.2.3</option>
+                                            <option value="../../../../v0.3.0/index.html" data-version="v0.3.0">v0.3.0</option>
+                                            <option value="../../../../v0.4.0/index.html" data-version="v0.4.0">v0.4.0</option>
+                                            <option value="../../../../v0.4.1/index.html" data-version="v0.4.1">v0.4.1</option>
+                                            <option value="../../../../v0.4.2/index.html" data-version="v0.4.2">v0.4.2</option>
+                                            <option value="../../../../v0.4.3/index.html" data-version="v0.4.3">v0.4.3</option>
+                                            <option value="../../../../v0.5.0/index.html" data-version="v0.5.0">v0.5.0</option>
+                                            <option value="../../../../v0.5.1/index.html" data-version="v0.5.1">v0.5.1</option>
+                                            <option value="../../../../v0.5.2/index.html" data-version="v0.5.2">v0.5.2</option>
+                                            <option value="../../../../master/index.html" data-version="master">master branch</option>
+                                    </select>
+            </form>
+                <script>
+            $('option[data-version="'+window.projectVersion+'"]').prop('selected', true);
+        </script>
+        <form id="search-form" action="../../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../../index.html">OpenCensus PHP API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../../classes.html">Classes</a></li>
+                                            <li><a href="../../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../../traits.html">Traits</a></li>
+                    <li><a href="../../../doc-index.html">Index</a></li>
+                    <li><a href="../../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                        <li><a href="../../../OpenCensus.html">OpenCensus</a></li><li class="backslash">\</li><li><a href="../../../OpenCensus/Tags.html">Tags</a></li><li class="backslash">\</li><li><a href="../../../OpenCensus/Tags/Codec.html">Codec</a></li><li class="backslash">\</li><li>Binary</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>
+            Binary
+                
+        </h1>
+    </div>
+
+    <p>    class
+    <strong>Binary</strong>
+</p>
+
+        
+    
+
+            <div class="description">
+            <p>This class implements the (de)serialization of TagContext using the binary
+wire format.</p>                                </div>
+    
+            <h2>Traits</h2>
+
+        
+    <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="../../../OpenCensus/Utils/VarintTrait.html"><abbr title="OpenCensus\Utils\VarintTrait">VarintTrait</abbr></a>
+                                            
+                </div>
+                <div class="col-md-6">
+                    Varint encoding and decoding methods inspired by Go encoding/binary package.
+                </div>
+            </div>
+            </div>
+    
+            <h2>Constants</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td>TAGS_VERSION_ID</td>
+                <td class="last">
+                    <p><em>Binary Encoding Version number</em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>KEYTYPE_STRING</td>
+                <td class="last">
+                    <p><em>KeyTypes (currently only string is supported)</em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>KEYTYPE_INT64</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>KEYTYPE_TRUE</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>KEYTYPE_FALSE</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+            </table>
+
+    
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;int
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_encodeUnsigned">encodeUnsigned</a>(string $buf, int $x)
+        
+                                            <p>Varint encode as unsigned integer.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../OpenCensus/Utils/VarintTrait.html#method_encodeUnsigned"><abbr title="OpenCensus\Utils\VarintTrait">VarintTrait</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;int
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_encodeSigned">encodeSigned</a>(string $buf, int $x)
+        
+                                            <p>Varint encode as signed integer.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../OpenCensus/Utils/VarintTrait.html#method_encodeSigned"><abbr title="OpenCensus\Utils\VarintTrait">VarintTrait</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;int
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_decodeUnsigned">decodeUnsigned</a>(string $buf, int $x)
+        
+                                            <p>Varint decode an unsigned integer.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../OpenCensus/Utils/VarintTrait.html#method_decodeUnsigned"><abbr title="OpenCensus\Utils\VarintTrait">VarintTrait</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;int
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_decodeSigned">decodeSigned</a>(string $buf, int $x)
+        
+                                            <p>Varint decode a signed integer.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../OpenCensus/Utils/VarintTrait.html#method_decodeSigned"><abbr title="OpenCensus\Utils\VarintTrait">VarintTrait</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;string
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_encode">encode</a>(<a href="../../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a> $tagContext)
+        
+                                            <p>Encode the provided TagContext to our binary wire format.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<a href="../../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_decode">decode</a>(string $str, <a target="_blank" href="http://php.net/Exception">Exception</a> $err = null)
+        
+                                            <p>Decode the provided TagContext from the binary wire format.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method_encodeUnsigned">
+        <div class="location">in <a href="../../../OpenCensus/Utils/VarintTrait.html#method_encodeUnsigned"><abbr title="OpenCensus\Utils\VarintTrait">VarintTrait</abbr></a> at         line 33</div>
+        <code>        static            int
+    <strong>encodeUnsigned</strong>(string $buf, int $x)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Varint encode as unsigned integer.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$buf</td>
+                <td>bytestring to hold varint encoding of $x.</td>
+            </tr>
+                    <tr>
+                <td>int</td>
+                <td>$x</td>
+                <td>the unsigned integer to varint encode.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>int</td>
+            <td>number of bytes written to buf.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_encodeSigned">
+        <div class="location">in <a href="../../../OpenCensus/Utils/VarintTrait.html#method_encodeSigned"><abbr title="OpenCensus\Utils\VarintTrait">VarintTrait</abbr></a> at         line 51</div>
+        <code>        static            int
+    <strong>encodeSigned</strong>(string $buf, int $x)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Varint encode as signed integer.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$buf</td>
+                <td>bytestring to hold varint encoding of $x.</td>
+            </tr>
+                    <tr>
+                <td>int</td>
+                <td>$x</td>
+                <td>the signed integer to varint encode.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>int</td>
+            <td>number of bytes written to buf.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_decodeUnsigned">
+        <div class="location">in <a href="../../../OpenCensus/Utils/VarintTrait.html#method_decodeUnsigned"><abbr title="OpenCensus\Utils\VarintTrait">VarintTrait</abbr></a> at         line 67</div>
+        <code>        static            int
+    <strong>decodeUnsigned</strong>(string $buf, int $x)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Varint decode an unsigned integer.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$buf</td>
+                <td>bytestring holding varint encoding.</td>
+            </tr>
+                    <tr>
+                <td>int</td>
+                <td>$x</td>
+                <td>integer to receive the decoded value.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>int</td>
+            <td>number of bytes read from buf.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_decodeSigned">
+        <div class="location">in <a href="../../../OpenCensus/Utils/VarintTrait.html#method_decodeSigned"><abbr title="OpenCensus\Utils\VarintTrait">VarintTrait</abbr></a> at         line 96</div>
+        <code>        static            int
+    <strong>decodeSigned</strong>(string $buf, int $x)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Varint decode a signed integer.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$buf</td>
+                <td>bytestring holding varint encoding.</td>
+            </tr>
+                    <tr>
+                <td>int</td>
+                <td>$x</td>
+                <td>integer to receive the decoded value.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>int</td>
+            <td>number of bytes read from buf.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_encode">
+        <div class="location">at         line 48</div>
+        <code>        static            string
+    <strong>encode</strong>(<a href="../../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a> $tagContext)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Encode the provided TagContext to our binary wire format.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a></td>
+                <td>$tagContext</td>
+                <td>the object holding the Tag's to encode.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>string</td>
+            <td>the bytestring holding our binary encoded Tag's.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_decode">
+        <div class="location">at         line 73</div>
+        <code>        static            <a href="../../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a>
+    <strong>decode</strong>(string $str, <a target="_blank" href="http://php.net/Exception">Exception</a> $err = null)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Decode the provided TagContext from the binary wire format.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$str</td>
+                <td>The bytestring holding our encoded TagContext.</td>
+            </tr>
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception">Exception</a></td>
+                <td>$err</td>
+                <td>Set on deserialization errors and size constraints.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../OpenCensus/Tags/TagContext.html"><abbr title="OpenCensus\Tags\TagContext">TagContext</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

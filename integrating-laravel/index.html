@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="generator" content="Hugo 0.30.2" />
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>Integrating OpenCensus with Laravel &middot; OpenCensus for PHP</title>
+
+  
+  <link rel="stylesheet" href="https://opencensus.io/api/php/css/print.css" media="print">
+  <link rel="stylesheet" href="https://opencensus.io/api/php/css/poole.css">
+  <link rel="stylesheet" href="https://opencensus.io/api/php/css/syntax.css">
+  <link rel="stylesheet" href="https://opencensus.io/api/php/css/hyde.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="OpenCensus for PHP" />
+</head>
+
+  <body class=" ">
+  <div class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      <a href="https://opencensus.io/api/php/"><h1>OpenCensus for PHP</h1></a>
+      <p class="lead">
+        A stats collection and distributed tracing framework
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/api/php/"> OpenCensus for PHP </a></li><li><a href="/api/php/integrations/"> Integrations </a></li><li><a href="/api/php/migration-guide/"> Migration Guide </a></li><li><a href="/api/php/using-the-extension/"> PECL Extension </a></li><li><a href="/api/php/api"> API Documentation </a></li>
+      <li><a href="https://github.com/census-instrumentation/opencensus-php" class="fork"> Fork on GitHub</a></li>
+    </ul>
+  </div>
+</div>
+
+    <div class="content container">
+    <div class="post">
+  <h1>Integrating OpenCensus with Laravel</h1>
+  
+
+<h2 id="laravel-5-5">Laravel 5.5</h2>
+
+<ol>
+<li><p>To add OpenCensus to our Laravel application, we will create a
+<code>ServiceProvider</code>. In <code>app/Providers/OpenCensusProvider.php</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
+<span style="color:#66d9ef">namespace</span> <span style="color:#a6e22e">App\Providers</span>;
+
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">Illuminate\Support\ServiceProvider</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">OpenCensus\Trace\Exporter\StackdriverExporter</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">OpenCensus\Trace\Tracer</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">OpenCensus\Trace\Integrations\Laravel</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">OpenCensus\Trace\Integrations\Mysql</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">OpenCensus\Trace\Integrations\PDO</span>;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OpenCensusProvider</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">ServiceProvider</span>
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#f92672"></span><span style="color:#a6e22e">boot</span>()
+    {
+        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">php_sapi_name</span>() <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;cli&#39;</span>) {
+            <span style="color:#66d9ef">return</span>;
+        }
+
+        <span style="color:#75715e">// Enable OpenCensus extension integrations
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">Laravel</span><span style="color:#f92672">::</span><span style="color:#a6e22e">load</span>();
+        <span style="color:#a6e22e">Mysql</span><span style="color:#f92672">::</span><span style="color:#a6e22e">load</span>();
+        <span style="color:#a6e22e">PDO</span><span style="color:#f92672">::</span><span style="color:#a6e22e">load</span>();
+
+        <span style="color:#75715e">// Start the request tracing for this request
+</span><span style="color:#75715e"></span>        $exporter <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">StackdriverExporter</span>();
+        <span style="color:#a6e22e">Tracer</span><span style="color:#f92672">::</span><span style="color:#a6e22e">start</span>($exporter);
+
+        <span style="color:#75715e">// Create a span that starts from when Laravel first boots (public/index.php)
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">Tracer</span><span style="color:#f92672">::</span><span style="color:#a6e22e">inSpan</span>([<span style="color:#e6db74">&#39;name&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;bootstrap&#39;</span>, <span style="color:#e6db74">&#39;startTime&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">LARAVEL_START</span>], <span style="color:#66d9ef">function</span> () {});
+    }
+}</code></pre></div>
+<p>In this example, we configured <code>StackdriverExporter</code>, but you can configure
+any exporter here. You can also enable any other integrations here.</p></li>
+
+<li><p>Enable this <code>ServiceProvider</code>. In <code>config/app.php</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
+<span style="color:#75715e">// in the `providers` section
+</span><span style="color:#75715e"></span><span style="color:#f92672">...</span>
+<span style="color:#e6db74">&#39;providers&#39;</span> <span style="color:#f92672">=&gt;</span> [
+    <span style="color:#f92672">...</span>
+    <span style="color:#a6e22e">App\Providers\OpenCensusProvider</span><span style="color:#f92672">::</span><span style="color:#a6e22e">class</span>,
+],
+<span style="color:#f92672">...</span></code></pre></div></li>
+</ol>
+
+</div>
+
+
+    </div>
+
+    
+  </body>
+</html>
