@@ -87,4 +87,50 @@ class Status
     {
         return $this->message;
     }
+
+    /**
+     * Returns Status from HTTP Code
+     *
+     * @param int $httpStatus
+     * @return Status
+     */
+    public static function fromHTTPStatus(int $httpStatus) : self
+    {
+        if ($httpStatus >= 100 && $httpStatus <= 399) {
+            return new self(self::OK, sprintf('Not an error, returned on success. Code: %d', $httpStatus));
+        }
+
+        switch ($httpStatus) {
+            case 400:
+                return new self(self::INVALID_ARGUMENT, 'The client specified an invalid argument');
+            case 401:
+                return new self(self::UNAUTHENTICATED,
+                    "The requester doesn’t have valid authentication credentials for the operation");
+            case 403:
+                return new self(self::PERMISSION_DENIED,
+                    "The caller doesn’t have permission to execute the specified operation");
+            case 404:
+                return new self(self::NOT_FOUND,
+                    'Content was not found or request was denied for an entire class of users');
+            case 409:
+                return new self(self::ALREADY_EXISTS, 'The entity attempted to be created already exists');
+            case 429:
+                return new self(self::RESOURCE_EXHAUSTED,
+                    'The resource has been exhausted e.g. per-user quota exhausted, file system out of space');
+            case 499:
+                return new self(self::CANCELLED, 'The operation was cancelled, typically by the caller');
+            case 500:
+                return new self(self::UNKNOWN,
+                    "An unknown error raised by APIs that don’t return enough error information");
+            case 501:
+                return new self(self::UNIMPLEMENTED,
+                    'The operation is not implemented or is not supported/enabled for this operation');
+            case 503:
+                return new self(self::UNAVAILABLE, 'The service is currently available e.g. as a transient condition');
+            case 504:
+                return new self(self::DEADLINE_EXCEEDED, 'The deadline expired before the operation could succeed');
+        }
+
+        return new self(self::UNKNOWN, 'Unknown error');
+    }
 }
