@@ -16,3 +16,6 @@ docs/json/**/*
 
 # Vendors
 vendor/
+
+# PHPUnit cache
+*.cache
