@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * Copyright 2017 OpenCensus Authors
  *
@@ -17,7 +18,7 @@
 
 namespace OpenCensus\Trace;
 
-use OpenCensus\Core\Context;
+use OpenCensus\Utils\IdGenerator;
 
 /**
  * SpanContext encapsulates your current context within your request's trace. It includes
@@ -46,25 +47,27 @@ class SpanContext
     private $spanId;
 
     /**
-     * @var bool|null Whether or not tracing is enabled for this request.
+     * @var bool Whether or not tracing is enabled for this request.
      */
     private $enabled;
 
     /**
+     * @var bool Indicator if the span was generated from headers
+     */
+    private $fromHeader;
+
+    /**
      * Creates a new SpanContext instance
      *
-     * @param string $traceId The current traceId. If not set, one will be
-     *        generated for you.
-     * @param string|null $spanId The current spanId. **Defaults to** `null`.
-     * @param bool|null $enabled Whether or not tracing is enabled on this
-     *        request. **Defaults to** `null`.
-     * @param bool $fromHeader Whether or not the context was detected from an
-     *        incoming header. **Defaults to** `false`.
+     * @param string $traceId The current traceId. If not set, one will be generated.
+     * @param string|null $spanId The current spanId. If not set, one will be generated.
+     * @param bool $enabled Whether or not this span should be sent to the extractor.
+     * @param bool $fromHeader Whether or not the context was detected from the incoming headers.
      */
-    public function __construct($traceId = null, $spanId = null, $enabled = null, $fromHeader = false)
+    public function __construct(string $traceId = null, string $spanId = null, bool $enabled = false, bool $fromHeader = false)
     {
-        $this->traceId = $traceId ?: self::generateTraceId();
-        $this->spanId = $spanId;
+        $this->traceId = $traceId ?: IdGenerator::hex(16);
+        $this->spanId = $spanId ?: IdGenerator::hex(8);
         $this->enabled = $enabled;
         $this->fromHeader = $fromHeader;
     }
@@ -127,19 +130,5 @@ class SpanContext
     public function fromHeader()
     {
         return $this->fromHeader;
-    }
-
-    /**
-     * Generates a random TraceID
-     *
-     * @return string
-     */
-    private static function generateTraceId(): string
-    {
-        try {
-            return bin2hex(random_bytes(16));
-        }catch (\Throwable $ex) {
-            return substr(str_shuffle(str_repeat('0123456789abcdef', mt_rand(1,10))),1,16);
-        }
     }
 }

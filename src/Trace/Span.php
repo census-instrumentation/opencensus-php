@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright 2017 OpenCensus Authors
  *
@@ -17,8 +17,9 @@
 
 namespace OpenCensus\Trace;
 
-use OpenCensus\Trace\EventHandler\SpanEventHandler;
+use OpenCensus\Trace\EventHandler\SpanEventHandlerInterface;
 use OpenCensus\Trace\EventHandler\NullEventHandler;
+use OpenCensus\Utils\IdGenerator;
 
 /**
  * This plain PHP class represents a single timed event within a Trace. Spans can
@@ -217,7 +218,7 @@ class Span
         if (array_key_exists('spanId', $options)) {
             $this->spanId = $options['spanId'];
         } else {
-            $this->spanId = $this->generateSpanId();
+            $this->spanId = IdGenerator::hex(8);
         }
 
         if (array_key_exists('stackTrace', $options)) {
@@ -386,22 +387,12 @@ class Span
     }
 
     /**
-     * Generate a random ID for this span. Must be unique per trace,
-     * but does not need to be globally unique.
-     *
-     * @return string
-     */
-    private function generateSpanId()
-    {
-        return dechex(mt_rand());
-    }
-
-    /**
      * Return a filtered stackTrace where we strip out all functions from the OpenCensus\Trace namespace
      *
+     * @param array $stackTrace
      * @return array
      */
-    private function filterStackTrace($stackTrace)
+    private function filterStackTrace(array $stackTrace): array
     {
         return array_values(
             array_filter($stackTrace, function ($st) {
@@ -416,7 +407,7 @@ class Span
      *
      * @return string
      */
-    private function generateSpanName()
+    private function generateSpanName(): string
     {
         // Try to find the first stacktrace class entry that doesn't start with OpenCensus\Trace
         foreach ($this->stackTrace as $st) {
