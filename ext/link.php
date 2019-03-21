@@ -20,18 +20,10 @@ namespace OpenCensus\Trace\Ext;
 /**
  * This is the equivalent PHP class created by the opencensus C extension
  */
-class Span {
-    protected $name = "unknown";
+class Link {
+    protected $traceId;
     protected $spanId;
-    protected $parentSpanId;
-    protected $startTime;
-    protected $endTime;
-    protected $attributes;
-    protected $stackTrace;
-    /** @var Link[] */
-    protected $links;
-    protected $timeEvents;
-    protected $kind;
+    protected $options;
 
     public function __construct(array $spanOptions)
     {
@@ -40,9 +32,9 @@ class Span {
         }
     }
 
-    public function name()
+    public function traceId()
     {
-        return $this->name;
+        return $this->spanId;
     }
 
     public function spanId()
@@ -50,43 +42,8 @@ class Span {
         return $this->spanId;
     }
 
-    public function parentSpanId()
+    public function options()
     {
-        return $this->parentSpanId;
-    }
-
-    public function startTime()
-    {
-        return $this->startTime;
-    }
-
-    public function endTime()
-    {
-        return $this->endTime;
-    }
-
-    public function attributes()
-    {
-        return $this->attributes;
-    }
-
-    public function stackTrace()
-    {
-        return $this->stackTrace;
-    }
-
-    public function links()
-    {
-        return $this->links;
-    }
-
-    public function timeEvents()
-    {
-        return $this->timeEvents;
-    }
-
-    public function kind()
-    {
-        return $this->kind;
+        return $this->options;
     }
 }
