@@ -34,8 +34,6 @@ use OpenCensus\Core\Context;
  */
 class SpanContext
 {
-    use IdGeneratorTrait;
-
     /**
      * @var string The current traceId. This is stored as a hex string.
      */
