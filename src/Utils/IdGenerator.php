@@ -4,6 +4,8 @@ namespace OpenCensus\Utils;
 
 class IdGenerator
 {
+    private const CHARSET = '0123456789abcdef';
+
     /**
      * Generates a random hex string
      *
@@ -12,12 +14,16 @@ class IdGenerator
      * @param int $length of bytes
      * @return string
      */
-    public static function hex(int $length): string
+    public static function hex(int $length) : string
     {
+        if ($length <= 0) {
+            return '';
+        }
+
         try {
             return bin2hex(random_bytes($length));
-        }catch (\Throwable $ex) {
-            return substr(str_shuffle(str_repeat('0123456789abcdef', mt_rand(1,10))),1,$length);
+        } catch (\Throwable $ex) {
+            return substr(str_shuffle(str_repeat(self::CHARSET, $length)), 1, $length);
         }
     }
 }
