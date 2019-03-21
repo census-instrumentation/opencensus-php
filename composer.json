@@ -16,7 +16,6 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=7.1",
-        "ramsey/uuid": "~3",
         "psr/log": "^1.0",
         "psr/cache": "^1.0",
         "cache/adapter-common": "^1.0"

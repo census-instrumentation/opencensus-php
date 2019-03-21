@@ -65,7 +65,7 @@ class SpanContext
      */
     public function __construct($traceId = null, $spanId = null, $enabled = null, $fromHeader = false)
     {
-        $this->traceId = $traceId ?: $this->generateTraceId();
+        $this->traceId = $traceId ?: self::generateTraceId();
         $this->spanId = $spanId;
         $this->enabled = $enabled;
         $this->fromHeader = $fromHeader;
@@ -129,5 +129,19 @@ class SpanContext
     public function fromHeader()
     {
         return $this->fromHeader;
+    }
+
+    /**
+     * Generates a random TraceID
+     *
+     * @return string
+     */
+    private static function generateTraceId(): string
+    {
+        try {
+            return bin2hex(random_bytes(16));
+        }catch (\Throwable $ex) {
+            return substr(str_shuffle(str_repeat('0123456789abcdef', mt_rand(1,10))),1,16);
+        }
     }
 }
