@@ -30,13 +30,7 @@ class CloudTraceFormatter implements FormatterInterface
 {
     const CONTEXT_HEADER_FORMAT = '/([0-9a-fA-F]{32})(?:\/(\d+))?(?:;o=(\d+))?/';
 
-    /**
-     * Generate a SpanContext object from the Trace Context header
-     *
-     * @param string $header
-     * @return SpanContext
-     */
-    public function deserialize($header)
+    public function deserialize($header): SpanContext
     {
         if (preg_match(self::CONTEXT_HEADER_FORMAT, $header, $matches)) {
             return new SpanContext(
@@ -51,13 +45,7 @@ class CloudTraceFormatter implements FormatterInterface
         return new SpanContext();
     }
 
-    /**
-     * Convert a SpanContext to header string
-     *
-     * @param SpanContext $context
-     * @return string
-     */
-    public function serialize(SpanContext $context)
+    public function serialize(SpanContext $context): string
     {
         $ret = '' . $context->traceId();
         if ($context->spanId()) {

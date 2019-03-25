@@ -30,7 +30,7 @@ interface FormatterInterface
      * @param string $header
      * @return SpanContext
      */
-    public function deserialize($header);
+    public function deserialize($header): SpanContext;
 
     /**
      * Convert a SpanContext to header string
@@ -38,5 +38,5 @@ interface FormatterInterface
      * @param SpanContext $context
      * @return string
      */
-    public function serialize(SpanContext $context);
+    public function serialize(SpanContext $context): string;
 }

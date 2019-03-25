@@ -20,7 +20,7 @@ namespace OpenCensus\Trace\Propagator;
 use OpenCensus\Trace\SpanContext;
 
 /**
- * This propagator contains the method for serializaing and deserializing
+ * This propagator contains the method for serializing and deserializing
  * SpanContext over a binary format.
  *
  * See
@@ -31,13 +31,7 @@ class BinaryFormatter implements FormatterInterface
 {
     const OPTION_ENABLED = 1;
 
-    /**
-     * Generate a SpanContext object from the Trace Context header
-     *
-     * @param string $header
-     * @return SpanContext
-     */
-    public function deserialize($bin)
+    public function deserialize($bin): SpanContext
     {
         $data = @unpack('Cversion/Cfield0/H32traceId/Cfield1/H16spanId/Cfield2/Coptions', $bin);
         if ($data === false) {
@@ -51,13 +45,7 @@ class BinaryFormatter implements FormatterInterface
         return new SpanContext($data['traceId'], $spanId, $enabled, true);
     }
 
-    /**
-     * Convert a SpanContext to header string
-     *
-     * @param SpanContext $context
-     * @return string
-     */
-    public function serialize(SpanContext $context)
+    public function serialize(SpanContext $context): string
     {
         $spanHex = str_pad($context->spanId(), 16, "0", STR_PAD_LEFT);
         $traceOptions = $context->enabled() ? self::OPTION_ENABLED : 0;
