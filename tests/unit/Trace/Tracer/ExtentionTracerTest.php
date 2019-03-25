@@ -18,6 +18,7 @@
 namespace OpenCensus\Tests\Unit\Trace\Tracer;
 
 use OpenCensus\Trace\Tracer\ExtensionTracer;
+use OpenCensus\Trace\Tracer\TracerInterface;
 
 /**
  * @group trace
@@ -32,8 +33,8 @@ class ExtensionTracerTest extends AbstractTracerTest
         opencensus_trace_clear();
     }
 
-    protected function getTracerClass()
+    protected function makeTracer(...$args): TracerInterface
     {
-        return ExtensionTracer::class;
+        return new ExtensionTracer(...$args);
     }
 }
