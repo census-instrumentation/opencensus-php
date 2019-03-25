@@ -72,8 +72,8 @@ class EventSubscriberTest extends TestCase
 
         $request = $history->getLastRequest();
         $headers = $request->getHeaders();
-        $this->assertArrayHasKey('X-CLOUD-TRACE-CONTEXT', $headers);
-        $this->assertRegExp('/[0-9a-f]+\/4660;o=1/', $headers['X-CLOUD-TRACE-CONTEXT'][0]);
+        $this->assertArrayHasKey('X-Cloud-Trace-Context', $headers);
+        $this->assertRegExp('/[0-9a-f]+\/4660;o=1/', $headers['X-Cloud-Trace-Context'][0]);
 
         $rt->onExit();
     }

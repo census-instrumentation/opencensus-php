@@ -51,8 +51,9 @@ class SpanContext
      */
     private $enabled;
 
+
     /**
-     * @var bool Indicator if the span was generated from headers
+     * @var bool Whether or not this context was detected from a request header.
      */
     private $fromHeader;
 
@@ -68,7 +69,7 @@ class SpanContext
         string $traceId = null,
         string $spanId = null,
         bool $enabled = null,
-        bool $fromHeader = null
+        bool $fromHeader = false
     ) {
         $this->traceId = $traceId ?: IdGenerator::hex(16);
         $this->spanId = $spanId;
@@ -109,7 +110,7 @@ class SpanContext
     /**
      * Whether or not the request is being traced.
      *
-     * @return bool
+     * @return bool|null
      */
     public function enabled()
     {

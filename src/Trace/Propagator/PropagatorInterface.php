@@ -41,18 +41,4 @@ interface PropagatorInterface
      * @param mixed $container An object in which the SpanContext data will be injected.
      */
     public function inject(SpanContext $context, &$container): void;
-
-    /**
-     * Fetch the formatter for propagating the SpanContext
-     *
-     * @return FormatterInterface
-     */
-    public function formatter();
-
-    /**
-     * Return the key used to propagate the SpanContext
-     *
-     * @return string
-     */
-    public function key();
 }
