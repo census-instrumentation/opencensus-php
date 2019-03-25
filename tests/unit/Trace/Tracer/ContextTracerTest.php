@@ -19,6 +19,7 @@ namespace OpenCensus\Tests\Unit\Trace\Tracer;
 
 use OpenCensus\Core\Context;
 use OpenCensus\Trace\Tracer\ContextTracer;
+use OpenCensus\Trace\Tracer\TracerInterface;
 
 /**
  * @group trace
@@ -30,8 +31,8 @@ class ContextTracerTest extends AbstractTracerTest
         Context::reset();
     }
 
-    protected function getTracerClass()
+    protected function makeTracer(...$args): TracerInterface
     {
-        return ContextTracer::class;
+        return new ContextTracer(...$args);
     }
 }

@@ -20,6 +20,7 @@ namespace OpenCensus\Tests\Unit\Trace\Tracer;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanContext;
+use OpenCensus\Trace\Tracer\TracerInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -27,14 +28,13 @@ use PHPUnit\Framework\TestCase;
  */
 abstract class AbstractTracerTest extends TestCase
 {
-    abstract protected function getTracerClass();
+    abstract protected function makeTracer(...$args): TracerInterface;
 
     public function testMaintainsContext()
     {
-        $class = $this->getTracerClass();
         $parentSpanId = 12345;
         $initialContext = new SpanContext('traceid', $parentSpanId);
-        $tracer = new $class($initialContext);
+        $tracer = $this->makeTracer($initialContext);
         $context = $tracer->spanContext();
 
         $this->assertEquals('traceid', $context->traceId());
@@ -55,8 +55,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testAddsAttributesToCurrentSpan()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
             $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
                 $tracer->addAttribute('foo', 'bar');
@@ -74,8 +73,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testAddsAttributesToRootSpan()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $rootSpan = $tracer->startSpan(['name' => 'root']);
         $scope = $tracer->withSpan($rootSpan);
         $tracer->inSpan(['name' => 'inner'], function () use ($tracer, $rootSpan) {
@@ -94,8 +92,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testPersistsBacktrace()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $tracer->inSpan(['name' => 'test'], function () {});
         $spanData = $tracer->spans()[0];
         $stackframe = $spanData->stackTrace()[0];
@@ -106,8 +103,7 @@ abstract class AbstractTracerTest extends TestCase
     public function testWithSpan()
     {
         $span = new Span(['name' => 'foo']);
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
 
         $this->assertNull($tracer->spanContext()->spanId());
         $scope = $tracer->withSpan($span);
@@ -120,8 +116,7 @@ abstract class AbstractTracerTest extends TestCase
     {
         $time = microtime(true) - 10;
         $span = new Span(['name' => 'foo', 'startTime' => $time]);
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $scope = $tracer->withSpan($span);
         usleep(100);
         $scope->close();
@@ -134,8 +129,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testAddsAnnotations()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
             $tracer->addAnnotation('some root annotation', ['attributes' => ['foo' => 'bar']]);
             $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
@@ -152,8 +146,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testAddsAnnotationToRootSpan()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $rootSpan = $tracer->startSpan(['name' => 'root']);
         $scope = $tracer->withSpan($rootSpan);
         $tracer->inSpan(['name' => 'inner'], function () use ($tracer, $rootSpan) {
@@ -174,8 +167,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testAddsLinks()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
             $tracer->addLink('traceid', 'spanid', ['attributes' => ['foo' => 'bar']]);
             $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
@@ -192,8 +184,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testAddsLinkToRootSpan()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $rootSpan = $tracer->startSpan(['name' => 'root']);
         $scope = $tracer->withSpan($rootSpan);
         $tracer->inSpan(['name' => 'inner'], function () use ($tracer, $rootSpan) {
@@ -213,8 +204,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testAddMessageEvents()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $tracer->inSpan(['name' => 'root'], function () use ($tracer) {
             $tracer->addMessageEvent(MessageEvent::TYPE_SENT, 'id1', ['uncompressedSize' => 1234, 'compressedSize' => 1000]);
             $tracer->inSpan(['name' => 'inner'], function () use ($tracer) {
@@ -231,8 +221,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testAddsMessageEventToRootSpan()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $rootSpan = $tracer->startSpan(['name' => 'root']);
         $scope = $tracer->withSpan($rootSpan);
         $tracer->inSpan(['name' => 'inner'], function () use ($tracer, $rootSpan) {
@@ -252,8 +241,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testInSpanSetsDefaultStartTime()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $tracer->inSpan(['name' => 'foo'], function () {
             // do nothing
         });
@@ -268,8 +256,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testStackTraceShouldBeSet()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $tracer->inSpan(['name' => 'foo'], function () {
             // do nothing
         });
@@ -284,8 +271,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testAttributesShouldBeSet()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $tracer->inSpan(['name' => 'foo'], function () {
             // do nothing
         });
@@ -300,8 +286,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testLinksShouldBeSet()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $tracer->inSpan(['name' => 'foo'], function () {
             // do nothing
         });
@@ -316,8 +301,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testTimeEventsShouldBeSet()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $tracer->inSpan(['name' => 'foo'], function () {
             // do nothing
         });
@@ -332,8 +316,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testDefaultSpanKind()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $tracer->inSpan(['name' => 'foo'], function () {
             // do nothing
         });
@@ -347,8 +330,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testSetSpanKind()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $tracer->inSpan(['name' => 'foo', 'kind' => Span::KIND_SERVER], function () {
             // do nothing
         });
@@ -362,8 +344,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testDefaultSameProcessAsParentSpan()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $tracer->inSpan(['name' => 'main'], function () use ($tracer) {
             $tracer->inSpan(['name' => 'inner'], function () {
                 // do nothing
@@ -378,8 +359,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testSameProcessAsParentSpan()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $tracer->inSpan(['name' => 'main', 'sameProcessAsParentSpan' => true], function () use ($tracer) {
             $tracer->inSpan(['name' => 'inner', 'sameProcessAsParentSpan' => false], function () {
                 // do nothing
@@ -399,8 +379,7 @@ abstract class AbstractTracerTest extends TestCase
 
     public function testAttachesSpan()
     {
-        $class = $this->getTracerClass();
-        $tracer = new $class();
+        $tracer = $this->makeTracer();
         $rootSpan = $tracer->startSpan(['name' => 'root']);
         $this->assertFalse($rootSpan->attached());
         $scope = $tracer->withSpan($rootSpan);
