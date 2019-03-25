@@ -32,16 +32,15 @@ interface PropagatorInterface
      * @param mixed $container
      * @return SpanContext
      */
-    public function extract($container);
+    public function extract($container): SpanContext;
 
     /**
      * Inject the SpanContext back into the response
      *
      * @param SpanContext $context
-     * @param mixed $container
-     * @return array
+     * @param mixed $container An object in which the SpanContext data will be injected.
      */
-    public function inject(SpanContext $context, $container);
+    public function inject(SpanContext $context, &$container): void;
 
     /**
      * Fetch the formatter for propagating the SpanContext
