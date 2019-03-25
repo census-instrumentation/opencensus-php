@@ -45,8 +45,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
     /**
      * Create a new ExtensionTracer
      *
-     * @param SpanContext|null $initialContext [optional] The starting span
-     *     context.
+     * @param SpanContext|null $initialContext The starting span context.
      */
     public function __construct(SpanContext $initialContext = null)
     {
@@ -55,15 +54,6 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         }
     }
 
-    /**
-     * Instrument a callable by creating a Span
-     *
-     * @param array $spanOptions Options for the span. See
-     *      <a href="../Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
-     * @param callable $callable The callable to instrument.
-     * @param array $arguments [optional] Arguments for the callable.
-     * @return mixed The result of the callable
-     */
     public function inSpan(array $spanOptions, callable $callable, array $arguments = [])
     {
         $span = $this->startSpan($spanOptions + [
@@ -77,13 +67,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         }
     }
 
-    /**
-     * Start a new Span. The start time is already set to the current time.
-     *
-     * @param array $spanOptions [optional] Options for the span. See
-     *      <a href="../Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
-     */
-    public function startSpan(array $spanOptions)
+    public function startSpan(array $spanOptions): Span
     {
         if (!array_key_exists('name', $spanOptions)) {
             $spanOptions['name'] = $this->generateSpanName();
@@ -92,14 +76,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         return new Span($spanOptions);
     }
 
-    /**
-     * Attaches the provided span as the current span and returns a Scope
-     * object which must be closed.
-     *
-     * @param Span $span
-     * @return Scope
-     */
-    public function withSpan(Span $span)
+    public function withSpan(Span $span): Scope
     {
         $spanData = $span->spanData();
         $startTime = $spanData->startTime()
@@ -129,12 +106,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         });
     }
 
-    /**
-     * Return the spans collected.
-     *
-     * @return Span[]
-     */
-    public function spans()
+    public function spans(): array
     {
         // each span returned from opencensus_trace_list should be a
         // OpenCensus\Span object
@@ -144,16 +116,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         }, opencensus_trace_list());
     }
 
-    /**
-     * Add an attribute to the provided Span
-     *
-     * @param string $attribute
-     * @param string $value
-     * @param array $options [optional] Configuration options.
-     *
-     *      @type Span $span The span to add the attribute to.
-     */
-    public function addAttribute($attribute, $value, $options = [])
+    public function addAttribute($attribute, $value, $options = []): void
     {
         if (array_key_exists('span', $options)) {
             $options['spanId'] = $options['span']->spanId();
@@ -161,17 +124,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         opencensus_trace_add_attribute($attribute, $value, $options);
     }
 
-    /**
-     * Add an annotation to the provided Span
-     *
-     * @param string $description
-     * @param array $options [optional] Configuration options.
-     *
-     *      @type Span $span The span to add the annotation to.
-     *      @type array $attributes Attributes for this annotation.
-     *      @type \DateTimeInterface|int|float $time The time of this event.
-     */
-    public function addAnnotation($description, $options = [])
+    public function addAnnotation($description, $options = []): void
     {
         if (array_key_exists('span', $options)) {
             $options['spanId'] = $options['span']->spanId();
@@ -179,20 +132,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         opencensus_trace_add_annotation($description, $options);
     }
 
-    /**
-     * Add a link to the provided Span
-     *
-     * @param string $traceId
-     * @param string $spanId
-     * @param array $options [optional] Configuration options.
-     *
-     *      @type Span $span The span to add the link to.
-     *      @type string $type The relationship of the current span relative to
-     *            the linked span: child, parent, or unspecified.
-     *      @type array $attributes Attributes for this annotation.
-     *      @type \DateTimeInterface|int|float $time The time of this event.
-     */
-    public function addLink($traceId, $spanId, $options = [])
+    public function addLink($traceId, $spanId, $options = []): void
     {
         if (array_key_exists('span', $options)) {
             $options['spanId'] = $options['span']->spanId();
@@ -200,22 +140,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         opencensus_trace_add_link($traceId, $spanId, $options);
     }
 
-    /**
-     * Add an message event to the provided Span
-     *
-     * @param string $type
-     * @param string $id
-     * @param array $options [optional] Configuration options.
-     *
-     *      @type Span $span The span to add the message event to.
-     *      @type int $uncompressedSize The number of uncompressed bytes sent or
-     *            received.
-     *      @type int $compressedSize The number of compressed bytes sent or
-     *            received. If missing assumed to be the same size as
-     *            uncompressed.
-     *      @type \DateTimeInterface|int|float $time The time of this event.
-     */
-    public function addMessageEvent($type, $id, $options = [])
+    public function addMessageEvent($type, $id, $options = []): void
     {
         if (array_key_exists('span', $options)) {
             $options['spanId'] = $options['span']->spanId();
@@ -223,12 +148,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         opencensus_trace_add_message_event($type, $id, $options);
     }
 
-    /**
-     * Returns the current SpanContext
-     *
-     * @return SpanContext
-     */
-    public function spanContext()
+    public function spanContext(): SpanContext
     {
         $context = opencensus_trace_context();
         return new SpanContext(
@@ -238,23 +158,11 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         );
     }
 
-    /**
-     * Whether or not this tracer is enabled.
-     *
-     * @return bool
-     */
     public function enabled()
     {
         return $this->spanContext()->enabled();
     }
 
-    /**
-     * Triggers when an attribute is added to a span.
-     *
-     * @param Span $span The span the attribute was added to
-     * @param string $attribute The name of the attribute added
-     * @param string $value The attribute value
-     */
     public function attributeAdded(Span $span, $attribute, $value)
     {
         // If the span is already attached (managed by the extension), then
@@ -266,12 +174,6 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         }
     }
 
-    /**
-     * Triggers when a link is added to a span.
-     *
-     * @param Span $span The span the link was added to
-     * @param Link $link The link added to the span
-     */
     public function linkAdded(Span $span, Link $link)
     {
         // If the span is already attached (managed by the extension), then
@@ -285,12 +187,6 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         }
     }
 
-    /**
-     * Triggers when a time event is added to a span.
-     *
-     * @param Span $span The span the time event was added to
-     * @param TimeEvent $timeEvent The time event added to the span
-     */
     public function timeEventAdded(Span $span, TimeEvent $timeEvent)
     {
         if ($span->attached()) {

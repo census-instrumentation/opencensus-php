@@ -40,8 +40,7 @@ class ContextTracer implements TracerInterface
     /**
      * Create a new ContextTracer
      *
-     * @param SpanContext|null $initialContext [optional] The starting span
-     *     context.
+     * @param SpanContext|null $initialContext [optional] The starting span context.
      */
     public function __construct(SpanContext $initialContext = null)
     {
@@ -55,15 +54,6 @@ class ContextTracer implements TracerInterface
         }
     }
 
-    /**
-     * Instrument a callable by creating a Span that manages the startTime and endTime.
-     *
-     * @param array $spanOptions Options for the span. See
-     *        <a href="../Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
-     * @param callable $callable The callable to instrument.
-     * @param array $arguments [optional] Arguments for the callable.
-     * @return mixed The result of the callable
-     */
     public function inSpan(array $spanOptions, callable $callable, array $arguments = [])
     {
         $span = $this->startSpan($spanOptions + [
@@ -77,15 +67,7 @@ class ContextTracer implements TracerInterface
         }
     }
 
-    /**
-     * Create a new Span. The start time is already set to the current time.
-     * The newly created span is not attached to the current context.
-     *
-     * @param array $spanOptions [optional] Options for the span. See
-     *        <a href="../Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
-     * @return Span
-     */
-    public function startSpan(array $spanOptions = [])
+    public function startSpan(array $spanOptions = []): Span
     {
         $spanOptions += [
             'traceId' => $this->spanContext()->traceId(),
@@ -96,14 +78,7 @@ class ContextTracer implements TracerInterface
         return new Span($spanOptions);
     }
 
-    /**
-     * Attaches the provided span as the current span and returns a Scope
-     * object which must be closed.
-     *
-     * @param Span $span
-     * @return Scope
-     */
-    public function withSpan(Span $span)
+    public function withSpan(Span $span): Scope
     {
         array_push($this->spans, $span);
         $prevContext = Context::current()
@@ -123,95 +98,38 @@ class ContextTracer implements TracerInterface
         });
     }
 
-    /**
-     * Return the spans collected.
-     *
-     * @return SpanData[]
-     */
-    public function spans()
+    public function spans(): array
     {
-        return array_map(function ($span) {
+        return array_map(function (Span $span) {
             return $span->spanData();
         }, $this->spans);
     }
 
-    /**
-     * Add an attribute to the provided Span
-     *
-     * @param string $attribute
-     * @param string $value
-     * @param array $options [optional] Configuration options.
-     *
-     *      @type Span $span The span to add the attribute to.
-     */
-    public function addAttribute($attribute, $value, $options = [])
+    public function addAttribute($attribute, $value, $options = []): void
     {
         $span = $this->getSpan($options);
         $span->addAttribute($attribute, $value);
     }
 
-    /**
-     * Add an annotation to the provided Span
-     *
-     * @param string $description
-     * @param array $options [optional] Configuration options.
-     *
-     *      @type Span $span The span to add the annotation to.
-     *      @type array $attributes Attributes for this annotation.
-     *      @type \DateTimeInterface|int|float $time The time of this event.
-     */
-    public function addAnnotation($description, $options = [])
+    public function addAnnotation($description, $options = []): void
     {
         $span = $this->getSpan($options);
         $span->addTimeEvent(new Annotation($description, $options));
     }
 
-    /**
-     * Add a link to the provided Span
-     *
-     * @param string $traceId
-     * @param string $spanId
-     * @param array $options [optional] Configuration options.
-     *
-     *      @type Span $span The span to add the link to.
-     *      @type string $type The relationship of the current span relative to
-     *            the linked span: child, parent, or unspecified.
-     *      @type array $attributes Attributes for this annotation.
-     *      @type \DateTimeInterface|int|float $time The time of this event.
-     */
-    public function addLink($traceId, $spanId, $options = [])
+    public function addLink($traceId, $spanId, $options = []): void
     {
         $span = $this->getSpan($options);
         $span->addLink(new Link($traceId, $spanId, $options));
     }
 
-    /**
-     * Add an message event to the provided Span
-     *
-     * @param string $type
-     * @param string $id
-     * @param array $options [optional] Configuration options.
-     *
-     *      @type Span $span The span to add the message event to.
-     *      @type int $uncompressedSize The number of uncompressed bytes sent or
-     *            received.
-     *      @type int $compressedSize The number of compressed bytes sent or
-     *            received. If missing assumed to be the same size as
-     *            uncompressed.
-     *      @type \DateTimeInterface|int|float $time The time of this event.
-     */
-    public function addMessageEvent($type, $id, $options = [])
+    public function addMessageEvent($type, $id, $options = []): void
     {
         $span = $this->getSpan($options);
         $span->addTimeEvent(new MessageEvent($type, $id, $options));
     }
 
-    /**
-     * Returns the current SpanContext
-     *
-     * @return SpanContext
-     */
-    public function spanContext()
+    public function spanContext(): SpanContext
     {
         $context = Context::current();
         return new SpanContext(
@@ -222,11 +140,6 @@ class ContextTracer implements TracerInterface
         );
     }
 
-    /**
-     * Whether or not this tracer is enabled.
-     *
-     * @return bool
-     */
     public function enabled()
     {
         return $this->spanContext()->enabled();

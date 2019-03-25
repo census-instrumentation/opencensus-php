@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Trace\Tracer;
 
+use OpenCensus\Core\Scope;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanData;
@@ -43,9 +44,11 @@ interface TracerInterface
      * Start a new Span. The start time is already set to the current time.
      * The newly created span is not attached to the current context.
      *
-     * @param  array  $spanOptions [description]
+     * @param  array $spanOptions [description]
+     * @see Span::__construct()
+     * @return Span
      */
-    public function startSpan(array $spanOptions);
+    public function startSpan(array $spanOptions): Span;
 
     /**
      * Attaches the provided span as the current span and returns a Scope
@@ -54,14 +57,14 @@ interface TracerInterface
      * @param Span $span
      * @return Scope
      */
-    public function withSpan(Span $span);
+    public function withSpan(Span $span): Scope;
 
     /**
      * Return the spans collected.
      *
      * @return SpanData[]
      */
-    public function spans();
+    public function spans(): array;
 
     /**
      * Add an attribute to the provided Span
@@ -72,7 +75,7 @@ interface TracerInterface
      *
      *      @type Span $span The span to add the attribute to.
      */
-    public function addAttribute($attribute, $value, $options = []);
+    public function addAttribute($attribute, $value, $options = []): void;
 
     /**
      * Add an annotation to the provided Span
@@ -84,7 +87,7 @@ interface TracerInterface
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addAnnotation($description, $options = []);
+    public function addAnnotation($description, $options = []): void;
 
     /**
      * Add a link to the provided Span
@@ -99,7 +102,7 @@ interface TracerInterface
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addLink($traceId, $spanId, $options = []);
+    public function addLink($traceId, $spanId, $options = []): void;
 
     /**
      * Add an message event to the provided Span
@@ -116,14 +119,14 @@ interface TracerInterface
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addMessageEvent($type, $id, $options = []);
+    public function addMessageEvent($type, $id, $options = []): void;
 
     /**
      * Returns the current SpanContext
      *
      * @return SpanContext
      */
-    public function spanContext();
+    public function spanContext(): SpanContext;
 
     /**
      * Whether or not this tracer is enabled.

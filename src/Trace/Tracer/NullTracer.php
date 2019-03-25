@@ -20,7 +20,6 @@ namespace OpenCensus\Trace\Tracer;
 use OpenCensus\Core\Scope;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Span;
-use OpenCensus\Trace\SpanData;
 
 /**
  * This implementation of the TracerInterface is the null object implementation.
@@ -28,125 +27,44 @@ use OpenCensus\Trace\SpanData;
  */
 class NullTracer implements TracerInterface
 {
-    /**
-     * Instrument a callable by creating a Span
-     *
-     * @param array $spanOptions Options for the span. See
-     *      <a href="../Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
-     * @param callable $callable The callable to instrument.
-     * @param array $arguments [optional] Arguments for the callable.
-     * @return mixed The result of the callable
-     */
     public function inSpan(array $spanOptions, callable $callable, array $arguments = [])
     {
         return call_user_func_array($callable, $arguments);
     }
 
-    /**
-     * Start a new Span. The start time is already set to the current time.
-     * The newly created span is not attached to the current context.
-     *
-     * @param array $spanOptions [optional] Options for the span. See
-     *      <a href="../Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
-     * @return Span
-     */
-    public function startSpan(array $spanOptions)
+    public function startSpan(array $spanOptions): Span
     {
         return new Span($spanOptions);
     }
 
-    /**
-     * Attaches the provided span as the current span and returns a Scope
-     * object which must be closed.
-     *
-     * @param Span $span
-     * @return Scope
-     */
-    public function withSpan(Span $span)
+    public function withSpan(Span $span): Scope
     {
         return new Scope(function () {
         });
     }
 
-    /**
-     * Return the spans collected.
-     *
-     * @return SpanData[]
-     */
-    public function spans()
+    public function spans(): array
     {
         return [];
     }
 
-    /**
-     * Add an attribute to the provided Span
-     *
-     * @param string $attribute
-     * @param string $value
-     * @param array $options [optional] Configuration options.
-     *
-     *      @type Span $span The span to add the attribute to.
-     */
-    public function addAttribute($attribute, $value, $options = [])
+    public function addAttribute($attribute, $value, $options = []): void
     {
     }
 
-    /**
-     * Add an annotation to the provided Span
-     *
-     * @param string $description
-     * @param array $options [optional] Configuration options.
-     *
-     *      @type Span $span The span to add the annotation to.
-     *      @type array $attributes Attributes for this annotation.
-     *      @type \DateTimeInterface|int|float $time The time of this event.
-     */
-    public function addAnnotation($description, $options = [])
+    public function addAnnotation($description, $options = []): void
     {
     }
 
-    /**
-     * Add a link to the provided Span
-     *
-     * @param string $traceId
-     * @param string $spanId
-     * @param array $options [optional] Configuration options.
-     *
-     *      @type Span $span The span to add the link to.
-     *      @type string $type The relationship of the current span relative to
-     *            the linked span: child, parent, or unspecified.
-     *      @type array $attributes Attributes for this annotation.
-     *      @type \DateTimeInterface|int|float $time The time of this event.
-     */
-    public function addLink($traceId, $spanId, $options = [])
+    public function addLink($traceId, $spanId, $options = []): void
     {
     }
 
-    /**
-     * Add an message event to the provided Span
-     *
-     * @param string $type
-     * @param string $id
-     * @param array $options [optional] Configuration options.
-     *
-     *      @type Span $span The span to add the message event to.
-     *      @type int $uncompressedSize The number of uncompressed bytes sent or
-     *            received.
-     *      @type int $compressedSize The number of compressed bytes sent or
-     *            received. If missing assumed to be the same size as
-     *            uncompressed.
-     *      @type \DateTimeInterface|int|float $time The time of this event.
-     */
-    public function addMessageEvent($type, $id, $options = [])
+    public function addMessageEvent($type, $id, $options = []): void
     {
     }
 
-    /**
-     * Returns the current SpanContext
-     *
-     * @return SpanContext
-     */
-    public function spanContext()
+    public function spanContext(): SpanContext
     {
         return new SpanContext(null, null, false);
     }

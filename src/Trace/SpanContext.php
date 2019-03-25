@@ -60,14 +60,18 @@ class SpanContext
      * Creates a new SpanContext instance
      *
      * @param string $traceId The current traceId. If not set, one will be generated.
-     * @param string|null $spanId The current spanId. If not set, one will be generated.
-     * @param bool $enabled Whether or not this span should be sent to the extractor.
+     * @param string|null $spanId The current spanId.
+     * @param bool|null $enabled Whether or not this span should be sent to the extractor.
      * @param bool $fromHeader Whether or not the context was detected from the incoming headers.
      */
-    public function __construct(string $traceId = null, string $spanId = null, bool $enabled = false, bool $fromHeader = false)
-    {
+    public function __construct(
+        string $traceId = null,
+        string $spanId = null,
+        bool $enabled = null,
+        bool $fromHeader = null
+    ) {
         $this->traceId = $traceId ?: IdGenerator::hex(16);
-        $this->spanId = $spanId ?: IdGenerator::hex(8);
+        $this->spanId = $spanId;
         $this->enabled = $enabled;
         $this->fromHeader = $fromHeader;
     }
