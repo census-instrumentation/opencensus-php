@@ -105,7 +105,7 @@ class RequestHandler
         // If the request was provided with a trace context header, we need to send it back with the response
         // including whether the request was sampled or not.
         if ($spanContext->fromHeader()) {
-            $propagator->inject($spanContext, []);
+            $propagator->inject($spanContext, $this->headers);
         }
 
         $this->tracer = $spanContext->enabled()

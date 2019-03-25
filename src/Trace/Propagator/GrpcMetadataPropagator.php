@@ -52,13 +52,7 @@ class GrpcMetadataPropagator implements PropagatorInterface
         $this->key = $key ?: self::DEFAULT_METADATA_KEY;
     }
 
-    /**
-     * Generate a SpanContext object from the all the HTTP headers
-     *
-     * @param array $metadata
-     * @return SpanContext
-     */
-    public function extract($metadata)
+    public function extract($metadata): SpanContext
     {
         if (array_key_exists($this->key, $metadata)) {
             return $this->formatter->deserialize($metadata[$this->key]);
@@ -66,17 +60,9 @@ class GrpcMetadataPropagator implements PropagatorInterface
         return new SpanContext();
     }
 
-    /**
-     * Persiste the current SpanContext back into the results of this request
-     *
-     * @param SpanContext $context
-     * @param array $container
-     * @return array
-     */
-    public function inject(SpanContext $context, $metadata)
+    public function inject(SpanContext $context, &$metadata): void
     {
         $metadata[$this->key] = $this->formatter->serialize($context);
-        return $metadata;
     }
 
     /**

@@ -60,7 +60,7 @@ class HttpHeaderPropagatorTest extends TestCase
     {
         $propagator = new HttpHeaderPropagator();
         $context = new SpanContext($traceId, $spanId, $enabled);
-        $output = $propagator->inject($context, []);
+        $propagator->inject($context, $output);
         $this->assertArrayHasKey('X-CLOUD-TRACE-CONTEXT', $output);
         $this->assertEquals($header, $output['X-CLOUD-TRACE-CONTEXT']);
     }
@@ -72,7 +72,7 @@ class HttpHeaderPropagatorTest extends TestCase
     {
         $propagator = new HttpHeaderPropagator(new CloudTraceFormatter(), 'HTTP_TRACE_CONTEXT');
         $context = new SpanContext($traceId, $spanId, $enabled);
-        $output = $propagator->inject($context, []);
+        $propagator->inject($context, $output);
         $this->assertArrayHasKey('TRACE-CONTEXT', $output);
         $this->assertEquals($header, $output['TRACE-CONTEXT']);
     }
