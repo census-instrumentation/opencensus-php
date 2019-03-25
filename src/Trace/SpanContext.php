@@ -69,7 +69,7 @@ class SpanContext
         string $traceId = null,
         string $spanId = null,
         bool $enabled = null,
-        bool $fromHeader = null
+        bool $fromHeader = false
     ) {
         $this->traceId = $traceId ?: IdGenerator::hex(16);
         $this->spanId = $spanId;

@@ -136,7 +136,7 @@ class ContextTracer implements TracerInterface
             $context->value('traceId'),
             $context->value('spanId'),
             $context->value('enabled'),
-            $context->value('fromHeader')
+            $context->value('fromHeader', false)
         );
     }
 
