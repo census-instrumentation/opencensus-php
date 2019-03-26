@@ -30,7 +30,7 @@ class CloudTraceFormatter implements FormatterInterface
 {
     const CONTEXT_HEADER_FORMAT = '/([0-9a-fA-F]{32})(?:\/(\d+))?(?:;o=(\d+))?/';
 
-    public function deserialize($header): SpanContext
+    public function deserialize(string $header): SpanContext
     {
         if (preg_match(self::CONTEXT_HEADER_FORMAT, $header, $matches)) {
             return new SpanContext(

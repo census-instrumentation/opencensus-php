@@ -27,10 +27,10 @@ interface FormatterInterface
     /**
      * Generate a SpanContext object from the Trace Context header
      *
-     * @param string[] $header
+     * @param string $header
      * @return SpanContext
      */
-    public function deserialize($header): SpanContext;
+    public function deserialize(string $header): SpanContext;
 
     /**
      * Convert a SpanContext to header string
