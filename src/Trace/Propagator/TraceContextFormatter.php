@@ -29,7 +29,7 @@ class TraceContextFormatter implements FormatterInterface
     const CONTEXT_HEADER_FORMAT = '/([0-9a-fA-F]{2})-(.*)/';
     const VERSION_0_FORMAT = '/([0-9a-fA-F]{32})-([0-9a-fA-F]{16})(?:-([0-9a-fA-F]{2}))?/';
 
-    public function deserialize($header): SpanContext
+    public function deserialize(string $header): SpanContext
     {
         if (preg_match(self::CONTEXT_HEADER_FORMAT, $header, $matches)) {
             if ($matches[1] == "00") {

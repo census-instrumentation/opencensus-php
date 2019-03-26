@@ -31,7 +31,7 @@ class BinaryFormatter implements FormatterInterface
 {
     const OPTION_ENABLED = 1;
 
-    public function deserialize($bin): SpanContext
+    public function deserialize(string $bin): SpanContext
     {
         $data = @unpack('Cversion/Cfield0/H32traceId/Cfield1/H16spanId/Cfield2/Coptions', $bin);
         if ($data === false) {
