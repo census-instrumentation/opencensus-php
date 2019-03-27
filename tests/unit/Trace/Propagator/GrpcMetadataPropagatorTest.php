@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
-use OpenCensus\Trace\SpanContext;
+use OpenCensus\Trace\Propagator\ArrayHeaders;
 use OpenCensus\Trace\Propagator\BinaryFormatter;
 use OpenCensus\Trace\Propagator\GrpcMetadataPropagator;
 use PHPUnit\Framework\TestCase;
@@ -33,7 +33,7 @@ class GrpcMetadataPropagatorTest extends TestCase
     public function testExtract($traceId, $spanId, $enabled, $hex)
     {
         $propagator = new GrpcMetadataPropagator();
-        $context = $propagator->extract(['grpc-trace-bin' => hex2bin($hex)]);
+        $context = $propagator->extract(new ArrayHeaders(['grpc-trace-bin' => hex2bin($hex)]));
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
         $this->assertEquals($enabled, $context->enabled());
@@ -46,7 +46,7 @@ class GrpcMetadataPropagatorTest extends TestCase
     public function testExtractCustomKey($traceId, $spanId, $enabled, $hex)
     {
         $propagator = new GrpcMetadataPropagator(new BinaryFormatter(), 'foobar');
-        $context = $propagator->extract(['foobar' => hex2bin($hex)]);
+        $context = $propagator->extract(new ArrayHeaders(['foobar' => hex2bin($hex)]));
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
         $this->assertEquals($enabled, $context->enabled());

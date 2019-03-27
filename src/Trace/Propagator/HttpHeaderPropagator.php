@@ -25,7 +25,7 @@ use OpenCensus\Trace\SpanContext;
  */
 class HttpHeaderPropagator implements PropagatorInterface
 {
-    const DEFAULT_HEADER = 'X-Cloud-Trace-Context';
+    private const DEFAULT_HEADER = 'X-Cloud-Trace-Context';
 
     /**
      * @var FormatterInterface
@@ -41,32 +41,29 @@ class HttpHeaderPropagator implements PropagatorInterface
      * Create a new HttpHeaderPropagator
      *
      * @param FormatterInterface $formatter The formatter used to serialize and
-     *        deserialize SpanContext. **Defaults to** a new
-     *        CloudTraceFormatter.
-     * @param string|null $header
+     *        deserialize SpanContext. **Defaults to** a new CloudTraceFormatter.
+     * @param string $header
      */
-    public function __construct(FormatterInterface $formatter = null, $header = null)
+    public function __construct(FormatterInterface $formatter = null, string $header = self::DEFAULT_HEADER)
     {
         $this->formatter = $formatter ?: new CloudTraceFormatter();
-        $this->header = $header ?: self::DEFAULT_HEADER;
+        $this->header = $header;
     }
 
-    public function extract($headers): SpanContext
+    public function extract(HeaderGetter $headers): SpanContext
     {
-        if (array_key_exists($this->header, $headers)) {
-            return $this->formatter->deserialize($headers[$this->header]);
-        }
-        return new SpanContext();
+        $data = $headers->get($this->header);
+
+        return $data ? $this->formatter->deserialize($data) : new SpanContext();
     }
 
-    public function inject(SpanContext $context, &$container): void
+    public function inject(SpanContext $context, HeaderSetter $setter): void
     {
-        $header = $this->header;
         $value = $this->formatter->serialize($context);
 
         if (!headers_sent()) {
-            header("$header: $value");
+            header("$this->header: $value");
         }
-        $container[$header] = $value;
+        $setter->set($this->header, $value);
     }
 }
