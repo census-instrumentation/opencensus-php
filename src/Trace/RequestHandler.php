@@ -20,6 +20,7 @@ namespace OpenCensus\Trace;
 use OpenCensus\Core\Context;
 use OpenCensus\Core\Scope;
 use OpenCensus\Trace\Exporter\ExporterInterface;
+use OpenCensus\Trace\Propagator\ArrayHeaders;
 use OpenCensus\Trace\Sampler\SamplerInterface;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer\ContextTracer;
@@ -65,7 +66,7 @@ class RequestHandler
     private $scope;
 
     /**
-     * @var array Replacement $_SERVER variables
+     * @var ArrayHeaders Keeps the provided headers and has a fallback to $_SERVER if none were given.
      */
     private $headers;
 
@@ -91,9 +92,7 @@ class RequestHandler
         array $options = []
     ) {
         $this->exporter = $exporter;
-        $this->headers = array_key_exists('headers', $options)
-            ? $options['headers']
-            : $_SERVER;
+        $this->headers = new ArrayHeaders($options['headers'] ?? $_SERVER);
 
         $spanContext = $propagator->extract($this->headers);
 
@@ -113,8 +112,8 @@ class RequestHandler
             : new NullTracer();
 
         $spanOptions = $options + [
-            'startTime' => $this->startTimeFromHeaders($this->headers),
-            'name' => $this->nameFromHeaders($this->headers),
+            'startTime' => $this->startTimeFromHeaders($this->headers->toArray()),
+            'name' => $this->nameFromHeaders($this->headers->toArray()),
             'attributes' => [],
             'kind' => Span::KIND_SERVER,
             'sameProcessAsParentSpan' => false
@@ -134,7 +133,7 @@ class RequestHandler
      */
     public function onExit()
     {
-        $this->addCommonRequestAttributes($this->headers);
+        $this->addCommonRequestAttributes($this->headers->toArray());
 
         $this->scope->close();
 
