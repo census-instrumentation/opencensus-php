@@ -18,7 +18,7 @@ interface SpanEventHandlerInterface
      * @param string $attribute The name of the attribute added
      * @param string $value The attribute value
      */
-    public function attributeAdded(Span $span, $attribute, $value);
+    public function attributeAdded(Span $span, $attribute, $value): void;
 
     /**
      * Triggers when a link is added to a span.
@@ -26,7 +26,7 @@ interface SpanEventHandlerInterface
      * @param Span $span The span the link was added to
      * @param Link $link The link added to the span
      */
-    public function linkAdded(Span $span, Link $link);
+    public function linkAdded(Span $span, Link $link): void;
 
     /**
      * Triggers when a time event is added to a span.
@@ -34,5 +34,5 @@ interface SpanEventHandlerInterface
      * @param Span $span The span the time event was added to
      * @param TimeEvent $timeEvent The time event added to the span
      */
-    public function timeEventAdded(Span $span, TimeEvent $timeEvent);
+    public function timeEventAdded(Span $span, TimeEvent $timeEvent): void;
 }
