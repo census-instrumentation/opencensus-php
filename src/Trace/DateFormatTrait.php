@@ -27,10 +27,10 @@ trait DateFormatTrait
      *
      * @param  \DateTimeInterface|int|float $when [optional] The end time of this span.
      *         **Defaults to** now. If provided as an int or float, it is expected to be a Unix timestamp.
-     * @return \DateTimeInterface
+     * @return \DateTime
      * @throws \InvalidArgumentException
      */
-    private function formatDate($when = null)
+    private function formatDate($when = null): \DateTime
     {
         if (!$when) {
             // now
@@ -41,6 +41,7 @@ trait DateFormatTrait
             throw new \InvalidArgumentException('Invalid date format. Must be a \DateTimeInterface or numeric.');
         }
         $when->setTimezone(new \DateTimeZone('UTC'));
+
         return $when;
     }
 
@@ -48,9 +49,9 @@ trait DateFormatTrait
      * Converts a float timestamp into a \DateTimeInterface object.
      *
      * @param float $when The Unix timestamp to be converted.
-     * @return \DateTimeInterface
+     * @return \DateTime
      */
-    private function formatFloatTimeToDate($when)
+    private function formatFloatTimeToDate($when): \DateTime
     {
         return \DateTime::createFromFormat('U.u', number_format($when, 6, '.', ''));
     }

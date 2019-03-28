@@ -20,7 +20,7 @@ namespace OpenCensus\Trace;
 trait AttributeTrait
 {
     /**
-     * @var array A set of attributes, each in the format `[KEY]:[VALUE]`.
+     * @var string[] A set of attributes.
      */
     private $attributes = [];
 
@@ -29,7 +29,7 @@ trait AttributeTrait
      *
      * @param array $attributes Attributes in the form of $attribute => $value
      */
-    public function addAttributes(array $attributes)
+    public function addAttributes(array $attributes): void
     {
         foreach ($attributes as $attribute => $value) {
             $this->addAttribute($attribute, $value);
@@ -39,20 +39,20 @@ trait AttributeTrait
     /**
      * Attach a single attribute to this object.
      *
-     * @param string $attribute The name of the attribute.
-     * @param mixed $value The value of the attribute. Will be cast to a string
+     * @param string $name The name of the attribute.
+     * @param string $value The value of the attribute. Will be cast to a string
      */
-    public function addAttribute($attribute, $value)
+    public function addAttribute(string $name, string $value): void
     {
-        $this->attributes[$attribute] = (string) $value;
+        $this->attributes[$name] = $value;
     }
 
     /**
      * Return the list of attributes for this object.
      *
-     * @return array
+     * @return string[]
      */
-    public function attributes()
+    public function attributes(): array
     {
         return $this->attributes;
     }

@@ -65,7 +65,7 @@ class SpanData
     /**
      * @var array A set of attributes, each in the format `[KEY]:[VALUE]`.
      */
-    private $attributes = [];
+    private $attributes;
 
     /**
      * The start time of the span. On the client side, this is the time kept by
@@ -92,7 +92,7 @@ class SpanData
      *
      * @var array
      */
-    private $stackTrace = [];
+    private $stackTrace;
 
     /**
      * A collection of `TimeEvent`s. A `TimeEvent` is a time-stamped annotation
@@ -101,7 +101,7 @@ class SpanData
      *
      * @var TimeEvent[]
      */
-    private $timeEvents = [];
+    private $timeEvents;
 
     /**
      * A collection of links, which are references from this span to a span
@@ -109,7 +109,7 @@ class SpanData
      *
      * @var Link[]
      */
-    private $links = [];
+    private $links;
 
     /**
      * An optional final status for this span.
@@ -206,7 +206,7 @@ class SpanData
      *
      * @return \DateTimeInterface
      */
-    public function startTime()
+    public function startTime(): \DateTimeInterface
     {
         return $this->startTime;
     }
@@ -216,7 +216,7 @@ class SpanData
      *
      * @return \DateTimeInterface
      */
-    public function endTime()
+    public function endTime(): \DateTimeInterface
     {
         return $this->endTime;
     }
@@ -226,7 +226,7 @@ class SpanData
      *
      * @return string
      */
-    public function traceId()
+    public function traceId(): string
     {
         return $this->traceId;
     }
@@ -236,7 +236,7 @@ class SpanData
      *
      * @return string
      */
-    public function spanId()
+    public function spanId(): string
     {
         return $this->spanId;
     }
@@ -246,7 +246,7 @@ class SpanData
      *
      * @return string
      */
-    public function parentSpanId()
+    public function parentSpanId(): string
     {
         return $this->parentSpanId;
     }
@@ -256,7 +256,7 @@ class SpanData
      *
      * @return string
      */
-    public function name()
+    public function name(): string
     {
         return $this->name;
     }
@@ -266,7 +266,7 @@ class SpanData
      *
      * @return array
      */
-    public function attributes()
+    public function attributes(): array
     {
         return $this->attributes;
     }
@@ -276,7 +276,7 @@ class SpanData
      *
      * @return TimeEvent[]
      */
-    public function timeEvents()
+    public function timeEvents(): array
     {
         return $this->timeEvents;
     }
@@ -286,7 +286,7 @@ class SpanData
      *
      * @return Link[]
      */
-    public function links()
+    public function links(): array
     {
         return $this->links;
     }
@@ -296,7 +296,7 @@ class SpanData
      *
      * @return Status
      */
-    public function status()
+    public function status(): Status
     {
         return $this->status;
     }
@@ -306,7 +306,7 @@ class SpanData
      *
      * @return array
      */
-    public function stackTrace()
+    public function stackTrace(): array
     {
         return $this->stackTrace;
     }
@@ -316,7 +316,7 @@ class SpanData
      *
      * @return string
      */
-    public function stackTraceHashId()
+    public function stackTraceHashId(): string
     {
         if (!isset($this->stackTraceHashId)) {
             // take the lower 16 digits of the md5
@@ -331,7 +331,7 @@ class SpanData
      *
      * @return bool
      */
-    public function sameProcessAsParentSpan()
+    public function sameProcessAsParentSpan(): bool
     {
         return $this->sameProcessAsParentSpan;
     }
@@ -341,7 +341,7 @@ class SpanData
      *
      * @return string
      */
-    public function kind()
+    public function kind(): string
     {
         return $this->kind;
     }

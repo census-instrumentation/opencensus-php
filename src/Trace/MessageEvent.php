@@ -22,9 +22,9 @@ namespace OpenCensus\Trace;
  */
 class MessageEvent extends TimeEvent
 {
-    const TYPE_UNSPECIFIED = 'TYPE_UNSPECIFIED';
-    const TYPE_SENT = 'SENT';
-    const TYPE_RECEIVED = 'RECEIVED';
+    public const TYPE_UNSPECIFIED = 'TYPE_UNSPECIFIED';
+    public const TYPE_SENT = 'SENT';
+    public const TYPE_RECEIVED = 'RECEIVED';
 
     /**
      * @var string Type of MessageEvent. Indicates whether the message was sent
@@ -87,7 +87,7 @@ class MessageEvent extends TimeEvent
      *
      * @return string
      */
-    public function type()
+    public function type(): string
     {
         return $this->type;
     }
@@ -97,7 +97,7 @@ class MessageEvent extends TimeEvent
      *
      * @return string
      */
-    public function id()
+    public function id(): string
     {
         return $this->id;
     }
@@ -107,7 +107,7 @@ class MessageEvent extends TimeEvent
      *
      * @return int
      */
-    public function uncompressedSize()
+    public function uncompressedSize(): int
     {
         return $this->uncompressedSize;
     }
@@ -117,7 +117,7 @@ class MessageEvent extends TimeEvent
      *
      * @return int
      */
-    public function compressedSize()
+    public function compressedSize(): int
     {
         return $this->compressedSize;
     }
