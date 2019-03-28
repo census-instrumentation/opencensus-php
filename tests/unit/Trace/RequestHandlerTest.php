@@ -33,6 +33,7 @@ use OpenCensus\Trace\Tracer\NullTracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 use OpenCensus\Trace\MockHttpResponseCode;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
 
 /**
  * @group trace
@@ -50,6 +51,7 @@ class RequestHandlerTest extends TestCase
         }
         $this->exporter = $this->prophesize(ExporterInterface::class);
         $this->sampler = $this->prophesize(SamplerInterface::class);
+        $this->exporter->export(Argument::any())->willReturn(true);
     }
 
     public function testCanTrackContext()

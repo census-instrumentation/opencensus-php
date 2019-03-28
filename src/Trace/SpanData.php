@@ -46,7 +46,7 @@ class SpanData
      * The `spanId` of this span's parent span. If this is a root span, then
      * this field must be empty. 8-byte value encoded as a hex string.
      *
-     * @var string
+     * @var string|null
      */
     private $parentSpanId;
 
@@ -114,7 +114,7 @@ class SpanData
     /**
      * An optional final status for this span.
      *
-     * @var Status
+     * @var Status|null
      */
     private $status;
 
@@ -244,9 +244,9 @@ class SpanData
     /**
      * Retrieve the ID of this span's parent if it exists.
      *
-     * @return string
+     * @return string|null
      */
-    public function parentSpanId(): string
+    public function parentSpanId(): ?string
     {
         return $this->parentSpanId;
     }
@@ -296,7 +296,7 @@ class SpanData
      *
      * @return Status
      */
-    public function status(): Status
+    public function status(): ?Status
     {
         return $this->status;
     }

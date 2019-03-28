@@ -19,6 +19,7 @@ namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Propagator\BinaryFormatter;
+use PHPUnit\Framework\Error\Warning;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -49,13 +50,11 @@ class BinaryFormatterTest extends TestCase
         $this->assertEquals($hex, bin2hex($formatter->serialize($context)));
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error_Warning
-     */
     public function testDeserializeBadData()
     {
         $formatter = new BinaryFormatter();
-        $context = $formatter->deserialize(hex2bin("0012341abc"));
+        $this->expectException(Warning::class);
+        $formatter->deserialize(hex2bin("0012341abc"));
     }
 
     public function testDeserializeBadDataReturnsEmptySpanContext()

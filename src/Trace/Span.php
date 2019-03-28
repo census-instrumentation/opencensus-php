@@ -198,7 +198,7 @@ class Span
             'eventHandler' => null
         ];
 
-        $this->traceId = $options['traceId'];
+        $this->traceId = $options['traceId'] ?? IdGenerator::hex(8);
         $this->eventHandler = $options['eventHandler'] ?: new NullEventHandler();
 
         if (array_key_exists('startTime', $options)) {
