@@ -107,16 +107,6 @@ jobs:
     docker:
       - image: circleci/php:7.3-zts-node
 
-  php71-32bit:
-    <<: *unit-config
-    docker:
-      - image: gcr.io/php-stackdriver/php71-32bit
-    environment:
-      TEST_PHP_ARGS: -q
-      REPORT_EXIT_STATUS: 1
-      RUN_EXTENSION_TESTS: 1
-      SUDO_CMD: ""
-
   php71-debug:
     <<: *unit-config
     docker:
@@ -226,6 +216,5 @@ workflows:
       - php72-zts
       - php73
       - php73-zts
-      - php71-32bit
       - php71-debug
       - integration
