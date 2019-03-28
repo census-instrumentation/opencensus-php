@@ -62,13 +62,7 @@ class LoggerExporter implements ExporterInterface
         $this->level = $level;
     }
 
-    /**
-     * Report the provided Trace to a backend.
-     *
-     * @param SpanData[] $spans
-     * @return bool
-     */
-    public function export(array $spans)
+    public function export(array $spans): bool
     {
         try {
             $this->logger->log($this->level, json_encode($spans));
