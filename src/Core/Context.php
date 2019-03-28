@@ -63,7 +63,7 @@ class Context
      * @param mixed $value
      * @return Context
      */
-    public function withValue($key, $value)
+    public function withValue($key, $value): Context
     {
         $copy = $this->values;
         $copy[$key] = $value;
@@ -76,7 +76,7 @@ class Context
      * @param array $data
      * @return Context
      */
-    public function withValues($data)
+    public function withValues($data): Context
     {
         $copy = $this->values;
         foreach ($data as $key => $value) {
@@ -105,7 +105,7 @@ class Context
      *
      * @return array
      */
-    public function values()
+    public function values(): array
     {
         return $this->values;
     }
@@ -116,7 +116,7 @@ class Context
      *
      * @return Context
      */
-    public function attach()
+    public function attach(): Context
     {
         $current = self::current();
         self::$current = $this;
@@ -129,7 +129,7 @@ class Context
      *
      * @param  Context $toAttach
      */
-    public function detach(Context $toAttach)
+    public function detach(Context $toAttach): void
     {
         if (self::current() !== $this) {
             trigger_error('Unexpected context to detach.', E_USER_WARNING);
@@ -144,7 +144,7 @@ class Context
      *
      * @return Context
      */
-    public static function current()
+    public static function current(): Context
     {
         if (!self::$current) {
             self::$current = self::background();
@@ -158,7 +158,7 @@ class Context
      *
      * @return Context
      */
-    public static function background()
+    public static function background(): Context
     {
         return new Context();
     }
@@ -169,7 +169,7 @@ class Context
      *
      * @internal
      */
-    public static function reset()
+    public static function reset(): void
     {
         self::$current = null;
     }
