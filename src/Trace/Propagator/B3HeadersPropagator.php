@@ -14,12 +14,12 @@ class B3HeadersPropagator implements PropagatorInterface
     private const X_B3_SAMPLED = 'X-B3-Sampled';
     private const X_B3_FLAGS = 'X-B3-Flags';
 
-    public function extract($container): SpanContext
+    public function extract(HeaderGetter $headers): SpanContext
     {
-        $traceId = $container[self::X_B3_TRACE_ID] ?? null;
-        $spanId = $container[self::X_B3_SPAN_ID] ?? null;
-        $sampled = $container[self::X_B3_SAMPLED] ?? null;
-        $flags = $container[self::X_B3_FLAGS] ?? null;
+        $traceId = $headers->get(self::X_B3_TRACE_ID);
+        $spanId = $headers->get(self::X_B3_SPAN_ID);
+        $sampled = $headers->get(self::X_B3_SAMPLED);
+        $flags = $headers->get(self::X_B3_FLAGS);
 
         if (!$traceId || !$spanId) {
             return new SpanContext();
@@ -38,10 +38,10 @@ class B3HeadersPropagator implements PropagatorInterface
         return new SpanContext($traceId, $spanId, $enabled, true);
     }
 
-    public function inject(SpanContext $context, &$container): void
+    public function inject(SpanContext $context, HeaderSetter $headers): void
     {
-        $container[self::X_B3_TRACE_ID] = $context->traceId();
-        $container[self::X_B3_SPAN_ID] = $context->spanId();
-        $container[self::X_B3_SAMPLED] = $context->enabled() ? 1 : 0;
+        $headers->set(self::X_B3_TRACE_ID, $context->traceId());
+        $headers->set(self::X_B3_SPAN_ID, $context->spanId());
+        $headers->set(self::X_B3_SAMPLED, $context->enabled() ? 1 : 0);
     }
 }

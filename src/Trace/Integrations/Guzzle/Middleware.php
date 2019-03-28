@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Trace\Integrations\Guzzle;
 
+use OpenCensus\Trace\Propagator\ArrayHeaders;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
@@ -70,8 +71,8 @@ class Middleware
         return function (RequestInterface $request, $options) use ($handler) {
             $context = Tracer::spanContext();
             if ($context->enabled()) {
+                $headers = new ArrayHeaders();
                 $this->propagator->inject($context, $headers) ;
-
                 foreach ($headers as $headerName => $headerValue) {
                     $request = $request->withHeader($headerName, $headerValue);
                 }

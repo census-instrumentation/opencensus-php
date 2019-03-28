@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
+use OpenCensus\Trace\Propagator\ArrayHeaders;
 use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\Propagator\CloudTraceFormatter;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
@@ -33,7 +34,7 @@ class HttpHeaderPropagatorTest extends TestCase
     public function testExtract($traceId, $spanId, $enabled, $header)
     {
         $propagator = new HttpHeaderPropagator();
-        $context = $propagator->extract(['X-Cloud-Trace-Context' => $header]);
+        $context = $propagator->extract(new ArrayHeaders(['X-Cloud-Trace-Context' => $header]));
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
         $this->assertEquals($enabled, $context->enabled());
@@ -46,7 +47,7 @@ class HttpHeaderPropagatorTest extends TestCase
     public function testExtractCustomKey($traceId, $spanId, $enabled, $header)
     {
         $propagator = new HttpHeaderPropagator(new CloudTraceFormatter(), 'Trace-Context');
-        $context = $propagator->extract(['Trace-Context' => $header]);
+        $context = $propagator->extract(new ArrayHeaders(['Trace-Context' => $header]));
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
         $this->assertEquals($enabled, $context->enabled());
@@ -60,9 +61,10 @@ class HttpHeaderPropagatorTest extends TestCase
     {
         $propagator = new HttpHeaderPropagator();
         $context = new SpanContext($traceId, $spanId, $enabled);
-        $propagator->inject($context, $output);
-        $this->assertArrayHasKey('X-Cloud-Trace-Context', $output);
-        $this->assertEquals($header, $output['X-Cloud-Trace-Context']);
+        $headers = new ArrayHeaders();
+        $propagator->inject($context, $headers);
+        $this->assertArrayHasKey('X-Cloud-Trace-Context', $headers);
+        $this->assertEquals($header, $headers->get('X-Cloud-Trace-Context'));
     }
 
     /**
@@ -72,9 +74,10 @@ class HttpHeaderPropagatorTest extends TestCase
     {
         $propagator = new HttpHeaderPropagator(new CloudTraceFormatter(), 'Trace-Context');
         $context = new SpanContext($traceId, $spanId, $enabled);
-        $propagator->inject($context, $output);
-        $this->assertArrayHasKey('Trace-Context', $output);
-        $this->assertEquals($header, $output['Trace-Context']);
+        $headers = new ArrayHeaders();
+        $propagator->inject($context, $headers);
+        $this->assertArrayHasKey('Trace-Context', $headers);
+        $this->assertEquals($header, $headers->get('Trace-Context'));
     }
 
     /**

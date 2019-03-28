@@ -22,6 +22,7 @@ use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Integrations\Guzzle\Middleware;
 use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use PHPUnit\Framework\TestCase;
@@ -31,6 +32,9 @@ use PHPUnit\Framework\TestCase;
  */
 class MiddlewareTest extends TestCase
 {
+    /**
+     * @var ExporterInterface|ObjectProphecy
+     */
     private $exporter;
 
     public function setUp()

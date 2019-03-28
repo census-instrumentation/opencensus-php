@@ -18,6 +18,7 @@
 namespace OpenCensus\Trace\Integrations\Guzzle;
 
 use OpenCensus\Core\Scope;
+use OpenCensus\Trace\Propagator\ArrayHeaders;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
@@ -88,8 +89,9 @@ class EventSubscriber implements SubscriberInterface
         $request = $event->getRequest();
         $context = Tracer::spanContext();
         if ($context->enabled()) {
+            $headers = new ArrayHeaders();
             $this->propagator->inject($context, $headers);
-            $request->setHeaders($headers);
+            $request->setHeaders($headers->toArray());
         }
 
         $span = Tracer::startSpan([

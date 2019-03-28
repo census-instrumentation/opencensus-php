@@ -2,8 +2,8 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Propagator;
 
+use OpenCensus\Trace\Propagator\ArrayHeaders;
 use OpenCensus\Trace\Propagator\B3HeadersPropagator;
-use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 use OpenCensus\Trace\SpanContext;
 use PHPUnit\Framework\TestCase;
 
@@ -18,7 +18,7 @@ class B3HeadersPropagatorTest extends TestCase
     public function testExtract($traceId, $spanId, $enabled, $headers)
     {
         $propagator = new B3HeadersPropagator();
-        $context = $propagator->extract($headers);
+        $context = $propagator->extract(new ArrayHeaders($headers));
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
         $this->assertEquals($enabled, $context->enabled());
@@ -28,7 +28,7 @@ class B3HeadersPropagatorTest extends TestCase
     public function testExtractWithoutHeaders()
     {
         $propagator = new B3HeadersPropagator();
-        $context = $propagator->extract([]);
+        $context = $propagator->extract(new ArrayHeaders());
         $this->assertNull($context->enabled());
         $this->assertFalse($context->fromHeader());
     }
@@ -40,7 +40,9 @@ class B3HeadersPropagatorTest extends TestCase
     {
         $propagator = new B3HeadersPropagator();
         $context = new SpanContext($traceId, $spanId, $enabled);
-        $propagator->inject($context, $output);
+        $headers = new ArrayHeaders();
+        $propagator->inject($context, $headers);
+        $output = $headers->toArray();
 
         $this->assertArrayHasKey('X-B3-TraceId', $output);
         $this->assertArrayHasKey('X-B3-SpanId', $output);

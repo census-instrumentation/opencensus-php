@@ -26,7 +26,7 @@ use OpenCensus\Trace\SpanContext;
  */
 class GrpcMetadataPropagator implements PropagatorInterface
 {
-    const DEFAULT_METADATA_KEY = 'grpc-trace-bin';
+    private const DEFAULT_METADATA_KEY = 'grpc-trace-bin';
 
     /**
      * @var FormatterInterface
@@ -43,25 +43,23 @@ class GrpcMetadataPropagator implements PropagatorInterface
      *
      * @param FormatterInterface $formatter [optional] The formatter used to serialize/deserialize SpanContext
      *        **Defaults to** a new BinaryFormatter.
-     * @param string $key [optional] The grpc metadata key to store/retrieve the encoded SpanContext.
-     *        **Defaults to** `grpc-trace-bin`
+     * @param string $key The grpc metadata key to store/retrieve the encoded SpanContext.
      */
-    public function __construct(FormatterInterface $formatter = null, $key = null)
+    public function __construct(FormatterInterface $formatter = null, string $key = self::DEFAULT_METADATA_KEY)
     {
         $this->formatter = $formatter ?: new BinaryFormatter();
-        $this->key = $key ?: self::DEFAULT_METADATA_KEY;
+        $this->key = $key;
     }
 
-    public function extract($metadata): SpanContext
+    public function extract(HeaderGetter $metadata): SpanContext
     {
-        if (array_key_exists($this->key, $metadata)) {
-            return $this->formatter->deserialize($metadata[$this->key]);
-        }
-        return new SpanContext();
+        $data = $metadata->get($this->key);
+
+        return $data ? $this->formatter->deserialize($data) : new SpanContext();
     }
 
-    public function inject(SpanContext $context, &$metadata): void
+    public function inject(SpanContext $context, HeaderSetter $metadata): void
     {
-        $metadata[$this->key] = $this->formatter->serialize($context);
+        $metadata->set($this->key, $this->formatter->serialize($context));
     }
 }

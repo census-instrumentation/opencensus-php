@@ -18,7 +18,6 @@
 namespace OpenCensus\Trace;
 
 use OpenCensus\Core\Scope;
-use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Sampler\AlwaysSampleSampler;
 use OpenCensus\Trace\Sampler\SamplerInterface;
 use OpenCensus\Trace\Exporter\ExporterInterface;
@@ -117,7 +116,7 @@ class Tracer
      *      @type array $headers Optional array of headers to use in place of $_SERVER
      * @return RequestHandler
      */
-    public static function start(ExporterInterface $reporter, array $options = [])
+    public static function start(ExporterInterface $reporter, array $options = []): RequestHandler
     {
         $sampler = array_key_exists('sampler', $options)
             ? $options['sampler']
@@ -187,12 +186,9 @@ class Tracer
      *      <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
      * @return Span
      */
-    public static function startSpan(array $spanOptions = [])
+    public static function startSpan(array $spanOptions = []): Span
     {
-        if (!isset(self::$instance)) {
-            return new Span();
-        }
-        return self::$instance->startSpan($spanOptions);
+        return isset(self::$instance) ? self::$instance->startSpan($spanOptions) : new Span();
     }
 
     /**
@@ -213,13 +209,12 @@ class Tracer
      * @param Span $span
      * @return Scope
      */
-    public static function withSpan(Span $span)
+    public static function withSpan(Span $span): Scope
     {
-        if (!isset(self::$instance)) {
-            return new Scope(function () {
-            });
-        }
-        return self::$instance->withSpan($span);
+        return isset(self::$instance) ? self::$instance->withSpan($span) : new Scope(
+            function () {
+            }
+        );
     }
 
     /**
@@ -231,12 +226,11 @@ class Tracer
      *
      *      @type Span $span The span to add the attribute to.
      */
-    public static function addAttribute($attribute, $value, $options = [])
+    public static function addAttribute($attribute, $value, $options = []): void
     {
-        if (!isset(self::$instance)) {
-            return;
+        if (isset(self::$instance)) {
+            self::$instance->addAttribute($attribute, $value, $options);
         }
-        return self::$instance->addAttribute($attribute, $value, $options);
     }
 
     /**
@@ -249,12 +243,11 @@ class Tracer
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public static function addAnnotation($description, $options = [])
+    public static function addAnnotation($description, $options = []): void
     {
-        if (!isset(self::$instance)) {
-            return;
+        if (isset(self::$instance)) {
+            self::$instance->addAnnotation($description, $options);
         }
-        return self::$instance->addAnnotation($description, $options);
     }
 
     /**
@@ -270,12 +263,11 @@ class Tracer
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public static function addLink($traceId, $spanId, $options = [])
+    public static function addLink($traceId, $spanId, $options = []): void
     {
-        if (!isset(self::$instance)) {
-            return;
+        if (isset(self::$instance)) {
+            self::$instance->addLink($traceId, $spanId, $options);
         }
-        return self::$instance->addLink($traceId, $spanId, $options);
     }
 
     /**
@@ -293,12 +285,11 @@ class Tracer
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public static function addMessageEvent($type, $id, $options = [])
+    public static function addMessageEvent($type, $id, $options = []): void
     {
-        if (!isset(self::$instance)) {
-            return;
+        if (isset(self::$instance)) {
+            self::$instance->addMessageEvent($type, $id, $options);
         }
-        return self::$instance->addMessageEvent($type, $id, $options);
     }
 
     /**
@@ -306,11 +297,8 @@ class Tracer
      *
      * @return SpanContext
      */
-    public static function spanContext()
+    public static function spanContext(): SpanContext
     {
-        if (!isset(self::$instance)) {
-            return new SpanContext(null, null, false);
-        }
-        return self::$instance->tracer()->spanContext();
+        return isset(self::$instance) ? self::$instance->tracer()->spanContext() : new SpanContext(null, null, false);
     }
 }

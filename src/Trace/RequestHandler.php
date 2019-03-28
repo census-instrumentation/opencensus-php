@@ -17,11 +17,10 @@
 
 namespace OpenCensus\Trace;
 
-use OpenCensus\Core\Context;
 use OpenCensus\Core\Scope;
 use OpenCensus\Trace\Exporter\ExporterInterface;
+use OpenCensus\Trace\Propagator\ArrayHeaders;
 use OpenCensus\Trace\Sampler\SamplerInterface;
-use OpenCensus\Trace\Span;
 use OpenCensus\Trace\Tracer\ContextTracer;
 use OpenCensus\Trace\Tracer\ExtensionTracer;
 use OpenCensus\Trace\Tracer\NullTracer;
@@ -35,8 +34,8 @@ use OpenCensus\Trace\Propagator\PropagatorInterface;
  */
 class RequestHandler
 {
-    const DEFAULT_ROOT_SPAN_NAME = 'main';
-    const ATTRIBUTE_MAP = [
+    private const DEFAULT_ROOT_SPAN_NAME = 'main';
+    private const ATTRIBUTE_MAP = [
         Span::ATTRIBUTE_HOST => ['HTTP_HOST', 'SERVER_NAME'],
         Span::ATTRIBUTE_PORT => ['SERVER_PORT'],
         Span::ATTRIBUTE_METHOD => ['REQUEST_METHOD'],
@@ -65,7 +64,7 @@ class RequestHandler
     private $scope;
 
     /**
-     * @var array Replacement $_SERVER variables
+     * @var ArrayHeaders Keeps the provided headers and has a fallback to $_SERVER if none were given.
      */
     private $headers;
 
@@ -91,9 +90,7 @@ class RequestHandler
         array $options = []
     ) {
         $this->exporter = $exporter;
-        $this->headers = array_key_exists('headers', $options)
-            ? $options['headers']
-            : $_SERVER;
+        $this->headers = new ArrayHeaders($options['headers'] ?? $_SERVER);
 
         $spanContext = $propagator->extract($this->headers);
 
@@ -113,8 +110,8 @@ class RequestHandler
             : new NullTracer();
 
         $spanOptions = $options + [
-            'startTime' => $this->startTimeFromHeaders($this->headers),
-            'name' => $this->nameFromHeaders($this->headers),
+            'startTime' => $this->startTimeFromHeaders($this->headers->toArray()),
+            'name' => $this->nameFromHeaders($this->headers->toArray()),
             'attributes' => [],
             'kind' => Span::KIND_SERVER,
             'sameProcessAsParentSpan' => false
@@ -132,9 +129,9 @@ class RequestHandler
      * reports using the provided ExporterInterface. Adds additional attributes to
      * the root span detected from the response.
      */
-    public function onExit()
+    public function onExit(): void
     {
-        $this->addCommonRequestAttributes($this->headers);
+        $this->addCommonRequestAttributes($this->headers->toArray());
 
         $this->scope->close();
 
@@ -146,7 +143,7 @@ class RequestHandler
      *
      * @return TracerInterface
      */
-    public function tracer()
+    public function tracer(): TracerInterface
     {
         return $this->tracer;
     }
@@ -160,6 +157,7 @@ class RequestHandler
      * @param array $spanOptions Options for the span. See
      *        <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
      * @param callable $callable The callable to instrument.
+     * @param array $arguments
      * @return mixed Returns whatever the callable returns
      */
     public function inSpan(array $spanOptions, callable $callable, array $arguments = [])
@@ -175,7 +173,7 @@ class RequestHandler
      *        <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
      * @return Span
      */
-    public function startSpan(array $spanOptions = [])
+    public function startSpan(array $spanOptions = []): Span
     {
         return $this->tracer->startSpan($spanOptions);
     }
@@ -187,7 +185,7 @@ class RequestHandler
      * @param Span $span
      * @return Scope
      */
-    public function withSpan(Span $span)
+    public function withSpan(Span $span): Scope
     {
         return $this->tracer->withSpan($span);
     }
@@ -201,7 +199,7 @@ class RequestHandler
      *
      *      @type Span $span The span to add the attribute to.
      */
-    public function addAttribute($attribute, $value, $options = [])
+    public function addAttribute($attribute, $value, $options = []): void
     {
         $this->tracer->addAttribute($attribute, $value, $options);
     }
@@ -216,7 +214,7 @@ class RequestHandler
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addAnnotation($description, $options = [])
+    public function addAnnotation($description, $options = []): void
     {
         $this->tracer->addAnnotation($description, $options);
     }
@@ -234,7 +232,7 @@ class RequestHandler
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addLink($traceId, $spanId, $options = [])
+    public function addLink($traceId, $spanId, $options = []): void
     {
         $this->tracer->addLink($traceId, $spanId, $options);
     }
@@ -254,12 +252,12 @@ class RequestHandler
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addMessageEvent($type, $id, $options)
+    public function addMessageEvent($type, $id, $options): void
     {
         $this->tracer->addMessageEvent($type, $id, $options);
     }
 
-    public function addCommonRequestAttributes(array $headers)
+    private function addCommonRequestAttributes(array $headers): void
     {
         if ($responseCode = http_response_code()) {
             $this->rootSpan->setStatus($responseCode, "HTTP status code: $responseCode");
@@ -276,7 +274,7 @@ class RequestHandler
         }
     }
 
-    private function startTimeFromHeaders(array $headers)
+    private function startTimeFromHeaders(array $headers): ?string
     {
         if (array_key_exists('REQUEST_TIME_FLOAT', $headers)) {
             return $headers['REQUEST_TIME_FLOAT'];
@@ -287,15 +285,12 @@ class RequestHandler
         return null;
     }
 
-    private function nameFromHeaders(array $headers)
+    private function nameFromHeaders(array $headers): string
     {
-        if (array_key_exists('REQUEST_URI', $headers)) {
-            return $headers['REQUEST_URI'];
-        }
-        return self::DEFAULT_ROOT_SPAN_NAME;
+        return $headers['REQUEST_URI'] ?? self::DEFAULT_ROOT_SPAN_NAME;
     }
 
-    private function detectKey(array $keys, array $array)
+    private function detectKey(array $keys, array $array): ?string
     {
         foreach ($keys as $key) {
             if (array_key_exists($key, $array)) {

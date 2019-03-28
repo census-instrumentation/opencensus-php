@@ -29,16 +29,16 @@ interface PropagatorInterface
     /**
      * Extract the SpanContext from some container
      *
-     * @param mixed $container
+     * @param HeaderGetter $getter
      * @return SpanContext
      */
-    public function extract($container): SpanContext;
+    public function extract(HeaderGetter $getter): SpanContext;
 
     /**
-     * Inject the SpanContext back into the response
+     * Inject the SpanContext back into the container
      *
      * @param SpanContext $context
-     * @param mixed $container An object in which the SpanContext data will be injected.
+     * @param HeaderSetter $setter
      */
-    public function inject(SpanContext $context, &$container): void;
+    public function inject(SpanContext $context, HeaderSetter $setter): void;
 }
