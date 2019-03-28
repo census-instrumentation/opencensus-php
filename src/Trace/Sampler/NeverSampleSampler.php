@@ -30,12 +30,7 @@ namespace OpenCensus\Trace\Sampler;
  */
 class NeverSampleSampler implements SamplerInterface
 {
-    /**
-     * Returns false because we never want to sample.
-     *
-     * @return bool
-     */
-    public function shouldSample()
+    public function shouldSample(): bool
     {
         return false;
     }
