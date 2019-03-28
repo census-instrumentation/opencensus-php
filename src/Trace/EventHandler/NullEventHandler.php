@@ -20,7 +20,7 @@ class NullEventHandler implements SpanEventHandlerInterface
      * @param string $attribute The name of the attribute added
      * @param string $value The attribute value
      */
-    public function attributeAdded(Span $span, $attribute, $value): void
+    public function attributeAdded(Span $span, string $attribute, string $value): void
     {
     }
 

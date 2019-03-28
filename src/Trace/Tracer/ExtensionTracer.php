@@ -163,7 +163,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         return $this->spanContext()->enabled();
     }
 
-    public function attributeAdded(Span $span, $attribute, $value): void
+    public function attributeAdded(Span $span, string $attribute, string $value): void
     {
         // If the span is already attached (managed by the extension), then
         // tell the extension to add the attribute.
