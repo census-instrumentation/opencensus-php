@@ -66,7 +66,7 @@ class EventSubscriberTest extends TestCase
         $client->getEmitter()->attach($history);
         $client->getEmitter()->attach($subscriber);
 
-        Tracer::inSpan(['name' => 'parentSpan', 'spanId' => '1234'], function () use ($client) {
+        Tracer::inSpan(['name' => 'parentSpan', 'spanId' => '1234'], static function () use ($client) {
             $client->get('/');
         });
 

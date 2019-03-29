@@ -79,9 +79,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
     public function withSpan(Span $span): Scope
     {
         $spanData = $span->spanData();
-        $startTime = $spanData->startTime()
-            ? (float)($spanData->startTime()->format('U.u'))
-            : microtime(true);
+        $startTime = $spanData->startTime() ? (float)$spanData->startTime()->format('U.u') : microtime(true);
         $info = [
             'traceId' => $spanData->traceId(),
             'spanId' => $spanData->spanId(),

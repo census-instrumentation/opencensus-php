@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace;
 
+use DateTimeInterface;
+
 /**
  * This plain PHP class represents a read-only version of a single timed event
  * within a Trace. Spans can be nested and form a trace tree. Often, a trace
@@ -204,9 +206,9 @@ class SpanData
     /**
      * Retrieve the start time for this span.
      *
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
-    public function startTime(): \DateTimeInterface
+    public function startTime(): ?DateTimeInterface
     {
         return $this->startTime;
     }
@@ -214,9 +216,9 @@ class SpanData
     /**
      * Retrieve the end time for this span.
      *
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
-    public function endTime(): \DateTimeInterface
+    public function endTime(): ?DateTimeInterface
     {
         return $this->endTime;
     }

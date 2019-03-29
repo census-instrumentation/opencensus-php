@@ -18,8 +18,8 @@
 namespace OpenCensus\Tests\Unit\Core;
 
 use OpenCensus\Core\Context;
-use PHPUnit\Framework\Error\Warning;
 use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_Error_Warning as Warning;
 
 /**
  * @group core
