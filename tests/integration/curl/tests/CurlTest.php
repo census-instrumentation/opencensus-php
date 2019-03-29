@@ -17,8 +17,8 @@
 
 namespace OpenCensus\Tests\Integration\Trace;
 
+use OpenCensus\Trace\Exporter\NullExporter;
 use OpenCensus\Trace\Tracer;
-use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Integrations\Curl;
 use PHPUnit\Framework\TestCase;
 
@@ -44,8 +44,8 @@ class CurlTest extends TestCase
     {
         $url = 'https://www.google.com/';
 
-        $exporter = $this->prophesize(ExporterInterface::class);
-        $tracer = Tracer::start($exporter->reveal(), [
+        $exporter = new NullExporter();
+        $tracer = Tracer::start($exporter, [
             'skipReporting' => true
         ]);
         $ch = curl_init($url);

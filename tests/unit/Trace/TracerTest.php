@@ -17,7 +17,7 @@
 
 namespace OpenCensus\Tests\Unit\Trace;
 
-use OpenCensus\Trace\Exporter\ExporterInterface;
+use OpenCensus\Trace\Exporter\NullExporter;
 use OpenCensus\Trace\Sampler\AlwaysSampleSampler;
 use OpenCensus\Trace\Sampler\NeverSampleSampler;
 use OpenCensus\Trace\Tracer;
@@ -29,16 +29,16 @@ use PHPUnit\Framework\TestCase;
  */
 class TracerTest extends TestCase
 {
-    private $reporter;
+    private $exporter;
 
     public function setUp()
     {
-        $this->reporter = $this->prophesize(ExporterInterface::class);
+        $this->exporter = new NullExporter();
     }
 
     public function testForceDisabled()
     {
-        $rt = Tracer::start($this->reporter->reveal(), [
+        $rt = Tracer::start($this->exporter, [
             'sampler' => new NeverSampleSampler(),
             'skipReporting' => true
         ]);
@@ -50,7 +50,7 @@ class TracerTest extends TestCase
 
     public function testForceEnabled()
     {
-        $rt = Tracer::start($this->reporter->reveal(), [
+        $rt = Tracer::start($this->exporter, [
             'sampler' => new AlwaysSampleSampler(),
             'skipReporting' => true
         ]);
@@ -61,7 +61,7 @@ class TracerTest extends TestCase
 
     public function testGlobalAttributes()
     {
-        $rt = Tracer::start($this->reporter->reveal(), [
+        $rt = Tracer::start($this->exporter, [
             'sampler' => new AlwaysSampleSampler(),
             'skipReporting' => true
         ]);
@@ -73,7 +73,7 @@ class TracerTest extends TestCase
 
     public function testGlobalAnnotation()
     {
-        $rt = Tracer::start($this->reporter->reveal(), [
+        $rt = Tracer::start($this->exporter, [
             'sampler' => new AlwaysSampleSampler(),
             'skipReporting' => true
         ]);
@@ -93,7 +93,7 @@ class TracerTest extends TestCase
 
     public function testGlobalMessageEvent()
     {
-        $rt = Tracer::start($this->reporter->reveal(), [
+        $rt = Tracer::start($this->exporter, [
             'sampler' => new AlwaysSampleSampler(),
             'skipReporting' => true
         ]);
@@ -109,7 +109,7 @@ class TracerTest extends TestCase
 
     public function testGlobalLink()
     {
-        $rt = Tracer::start($this->reporter->reveal(), [
+        $rt = Tracer::start($this->exporter, [
             'sampler' => new AlwaysSampleSampler(),
             'skipReporting' => true
         ]);

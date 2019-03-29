@@ -22,8 +22,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Subscriber\Mock;
 use GuzzleHttp\Subscriber\History;
 use GuzzleHttp\Message\Response;
-use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Exporter\ExporterInterface;
+use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Integrations\Guzzle\EventSubscriber;
 use Prophecy\Argument;
 use PHPUnit\Framework\TestCase;
@@ -47,8 +47,8 @@ class EventSubscriberTest extends TestCase
 
     public function testAddsSpanContextHeader()
     {
-        $this->exporter->export(Argument::that(function ($spans) {
-            return count($spans) == 3 && $spans[2]->name() == 'GuzzleHttp::request';
+        $this->exporter->export(Argument::that(static function ($spans) {
+            return count($spans) === 3 && $spans[2]->name() === 'GuzzleHttp::request';
         }))->shouldBeCalled();
 
         $rt = Tracer::start($this->exporter->reveal(), [

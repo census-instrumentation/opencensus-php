@@ -20,14 +20,13 @@ namespace OpenCensus\Tests\Unit\Trace;
 require_once __DIR__ . '/mock_http_response_code.php';
 
 use OpenCensus\Trace\Annotation;
+use OpenCensus\Trace\Exporter\NullExporter;
 use OpenCensus\Trace\Link;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Span;
-use OpenCensus\Trace\SpanContext;
 use OpenCensus\Trace\SpanData;
 use OpenCensus\Trace\Status;
 use OpenCensus\Trace\RequestHandler;
-use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Sampler\SamplerInterface;
 use OpenCensus\Trace\Tracer\NullTracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
@@ -49,9 +48,8 @@ class RequestHandlerTest extends TestCase
         if (extension_loaded('opencensus')) {
             opencensus_trace_clear();
         }
-        $this->exporter = $this->prophesize(ExporterInterface::class);
+        $this->exporter = new NullExporter();
         $this->sampler = $this->prophesize(SamplerInterface::class);
-        $this->exporter->export(Argument::any())->willReturn(true);
     }
 
     public function testCanTrackContext()
@@ -59,7 +57,7 @@ class RequestHandlerTest extends TestCase
         $this->sampler->shouldSample()->willReturn(true);
 
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -84,7 +82,7 @@ class RequestHandlerTest extends TestCase
     public function testCanParseParentContext()
     {
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -103,7 +101,7 @@ class RequestHandlerTest extends TestCase
     public function testForceEnabledContextHeader()
     {
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -121,7 +119,7 @@ class RequestHandlerTest extends TestCase
     public function testForceDisabledContextHeader()
     {
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -141,7 +139,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -165,7 +163,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -191,7 +189,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -215,7 +213,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -239,7 +237,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -273,7 +271,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -308,7 +306,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -342,7 +340,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -376,7 +374,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -413,7 +411,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -451,7 +449,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -488,7 +486,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -525,7 +523,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -560,7 +558,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -596,7 +594,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -635,7 +633,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -674,7 +672,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
@@ -697,7 +695,7 @@ class RequestHandlerTest extends TestCase
     {
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
-            $this->exporter->reveal(),
+            $this->exporter,
             $this->sampler->reveal(),
             new HttpHeaderPropagator(),
             [
