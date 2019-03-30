@@ -17,8 +17,9 @@
 
 namespace OpenCensus\Tests\Unit\Trace\Sampler;
 
+use OpenCensus\Trace\Sampler\AlwaysSampleSampler;
 use OpenCensus\Trace\Sampler\MultiSampler;
-use OpenCensus\Trace\Sampler\SamplerInterface;
+use OpenCensus\Trace\Sampler\NeverSampleSampler;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -26,48 +27,39 @@ use PHPUnit\Framework\TestCase;
  */
 class MultiSamplerTest extends TestCase
 {
-    public function testNoSamplers()
+    public function testNoSamplersShouldSample()
     {
         $sampler = new MultiSampler();
+
         $this->assertTrue($sampler->shouldSample());
     }
 
-    public function testSingleSampler()
+    public function testOneSamplerShouldSample()
     {
-        $innerSampler = $this->prophesize(SamplerInterface::class);
-        $innerSampler->shouldSample()->willReturn(true)->shouldBeCalled();
-
         $sampler = new MultiSampler([
-            $innerSampler->reveal()
+            new AlwaysSampleSampler(),
         ]);
+
         $this->assertTrue($sampler->shouldSample());
     }
 
-    public function testMultipleSamplers()
+    public function testMultipleSamplersShouldSample()
     {
-        $innerSampler = $this->prophesize(SamplerInterface::class);
-        $innerSampler->shouldSample()->willReturn(true)->shouldBeCalled();
-        $innerSampler2 = $this->prophesize(SamplerInterface::class);
-        $innerSampler2->shouldSample()->willReturn(true)->shouldBeCalled();
-
         $sampler = new MultiSampler([
-            $innerSampler->reveal(),
-            $innerSampler2->reveal()
+            new AlwaysSampleSampler(),
+            new AlwaysSampleSampler(),
         ]);
+
         $this->assertTrue($sampler->shouldSample());
     }
 
-    public function testInnerSamplerFails()
+    public function testOneFromMultipleSamplersFailsShouldNotSample()
     {
-        $innerSampler = $this->prophesize(SamplerInterface::class);
-        $innerSampler->shouldSample()->willReturn(true)->shouldBeCalled();
-        $innerSampler2 = $this->prophesize(SamplerInterface::class);
-        $innerSampler2->shouldSample()->willReturn(false)->shouldBeCalled();
-
         $sampler = new MultiSampler([
-            $innerSampler->reveal(),
-            $innerSampler2->reveal()
+            new AlwaysSampleSampler(),
+            new NeverSampleSampler(),
         ]);
+
         $this->assertFalse($sampler->shouldSample());
     }
 }

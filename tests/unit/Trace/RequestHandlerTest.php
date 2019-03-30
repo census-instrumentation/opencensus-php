@@ -23,16 +23,16 @@ use OpenCensus\Trace\Annotation;
 use OpenCensus\Trace\Exporter\NullExporter;
 use OpenCensus\Trace\Link;
 use OpenCensus\Trace\MessageEvent;
+use OpenCensus\Trace\Sampler\AlwaysSampleSampler;
+use OpenCensus\Trace\Sampler\NeverSampleSampler;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanData;
 use OpenCensus\Trace\Status;
 use OpenCensus\Trace\RequestHandler;
-use OpenCensus\Trace\Sampler\SamplerInterface;
 use OpenCensus\Trace\Tracer\NullTracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 use OpenCensus\Trace\MockHttpResponseCode;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 
 /**
  * @group trace
@@ -41,24 +41,19 @@ class RequestHandlerTest extends TestCase
 {
     private $exporter;
 
-    private $sampler;
-
     public function setUp()
     {
         if (extension_loaded('opencensus')) {
             opencensus_trace_clear();
         }
         $this->exporter = new NullExporter();
-        $this->sampler = $this->prophesize(SamplerInterface::class);
     }
 
     public function testCanTrackContext()
     {
-        $this->sampler->shouldSample()->willReturn(true);
-
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -83,7 +78,7 @@ class RequestHandlerTest extends TestCase
     {
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new NeverSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'headers' => [
@@ -102,7 +97,7 @@ class RequestHandlerTest extends TestCase
     {
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new NeverSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'headers' => [
@@ -120,7 +115,7 @@ class RequestHandlerTest extends TestCase
     {
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new NeverSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'headers' => [
@@ -137,10 +132,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsAttributes()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -161,10 +155,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsAttributesToSpecificSpan()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -187,10 +180,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsAttributesToSpecificUnattachedDetachedSpan()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -211,10 +203,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsAttributesToSpecificDetachedSpan()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -235,10 +226,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsAnnotation()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -269,10 +259,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsAnnotationToSpecificSpan()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -304,10 +293,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsAnnotationToSpecificUnattachedDetachedSpan()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -338,10 +326,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsAnnotationToSpecificDetachedSpan()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -372,10 +359,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsLink()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -409,10 +395,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsLinkToSpecificSpan()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -447,10 +432,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsLinkToSpecificUnattachedDetachedSpan()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -484,10 +468,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsLinkToSpecificDetachedSpan()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -521,10 +504,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsMessageEvent()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -556,10 +538,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsMessageEventToSpecificSpan()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -592,10 +573,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsMessageEventToSpecificUnattachedDetachedSpan()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -631,10 +611,9 @@ class RequestHandlerTest extends TestCase
 
     public function testAddsMessageEventToSpecificDetachedSpan()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -670,10 +649,9 @@ class RequestHandlerTest extends TestCase
 
     public function testNoStatusOfRootSpanOnExitWithoutHttpResponse()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true
@@ -693,10 +671,9 @@ class RequestHandlerTest extends TestCase
 
     public function testSetsStatusOfRootSpanOnExitWithHttpResponse()
     {
-        $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter,
-            $this->sampler->reveal(),
+            new AlwaysSampleSampler(),
             new HttpHeaderPropagator(),
             [
                 'skipReporting' => true

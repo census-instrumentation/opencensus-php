@@ -57,6 +57,7 @@ class MultiSampler implements SamplerInterface
                 return false;
             }
         }
+
         return true;
     }
 }
