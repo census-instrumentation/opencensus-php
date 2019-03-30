@@ -28,7 +28,7 @@ class TagValue
     use \OpenCensus\Utils\PrintableTrait;
 
     /** The maximum length for a tag value. */
-    const MAX_LENGTH = 255;
+    private const MAX_LENGTH = 255;
 
     /** @var string TagValue payload */
     private $value;
@@ -54,7 +54,7 @@ class TagValue
     public static function create(string $value): TagValue
     {
         if (strlen($value) > self::MAX_LENGTH || !self::isPrintable($value)) {
-            throw new \Exception("Invalid TagValue: $value");
+            throw new \RuntimeException("Invalid TagValue: $value");
         }
         return new self($value);
     }

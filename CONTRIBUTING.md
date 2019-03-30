@@ -63,7 +63,7 @@ You can check your code against these rules by running PHPCS with the proper
 ruleset, like this:
 
 ```sh
-$ vendor/bin/phpcs --standard=phpcs-ruleset
+$ vendor/bin/phpcs --standard=phpcs.xml
 ```
 
 Coding style checks are run along with the other test suites.

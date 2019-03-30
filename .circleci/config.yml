@@ -60,7 +60,7 @@ unit-config: &unit-config
 
     - run:
         name: PHP Code Style
-        command: vendor/bin/phpcs --standard=./phpcs-ruleset.xml
+        command: vendor/bin/phpcs --standard=./phpcs.xml
 
     - run:
         name: PHP unit tests
