@@ -33,7 +33,7 @@ interface ExporterInterface
      * @param Measure $measure The measure to register.
      * @return bool Returns true on successful send operation.
      */
-    public static function createMeasure(Measure $measure): bool;
+    public function createMeasure(Measure $measure): bool;
 
     /**
      * Adjust the stats reporting period of the Daemom.
@@ -41,7 +41,7 @@ interface ExporterInterface
      * @param float $interval Reporting interval of the daemon in seconds.
      * @return bool Returns true on successful send operation.
      */
-    public static function setReportingPeriod(float $interval): bool;
+    public function setReportingPeriod(float $interval): bool;
 
     /**
      * Register views.
@@ -49,7 +49,7 @@ interface ExporterInterface
      * @param View ...$views One or more Views to register.
      * @return bool Returns true on successful send operation.
      */
-    public static function registerView(View ...$views): bool;
+    public function registerView(View ...$views): bool;
 
     /**
      * Unregister views.
@@ -57,7 +57,7 @@ interface ExporterInterface
      * @param View ...$views Views to unregister.
      * @return bool Returns true on successful send operation.
      */
-    public static function unregisterView(View ...$views): bool;
+    public function unregisterView(View ...$views): bool;
 
     /**
      * Record the provided Measurements, Attachments and Tags.
@@ -67,5 +67,5 @@ interface ExporterInterface
      * @param Measurement ...$ms One or more measurements to record.
      * @return bool Returns true on successful send operation.
      */
-    public static function recordStats(TagContext $tagContext, array $attachments, Measurement ...$ms): bool;
+    public function recordStats(TagContext $tagContext, array $attachments, Measurement ...$ms): bool;
 }

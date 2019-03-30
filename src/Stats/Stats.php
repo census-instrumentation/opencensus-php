@@ -115,7 +115,7 @@ final class Stats
      */
     public static function newMeasurementMap(): MeasurementInterface
     {
-        if (self::$exporter instanceof NoopExporter) {
+        if (self::getExporter() instanceof NoopExporter) {
             return new NoopMeasurementMap();
         }
 
@@ -130,7 +130,7 @@ final class Stats
      */
     public static function registerView(View ...$views): bool
     {
-        return self::getExporter()::registerView(...$views);
+        return self::getExporter()->registerView(...$views);
     }
 
     /**
@@ -141,6 +141,6 @@ final class Stats
      */
     public static function unregisterView(View ...$views): bool
     {
-        return self::getExporter()::unregisterView(...$views);
+        return self::getExporter()->unregisterView(...$views);
     }
 }

@@ -24,27 +24,27 @@ use \OpenCensus\Stats\View\View;
 
 class NoopExporter implements ExporterInterface
 {
-    public static function createMeasure(Measure $measure): bool
+    public function createMeasure(Measure $measure): bool
     {
         return true;
     }
 
-    public static function setReportingPeriod(float $interval): bool
+    public function setReportingPeriod(float $interval): bool
     {
         return true;
     }
 
-    public static function registerView(View ...$views): bool
+    public function registerView(View ...$views): bool
     {
         return true;
     }
 
-    public static function unregisterView(View ...$views): bool
+    public function unregisterView(View ...$views): bool
     {
         return true;
     }
 
-    public static function recordStats(TagContext $tags, array $attachments, Measurement ...$ms): bool
+    public function recordStats(TagContext $tags, array $attachments, Measurement ...$ms): bool
     {
         return true;
     }
