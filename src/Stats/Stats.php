@@ -145,7 +145,7 @@ class Stats
     /**
      * Register one or multiple views.
      *
-     * @param View ...$views the views to register.
+     * @param View[] $views the views to register.
      * @return bool
      */
     public static function registerView(View ...$views): bool
