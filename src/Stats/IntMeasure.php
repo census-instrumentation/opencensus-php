@@ -42,7 +42,7 @@ class IntMeasure extends Measure
      * Constructs a new IntMeasure.
      *
      * @param string $name Unique name of the Measure.
-     * @param string $description Human readable discription of the Measure.
+     * @param string $description Human readable description of the Measure.
      * @param string $unit Unit of the Measure. See
      *     <a href="http://unitsofmeasure.org/ucum.html">Unified Code for Units of Measure</a>
      * @return IntMeasure
@@ -50,7 +50,7 @@ class IntMeasure extends Measure
      */
     final public static function create(
         string $name,
-        string $description = "",
+        string $description = '',
         string $unit = Measure::DIMENSIONLESS
     ): IntMeasure {
         return self::registerMeasureHandle($name, $description, $unit);
