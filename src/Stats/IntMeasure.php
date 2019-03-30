@@ -72,7 +72,7 @@ class IntMeasure extends Measure
              * @param Measure $measure The Measure.
              * @param int $value The Measurement value.
              */
-            public function __construct(Measure &$measure, int $value)
+            public function __construct(Measure $measure, int $value)
             {
                 parent::__construct($measure, $value);
             }

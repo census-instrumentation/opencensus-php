@@ -74,7 +74,7 @@ class FloatMeasure extends Measure
              * @param float $value The value of this Measurement.
              */
 
-            public function __construct(Measure &$measure, float $value)
+            public function __construct(Measure $measure, float $value)
             {
                 parent::__construct($measure, $value);
             }
