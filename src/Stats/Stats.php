@@ -71,42 +71,21 @@ use OpenCensus\Stats\View\View;
  * });
  * ```
  */
-class Stats
+final class Stats
 {
-    /** @var Stats $instance */
-    private static $instance;
-
-    /** @var ExporterInterface $exporter */
-    private $exporter;
-
-    private function __construct()
-    {
-    }
-
     /**
-      * Retrieve Stats instance.
-      *
-      * @return Stats
-      */
-    public static function getInstance(): Stats
-    {
-        if (self::$instance instanceof Stats) {
-            return self::$instance;
-        }
-        self::$instance = new Stats();
-        self::$instance->exporter = new NoopExporter();
-
-        return self::$instance;
-    }
+     * @var ExporterInterface
+     */
+    private static $exporter;
 
     /**
      * Set the ExporterInterface to use by the Stats components.
      *
      * @param ExporterInterface $exporter
      */
-    public static function setExporter(ExporterInterface $exporter)
+    public static function setExporter(ExporterInterface $exporter): void
     {
-        self::getInstance()->exporter = $exporter;
+        self::$exporter = $exporter;
     }
 
     /**
@@ -116,7 +95,7 @@ class Stats
      */
     public static function getExporter(): ExporterInterface
     {
-        return self::getInstance()->exporter;
+        return self::$exporter ?? new NoopExporter();
     }
 
     /**
@@ -136,21 +115,22 @@ class Stats
      */
     public static function newMeasurementMap(): MeasurementInterface
     {
-        if (self::getInstance()->exporter instanceof NoopExporter) {
+        if (self::$exporter instanceof NoopExporter) {
             return new NoopMeasurementMap();
         }
+
         return new MeasurementMap();
     }
 
     /**
      * Register one or multiple views.
      *
-     * @param View[] $views the views to register.
+     * @param View ...$views the views to register.
      * @return bool
      */
     public static function registerView(View ...$views): bool
     {
-        return self::getInstance()->exporter->registerView(...$views);
+        return self::getExporter()::registerView(...$views);
     }
 
     /**
@@ -161,6 +141,6 @@ class Stats
      */
     public static function unregisterView(View ...$views): bool
     {
-        return self::getInstance()->exporter->unregisterView(...$views);
+        return self::getExporter()::unregisterView(...$views);
     }
 }

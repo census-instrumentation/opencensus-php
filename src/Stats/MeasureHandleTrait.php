@@ -40,7 +40,7 @@ trait MeasureHandleTrait
         }
 
         $m = new self($name, $description, $unit);
-        Stats::getInstance()->getExporter()->createMeasure($m);
+        Stats::getExporter()->createMeasure($m);
         return parent::$map[$name] = $m;
     }
 }
