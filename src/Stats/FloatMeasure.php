@@ -43,7 +43,7 @@ class FloatMeasure extends Measure
      * Constructs a new FloatMeasure.
      *
      * @param string $name Unique name of the Measure.
-     * @param string $description Human readable discription of the Measure.
+     * @param string $description Human readable description of the Measure.
      * @param string $unit Unit of the Measure. See
      *     <a href="http://unitsofmeasure.org/ucum.html">Unified Code for Units of Measure</a>
      * @return FloatMeasure
@@ -51,7 +51,7 @@ class FloatMeasure extends Measure
      */
     final public static function create(
         string $name,
-        string $description = "",
+        string $description = '',
         string $unit = Measure::DIMENSIONLESS
     ): FloatMeasure {
         return self::registerMeasureHandle($name, $description, $unit);
@@ -74,7 +74,7 @@ class FloatMeasure extends Measure
              * @param float $value The value of this Measurement.
              */
 
-            public function __construct(Measure &$measure, float $value)
+            public function __construct(Measure $measure, float $value)
             {
                 parent::__construct($measure, $value);
             }

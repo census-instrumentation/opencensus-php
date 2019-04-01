@@ -31,22 +31,22 @@ abstract class Measure
     use \OpenCensus\Utils\PrintableTrait;
 
     /** measurement is dimensionless */
-    public const DIMENSIONLESS = "1";
+    public const DIMENSIONLESS = '1';
     /** measurement in bytes */
-    public const BYTES         = "By";
+    public const BYTES         = 'By';
     /** measurement in milliseconds */
-    public const MILLISECONDS  = "ms";
+    public const MILLISECONDS  = 'ms';
 
     protected const NAME_MAX_LENGTH = 255;
-    protected const EX_NAME_EXISTS  = "Different Measure Type with same name already exists.";
-    protected const EX_INVALID_NAME = "Name should be a ASCII string with a length " .
-        "no greater than " . self::NAME_MAX_LENGTH . " characters.";
+    protected const EX_NAME_EXISTS  = 'Different Measure Type with same name already exists.';
+    protected const EX_INVALID_NAME = 'Name should be an ASCII string with a length no greater than ' .
+                                       self::NAME_MAX_LENGTH . ' characters.';
 
     /**
-     * Contains our initialized Measure's
+     * Contains our initialized Measures
      * @var array $map
      */
-    protected static $map = array();
+    protected static $map = [];
     /**
      * Holds our Measure's name.
      * @var string $name

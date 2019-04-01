@@ -18,6 +18,7 @@
 namespace OpenCensus\Tests\Unit\Trace\Integrations\Guzzle;
 
 use OpenCensus\Core\Context;
+use OpenCensus\Trace\Exporter\NullExporter;
 use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Integrations\Guzzle\Middleware;

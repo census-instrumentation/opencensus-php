@@ -30,12 +30,7 @@ namespace OpenCensus\Trace\Sampler;
  */
 class AlwaysSampleSampler implements SamplerInterface
 {
-    /**
-     * Returns true because we always want to sample.
-     *
-     * @return bool
-     */
-    public function shouldSample()
+    public function shouldSample(): bool
     {
         return true;
     }

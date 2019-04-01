@@ -17,6 +17,8 @@
 
 namespace OpenCensus\Trace\Sampler;
 
+use InvalidArgumentException;
+
 /**
  * This implementation of the SamplerInterface uses a pseudo-random number generator
  * to sample a percentage of requests.
@@ -39,23 +41,18 @@ class ProbabilitySampler implements SamplerInterface
     /**
      * Creates the ProbabilitySampler
      *
-     * @param float $percentage The percentage of requests to sample. Must be between 0 and 1.
+     * @param float $rate The percentage of requests to sample. Must be between 0 and 1.
      */
-    public function __construct($rate)
+    public function __construct(float $rate)
     {
         if ($rate > 1 || $rate < 0) {
-            throw new \InvalidArgumentException('Percentage must be between 0 and 1');
+            throw new InvalidArgumentException('Percentage must be between 0 and 1');
         }
 
         $this->rate = $rate;
     }
 
-    /**
-     * Uses a pseudo-random number generator to decide if we should sample the request.
-     *
-     * @return bool
-     */
-    public function shouldSample()
+    public function shouldSample(): bool
     {
         return lcg_value() <= $this->rate;
     }

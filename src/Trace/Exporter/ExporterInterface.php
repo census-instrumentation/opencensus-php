@@ -28,7 +28,7 @@ interface ExporterInterface
      * Export the provided SpanData to a backend.
      *
      * @param SpanData[] $spans
-     * @return bool
+     * @return bool Success of export
      */
-    public function export(array $spans);
+    public function export(array $spans): bool;
 }

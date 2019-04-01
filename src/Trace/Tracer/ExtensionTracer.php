@@ -79,9 +79,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
     public function withSpan(Span $span): Scope
     {
         $spanData = $span->spanData();
-        $startTime = $spanData->startTime()
-            ? (float)($spanData->startTime()->format('U.u'))
-            : microtime(true);
+        $startTime = $spanData->startTime() ? (float)$spanData->startTime()->format('U.u') : microtime(true);
         $info = [
             'traceId' => $spanData->traceId(),
             'spanId' => $spanData->spanId(),
@@ -163,7 +161,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         return $this->spanContext()->enabled();
     }
 
-    public function attributeAdded(Span $span, $attribute, $value)
+    public function attributeAdded(Span $span, string $attribute, string $value): void
     {
         // If the span is already attached (managed by the extension), then
         // tell the extension to add the attribute.
@@ -174,7 +172,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         }
     }
 
-    public function linkAdded(Span $span, Link $link)
+    public function linkAdded(Span $span, Link $link): void
     {
         // If the span is already attached (managed by the extension), then
         // tell the extension to add the link.
@@ -187,7 +185,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         }
     }
 
-    public function timeEventAdded(Span $span, TimeEvent $timeEvent)
+    public function timeEventAdded(Span $span, TimeEvent $timeEvent): void
     {
         if ($span->attached()) {
             if ($timeEvent instanceof Annotation) {

@@ -39,7 +39,7 @@ abstract class Measurement
      * @param Measure $measure The measure this measurement belongs to.
      * @param mixed $value The value of the measurement.
      */
-    protected function __construct(Measure &$measure, $value)
+    protected function __construct(Measure $measure, $value)
     {
         $this->m = $measure;
         $this->v = $value;

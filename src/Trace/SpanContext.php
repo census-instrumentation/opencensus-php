@@ -82,7 +82,7 @@ class SpanContext
      *
      * @return string
      */
-    public function traceId()
+    public function traceId(): string
     {
         return $this->traceId;
     }
@@ -90,9 +90,9 @@ class SpanContext
     /**
      * Fetch the current spanId.
      *
-     * @return string
+     * @return string|null
      */
-    public function spanId()
+    public function spanId(): ?string
     {
         return $this->spanId;
     }
@@ -100,9 +100,9 @@ class SpanContext
     /**
      * Set the current spanId.
      *
-     * @param string|null $spanId The spanId to set.
+     * @param string $spanId The spanId to set.
      */
-    public function setSpanId($spanId)
+    public function setSpanId(string $spanId): void
     {
         $this->spanId = $spanId;
     }
@@ -112,7 +112,7 @@ class SpanContext
      *
      * @return bool|null
      */
-    public function enabled()
+    public function enabled(): ?bool
     {
         return $this->enabled;
     }
@@ -122,7 +122,7 @@ class SpanContext
      *
      * @param bool|null $enabled
      */
-    public function setEnabled($enabled)
+    public function setEnabled($enabled): void
     {
         $this->enabled = $enabled;
     }
@@ -132,7 +132,7 @@ class SpanContext
      *
      * @return bool
      */
-    public function fromHeader()
+    public function fromHeader(): bool
     {
         return $this->fromHeader;
     }

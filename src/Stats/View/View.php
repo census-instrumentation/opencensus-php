@@ -30,14 +30,14 @@ class View
     use \OpenCensus\Utils\PrintableTrait;
 
     /** @var array $views map of views to make sure view names are unique. */
-    private static $views = array();
+    private static $views = [];
 
     /** @var string $name */
     private $name;
     /** @var string $description */
     private $description;
     /** @var TagKey[] $tagKeys */
-    private $tagKeys = array();
+    private $tagKeys;
     /** @var Measure $measure */
     private $measure;
     /** @var Aggregation $aggregation */
@@ -59,7 +59,6 @@ class View
         Aggregation $aggregation,
         TagKey ...$tagKeys
     ) {
-    
         if ($name === '') {
             $name = $measure->getName();
         }

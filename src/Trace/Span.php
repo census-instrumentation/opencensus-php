@@ -34,17 +34,17 @@ class Span
     use DateFormatTrait;
 
     // See https://github.com/census-instrumentation/opencensus-specs/blob/master/trace/HTTP.md#attributes
-    const ATTRIBUTE_HOST = 'http.host';
-    const ATTRIBUTE_PORT = 'http.port';
-    const ATTRIBUTE_METHOD = 'http.method';
-    const ATTRIBUTE_PATH = 'http.path';
-    const ATTRIBUTE_ROUTE = 'http.route';
-    const ATTRIBUTE_USER_AGENT = 'http.user_agent';
-    const ATTRIBUTE_STATUS_CODE = 'http.status_code';
+    public const ATTRIBUTE_HOST = 'http.host';
+    public const ATTRIBUTE_PORT = 'http.port';
+    public const ATTRIBUTE_METHOD = 'http.method';
+    public const ATTRIBUTE_PATH = 'http.path';
+    public const ATTRIBUTE_ROUTE = 'http.route';
+    public const ATTRIBUTE_USER_AGENT = 'http.user_agent';
+    public const ATTRIBUTE_STATUS_CODE = 'http.status_code';
 
-    const KIND_UNSPECIFIED = 'SPAN_KIND_UNSPECIFIED';
-    const KIND_SERVER = 'SERVER';
-    const KIND_CLIENT = 'CLIENT';
+    public const KIND_UNSPECIFIED = 'SPAN_KIND_UNSPECIFIED';
+    public const KIND_SERVER = 'SERVER';
+    public const KIND_CLIENT = 'CLIENT';
 
     /**
      * Unique identifier for a trace. All spans from the same Trace share the
@@ -198,10 +198,8 @@ class Span
             'eventHandler' => null
         ];
 
-        $this->traceId = $options['traceId'];
-        $this->eventHandler = $options['eventHandler']
-            ? $options['eventHandler']
-            : new NullEventHandler();
+        $this->traceId = $options['traceId'] ?? IdGenerator::hex(8);
+        $this->eventHandler = $options['eventHandler'] ?: new NullEventHandler();
 
         if (array_key_exists('startTime', $options)) {
             $this->setStartTime($options['startTime']);
@@ -246,7 +244,7 @@ class Span
      *         this span. **Defaults to** now. If provided as an int or float,
      *         it is expected to be a Unix timestamp.
      */
-    public function setStartTime($when = null)
+    public function setStartTime($when = null): void
     {
         $this->startTime = $this->formatDate($when);
     }
@@ -258,7 +256,7 @@ class Span
      *         this span. **Defaults to** now. If provided as an int or float,
      *         it is expected to be a Unix timestamp.
      */
-    public function setEndTime($when = null)
+    public function setEndTime($when = null): void
     {
         $this->endTime = $this->formatDate($when);
     }
@@ -268,7 +266,7 @@ class Span
      *
      * @return string
      */
-    public function spanId()
+    public function spanId(): string
     {
         return $this->spanId;
     }
@@ -278,7 +276,7 @@ class Span
      *
      * @return SpanData
      */
-    public function spanData()
+    public function spanData(): SpanData
     {
         return new SpanData(
             $this->name,
@@ -302,7 +300,7 @@ class Span
     /**
      * Mark this span as attached.
      */
-    public function attach()
+    public function attach(): void
     {
         $this->attached = true;
     }
@@ -312,7 +310,7 @@ class Span
      *
      * @return bool
      */
-    public function attached()
+    public function attached(): bool
     {
         return $this->attached;
     }
@@ -320,13 +318,13 @@ class Span
     /**
      * Add an attribute to this span.
      *
-     * @param string $attribute The name of the attribute to add
+     * @param string $name The name of the attribute to add
      * @param string $value The attribute value
      */
-    public function addAttribute($attribute, $value)
+    public function addAttribute(string $name, string $value): void
     {
-        $this->attributes[$attribute] = (string) $value;
-        $this->eventHandler->attributeAdded($this, $attribute, $value);
+        $this->attributes[$name] = $value;
+        $this->eventHandler->attributeAdded($this, $name, $value);
     }
 
     /**
@@ -334,7 +332,7 @@ class Span
      *
      * @param TimeEvent[] $timeEvents
      */
-    public function addTimeEvents(array $timeEvents)
+    public function addTimeEvents(array $timeEvents): void
     {
         foreach ($timeEvents as $timeEvent) {
             $this->addTimeEvent($timeEvent);
@@ -346,7 +344,7 @@ class Span
      *
      * @param TimeEvent $timeEvent
      */
-    public function addTimeEvent(TimeEvent $timeEvent)
+    public function addTimeEvent(TimeEvent $timeEvent): void
     {
         $this->timeEvents[] = $timeEvent;
         $this->eventHandler->timeEventAdded($this, $timeEvent);
@@ -357,7 +355,7 @@ class Span
      *
      * @param Link[] $links
      */
-    public function addLinks(array $links)
+    public function addLinks(array $links): void
     {
         foreach ($links as $link) {
             $this->addLink($link);
@@ -369,7 +367,7 @@ class Span
      *
      * @param Link $link
      */
-    public function addLink(Link $link)
+    public function addLink(Link $link): void
     {
         $this->links[] = $link;
         $this->eventHandler->linkAdded($this, $link);
@@ -381,7 +379,7 @@ class Span
      * @param int $code The status code
      * @param string $message A developer-facing error message
      */
-    public function setStatus($code, $message)
+    public function setStatus($code, $message): void
     {
         $this->status = new Status($code, $message);
     }
@@ -395,8 +393,8 @@ class Span
     private function filterStackTrace(array $stackTrace): array
     {
         return array_values(
-            array_filter($stackTrace, function ($st) {
-                return !array_key_exists('class', $st) || substr($st['class'], 0, 16) != 'OpenCensus\Trace';
+            array_filter($stackTrace, static function ($st) {
+                return !array_key_exists('class', $st) || strpos($st['class'], 'OpenCensus\Trace') !== 0;
             })
         );
     }
@@ -414,12 +412,14 @@ class Span
             $st += ['line' => null];
             if (!array_key_exists('class', $st)) {
                 return implode('/', array_filter(['app', basename($st['file']), $st['function'], $st['line']]));
-            } elseif (substr($st['class'], 0, 18) != 'OpenCensus\Trace') {
+            }
+
+            if (strpos($st['class'], 'OpenCensus\Trace') !== 0) {
                 return implode('/', array_filter(['app', $st['class'], $st['function'], $st['line']]));
             }
         }
 
         // We couldn't find a suitable stackTrace entry - generate a random one
-        return uniqid('span');
+        return uniqid('span', true);
     }
 }

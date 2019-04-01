@@ -24,9 +24,9 @@ class Link
 {
     use AttributeTrait;
 
-    const TYPE_UNSPECIFIED = 'TYPE_UNSPECIFIED';
-    const TYPE_CHILD_LINKED_SPAN = 'CHILD_LINKED_SPAN';
-    const TYPE_PARENT_LINKED_SPAN = 'PARENT_LINKED_SPAN';
+    public const TYPE_UNSPECIFIED = 'TYPE_UNSPECIFIED';
+    public const TYPE_CHILD_LINKED_SPAN = 'CHILD_LINKED_SPAN';
+    public const TYPE_PARENT_LINKED_SPAN = 'PARENT_LINKED_SPAN';
 
     /**
      * @var string `TRACE_ID` a unique identifier for a trace.
@@ -74,7 +74,7 @@ class Link
      *
      * @return string
      */
-    public function traceId()
+    public function traceId(): string
     {
         return $this->traceId;
     }
@@ -84,7 +84,7 @@ class Link
      *
      * @return string
      */
-    public function spanId()
+    public function spanId(): string
     {
         return $this->spanId;
     }
@@ -94,7 +94,7 @@ class Link
      *
      * @return string
      */
-    public function type()
+    public function type(): string
     {
         return $this->type;
     }

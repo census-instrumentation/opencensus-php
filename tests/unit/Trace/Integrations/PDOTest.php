@@ -55,9 +55,4 @@ class PDOTest extends TestCase
 
         $this->assertEquals($expected, $spanOptions);
     }
-
-    public function testStatmentExecute()
-    {
-        $this->markTestSkipped('Cannot test without a database instance');
-    }
 }

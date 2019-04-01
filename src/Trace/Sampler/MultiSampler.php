@@ -50,19 +50,14 @@ class MultiSampler implements SamplerInterface
         $this->samplers = $samplers;
     }
 
-    /**
-     * Returns false if any provided sampler chooses not to sample this
-     * request.
-     *
-     * @return bool
-     */
-    public function shouldSample()
+    public function shouldSample(): bool
     {
         foreach ($this->samplers as $sampler) {
             if ($sampler->shouldSample() === false) {
                 return false;
             }
         }
+
         return true;
     }
 }

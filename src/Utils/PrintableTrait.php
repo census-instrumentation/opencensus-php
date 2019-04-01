@@ -28,13 +28,15 @@ trait PrintableTrait
      * @param string $str string to test.
      * @return bool returns true if string is printable.
      */
-    private static function isPrintable($str)
+    private static function isPrintable(string $str): bool
     {
-        for ($i = 0; $i < strlen($str); $i++) {
+        $length = strlen($str);
+        for ($i = 0; $i < $length; $i++) {
             if (!($str[$i] >= ' ' && $str[$i] <= '~')) {
                 return false;
             }
         }
+
         return true;
     }
 }

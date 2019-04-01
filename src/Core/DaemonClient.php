@@ -186,7 +186,7 @@ class DaemonClient implements StatsExporter, TraceExporter
         return self::$instance = new DaemonClient($sock, $maxSendTime);
     }
 
-    public static function createMeasure(Measure $measure): bool
+    public function createMeasure(Measure $measure): bool
     {
         $msg = '';
         switch (true) {
@@ -206,7 +206,7 @@ class DaemonClient implements StatsExporter, TraceExporter
         return self::$instance->send(self::MSG_MEASURE_CREATE, $msg);
     }
 
-    public static function setReportingPeriod(float $interval): bool
+    public function setReportingPeriod(float $interval): bool
     {
         if ($interval < 1.0) {
             return false;
@@ -215,7 +215,7 @@ class DaemonClient implements StatsExporter, TraceExporter
         return self::$instance->send(self::MSG_VIEW_REPORTING_PERIOD, $msg);
     }
 
-    public static function registerView(View ...$views): bool
+    public function registerView(View ...$views): bool
     {
         // bail out if we don't have views
         if (count($views) === 0) {
@@ -247,7 +247,7 @@ class DaemonClient implements StatsExporter, TraceExporter
         return self::$instance->send(self::MSG_VIEW_REGISTER, $msg);
     }
 
-    public static function unregisterView(View ...$views): bool
+    public function unregisterView(View ...$views): bool
     {
         // bail out if we don't have views
         if (count($views) === 0) {
@@ -262,7 +262,7 @@ class DaemonClient implements StatsExporter, TraceExporter
         return self::$instance->send(self::MSG_VIEW_UNREGISTER, $msg);
     }
 
-    public static function recordStats(TagContext $tagContext, array $attachments, Measurement ...$ms): bool
+    public function recordStats(TagContext $tagContext, array $attachments, Measurement ...$ms): bool
     {
         // bail out if we don't have measurements
         if (count($ms) === 0) {
@@ -298,7 +298,7 @@ class DaemonClient implements StatsExporter, TraceExporter
         return self::$instance->send(self::MSG_STATS_RECORD, $msg);
     }
 
-    public function export(array $spans)
+    public function export(array $spans): bool
     {
         $spanData = json_encode(array_map(function (SpanData $span) {
             return [

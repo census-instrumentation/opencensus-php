@@ -52,7 +52,7 @@ class Annotation extends TimeEvent
      *
      * @return string
      */
-    public function description()
+    public function description(): string
     {
         return $this->description;
     }

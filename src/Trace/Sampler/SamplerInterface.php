@@ -23,9 +23,9 @@ namespace OpenCensus\Trace\Sampler;
 interface SamplerInterface
 {
     /**
-     * Returns true if we whould sample the request
+     * Returns true if we should sample the request
      *
      * @return bool
      */
-    public function shouldSample();
+    public function shouldSample(): bool;
 }

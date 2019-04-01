@@ -23,4 +23,4 @@ DIRNAME=$(dirname $0)
 $DIRNAME/../vendor/bin/phpunit
 
 # Run code style tests
-$DIRNAME/../vendor/bin/phpcs --standard=$DIRNAME/../phpcs-ruleset.xml -p
+$DIRNAME/../vendor/bin/phpcs --standard=$DIRNAME/../phpcs.xml -p

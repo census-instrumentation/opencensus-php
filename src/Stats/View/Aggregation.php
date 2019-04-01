@@ -25,18 +25,18 @@ namespace OpenCensus\Stats\View;
 class Aggregation
 {
     /** No or unknown Aggregation type. */
-    const NONE         = 0;
+    public const NONE         = 0;
     /** Count Aggregation type. */
-    const COUNT        = 1;
+    public const COUNT        = 1;
     /** Sum Aggregation type. */
-    const SUM          = 2;
+    public const SUM          = 2;
     /** Distribution Aggregation type. */
-    const DISTRIBUTION = 3;
+    public const DISTRIBUTION = 3;
     /** LastValue Aggregation type. */
-    const LAST_VALUE   = 4;
+    public const LAST_VALUE   = 4;
 
-    /** @var int $type Aggragation type */
-    private $type = 0;
+    /** @var int $type Aggregation type */
+    private $type;
 
     /**
      * @var float[] $bounds Bucket boundaries if this Aggregation represents a
@@ -93,11 +93,11 @@ class Aggregation
       */
     final public static function distribution(array $bounds): Aggregation
     {
-        foreach ($bounds as &$value) {
-            if (!is_float($value) && !is_integer($value)) {
-                throw new \Exception("provided bucket boundaries need to be of type float");
+        foreach ($bounds as $index => $value) {
+            if (!is_float($value) && !is_int($value)) {
+                throw new \RuntimeException('Provided bucket boundaries need to be of type float.');
             }
-            $value = (float) $value;
+            $bounds[$index] = (float) $value;
         }
         sort($bounds);
 

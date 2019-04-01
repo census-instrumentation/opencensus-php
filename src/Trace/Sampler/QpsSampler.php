@@ -113,12 +113,7 @@ class QpsSampler implements SamplerInterface
         }
     }
 
-    /**
-     * Returns whether or not the request should be sampled.
-     *
-     * @return bool
-     */
-    public function shouldSample()
+    public function shouldSample(): bool
     {
         // We will store the microtime timestamp in the cache because some
         // cache implementations will not let you use expiry for anything less

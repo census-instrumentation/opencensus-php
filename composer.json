@@ -32,6 +32,7 @@
         "ext-opencensus": "< 0.1.0"
     },
     "suggest": {
+        "ext-json": "For using LoggerExporter",
         "opencensus/opencensus-exporter-jaeger": "Export data to Jaeger",
         "opencensus/opencensus-exporter-stackdriver": "Export data to Stackdriver",
         "opencensus/opencensus-exporter-zipkin": "Export data to Zipkin",

@@ -50,13 +50,7 @@ class FileExporter implements ExporterInterface
         $this->filename = $filename;
     }
 
-    /**
-     * Report the provided SpanData to a file in json format.
-     *
-     * @param SpanData[] $spans
-     * @return bool
-     */
-    public function export(array $spans)
+    public function export(array $spans): bool
     {
         $spans = $this->convertSpans($spans);
         return file_put_contents($this->filename, json_encode($spans) . PHP_EOL, FILE_APPEND) !== false;

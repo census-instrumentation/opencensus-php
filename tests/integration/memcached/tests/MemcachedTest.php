@@ -17,8 +17,8 @@
 
 namespace OpenCensus\Tests\Integration\Trace\Exporter;
 
+use OpenCensus\Trace\Exporter\NullExporter;
 use OpenCensus\Trace\Tracer;
-use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Integrations\Memcached as MemcachedIntegration;
 use PHPUnit\Framework\TestCase;
 use Memcached;
@@ -42,8 +42,8 @@ class MemcachedTest extends TestCase
             $this->markTestSkipped('Please enable the opencensus extension.');
         }
         opencensus_trace_clear();
-        $exporter = $this->prophesize(ExporterInterface::class);
-        $this->tracer = Tracer::start($exporter->reveal(), [
+        $exporter = new NullExporter();
+        $this->tracer = Tracer::start($exporter, [
             'skipReporting' => true
         ]);
     }

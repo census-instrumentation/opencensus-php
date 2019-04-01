@@ -19,8 +19,8 @@ namespace OpenCensus\Tests\Integration\Trace;
 
 use GuzzleHttp\Client;
 use HttpTest\HttpTestServer;
+use OpenCensus\Trace\Exporter\NullExporter;
 use OpenCensus\Trace\Tracer;
-use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Integrations\Guzzle\EventSubscriber;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -54,8 +54,8 @@ class Guzzle5Test extends TestCase
             }
         );
 
-        $exporter = $this->prophesize(ExporterInterface::class);
-        $tracer = Tracer::start($exporter->reveal(), [
+        $exporter = new NullExporter();
+        $tracer = Tracer::start($exporter, [
             'skipReporting' => true
         ]);
 
@@ -91,8 +91,8 @@ class Guzzle5Test extends TestCase
         );
 
         $traceContextHeader = '1603c1cde5c74f23bcf1682eb822fcf7/1150672535;o=1';
-        $exporter = $this->prophesize(ExporterInterface::class);
-        $tracer = Tracer::start($exporter->reveal(), [
+        $exporter = new NullExporter();
+        $tracer = Tracer::start($exporter, [
             'skipReporting' => true,
             'headers' => [
                 'X-Cloud-Trace-Context' => $traceContextHeader

@@ -105,9 +105,13 @@ class RequestHandler
             $propagator->inject($spanContext, $this->headers);
         }
 
-        $this->tracer = $spanContext->enabled()
-            ? extension_loaded('opencensus') ? new ExtensionTracer($spanContext) : new ContextTracer($spanContext)
-            : new NullTracer();
+        if ($spanContext->enabled()) {
+            $this->tracer = extension_loaded('opencensus') ?
+                new ExtensionTracer($spanContext) :
+                new ContextTracer($spanContext);
+        } else {
+            $this->tracer = new NullTracer();
+        }
 
         $spanOptions = $options + [
             'startTime' => $this->startTimeFromHeaders($this->headers->toArray()),

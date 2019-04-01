@@ -73,7 +73,7 @@ class Status
      *
      * @return int
      */
-    public function code()
+    public function code(): int
     {
         return $this->code;
     }
@@ -83,7 +83,7 @@ class Status
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return $this->message;
     }
@@ -105,10 +105,10 @@ class Status
                 return new self(self::INVALID_ARGUMENT, 'The client specified an invalid argument');
             case 401:
                 return new self(self::UNAUTHENTICATED,
-                    "The requester doesn’t have valid authentication credentials for the operation");
+                    'The requester does not have valid authentication credentials for the operation');
             case 403:
                 return new self(self::PERMISSION_DENIED,
-                    "The caller doesn’t have permission to execute the specified operation");
+                    'The caller does not have permission to execute the specified operation');
             case 404:
                 return new self(self::NOT_FOUND,
                     'Content was not found or request was denied for an entire class of users');
@@ -121,7 +121,7 @@ class Status
                 return new self(self::CANCELLED, 'The operation was cancelled, typically by the caller');
             case 500:
                 return new self(self::UNKNOWN,
-                    "An unknown error raised by APIs that don’t return enough error information");
+                    'An unknown error raised by APIs that do not return enough error information');
             case 501:
                 return new self(self::UNIMPLEMENTED,
                     'The operation is not implemented or is not supported/enabled for this operation');
