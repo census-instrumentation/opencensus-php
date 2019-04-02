@@ -55,6 +55,23 @@ class B3HeadersPropagatorTest extends TestCase
         $this->assertEquals($sampled, $output['X-B3-Sampled']);
     }
 
+    public function testEmptyContext()
+    {
+        $propagator = new B3HeadersPropagator();
+        $context = new SpanContext();
+        $headers = new ArrayHeaders();
+        $propagator->inject($context, $headers);
+        $output = $headers->toArray();
+
+        $this->assertArrayHasKey('X-B3-TraceId', $output);
+        $this->assertArrayHasKey('X-B3-SpanId', $output);
+        $this->assertArrayHasKey('X-B3-Sampled', $output);
+
+        $this->assertNotEmpty($output['X-B3-TraceId']);
+        $this->assertEquals('', $output['X-B3-SpanId']);
+        $this->assertEquals(0, $output['X-B3-Sampled']);
+    }
+
     public function traceMetadata()
     {
         return [
