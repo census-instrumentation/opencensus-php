@@ -21,23 +21,14 @@ namespace OpenCensus\Trace\Ext;
  * This is the equivalent PHP class created by the opencensus C extension
  */
 class SpanContext {
-    protected $traceId;
-    protected $spanId;
 
-    public function __construct(array $contextOptions)
+    public function spanId(): ?string
     {
-        foreach ($contextOptions as $k => $v) {
-            $this->__set($k, $v);
-        }
+        return '';
     }
 
-    public function spanId()
+    public function traceId(): string
     {
-        return $this->spanId;
-    }
-
-    public function traceId()
-    {
-        return $this->traceId;
+        return '';
     }
 }
