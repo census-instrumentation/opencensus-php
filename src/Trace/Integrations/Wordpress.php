@@ -32,7 +32,7 @@ class Wordpress implements IntegrationInterface
     /**
      * Static method to add instrumentation to the Wordpress framework
      */
-    public static function load()
+    public static function load(): void
     {
         if (!extension_loaded('opencensus')) {
             trigger_error('opencensus extension required to load Wordpress integrations.', E_USER_WARNING);

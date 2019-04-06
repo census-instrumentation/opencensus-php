@@ -34,7 +34,7 @@ class Laravel implements IntegrationInterface
     /**
      * Static method to add instrumentation to the Laravel framework
      */
-    public static function load()
+    public static function load(): void
     {
         if (!extension_loaded('opencensus')) {
             trigger_error('opencensus extension required to load Laravel integrations.', E_USER_WARNING);

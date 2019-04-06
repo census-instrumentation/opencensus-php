@@ -36,7 +36,7 @@ class CloudTraceFormatter implements FormatterInterface
      * @param string $header
      * @return SpanContext
      */
-    public function deserialize($header)
+    public function deserialize(string $header): SpanContext
     {
         if (preg_match(self::CONTEXT_HEADER_FORMAT, $header, $matches)) {
             return new SpanContext(
@@ -57,7 +57,7 @@ class CloudTraceFormatter implements FormatterInterface
      * @param SpanContext $context
      * @return string
      */
-    public function serialize(SpanContext $context)
+    public function serialize(SpanContext $context): string
     {
         $ret = '' . $context->traceId();
         if ($context->spanId()) {

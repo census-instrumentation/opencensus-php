@@ -58,7 +58,7 @@ class GrpcMetadataPropagator implements PropagatorInterface
      * @param array $metadata
      * @return SpanContext
      */
-    public function extract($metadata)
+    public function extract($metadata): SpanContext
     {
         if (array_key_exists($this->key, $metadata)) {
             return $this->formatter->deserialize($metadata[$this->key]);
@@ -73,7 +73,7 @@ class GrpcMetadataPropagator implements PropagatorInterface
      * @param array $container
      * @return array
      */
-    public function inject(SpanContext $context, $metadata)
+    public function inject(SpanContext $context, $metadata): array
     {
         $metadata[$this->key] = $this->formatter->serialize($context);
         return $metadata;
@@ -84,7 +84,7 @@ class GrpcMetadataPropagator implements PropagatorInterface
      *
      * @return FormatterInterface
      */
-    public function formatter()
+    public function formatter(): FormatterInterface
     {
         return $this->formatter;
     }
@@ -94,7 +94,7 @@ class GrpcMetadataPropagator implements PropagatorInterface
      *
      * @return string
      */
-    public function key()
+    public function key(): string
     {
         return $this->key;
     }

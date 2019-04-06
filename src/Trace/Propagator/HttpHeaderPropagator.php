@@ -58,7 +58,7 @@ class HttpHeaderPropagator implements PropagatorInterface
      * @param array $headers
      * @return SpanContext
      */
-    public function extract($headers)
+    public function extract($headers): SpanContext
     {
         if (array_key_exists($this->header, $headers)) {
             return $this->formatter->deserialize($headers[$this->header]);
@@ -73,7 +73,7 @@ class HttpHeaderPropagator implements PropagatorInterface
      * @param array $container
      * @return array
      */
-    public function inject(SpanContext $context, $container)
+    public function inject(SpanContext $context, $container): array
     {
         $header = $this->key();
         $value = $this->formatter->serialize($context);
@@ -90,7 +90,7 @@ class HttpHeaderPropagator implements PropagatorInterface
      *
      * @return FormatterInterface
      */
-    public function formatter()
+    public function formatter(): FormatterInterface
     {
         return $this->formatter;
     }
@@ -100,7 +100,7 @@ class HttpHeaderPropagator implements PropagatorInterface
      *
      * @return string
      */
-    public function key()
+    public function key(): string
     {
         return str_replace('_', '-', preg_replace('/^HTTP_/', '', $this->header));
     }

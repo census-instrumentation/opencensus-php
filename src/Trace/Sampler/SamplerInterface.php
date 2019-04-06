@@ -27,5 +27,5 @@ interface SamplerInterface
      *
      * @return bool
      */
-    public function shouldSample();
+    public function shouldSample(): bool;
 }

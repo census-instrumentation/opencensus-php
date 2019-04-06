@@ -28,7 +28,7 @@ class OneLineEchoExporter implements ExporterInterface
      * @param SpanData[] $spans
      * @return bool
      */
-    public function export(array $spans)
+    public function export(array $spans): bool
     {
         foreach ($spans as $span) {
             $time = (float) ($span->endTime()->format('U.u')) - (float) ($span->startTime()->format('U.u'));

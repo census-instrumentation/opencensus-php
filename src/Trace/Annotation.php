@@ -38,7 +38,7 @@ class Annotation extends TimeEvent
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function __construct($description, $options = [])
+    public function __construct(string $description, array $options = [])
     {
         parent::__construct($options);
         $this->description = $description;
@@ -52,7 +52,7 @@ class Annotation extends TimeEvent
      *
      * @return string
      */
-    public function description()
+    public function description(): string
     {
         return $this->description;
     }

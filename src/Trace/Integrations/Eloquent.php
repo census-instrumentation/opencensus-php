@@ -36,7 +36,7 @@ class Eloquent implements IntegrationInterface
     /**
      * Static method to add instrumentation to Eloquent ORM calls
      */
-    public static function load()
+    public static function load(): void
     {
         if (!extension_loaded('opencensus')) {
             trigger_error('opencensus extension required to load Eloquent integrations.', E_USER_WARNING);

@@ -65,7 +65,7 @@ class Middleware
      * @param  callable $handler The next handler in the HandlerStack
      * @return callable
      */
-    public function __invoke(callable $handler)
+    public function __invoke(callable $handler): callable
     {
         return function (RequestInterface $request, $options) use ($handler) {
             $context = Tracer::spanContext();

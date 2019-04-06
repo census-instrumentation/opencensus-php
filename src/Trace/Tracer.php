@@ -117,7 +117,7 @@ class Tracer
      *      @type array $headers Optional array of headers to use in place of $_SERVER
      * @return RequestHandler
      */
-    public static function start(ExporterInterface $reporter, array $options = [])
+    public static function start(ExporterInterface $reporter, array $options = []): RequestHandler
     {
         $sampler = array_key_exists('sampler', $options)
             ? $options['sampler']
@@ -187,7 +187,7 @@ class Tracer
      *      <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
      * @return Span
      */
-    public static function startSpan(array $spanOptions = [])
+    public static function startSpan(array $spanOptions = []): Span
     {
         if (!isset(self::$instance)) {
             return new Span();
@@ -213,7 +213,7 @@ class Tracer
      * @param Span $span
      * @return Scope
      */
-    public static function withSpan(Span $span)
+    public static function withSpan(Span $span): Scope
     {
         if (!isset(self::$instance)) {
             return new Scope(function () {
@@ -231,12 +231,12 @@ class Tracer
      *
      *      @type Span $span The span to add the attribute to.
      */
-    public static function addAttribute($attribute, $value, $options = [])
+    public static function addAttribute(string $attribute, string $value, array $options = []): void
     {
         if (!isset(self::$instance)) {
             return;
         }
-        return self::$instance->addAttribute($attribute, $value, $options);
+        self::$instance->addAttribute($attribute, $value, $options);
     }
 
     /**
@@ -249,12 +249,12 @@ class Tracer
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public static function addAnnotation($description, $options = [])
+    public static function addAnnotation(string $description, array $options = []): void
     {
         if (!isset(self::$instance)) {
             return;
         }
-        return self::$instance->addAnnotation($description, $options);
+        self::$instance->addAnnotation($description, $options);
     }
 
     /**
@@ -270,12 +270,12 @@ class Tracer
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public static function addLink($traceId, $spanId, $options = [])
+    public static function addLink(string $traceId, string $spanId, array $options = []): void
     {
         if (!isset(self::$instance)) {
             return;
         }
-        return self::$instance->addLink($traceId, $spanId, $options);
+        self::$instance->addLink($traceId, $spanId, $options);
     }
 
     /**
@@ -293,12 +293,12 @@ class Tracer
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public static function addMessageEvent($type, $id, $options = [])
+    public static function addMessageEvent(string $type, string $id, array $options = []): void
     {
         if (!isset(self::$instance)) {
             return;
         }
-        return self::$instance->addMessageEvent($type, $id, $options);
+        self::$instance->addMessageEvent($type, $id, $options);
     }
 
     /**
@@ -306,7 +306,7 @@ class Tracer
      *
      * @return SpanContext
      */
-    public static function spanContext()
+    public static function spanContext(): SpanContext
     {
         if (!isset(self::$instance)) {
             return new SpanContext(null, null, false);

@@ -25,5 +25,5 @@ interface IntegrationInterface
     /**
      * Static method to add instrumentation to a framework or library
      */
-    public static function load();
+    public static function load(): void;
 }

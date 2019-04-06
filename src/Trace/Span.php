@@ -19,6 +19,7 @@ namespace OpenCensus\Trace;
 
 use OpenCensus\Trace\EventHandler\SpanEventHandler;
 use OpenCensus\Trace\EventHandler\NullEventHandler;
+use OpenCensus\Trace\EventHandler\SpanEventHandlerInterface;
 
 /**
  * This plain PHP class represents a single timed event within a Trace. Spans can
@@ -183,7 +184,7 @@ class Span
      *            belongs to the same process as the current span.
      *      @type string $kind The span's type.
      */
-    public function __construct($options = [])
+    public function __construct(array $options = [])
     {
         $options += [
             'traceId' => null,
@@ -245,7 +246,7 @@ class Span
      *         this span. **Defaults to** now. If provided as an int or float,
      *         it is expected to be a Unix timestamp.
      */
-    public function setStartTime($when = null)
+    public function setStartTime($when = null): void
     {
         $this->startTime = $this->formatDate($when);
     }
@@ -257,7 +258,7 @@ class Span
      *         this span. **Defaults to** now. If provided as an int or float,
      *         it is expected to be a Unix timestamp.
      */
-    public function setEndTime($when = null)
+    public function setEndTime($when = null): void
     {
         $this->endTime = $this->formatDate($when);
     }
@@ -267,7 +268,7 @@ class Span
      *
      * @return string
      */
-    public function spanId()
+    public function spanId(): string
     {
         return $this->spanId;
     }
@@ -277,7 +278,7 @@ class Span
      *
      * @return SpanData
      */
-    public function spanData()
+    public function spanData(): SpanData
     {
         return new SpanData(
             $this->name,
@@ -301,7 +302,7 @@ class Span
     /**
      * Mark this span as attached.
      */
-    public function attach()
+    public function attach(): void
     {
         $this->attached = true;
     }
@@ -311,7 +312,7 @@ class Span
      *
      * @return bool
      */
-    public function attached()
+    public function attached(): bool
     {
         return $this->attached;
     }
@@ -322,7 +323,7 @@ class Span
      * @param string $attribute The name of the attribute to add
      * @param string $value The attribute value
      */
-    public function addAttribute($attribute, $value)
+    public function addAttribute(string $attribute, string $value): void
     {
         $this->attributes[$attribute] = (string) $value;
         $this->eventHandler->attributeAdded($this, $attribute, $value);
@@ -333,7 +334,7 @@ class Span
      *
      * @param TimeEvent[] $timeEvents
      */
-    public function addTimeEvents(array $timeEvents)
+    public function addTimeEvents(array $timeEvents): void
     {
         foreach ($timeEvents as $timeEvent) {
             $this->addTimeEvent($timeEvent);
@@ -345,7 +346,7 @@ class Span
      *
      * @param TimeEvent $timeEvent
      */
-    public function addTimeEvent(TimeEvent $timeEvent)
+    public function addTimeEvent(TimeEvent $timeEvent): void
     {
         $this->timeEvents[] = $timeEvent;
         $this->eventHandler->timeEventAdded($this, $timeEvent);
@@ -356,7 +357,7 @@ class Span
      *
      * @param Link[] $links
      */
-    public function addLinks(array $links)
+    public function addLinks(array $links): void
     {
         foreach ($links as $link) {
             $this->addLink($link);
@@ -368,7 +369,7 @@ class Span
      *
      * @param Link $link
      */
-    public function addLink(Link $link)
+    public function addLink(Link $link): void
     {
         $this->links[] = $link;
         $this->eventHandler->linkAdded($this, $link);
@@ -380,7 +381,7 @@ class Span
      * @param int $code The status code
      * @param string $message A developer-facing error message
      */
-    public function setStatus($code, $message)
+    public function setStatus(int $code, string $message): void
     {
         $this->status = new Status($code, $message);
     }
@@ -391,7 +392,7 @@ class Span
      *
      * @return string
      */
-    private function generateSpanId()
+    private function generateSpanId(): string
     {
         return dechex(mt_rand());
     }
@@ -401,7 +402,7 @@ class Span
      *
      * @return array
      */
-    private function filterStackTrace($stackTrace)
+    private function filterStackTrace($stackTrace): array
     {
         return array_values(
             array_filter($stackTrace, function ($st) {
@@ -416,7 +417,7 @@ class Span
      *
      * @return string
      */
-    private function generateSpanName()
+    private function generateSpanName(): string
     {
         // Try to find the first stacktrace class entry that doesn't start with OpenCensus\Trace
         foreach ($this->stackTrace as $st) {

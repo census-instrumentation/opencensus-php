@@ -29,7 +29,7 @@ trait AttributeTrait
      *
      * @param array $attributes Attributes in the form of $attribute => $value
      */
-    public function addAttributes(array $attributes)
+    public function addAttributes(array $attributes): void
     {
         foreach ($attributes as $attribute => $value) {
             $this->addAttribute($attribute, $value);
@@ -42,9 +42,9 @@ trait AttributeTrait
      * @param string $attribute The name of the attribute.
      * @param mixed $value The value of the attribute. Will be cast to a string
      */
-    public function addAttribute($attribute, $value)
+    public function addAttribute(string $attribute, string $value): void
     {
-        $this->attributes[$attribute] = (string) $value;
+        $this->attributes[$attribute] = $value;
     }
 
     /**
@@ -52,7 +52,7 @@ trait AttributeTrait
      *
      * @return array
      */
-    public function attributes()
+    public function attributes(): array
     {
         return $this->attributes;
     }

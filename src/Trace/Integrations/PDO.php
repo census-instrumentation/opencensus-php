@@ -34,7 +34,7 @@ class PDO implements IntegrationInterface
     /**
      * Static method to add instrumentation to the PDO requests
      */
-    public static function load()
+    public static function load(): void
     {
         if (!extension_loaded('opencensus')) {
             trigger_error('opencensus extension required to load PDO integrations.', E_USER_WARNING);
@@ -64,11 +64,11 @@ class PDO implements IntegrationInterface
      * Handle extracting the SQL query from the first argument
      *
      * @internal
-     * @param PDO $pdo The connectoin
+     * @param \PDO $pdo The connection
      * @param string $query The SQL query to extract
      * @return array
      */
-    public static function handleQuery($pdo, $query)
+    public static function handleQuery($pdo, string $query): array
     {
         return [
             'attributes' => ['query' => $query],
@@ -80,11 +80,11 @@ class PDO implements IntegrationInterface
      * Handle extracting the Data Source Name (DSN) from the constructor aruments to PDO
      *
      * @internal
-     * @param PDO $pdo
+     * @param \PDO $pdo
      * @param string $dsn The connection DSN
      * @return array
      */
-    public static function handleConnect($pdo, $dsn)
+    public static function handleConnect($pdo, $dsn): array
     {
         return [
             'attributes' => ['dsn' => $dsn],
@@ -96,10 +96,10 @@ class PDO implements IntegrationInterface
      * Handle extracting the SQL query from a PDOStatement instance
      *
      * @internal
-     * @param PDOStatement $statement The prepared statement
+     * @param \PDOStatement $statement The prepared statement
      * @return array
      */
-    public static function handleStatementExecute($statement)
+    public static function handleStatementExecute($statement): array
     {
         return [
             'attributes' => ['query' => $statement->queryString],

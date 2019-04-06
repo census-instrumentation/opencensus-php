@@ -82,8 +82,9 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
      *
      * @param array $spanOptions [optional] Options for the span. See
      *      <a href="../Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
+     * @return Span
      */
-    public function startSpan(array $spanOptions)
+    public function startSpan(array $spanOptions): Span
     {
         if (!array_key_exists('name', $spanOptions)) {
             $spanOptions['name'] = $this->generateSpanName();
@@ -99,7 +100,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
      * @param Span $span
      * @return Scope
      */
-    public function withSpan(Span $span)
+    public function withSpan(Span $span): Scope
     {
         $spanData = $span->spanData();
         $startTime = $spanData->startTime()
@@ -134,7 +135,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
      *
      * @return Span[]
      */
-    public function spans()
+    public function spans(): array
     {
         // each span returned from opencensus_trace_list should be a
         // OpenCensus\Span object
@@ -153,7 +154,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
      *
      *      @type Span $span The span to add the attribute to.
      */
-    public function addAttribute($attribute, $value, $options = [])
+    public function addAttribute(string $attribute, string $value, array $options = []): void
     {
         if (array_key_exists('span', $options)) {
             $options['spanId'] = $options['span']->spanId();
@@ -171,7 +172,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addAnnotation($description, $options = [])
+    public function addAnnotation(string $description, array $options = []): void
     {
         if (array_key_exists('span', $options)) {
             $options['spanId'] = $options['span']->spanId();
@@ -192,7 +193,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addLink($traceId, $spanId, $options = [])
+    public function addLink(string $traceId, string $spanId, array $options = []): void
     {
         if (array_key_exists('span', $options)) {
             $options['spanId'] = $options['span']->spanId();
@@ -215,7 +216,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addMessageEvent($type, $id, $options = [])
+    public function addMessageEvent(string $type, string $id, array $options = []): void
     {
         if (array_key_exists('span', $options)) {
             $options['spanId'] = $options['span']->spanId();
@@ -228,7 +229,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
      *
      * @return SpanContext
      */
-    public function spanContext()
+    public function spanContext(): SpanContext
     {
         $context = opencensus_trace_context();
         return new SpanContext(
@@ -243,7 +244,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
      *
      * @return bool
      */
-    public function enabled()
+    public function enabled(): bool
     {
         return $this->spanContext()->enabled();
     }
@@ -255,7 +256,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
      * @param string $attribute The name of the attribute added
      * @param string $value The attribute value
      */
-    public function attributeAdded(Span $span, $attribute, $value)
+    public function attributeAdded(Span $span, string $attribute, string $value): void
     {
         // If the span is already attached (managed by the extension), then
         // tell the extension to add the attribute.
@@ -272,7 +273,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
      * @param Span $span The span the link was added to
      * @param Link $link The link added to the span
      */
-    public function linkAdded(Span $span, Link $link)
+    public function linkAdded(Span $span, Link $link): void
     {
         // If the span is already attached (managed by the extension), then
         // tell the extension to add the link.
@@ -291,7 +292,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
      * @param Span $span The span the time event was added to
      * @param TimeEvent $timeEvent The time event added to the span
      */
-    public function timeEventAdded(Span $span, TimeEvent $timeEvent)
+    public function timeEventAdded(Span $span, TimeEvent $timeEvent): void
     {
         if ($span->attached()) {
             if ($timeEvent instanceof Annotation) {
@@ -317,7 +318,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
      *
      * @return string
      */
-    private function generateSpanName()
+    private function generateSpanName(): string
     {
         // Try to find the first stacktrace class entry that doesn't start with OpenCensus\Trace
         foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $bt) {
@@ -333,7 +334,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         return uniqid('span');
     }
 
-    private function mapSpan($span, $traceId)
+    private function mapSpan($span, string $traceId): SpanData
     {
         return new SpanData(
             $span->name(),
@@ -353,7 +354,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         );
     }
 
-    private function getKind($span)
+    private function getKind(Span $span): string
     {
         if (method_exists($span, 'kind')) {
             return $span->kind();
@@ -361,7 +362,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         return Span::KIND_UNSPECIFIED;
     }
 
-    private function getSameProcessAsParentSpan($span)
+    private function getSameProcessAsParentSpan(Span $span): bool
     {
         if (method_exists($span, 'sameProcessAsParentSpan')) {
             return $span->sameProcessAsParentSpan();
@@ -369,7 +370,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         return true;
     }
 
-    private function mapLink($link)
+    private function mapLink($link): Link
     {
         return new Link($link->traceId(), $link->spanId(), $link->options());
     }

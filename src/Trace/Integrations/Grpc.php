@@ -37,7 +37,7 @@ class Grpc implements IntegrationInterface
     /**
      * Static method to add instrumentation to grpc requests
      */
-    public static function load()
+    public static function load(): void
     {
         if (!extension_loaded('opencensus')) {
             trigger_error('opencensus extension required to load grpc integrations.', E_USER_WARNING);
@@ -116,7 +116,7 @@ class Grpc implements IntegrationInterface
      * @param string $jwtAuthUri
      * @return array
      */
-    public static function updateMetadata($metadata, $jwtAuthUri)
+    public static function updateMetadata(array $metadata, string $jwtAuthUri): array
     {
         $context = Tracer::spanContext();
         if ($context->enabled()) {

@@ -30,7 +30,7 @@ trait DateFormatTrait
      * @return \DateTimeInterface
      * @throws \InvalidArgumentException
      */
-    private function formatDate($when = null)
+    private function formatDate($when = null): \DateTimeInterface
     {
         if (!$when) {
             // now
@@ -50,7 +50,7 @@ trait DateFormatTrait
      * @param float $when The Unix timestamp to be converted.
      * @return \DateTimeInterface
      */
-    private function formatFloatTimeToDate($when)
+    private function formatFloatTimeToDate($when): \DateTimeInterface
     {
         return \DateTime::createFromFormat('U.u', number_format($when, 6, '.', ''));
     }

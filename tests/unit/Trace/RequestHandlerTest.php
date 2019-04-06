@@ -19,6 +19,8 @@ namespace OpenCensus\Tests\Unit\Trace;
 
 require_once __DIR__ . '/mock_http_response_code.php';
 
+use function foo\func;
+use function func_get_args;
 use OpenCensus\Trace\Annotation;
 use OpenCensus\Trace\Link;
 use OpenCensus\Trace\MessageEvent;
@@ -33,6 +35,8 @@ use OpenCensus\Trace\Tracer\NullTracer;
 use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
 use OpenCensus\Trace\MockHttpResponseCode;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
+use function var_dump;
 
 /**
  * @group trace
@@ -55,6 +59,7 @@ class RequestHandlerTest extends TestCase
     public function testCanTrackContext()
     {
         $this->sampler->shouldSample()->willReturn(true);
+        $this->exporter->export(Argument::any())->willReturn('');
 
         $rt = new RequestHandler(
             $this->exporter->reveal(),
@@ -670,6 +675,7 @@ class RequestHandlerTest extends TestCase
 
     public function testNoStatusOfRootSpanOnExitWithoutHttpResponse()
     {
+        $this->exporter->export(Argument::any())->willReturn('');
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter->reveal(),
@@ -693,6 +699,7 @@ class RequestHandlerTest extends TestCase
 
     public function testSetsStatusOfRootSpanOnExitWithHttpResponse()
     {
+        $this->exporter->export(Argument::any())->willReturn('');
         $this->sampler->shouldSample()->willReturn(true);
         $rt = new RequestHandler(
             $this->exporter->reveal(),

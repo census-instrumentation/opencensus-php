@@ -298,7 +298,7 @@ class DaemonClient implements StatsExporter, TraceExporter
         return self::$instance->send(self::MSG_STATS_RECORD, $msg);
     }
 
-    public function export(array $spans)
+    public function export(array $spans): bool
     {
         $spanData = json_encode(array_map(function (SpanData $span) {
             return [

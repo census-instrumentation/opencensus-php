@@ -88,7 +88,7 @@ class QpsSampler implements SamplerInterface
      *     @type string $key The cache key to use. **Defaults to** `__opencensus_trace__`
      * }
      */
-    public function __construct(CacheItemPoolInterface $cache = null, $options = [])
+    public function __construct(CacheItemPoolInterface $cache = null, array $options = [])
     {
         $this->cache = $cache ?: $this->defaultCache();
         if (!$this->cache) {
@@ -118,7 +118,7 @@ class QpsSampler implements SamplerInterface
      *
      * @return bool
      */
-    public function shouldSample()
+    public function shouldSample(): bool
     {
         // We will store the microtime timestamp in the cache because some
         // cache implementations will not let you use expiry for anything less
@@ -143,7 +143,7 @@ class QpsSampler implements SamplerInterface
      *
      * @return CacheItemPoolInterface
      */
-    private function defaultCache()
+    private function defaultCache(): ?CacheItemPoolInterface
     {
         if (extension_loaded('apcu') && class_exists('\\Cache\\Adapter\\Apcu\\ApcuCachePool')) {
             return new \Cache\Adapter\Apcu\ApcuCachePool();
@@ -158,7 +158,7 @@ class QpsSampler implements SamplerInterface
      *
      * @return float
      */
-    public function rate()
+    public function rate(): float
     {
         return $this->rate;
     }

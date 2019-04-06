@@ -46,7 +46,7 @@ class SpanData
      * The `spanId` of this span's parent span. If this is a root span, then
      * this field must be empty. 8-byte value encoded as a hex string.
      *
-     * @var string
+     * @var string|null
      */
     private $parentSpanId;
 
@@ -72,17 +72,16 @@ class SpanData
      * the local machine where the span execution starts. On the server side,
      * this is the time when the server's application handler starts running.
      *
-     * @var \DateTimeInterface
+     * @var \DateTimeInterface|null
      */
     private $startTime;
-
 
     /**
      * The end time of the span. On the client side, this is the time kept by
      * the local machine where the span execution ends. On the server side, this
      * is the time when the server application handler stops running.
      *
-     * @var \DateTimeInterface
+     * @var \DateTimeInterface|null
      */
     private $endTime;
 
@@ -114,7 +113,7 @@ class SpanData
     /**
      * An optional final status for this span.
      *
-     * @var Status
+     * @var Status|null
      */
     private $status;
 
@@ -123,7 +122,7 @@ class SpanData
      * crosses a process boundary. True when the parentSpanId belongs to the
      * same process as the current span.
      *
-     * @var bool
+     * @var bool|null
      */
     private $sameProcessAsParentSpan;
 
@@ -167,9 +166,9 @@ class SpanData
      *      @type string $kind The span's type.
      */
     public function __construct(
-        $name,
-        $traceId,
-        $spanId,
+        string $name,
+        string $traceId,
+        string $spanId,
         \DateTimeInterface $startTime = null,
         \DateTimeInterface $endTime = null,
         array $options = []
@@ -204,9 +203,9 @@ class SpanData
     /**
      * Retrieve the start time for this span.
      *
-     * @return \DateTimeInterface
+     * @return \DateTimeInterface|null
      */
-    public function startTime()
+    public function startTime(): ?\DateTimeInterface
     {
         return $this->startTime;
     }
@@ -214,9 +213,9 @@ class SpanData
     /**
      * Retrieve the end time for this span.
      *
-     * @return \DateTimeInterface
+     * @return \DateTimeInterface|null
      */
-    public function endTime()
+    public function endTime(): ?\DateTimeInterface
     {
         return $this->endTime;
     }
@@ -226,7 +225,7 @@ class SpanData
      *
      * @return string
      */
-    public function traceId()
+    public function traceId(): string
     {
         return $this->traceId;
     }
@@ -236,7 +235,7 @@ class SpanData
      *
      * @return string
      */
-    public function spanId()
+    public function spanId(): string
     {
         return $this->spanId;
     }
@@ -244,9 +243,9 @@ class SpanData
     /**
      * Retrieve the ID of this span's parent if it exists.
      *
-     * @return string
+     * @return string|null
      */
-    public function parentSpanId()
+    public function parentSpanId(): ?string
     {
         return $this->parentSpanId;
     }
@@ -254,9 +253,9 @@ class SpanData
     /**
      * Retrieve the name of this span.
      *
-     * @return string
+     * @return string|null
      */
-    public function name()
+    public function name(): string
     {
         return $this->name;
     }
@@ -266,7 +265,7 @@ class SpanData
      *
      * @return array
      */
-    public function attributes()
+    public function attributes(): array
     {
         return $this->attributes;
     }
@@ -276,7 +275,7 @@ class SpanData
      *
      * @return TimeEvent[]
      */
-    public function timeEvents()
+    public function timeEvents(): array
     {
         return $this->timeEvents;
     }
@@ -286,7 +285,7 @@ class SpanData
      *
      * @return Link[]
      */
-    public function links()
+    public function links(): array
     {
         return $this->links;
     }
@@ -294,9 +293,9 @@ class SpanData
     /**
      * Retrieve the final status for this span.
      *
-     * @return Status
+     * @return Status|null
      */
-    public function status()
+    public function status(): ?Status
     {
         return $this->status;
     }
@@ -306,7 +305,7 @@ class SpanData
      *
      * @return array
      */
-    public function stackTrace()
+    public function stackTrace(): array
     {
         return $this->stackTrace;
     }
@@ -316,7 +315,7 @@ class SpanData
      *
      * @return string
      */
-    public function stackTraceHashId()
+    public function stackTraceHashId(): string
     {
         if (!isset($this->stackTraceHashId)) {
             // take the lower 16 digits of the md5
@@ -331,7 +330,7 @@ class SpanData
      *
      * @return bool
      */
-    public function sameProcessAsParentSpan()
+    public function sameProcessAsParentSpan(): bool
     {
         return $this->sameProcessAsParentSpan;
     }
@@ -341,7 +340,7 @@ class SpanData
      *
      * @return string
      */
-    public function kind()
+    public function kind(): string
     {
         return $this->kind;
     }

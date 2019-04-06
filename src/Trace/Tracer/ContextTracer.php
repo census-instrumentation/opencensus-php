@@ -24,6 +24,7 @@ use OpenCensus\Trace\Link;
 use OpenCensus\Trace\MessageEvent;
 use OpenCensus\Trace\Span;
 use OpenCensus\Trace\SpanContext;
+use OpenCensus\Trace\SpanData;
 
 /**
  * This implementation of the TracerInterface manages your trace context throughout
@@ -85,7 +86,7 @@ class ContextTracer implements TracerInterface
      *        <a href="../Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
      * @return Span
      */
-    public function startSpan(array $spanOptions = [])
+    public function startSpan(array $spanOptions = []): Span
     {
         $spanOptions += [
             'traceId' => $this->spanContext()->traceId(),
@@ -103,7 +104,7 @@ class ContextTracer implements TracerInterface
      * @param Span $span
      * @return Scope
      */
-    public function withSpan(Span $span)
+    public function withSpan(Span $span): Scope
     {
         array_push($this->spans, $span);
         $prevContext = Context::current()
@@ -128,7 +129,7 @@ class ContextTracer implements TracerInterface
      *
      * @return SpanData[]
      */
-    public function spans()
+    public function spans(): array
     {
         return array_map(function ($span) {
             return $span->spanData();
@@ -144,7 +145,7 @@ class ContextTracer implements TracerInterface
      *
      *      @type Span $span The span to add the attribute to.
      */
-    public function addAttribute($attribute, $value, $options = [])
+    public function addAttribute(string $attribute, string $value, array $options = []): void
     {
         $span = $this->getSpan($options);
         $span->addAttribute($attribute, $value);
@@ -160,7 +161,7 @@ class ContextTracer implements TracerInterface
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addAnnotation($description, $options = [])
+    public function addAnnotation(string $description, array $options = []): void
     {
         $span = $this->getSpan($options);
         $span->addTimeEvent(new Annotation($description, $options));
@@ -179,7 +180,7 @@ class ContextTracer implements TracerInterface
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addLink($traceId, $spanId, $options = [])
+    public function addLink(string $traceId, string $spanId, array $options = []): void
     {
         $span = $this->getSpan($options);
         $span->addLink(new Link($traceId, $spanId, $options));
@@ -200,7 +201,7 @@ class ContextTracer implements TracerInterface
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addMessageEvent($type, $id, $options = [])
+    public function addMessageEvent(string $type, string $id, array $options = []): void
     {
         $span = $this->getSpan($options);
         $span->addTimeEvent(new MessageEvent($type, $id, $options));
@@ -211,14 +212,14 @@ class ContextTracer implements TracerInterface
      *
      * @return SpanContext
      */
-    public function spanContext()
+    public function spanContext(): SpanContext
     {
         $context = Context::current();
         return new SpanContext(
             $context->value('traceId'),
             $context->value('spanId'),
             $context->value('enabled'),
-            $context->value('fromHeader')
+            $context->value('fromHeader', false)
         );
     }
 
@@ -227,12 +228,12 @@ class ContextTracer implements TracerInterface
      *
      * @return bool
      */
-    public function enabled()
+    public function enabled(): bool
     {
         return $this->spanContext()->enabled();
     }
 
-    private function getSpan($options = [])
+    private function getSpan(array $options = []): Span
     {
         return array_key_exists('span', $options)
             ? $options['span']

@@ -35,7 +35,7 @@ class TraceContextFormatter implements FormatterInterface
      * @param string $header
      * @return SpanContext
      */
-    public function deserialize($header)
+    public function deserialize(string $header): SpanContext
     {
         if (preg_match(self::CONTEXT_HEADER_FORMAT, $header, $matches)) {
             if ($matches[1] == "00") {
@@ -53,7 +53,7 @@ class TraceContextFormatter implements FormatterInterface
      * @param SpanContext $context
      * @return string
      */
-    public function serialize(SpanContext $context)
+    public function serialize(SpanContext $context): string
     {
         $ret = '00-' . $context->traceId();
         if ($context->spanId()) {
@@ -65,7 +65,7 @@ class TraceContextFormatter implements FormatterInterface
         return $ret;
     }
 
-    private function deserializeVersion0($header)
+    private function deserializeVersion0(string $header): ?SpanContext
     {
         if (preg_match(self::VERSION_0_FORMAT, $header, $matches)) {
             return new SpanContext(

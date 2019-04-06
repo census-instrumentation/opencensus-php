@@ -56,7 +56,7 @@ class LoggerExporter implements ExporterInterface
      * @param LoggerInterface $logger The logger to write to.
      * @param string $level The logger level to write as. **Defaults to** `notice`.
      */
-    public function __construct(LoggerInterface $logger, $level = self::DEFAULT_LOG_LEVEL)
+    public function __construct(LoggerInterface $logger, string $level = self::DEFAULT_LOG_LEVEL)
     {
         $this->logger = $logger;
         $this->level = $level;
@@ -68,7 +68,7 @@ class LoggerExporter implements ExporterInterface
      * @param SpanData[] $spans
      * @return bool
      */
-    public function export(array $spans)
+    public function export(array $spans): bool
     {
         try {
             $this->logger->log($this->level, json_encode($spans));

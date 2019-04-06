@@ -51,7 +51,7 @@ class Context
      *
      * @param array $initialValues
      */
-    public function __construct($initialValues = [])
+    public function __construct(array $initialValues = [])
     {
         $this->values = $initialValues;
     }
@@ -63,7 +63,7 @@ class Context
      * @param mixed $value
      * @return Context
      */
-    public function withValue($key, $value)
+    public function withValue(string $key, $value): Context
     {
         $copy = $this->values;
         $copy[$key] = $value;
@@ -76,7 +76,7 @@ class Context
      * @param array $data
      * @return Context
      */
-    public function withValues($data)
+    public function withValues(array $data): Context
     {
         $copy = $this->values;
         foreach ($data as $key => $value) {
@@ -93,7 +93,7 @@ class Context
      * @param mixed $default [optional]
      * @return mixed
      */
-    public function value($key, $default = null)
+    public function value(string $key, $default = null)
     {
         return array_key_exists($key, $this->values)
             ? $this->values[$key]
@@ -105,7 +105,7 @@ class Context
      *
      * @return array
      */
-    public function values()
+    public function values(): array
     {
         return $this->values;
     }
@@ -116,7 +116,7 @@ class Context
      *
      * @return Context
      */
-    public function attach()
+    public function attach(): Context
     {
         $current = self::current();
         self::$current = $this;
@@ -144,7 +144,7 @@ class Context
      *
      * @return Context
      */
-    public static function current()
+    public static function current(): Context
     {
         if (!self::$current) {
             self::$current = self::background();
@@ -158,7 +158,7 @@ class Context
      *
      * @return Context
      */
-    public static function background()
+    public static function background(): Context
     {
         return new Context();
     }

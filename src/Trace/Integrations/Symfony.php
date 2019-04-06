@@ -35,7 +35,7 @@ class Symfony implements IntegrationInterface
     /**
      * Static method to add instrumentation to the Symfony framework
      */
-    public static function load()
+    public static function load(): void
     {
         if (!extension_loaded('opencensus')) {
             trigger_error('opencensus extension required to load Symfony integrations.', E_USER_WARNING);

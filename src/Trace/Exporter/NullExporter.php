@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Trace\Exporter;
 
+use OpenCensus\Trace\SpanData;
 use OpenCensus\Trace\Tracer\TracerInterface;
 
 /**
@@ -39,7 +40,7 @@ class NullExporter implements ExporterInterface
      * @param SpanData[] $spans
      * @return bool
      */
-    public function export(array $spans)
+    public function export(array $spans): bool
     {
         return true;
     }

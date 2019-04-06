@@ -35,7 +35,7 @@ class Doctrine implements IntegrationInterface
     /**
      * Static method to add instrumentation to Doctrine ORM calls
      */
-    public static function load()
+    public static function load(): void
     {
         if (!extension_loaded('opencensus')) {
             trigger_error('opencensus extension required to load Doctrine integrations.', E_USER_WARNING);

@@ -37,9 +37,9 @@ class BinaryFormatter implements FormatterInterface
      * @param string $header
      * @return SpanContext
      */
-    public function deserialize($bin)
+    public function deserialize(string $header): SpanContext
     {
-        $data = @unpack('Cversion/Cfield0/H32traceId/Cfield1/H16spanId/Cfield2/Coptions', $bin);
+        $data = @unpack('Cversion/Cfield0/H32traceId/Cfield1/H16spanId/Cfield2/Coptions', $header);
         if ($data === false) {
             trigger_error('Invalid binary format for SpanContext', E_USER_WARNING);
             return new SpanContext();
@@ -57,7 +57,7 @@ class BinaryFormatter implements FormatterInterface
      * @param SpanContext $context
      * @return string
      */
-    public function serialize(SpanContext $context)
+    public function serialize(SpanContext $context): string
     {
         $spanHex = str_pad($context->spanId(), 16, "0", STR_PAD_LEFT);
         $traceOptions = $context->enabled() ? self::OPTION_ENABLED : 0;
