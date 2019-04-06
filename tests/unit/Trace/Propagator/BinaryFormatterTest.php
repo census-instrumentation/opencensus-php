@@ -49,13 +49,12 @@ class BinaryFormatterTest extends TestCase
         $this->assertEquals($hex, bin2hex($formatter->serialize($context)));
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error_Warning
-     */
     public function testDeserializeBadData()
     {
         $formatter = new BinaryFormatter();
-        $context = $formatter->deserialize(hex2bin("0012341abc"));
+
+        $this->expectException(\PHPUnit\Framework\Error\Warning::class);
+        $formatter->deserialize(hex2bin("0012341abc"));
     }
 
     public function testDeserializeBadDataReturnsEmptySpanContext()

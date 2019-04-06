@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="./tests/unit/bootstrap.php" colors="true">
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/7.5/phpunit.xsd"
+    bootstrap="./tests/unit/bootstrap.php"
+    colors="true">
   <testsuites>
-    <testsuite>
+    <testsuite name="units">
       <directory>tests/unit</directory>
     </testsuite>
   </testsuites>
@@ -9,9 +13,7 @@
     <whitelist>
       <directory suffix=".php">src</directory>
       <exclude>
-        <directory suffix=".php">src/*/V[!a-zA-Z]*</directory>
-        <directory suffix=".php">src/*/*/V[!a-zA-Z]*</directory>
-        <directory suffix=".php">src/*/*/*/V[!a-zA-Z]*</directory>
+        <file>src/Version.php</file>
       </exclude>
     </whitelist>
   </filter>
