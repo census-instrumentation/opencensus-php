@@ -30,5 +30,5 @@ interface ExporterInterface
      * @param SpanData[] $spans
      * @return bool Success of export
      */
-    public function export(array $spans): bool;
+    public function export(array $spans);
 }
