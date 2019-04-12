@@ -1,4 +1,19 @@
 <?php
+/**
+ * Copyright 2019 OpenCensus Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 namespace OpenCensus\Trace\Integrations;
 
@@ -27,13 +42,20 @@ class Redis implements IntegrationInterface
         }
         opencensus_trace_method('Redis', '__construct', [static::class, 'handleConstruct']);
 
-        opencensus_trace_method('Redis', 'set', [static::class, 'handleSet']);
+        opencensus_trace_method('Redis', 'set', [static::class, 'handleIO']);
 
-        opencensus_trace_method('Redis', 'get', [static::class, 'handleGet']);
+        opencensus_trace_method('Redis', 'get', [static::class, 'handleIO']);
 
+        opencensus_trace_method('Redis', 'flushDB');
     }
 
-    public static function handleConstruct($redis, $params)
+    /**
+     * Trace Construct Options
+     *
+     * @param  $params
+     * @return array
+     */
+    public static function handleConstruct($params)
     {
         return [
             'attributes' => [
@@ -45,7 +67,13 @@ class Redis implements IntegrationInterface
         ];
     }
 
-    public static function handleConnect($redis, $params)
+    /**
+     * Trace Connect Options
+     *
+     * @param  $params
+     * @return array
+     */
+    public static function handleConnect($params)
     {
         return [
             'attributes' => [
@@ -57,20 +85,17 @@ class Redis implements IntegrationInterface
         ];
     }
 
-    public static function handleSet($redis, $key)
+    /**
+     * Trace Set / Get Operations
+     *
+     * @param  $key
+     * @return array
+     */
+    public static function handleIO($key)
     {
         return [
-            'attributes' => ['setKey' => $key],
+            'attributes' => ['key' => $key],
             'kind' => Span::KIND_CLIENT
         ];
     }
-
-    public static function handleGet($redis, $key)
-    {
-        return [
-            'attributes' => ['retrievedKey' => $key],
-            'kind' => Span::KIND_CLIENT
-        ];
-    }
-
 }
