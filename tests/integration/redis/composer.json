@@ -2,6 +2,7 @@
     "require": {
         "php": "^7.2",
         "opencensus/opencensus": "dev-master",
+        "predis/predis": "1.1.0",
         "ext-opencensus": "*",
         "ext-phpredis": "*"
     },

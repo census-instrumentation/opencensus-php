@@ -17,8 +17,11 @@
 
 namespace OpenCensus\Tests\Integration\Trace\Exporter;
 
+use OpenCensus\Trace\Tracer;
+use OpenCensus\Trace\Exporter\ExporterInterface;
 use OpenCensus\Trace\Integrations\Redis as RedisIntegration;
 use PHPUnit\Framework\TestCase;
+use Predis\Client;
 
 class RedisTest extends TestCase
 {
@@ -31,5 +34,38 @@ class RedisTest extends TestCase
         RedisIntegration::load();
         self::$redisHost = getenv('REDIS_HOST') ?: '127.0.0.1';
         self::$redisPort = (int) (getenv('REDIS_PORT') ?: 6379);
+    }
+
+    public function setUp()
+    {
+        if (!extension_loaded('opencensus')) {
+            $this->markTestSkipped('Please enable the opencensus extension.');
+        }
+        opencensus_trace_clear();
+        $exporter = $this->prophesize(ExporterInterface::class);
+        $this->tracer = Tracer::start($exporter->reveal(), [
+            'skipReporting' => true
+        ]);
+    }
+
+    private function getSpans()
+    {
+        $this->tracer->onExit();
+        return $this->tracer->tracer()->spans();
+    }
+
+    public function testAddGet()
+    {
+        $client = new Client([
+            'host' => self::$redisHost,
+            'port'   => self::$redisPort
+        ]);
+
+        $client->set('foo', 'bar');
+        $value = $client->get('foo');
+        $this->assertEquals('bar', $value);
+
+        $spans = $this->getSpans();
+        $this->assertCount(4, $spans);
     }
 }

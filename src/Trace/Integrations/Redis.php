@@ -52,6 +52,7 @@ class Redis implements IntegrationInterface
     /**
      * Trace Construct Options
      *
+     * @param $predis
      * @param  $params
      * @return array
      */
@@ -69,6 +70,7 @@ class Redis implements IntegrationInterface
     /**
      * Trace Set / Get Operations
      *
+     * @param $predis
      * @param  $key
      * @return array
      */
