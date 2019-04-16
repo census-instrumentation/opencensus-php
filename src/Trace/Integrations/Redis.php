@@ -37,16 +37,16 @@ class Redis implements IntegrationInterface
     public static function load()
     {
         if (!extension_loaded('opencensus')) {
-            trigger_error('opencensus extension required to load Memcached integrations.', E_USER_WARNING);
-            return;
+            trigger_error('opencensus extension required to load Redis integrations.', E_USER_WARNING);
         }
-        opencensus_trace_method('Redis', '__construct', [static::class, 'handleConstruct']);
 
-        opencensus_trace_method('Redis', 'set', [static::class, 'handleIO']);
+        opencensus_trace_method('Predis\Client', '__construct', [static::class, 'handleConstruct']);
 
-        opencensus_trace_method('Redis', 'get', [static::class, 'handleIO']);
+        opencensus_trace_method('Predis\Client', 'set', [static::class, 'handleCall']);
 
-        opencensus_trace_method('Redis', 'flushDB');
+        opencensus_trace_method('Predis\Client', 'get', [static::class, 'handleCall']);
+
+        opencensus_trace_method('Predis\Client', 'flushDB');
     }
 
     /**
@@ -55,31 +55,12 @@ class Redis implements IntegrationInterface
      * @param  $params
      * @return array
      */
-    public static function handleConstruct($params)
+    public static function handleConstruct($predis, $params)
     {
         return [
             'attributes' => [
                 'host' => $params['host'],
-                'port' => $params['port'],
-                'db' => $params['database'],
-            ],
-            'kind' => Span::KIND_CLIENT
-        ];
-    }
-
-    /**
-     * Trace Connect Options
-     *
-     * @param  $params
-     * @return array
-     */
-    public static function handleConnect($params)
-    {
-        return [
-            'attributes' => [
-                'host' => $params['host'],
-                'port' => $params['port'],
-                'db' => $params['database'],
+                'port' => $params['port']
             ],
             'kind' => Span::KIND_CLIENT
         ];
@@ -91,7 +72,7 @@ class Redis implements IntegrationInterface
      * @param  $key
      * @return array
      */
-    public static function handleIO($key)
+    public static function handleCall($predis, $key)
     {
         return [
             'attributes' => ['key' => $key],
