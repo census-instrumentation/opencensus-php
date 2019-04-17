@@ -182,7 +182,7 @@ jobs:
       - run:
           name: Install redis extension
           command: |
-            pecl install redis
+            sudo pecl install redis
             sudo docker-php-ext-enable redis
       - run:
           name: Install mysqli extension
