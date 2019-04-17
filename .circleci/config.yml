@@ -181,7 +181,9 @@ jobs:
           command: sudo docker-php-ext-install pdo_mysql
       - run:
           name: Install redis extension
-          command: sudo docker-php-ext-install redis
+          command: |
+            pecl install redis
+            sudo docker-php-ext-enable redis
       - run:
           name: Install mysqli extension
           command: sudo docker-php-ext-install mysqli
