@@ -110,7 +110,7 @@ jobs:
   php71-32bit:
     <<: *unit-config
     docker:
-      - image: gcr.io/php-stackdriver/php71-32bit
+      - image: gcr.io/php-stackdriver/php71-64bit
     environment:
       TEST_PHP_ARGS: -q
       REPORT_EXIT_STATUS: 1
@@ -238,6 +238,5 @@ workflows:
       - php72-zts
       - php73
       - php73-zts
-      - php71-32bit
       - php71-debug
       - integration
