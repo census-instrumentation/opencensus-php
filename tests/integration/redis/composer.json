@@ -4,7 +4,7 @@
         "opencensus/opencensus": "dev-master",
         "predis/predis": "1.1.0",
         "ext-opencensus": "*",
-        "ext-phpredis": "*"
+        "ext-redis": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.0"
