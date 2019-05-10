@@ -32,7 +32,7 @@ use OpenCensus\Trace\Span;
 class Redis implements IntegrationInterface
 {
     /**
-     * Static method to add instrumentation to memcache requests
+     * Static method to add instrumentation to redis requests
      */
     public static function load()
     {
