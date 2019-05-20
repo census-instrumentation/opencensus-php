@@ -1,28 +1,29 @@
-dist: trusty
 language: php
 php:
   - '7.1'
-    - - '7.2'
-  - '7.3'
 
-before_install:
-  - autoconf -V
-  - sudo apt-get update -y
-  - sudo apt-get install -y -q --no-install-recommends
-  - sudo apt-get install -y build-essential
-  - sudo apt-get install -y g++
-  - sudo apt-get install -y gcc
-  - sudo apt-get install -y libc-dev
-  - sudo apt-get install -y make
-  - sudo apt-get install -y autoconf
-  - sudo apt-get install -y git
-  - sudo apt-get install -y unzip
-  - sudo apt-get install -y pushd ext
-  - sudo apt-get install -y phpize
-  - ./configure --enable-opencensus
-  - make test || ((find . -name '*.diff' | xargs cat) && false)
+install:
+  - wget -O sami.phar http://get.sensiolabs.org/sami.phar
+  - wget -O /tmp/hugo.deb https://github.com/gohugoio/hugo/releases/download/v0.30.2/hugo_0.30.2_Linux-64bit.deb
+  - sudo dpkg -i /tmp/hugo.deb
 
+script:
+  - pushd docs
+  - hugo
+  - popd
+  - cp config/sami.php config/sami-config.php
+  - php sami.phar update config/sami-config.php
+  - touch docs/.nojekyll
 
-before_script:
-  - composer install -n --prefer-dist
-  - sudo cp config/php.ini /usr/local/etc/php
+branches:
+  only:
+    - master
+
+deploy:
+  provider: pages
+  local_dir: docs/public
+  skip_cleanup: true
+  email: chingor@google.com # To satisfy the CLA check, replace this with bot email.
+  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+  on:
+    branch: master
