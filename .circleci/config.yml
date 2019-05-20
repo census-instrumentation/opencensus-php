@@ -141,14 +141,6 @@ jobs:
         environment:
           POSTGRES_PASSWORD: pgsql
           POSTGRES_USER: postgres
-      - image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
-         environment:
-           - cluster.name: group-project-test-cluster
-           - xpack.security.enabled: false
-           - transport.host: localhost
-           - network.host: 127.0.0.1
-           - http.port: 9210
-           - discovery.type: single-node
     steps:
       - checkout
       - run:
