@@ -12,7 +12,7 @@
     "repositories": {
         "opencensus": {
             "type": "git",
-            "url": "https://github.com/census-instrumentation/opencensus-php"
+            "url": "https://github.com/beatlabs/opencensus-php"
         }
     }
 }

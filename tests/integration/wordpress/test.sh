@@ -20,7 +20,7 @@ source ../setup_test_repo.sh
 
 curl -L https://wordpress.org/latest.tar.gz | tar zxf -
 sed -i "s|dev-master|dev-${BRANCH}|" composer.json
-sed -i "s|https://github.com/census-instrumentation/opencensus-php|${REPO}|" composer.json
+sed -i "s|https://github.com/beatlabs/opencensus-php|${REPO}|" composer.json
 composer install -n --prefer-dist
 cp wp-config.php wordpress
 vendor/bin/wp core install  --admin_user=admin \

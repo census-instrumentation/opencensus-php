@@ -24,5 +24,5 @@ elif [ ! -z "${CIRCLE_BRANCH}" ]; then
     export REPO=$CIRCLE_REPOSITORY_URL
 else
     export BRANCH="master"
-    export REPO="https://github.com/census-instrumentation/opencensus-php"
+    export REPO="https://github.com/beatlabs/opencensus-php"
 fi
