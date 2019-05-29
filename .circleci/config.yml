@@ -41,9 +41,9 @@ unit-config: &unit-config
     # Download and cache dependencies
     - restore_cache:
         keys:
-        - v1-dependencies-{{ checksum "composer.json" }}
-        # fallback to using the latest cache if no exact match is found
-        - v1-dependencies-
+          - v1-dependencies-{{ checksum "composer.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
 
     - run:
         name: Install composer packages
@@ -141,6 +141,8 @@ jobs:
         environment:
           POSTGRES_PASSWORD: pgsql
           POSTGRES_USER: postgres
+      - image: redis:4.0
+      - image: elasticsearch:6.8.0
     steps:
       - checkout
       - run:
@@ -185,6 +187,11 @@ jobs:
           name: Install pcntl extension
           command: sudo docker-php-ext-install pcntl
       - run:
+          name: Install redis extension
+          command: |
+            sudo pecl install redis
+            sudo docker-php-ext-enable redis
+      - run:
           name: Curl test
           command: tests/integration/curl/test.sh
       - run:
@@ -208,8 +215,11 @@ jobs:
           environment:
             DATABASE_URL: mysql://mysql:mysql@127.0.0.1:3306/mysqldb
       - run:
-          name: Wordpress test
-          command: tests/integration/wordpress/test.sh
+          name: Predis test
+          command: tests/integration/predis/test.sh
+      - run:
+          name: Elastica test
+          command: tests/integration/elastica/test.sh
     environment:
       DB_HOST: 127.0.0.1
       DB_USERNAME: mysql
