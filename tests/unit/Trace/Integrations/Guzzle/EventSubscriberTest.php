@@ -37,6 +37,10 @@ class EventSubscriberTest extends TestCase
 
     public function setUp()
     {
+        if (!interface_exists('GuzzleHttp\Event\SubscriberInterface')) {
+            $this->markTestSkipped('Guzzle 5 not loaded');
+        }
+
         $this->exporter = $this->prophesize(ExporterInterface::class);
         if (extension_loaded('opencensus')) {
             opencensus_trace_clear();
