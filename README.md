@@ -4,8 +4,6 @@
 server's resource usage and collect performance stats. This repository contains
 PHP related utilities and supporting software needed by Census.
 
-![PHP-Version](https://img.shields.io/packagist/php-v/opencensus/opencensus.svg)
-
 * [API Documentation][api-docs]
 * [Integration Documentation][integration-docs]
 
