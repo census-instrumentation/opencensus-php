@@ -4,8 +4,6 @@
 server's resource usage and collect performance stats. This repository contains
 PHP related utilities and supporting software needed by Census.
 
-[![CircleCI](https://circleci.com/gh/census-instrumentation/opencensus-php.svg?style=svg)](https://circleci.com/gh/census-instrumentation/opencensus-php)
-[![Packagist](https://img.shields.io/packagist/v/opencensus/opencensus.svg)](https://packagist.org/packages/opencensus/opencensus)
 ![PHP-Version](https://img.shields.io/packagist/php-v/opencensus/opencensus.svg)
 
 * [API Documentation][api-docs]
@@ -13,25 +11,30 @@ PHP related utilities and supporting software needed by Census.
 
 ## Installation & basic usage
 
-1. Install the `opencensus/opencensus` package using [composer][composer]:
+
+1. This package is a fork of the official OpenCensus package. To include it in your project, add
+the following configuration in your `composer.json`:
+
+    ```json
+    {
+        "repositories": [
+            {
+                "type": "vcs",
+                "url": "git@github.com:nenad/opencensus-php.git"
+            }
+        ]
+    }
+    ```
+
+2. Install the `opencensus/opencensus` package using [composer][composer]:
+
 
     ```bash
-    $ composer require opencensus/opencensus:~0.2
+    $ composer require opencensus/opencensus:~0.5
     ```
 
     **IMPORTANT: Please ensure your version is >= 0.2.0**. There is a potential security
     vulnerability in < 0.2.0.
-
-1. [Optional]: Install the `opencensus` extension from [PECL][pecl]:
-
-    ```bash
-    $ pecl install opencensus-alpha
-    ```
-   Enable the extension in your `php.ini`:
-
-    ```ini
-    extension=opencensus.so
-    ```
 
 1. Initialize a tracer for your application:
 
@@ -142,10 +145,6 @@ work-in-progress and are more likely to get backwards-incompatible updates.
 Contributions to this library are always welcome and highly encouraged.
 
 See [CONTRIBUTING](CONTRIBUTING.md) for more information on how to get started.
-
-## Releasing
-
-See [RELEASING](RELEASING.md) for more information on releasing new versions.
 
 ## License
 
