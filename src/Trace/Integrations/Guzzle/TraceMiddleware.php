@@ -70,51 +70,47 @@ final class TraceMiddleware
             /** @var PromiseInterface $promise */
             $promise = $handler($request, $options);
 
-            return $promise->then(
-                static function (Response $response) use ($span, $scope) {
-                    $statusCode = $response->getStatusCode();
-                    $span->addAttribute('http.status_code', (string)$statusCode);
+            return $promise->then(static function (Response $response) use ($span, $scope) {
+                $statusCode = $response->getStatusCode();
+                $span->addAttribute('http.status_code', (string)$statusCode);
 
-                    // If it's an error, annotate it as such
-                    if ($statusCode >= 400) {
-                        $span->addAttribute('error', 'true');
-                    }
-
-                    if ($this->logBody) {
-                        $bodyLength = (int)$response->getHeaderLine('Content-Length');
-                        // Jaeger agent limits us to 65K bytes per request, so in order to "balance" the data going to the
-                        // collector, we don't send any information bigger than 4K bytes per Span, as we can have many spans
-                        // within the trace. With this, we will have some response bodies in Jaeger, but the really big ones
-                        // will be skipped.
-                        // PHP Jaeger client: https://github.com/dz0ny/opencensus-php-exporter-jaeger/blob/ebecdf9769b4199047752f0bc2dbdeb0e514fec4/src/Jaeger/UDPClient.php#L92
-                        // Go Jaeger agent const size: https://github.com/jaegertracing/jaeger-client-go/blob/f7e0d4744fa6d5287c53b8ac8d4f83089ce07ce8/utils/udp_client.go#L31
-                        // Go Jaeger agent: https://github.com/jaegertracing/jaeger-client-go/blob/f7e0d4744fa6d5287c53b8ac8d4f83089ce07ce8/utils/udp_client.go#L87-L90
-                        if ($bodyLength > 0 && $bodyLength <= 4096) {
-                            $body = (string)$response->getBody();
-                        } else {
-                            $body = 'Either Content-Length is missing, or it is bigger than 4096';
-                        }
-                        $span->addAttribute('response.body', $body);
-                    }
-
-                    $attrHeaders = [];
-                    foreach ($response->getHeaders() as $name => $values) {
-                        $attrHeaders['response.' . $name] = implode(', ', $values);
-                    }
-                    $span->addAttributes($attrHeaders);
-                    $scope->close();
-
-                    return new FulfilledPromise($response);
-                },
-                static function (GuzzleException $r) use ($span, $scope) {
+                // If it's an error, annotate it as such
+                if ($statusCode >= 400) {
                     $span->addAttribute('error', 'true');
-                    $span->addAttribute('exception', sprintf('%s: %s', get_class($r), $r->getMessage()));
-                    $scope->close();
-
-                    return new RejectedPromise($r);
                 }
-            );
+
+                if ($this->logBody) {
+                    $bodyLength = (int)$response->getHeaderLine('Content-Length');
+                    // Jaeger agent limits us to 65K bytes per request, so in order to "balance" the data going to the
+                    // collector, we don't send any information bigger than 4K bytes per Span, as we can have many spans
+                    // within the trace. With this, we will have some response bodies in Jaeger, but the really big ones
+                    // will be skipped.
+                    // PHP Jaeger client: https://github.com/dz0ny/opencensus-php-exporter-jaeger/blob/ebecdf9769b4199047752f0bc2dbdeb0e514fec4/src/Jaeger/UDPClient.php#L92
+                    // Go Jaeger agent const size: https://github.com/jaegertracing/jaeger-client-go/blob/f7e0d4744fa6d5287c53b8ac8d4f83089ce07ce8/utils/udp_client.go#L31
+                    // Go Jaeger agent: https://github.com/jaegertracing/jaeger-client-go/blob/f7e0d4744fa6d5287c53b8ac8d4f83089ce07ce8/utils/udp_client.go#L87-L90
+                    if ($bodyLength > 0 && $bodyLength <= 4096) {
+                        $body = (string)$response->getBody();
+                    } else {
+                        $body = 'Either Content-Length is missing, or it is bigger than 4096';
+                    }
+                    $span->addAttribute('response.body', $body);
+                }
+
+                $attrHeaders = [];
+                foreach ($response->getHeaders() as $name => $values) {
+                    $attrHeaders['response.' . $name] = implode(', ', $values);
+                }
+                $span->addAttributes($attrHeaders);
+                $scope->close();
+
+                return new FulfilledPromise($response);
+            }, static function (GuzzleException $r) use ($span, $scope) {
+                $span->addAttribute('error', 'true');
+                $span->addAttribute('exception', sprintf('%s: %s', get_class($r), $r->getMessage()));
+                $scope->close();
+
+                return new RejectedPromise($r);
+            });
         };
     }
 }
-
