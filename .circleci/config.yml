@@ -78,6 +78,10 @@ unit-config: &unit-config
 
 version: 2
 jobs:
+  php70:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:7.0-node
   php71:
     <<: *unit-config
     docker:
@@ -186,6 +190,7 @@ workflows:
   version: 2
   units:
     jobs:
+      - php70
       - php71
       - php72
       - php73
