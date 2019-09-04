@@ -38,7 +38,7 @@ class B3HeadersPropagator implements PropagatorInterface
         return new SpanContext($traceId, $spanId, $enabled, true);
     }
 
-    public function inject(SpanContext $context, HeaderSetter $headers): void
+    public function inject(SpanContext $context, HeaderSetter $headers)
     {
         $headers->set(self::X_B3_TRACE_ID, $context->traceId());
         $headers->set(self::X_B3_SPAN_ID, $context->spanId() ?? '');

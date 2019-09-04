@@ -226,7 +226,7 @@ class Tracer
      *
      *      @type Span $span The span to add the attribute to.
      */
-    public static function addAttribute($attribute, $value, $options = []): void
+    public static function addAttribute($attribute, $value, $options = [])
     {
         if (isset(self::$instance)) {
             self::$instance->addAttribute($attribute, $value, $options);
@@ -243,7 +243,7 @@ class Tracer
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public static function addAnnotation($description, $options = []): void
+    public static function addAnnotation($description, $options = [])
     {
         if (isset(self::$instance)) {
             self::$instance->addAnnotation($description, $options);
@@ -263,7 +263,7 @@ class Tracer
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public static function addLink($traceId, $spanId, $options = []): void
+    public static function addLink($traceId, $spanId, $options = [])
     {
         if (isset(self::$instance)) {
             self::$instance->addLink($traceId, $spanId, $options);
@@ -285,7 +285,7 @@ class Tracer
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public static function addMessageEvent($type, $id, $options = []): void
+    public static function addMessageEvent($type, $id, $options = [])
     {
         if (isset(self::$instance)) {
             self::$instance->addMessageEvent($type, $id, $options);

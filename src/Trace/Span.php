@@ -244,7 +244,7 @@ class Span
      *         this span. **Defaults to** now. If provided as an int or float,
      *         it is expected to be a Unix timestamp.
      */
-    public function setStartTime($when = null): void
+    public function setStartTime($when = null)
     {
         $this->startTime = $this->formatDate($when);
     }
@@ -256,7 +256,7 @@ class Span
      *         this span. **Defaults to** now. If provided as an int or float,
      *         it is expected to be a Unix timestamp.
      */
-    public function setEndTime($when = null): void
+    public function setEndTime($when = null)
     {
         $this->endTime = $this->formatDate($when);
     }
@@ -300,7 +300,7 @@ class Span
     /**
      * Mark this span as attached.
      */
-    public function attach(): void
+    public function attach()
     {
         $this->attached = true;
     }
@@ -321,7 +321,7 @@ class Span
      * @param string $name The name of the attribute to add
      * @param string $value The attribute value
      */
-    public function addAttribute(string $name, string $value): void
+    public function addAttribute(string $name, string $value)
     {
         $this->attributes[$name] = $value;
         $this->eventHandler->attributeAdded($this, $name, $value);
@@ -332,7 +332,7 @@ class Span
      *
      * @param TimeEvent[] $timeEvents
      */
-    public function addTimeEvents(array $timeEvents): void
+    public function addTimeEvents(array $timeEvents)
     {
         foreach ($timeEvents as $timeEvent) {
             $this->addTimeEvent($timeEvent);
@@ -344,7 +344,7 @@ class Span
      *
      * @param TimeEvent $timeEvent
      */
-    public function addTimeEvent(TimeEvent $timeEvent): void
+    public function addTimeEvent(TimeEvent $timeEvent)
     {
         $this->timeEvents[] = $timeEvent;
         $this->eventHandler->timeEventAdded($this, $timeEvent);
@@ -355,7 +355,7 @@ class Span
      *
      * @param Link[] $links
      */
-    public function addLinks(array $links): void
+    public function addLinks(array $links)
     {
         foreach ($links as $link) {
             $this->addLink($link);
@@ -367,7 +367,7 @@ class Span
      *
      * @param Link $link
      */
-    public function addLink(Link $link): void
+    public function addLink(Link $link)
     {
         $this->links[] = $link;
         $this->eventHandler->linkAdded($this, $link);
@@ -379,7 +379,7 @@ class Span
      * @param int $code The status code
      * @param string $message A developer-facing error message
      */
-    public function setStatus($code, $message): void
+    public function setStatus($code, $message)
     {
         $this->status = new Status($code, $message);
     }

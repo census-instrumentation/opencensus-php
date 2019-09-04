@@ -57,7 +57,7 @@ class HttpHeaderPropagator implements PropagatorInterface
         return $data ? $this->formatter->deserialize($data) : new SpanContext();
     }
 
-    public function inject(SpanContext $context, HeaderSetter $setter): void
+    public function inject(SpanContext $context, HeaderSetter $setter)
     {
         $value = $this->formatter->serialize($context);
 

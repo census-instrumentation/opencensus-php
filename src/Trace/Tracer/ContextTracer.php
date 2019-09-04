@@ -105,25 +105,25 @@ class ContextTracer implements TracerInterface
         }, $this->spans);
     }
 
-    public function addAttribute($attribute, $value, $options = []): void
+    public function addAttribute($attribute, $value, $options = [])
     {
         $span = $this->getSpan($options);
         $span->addAttribute($attribute, $value);
     }
 
-    public function addAnnotation($description, $options = []): void
+    public function addAnnotation($description, $options = [])
     {
         $span = $this->getSpan($options);
         $span->addTimeEvent(new Annotation($description, $options));
     }
 
-    public function addLink($traceId, $spanId, $options = []): void
+    public function addLink($traceId, $spanId, $options = [])
     {
         $span = $this->getSpan($options);
         $span->addLink(new Link($traceId, $spanId, $options));
     }
 
-    public function addMessageEvent($type, $id, $options = []): void
+    public function addMessageEvent($type, $id, $options = [])
     {
         $span = $this->getSpan($options);
         $span->addTimeEvent(new MessageEvent($type, $id, $options));

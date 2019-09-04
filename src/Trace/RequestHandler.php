@@ -133,7 +133,7 @@ class RequestHandler
      * reports using the provided ExporterInterface. Adds additional attributes to
      * the root span detected from the response.
      */
-    public function onExit(): void
+    public function onExit()
     {
         $this->addCommonRequestAttributes($this->headers->toArray());
 
@@ -203,7 +203,7 @@ class RequestHandler
      *
      *      @type Span $span The span to add the attribute to.
      */
-    public function addAttribute($attribute, $value, $options = []): void
+    public function addAttribute($attribute, $value, $options = [])
     {
         $this->tracer->addAttribute($attribute, $value, $options);
     }
@@ -218,7 +218,7 @@ class RequestHandler
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addAnnotation($description, $options = []): void
+    public function addAnnotation($description, $options = [])
     {
         $this->tracer->addAnnotation($description, $options);
     }
@@ -236,7 +236,7 @@ class RequestHandler
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addLink($traceId, $spanId, $options = []): void
+    public function addLink($traceId, $spanId, $options = [])
     {
         $this->tracer->addLink($traceId, $spanId, $options);
     }
@@ -256,12 +256,12 @@ class RequestHandler
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addMessageEvent($type, $id, $options): void
+    public function addMessageEvent($type, $id, $options)
     {
         $this->tracer->addMessageEvent($type, $id, $options);
     }
 
-    private function addCommonRequestAttributes(array $headers): void
+    private function addCommonRequestAttributes(array $headers)
     {
         if ($responseCode = http_response_code()) {
             $this->rootSpan->setStatus($responseCode, "HTTP status code: $responseCode");

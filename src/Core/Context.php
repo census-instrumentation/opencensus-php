@@ -129,7 +129,7 @@ class Context
      *
      * @param  Context $toAttach
      */
-    public function detach(Context $toAttach): void
+    public function detach(Context $toAttach)
     {
         if (self::current() !== $this) {
             trigger_error('Unexpected context to detach.', E_USER_WARNING);
@@ -169,7 +169,7 @@ class Context
      *
      * @internal
      */
-    public static function reset(): void
+    public static function reset()
     {
         self::$current = null;
     }

@@ -58,7 +58,7 @@ class Scope
     /**
      * Close and clean up the scope. Runs the initial callback provided.
      */
-    public function close(): void
+    public function close()
     {
         call_user_func_array($this->callback, $this->args);
     }

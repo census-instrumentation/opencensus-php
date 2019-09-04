@@ -83,7 +83,7 @@ final class Stats
      *
      * @param ExporterInterface $exporter
      */
-    public static function setExporter(ExporterInterface $exporter): void
+    public static function setExporter(ExporterInterface $exporter)
     {
         self::$exporter = $exporter;
     }

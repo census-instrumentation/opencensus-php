@@ -20,7 +20,7 @@ class NullEventHandler implements SpanEventHandlerInterface
      * @param string $attribute The name of the attribute added
      * @param string $value The attribute value
      */
-    public function attributeAdded(Span $span, string $attribute, string $value): void
+    public function attributeAdded(Span $span, string $attribute, string $value)
     {
     }
 
@@ -30,7 +30,7 @@ class NullEventHandler implements SpanEventHandlerInterface
      * @param Span $span The span the link was added to
      * @param Link $link The link added to the span
      */
-    public function linkAdded(Span $span, Link $link): void
+    public function linkAdded(Span $span, Link $link)
     {
     }
 
@@ -40,7 +40,7 @@ class NullEventHandler implements SpanEventHandlerInterface
      * @param Span $span The span the time event was added to
      * @param TimeEvent $timeEvent The time event added to the span
      */
-    public function timeEventAdded(Span $span, TimeEvent $timeEvent): void
+    public function timeEventAdded(Span $span, TimeEvent $timeEvent)
     {
     }
 }
