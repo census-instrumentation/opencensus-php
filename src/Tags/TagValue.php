@@ -28,7 +28,7 @@ class TagValue
     use \OpenCensus\Utils\PrintableTrait;
 
     /** The maximum length for a tag value. */
-    private const MAX_LENGTH = 255;
+    const MAX_LENGTH = 255;
 
     /** @var string TagValue payload */
     private $value;

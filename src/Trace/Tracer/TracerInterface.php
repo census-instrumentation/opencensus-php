@@ -75,7 +75,7 @@ interface TracerInterface
      *
      *      @type Span $span The span to add the attribute to.
      */
-    public function addAttribute($attribute, $value, $options = []): void;
+    public function addAttribute($attribute, $value, $options = []);
 
     /**
      * Add an annotation to the provided Span
@@ -87,7 +87,7 @@ interface TracerInterface
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addAnnotation($description, $options = []): void;
+    public function addAnnotation($description, $options = []);
 
     /**
      * Add a link to the provided Span
@@ -102,7 +102,7 @@ interface TracerInterface
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addLink($traceId, $spanId, $options = []): void;
+    public function addLink($traceId, $spanId, $options = []);
 
     /**
      * Add an message event to the provided Span
@@ -119,7 +119,7 @@ interface TracerInterface
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addMessageEvent($type, $id, $options = []): void;
+    public function addMessageEvent($type, $id, $options = []);
 
     /**
      * Returns the current SpanContext

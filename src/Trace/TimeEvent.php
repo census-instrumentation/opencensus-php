@@ -59,7 +59,7 @@ abstract class TimeEvent
      *
      * @param \DateTimeInterface|int|float $time The time of this event.
      */
-    public function setTime($time = null): void
+    public function setTime($time = null)
     {
         $this->time = $this->formatDate($time);
     }

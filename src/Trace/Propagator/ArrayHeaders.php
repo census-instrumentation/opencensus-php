@@ -17,12 +17,12 @@ class ArrayHeaders implements HeaderSetter, HeaderGetter, \IteratorAggregate, \A
         $this->headers = $headers;
     }
 
-    public function get(string $header): ?string
+    public function get(string $header)
     {
         return $this->headers[$header] ?? null;
     }
 
-    public function set(string $header, string $value): void
+    public function set(string $header, string $value)
     {
         $this->headers[$header] = $value;
     }

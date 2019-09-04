@@ -92,7 +92,7 @@ class SpanContext
      *
      * @return string|null
      */
-    public function spanId(): ?string
+    public function spanId()
     {
         return $this->spanId;
     }
@@ -102,7 +102,7 @@ class SpanContext
      *
      * @param string $spanId The spanId to set.
      */
-    public function setSpanId(string $spanId): void
+    public function setSpanId(string $spanId)
     {
         $this->spanId = $spanId;
     }
@@ -112,7 +112,7 @@ class SpanContext
      *
      * @return bool|null
      */
-    public function enabled(): ?bool
+    public function enabled()
     {
         return $this->enabled;
     }
@@ -122,7 +122,7 @@ class SpanContext
      *
      * @param bool|null $enabled
      */
-    public function setEnabled($enabled): void
+    public function setEnabled($enabled)
     {
         $this->enabled = $enabled;
     }

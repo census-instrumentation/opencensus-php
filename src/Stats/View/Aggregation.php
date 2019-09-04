@@ -25,15 +25,15 @@ namespace OpenCensus\Stats\View;
 class Aggregation
 {
     /** No or unknown Aggregation type. */
-    public const NONE         = 0;
+    const NONE         = 0;
     /** Count Aggregation type. */
-    public const COUNT        = 1;
+    const COUNT        = 1;
     /** Sum Aggregation type. */
-    public const SUM          = 2;
+    const SUM          = 2;
     /** Distribution Aggregation type. */
-    public const DISTRIBUTION = 3;
+    const DISTRIBUTION = 3;
     /** LastValue Aggregation type. */
-    public const LAST_VALUE   = 4;
+    const LAST_VALUE   = 4;
 
     /** @var int $type Aggregation type */
     private $type;

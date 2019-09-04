@@ -4,7 +4,7 @@ namespace OpenCensus\Utils;
 
 class IdGenerator
 {
-    private const CHARSET = '0123456789abcdef';
+    const CHARSET = '0123456789abcdef';
 
     /**
      * Generates a random hex string

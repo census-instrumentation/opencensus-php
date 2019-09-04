@@ -57,9 +57,10 @@ class Guzzle6Test extends TestCase
         $tracer = Tracer::start($exporter, [
             'skipReporting' => true
         ]);
-        $response = $this->client->get($server->getUrl());
 
         $server->start();
+
+        $response = $this->client->get($server->getUrl());
 
         $this->assertEquals(200, $response->getStatusCode());
 

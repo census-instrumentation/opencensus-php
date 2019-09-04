@@ -22,9 +22,9 @@ namespace OpenCensus\Trace;
  */
 class MessageEvent extends TimeEvent
 {
-    public const TYPE_UNSPECIFIED = 'TYPE_UNSPECIFIED';
-    public const TYPE_SENT = 'SENT';
-    public const TYPE_RECEIVED = 'RECEIVED';
+    const TYPE_UNSPECIFIED = 'TYPE_UNSPECIFIED';
+    const TYPE_SENT = 'SENT';
+    const TYPE_RECEIVED = 'RECEIVED';
 
     /**
      * @var string Type of MessageEvent. Indicates whether the message was sent

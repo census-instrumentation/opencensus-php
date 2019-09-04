@@ -206,9 +206,9 @@ class SpanData
     /**
      * Retrieve the start time for this span.
      *
-     * @return DateTimeInterface
+     * @return DateTimeInterface|null
      */
-    public function startTime(): ?DateTimeInterface
+    public function startTime()
     {
         return $this->startTime;
     }
@@ -216,9 +216,9 @@ class SpanData
     /**
      * Retrieve the end time for this span.
      *
-     * @return DateTimeInterface
+     * @return DateTimeInterface|null
      */
-    public function endTime(): ?DateTimeInterface
+    public function endTime()
     {
         return $this->endTime;
     }
@@ -248,7 +248,7 @@ class SpanData
      *
      * @return string|null
      */
-    public function parentSpanId(): ?string
+    public function parentSpanId()
     {
         return $this->parentSpanId;
     }
@@ -296,9 +296,9 @@ class SpanData
     /**
      * Retrieve the final status for this span.
      *
-     * @return Status
+     * @return Status|null
      */
-    public function status(): ?Status
+    public function status()
     {
         return $this->status;
     }

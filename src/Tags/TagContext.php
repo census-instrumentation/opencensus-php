@@ -34,7 +34,7 @@ class TagContext
     use \OpenCensus\Utils\PrintableTrait;
 
     /** The key used for storing and retrieving a TagContext object from Context. */
-    private const CTX_KEY = '__OCTagContext__';
+    const CTX_KEY = '__OCTagContext__';
 
     /** The maximum length for a serialized TagContext. */
     const MAX_LENGTH = 8192;

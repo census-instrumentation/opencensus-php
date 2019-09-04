@@ -40,5 +40,5 @@ interface PropagatorInterface
      * @param SpanContext $context
      * @param HeaderSetter $setter
      */
-    public function inject(SpanContext $context, HeaderSetter $setter): void;
+    public function inject(SpanContext $context, HeaderSetter $setter);
 }

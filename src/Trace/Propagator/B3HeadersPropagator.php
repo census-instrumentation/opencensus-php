@@ -9,10 +9,10 @@ use OpenCensus\Trace\SpanContext;
  */
 class B3HeadersPropagator implements PropagatorInterface
 {
-    private const X_B3_TRACE_ID = 'X-B3-TraceId';
-    private const X_B3_SPAN_ID = 'X-B3-SpanId';
-    private const X_B3_SAMPLED = 'X-B3-Sampled';
-    private const X_B3_FLAGS = 'X-B3-Flags';
+    const X_B3_TRACE_ID = 'X-B3-TraceId';
+    const X_B3_SPAN_ID = 'X-B3-SpanId';
+    const X_B3_SAMPLED = 'X-B3-Sampled';
+    const X_B3_FLAGS = 'X-B3-Flags';
 
     public function extract(HeaderGetter $headers): SpanContext
     {
@@ -38,7 +38,7 @@ class B3HeadersPropagator implements PropagatorInterface
         return new SpanContext($traceId, $spanId, $enabled, true);
     }
 
-    public function inject(SpanContext $context, HeaderSetter $headers): void
+    public function inject(SpanContext $context, HeaderSetter $headers)
     {
         $headers->set(self::X_B3_TRACE_ID, $context->traceId());
         $headers->set(self::X_B3_SPAN_ID, $context->spanId() ?? '');

@@ -26,7 +26,7 @@ use OpenCensus\Trace\SpanContext;
  */
 class GrpcMetadataPropagator implements PropagatorInterface
 {
-    private const DEFAULT_METADATA_KEY = 'grpc-trace-bin';
+    const DEFAULT_METADATA_KEY = 'grpc-trace-bin';
 
     /**
      * @var FormatterInterface
@@ -58,7 +58,7 @@ class GrpcMetadataPropagator implements PropagatorInterface
         return $data ? $this->formatter->deserialize($data) : new SpanContext();
     }
 
-    public function inject(SpanContext $context, HeaderSetter $metadata): void
+    public function inject(SpanContext $context, HeaderSetter $metadata)
     {
         $metadata->set($this->key, $this->formatter->serialize($context));
     }

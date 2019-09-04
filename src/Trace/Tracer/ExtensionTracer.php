@@ -114,7 +114,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         }, opencensus_trace_list());
     }
 
-    public function addAttribute($attribute, $value, $options = []): void
+    public function addAttribute($attribute, $value, $options = [])
     {
         if (array_key_exists('span', $options)) {
             $options['spanId'] = $options['span']->spanId();
@@ -122,7 +122,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         opencensus_trace_add_attribute($attribute, $value, $options);
     }
 
-    public function addAnnotation($description, $options = []): void
+    public function addAnnotation($description, $options = [])
     {
         if (array_key_exists('span', $options)) {
             $options['spanId'] = $options['span']->spanId();
@@ -130,7 +130,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         opencensus_trace_add_annotation($description, $options);
     }
 
-    public function addLink($traceId, $spanId, $options = []): void
+    public function addLink($traceId, $spanId, $options = [])
     {
         if (array_key_exists('span', $options)) {
             $options['spanId'] = $options['span']->spanId();
@@ -138,7 +138,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         opencensus_trace_add_link($traceId, $spanId, $options);
     }
 
-    public function addMessageEvent($type, $id, $options = []): void
+    public function addMessageEvent($type, $id, $options = [])
     {
         if (array_key_exists('span', $options)) {
             $options['spanId'] = $options['span']->spanId();
@@ -161,7 +161,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         return $this->spanContext()->enabled();
     }
 
-    public function attributeAdded(Span $span, string $attribute, string $value): void
+    public function attributeAdded(Span $span, string $attribute, string $value)
     {
         // If the span is already attached (managed by the extension), then
         // tell the extension to add the attribute.
@@ -172,7 +172,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         }
     }
 
-    public function linkAdded(Span $span, Link $link): void
+    public function linkAdded(Span $span, Link $link)
     {
         // If the span is already attached (managed by the extension), then
         // tell the extension to add the link.
@@ -185,7 +185,7 @@ class ExtensionTracer implements TracerInterface, SpanEventHandlerInterface
         }
     }
 
-    public function timeEventAdded(Span $span, TimeEvent $timeEvent): void
+    public function timeEventAdded(Span $span, TimeEvent $timeEvent)
     {
         if ($span->attached()) {
             if ($timeEvent instanceof Annotation) {

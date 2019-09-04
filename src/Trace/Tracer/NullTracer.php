@@ -48,19 +48,19 @@ class NullTracer implements TracerInterface
         return [];
     }
 
-    public function addAttribute($attribute, $value, $options = []): void
+    public function addAttribute($attribute, $value, $options = [])
     {
     }
 
-    public function addAnnotation($description, $options = []): void
+    public function addAnnotation($description, $options = [])
     {
     }
 
-    public function addLink($traceId, $spanId, $options = []): void
+    public function addLink($traceId, $spanId, $options = [])
     {
     }
 
-    public function addMessageEvent($type, $id, $options = []): void
+    public function addMessageEvent($type, $id, $options = [])
     {
     }
 
