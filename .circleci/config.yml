@@ -83,40 +83,15 @@ jobs:
     docker:
       - image: circleci/php:7.1-node
 
-  php71-zts:
-    <<: *unit-config
-    docker:
-      - image: circleci/php:7.1-zts-node
-
   php72:
     <<: *unit-config
     docker:
       - image: circleci/php:7.2-node
 
-  php72-zts:
-    <<: *unit-config
-    docker:
-      - image: circleci/php:7.2-zts-node
-
   php73:
     <<: *unit-config
     docker:
       - image: circleci/php:7.3-node
-
-  php73-zts:
-    <<: *unit-config
-    docker:
-      - image: circleci/php:7.3-zts-node
-
-  php71-debug:
-    <<: *unit-config
-    docker:
-      - image: gcr.io/php-stackdriver/php71-debug
-    environment:
-      TEST_PHP_ARGS: -q
-      REPORT_EXIT_STATUS: 1
-      RUN_EXTENSION_TESTS: 1
-      SUDO_CMD: ""
 
   integration:
     docker:
@@ -212,10 +187,6 @@ workflows:
   units:
     jobs:
       - php71
-      - php71-zts
       - php72
-      - php72-zts
       - php73
-      - php73-zts
-      - php71-debug
       - integration
