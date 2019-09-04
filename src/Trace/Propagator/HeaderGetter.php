@@ -8,5 +8,5 @@ interface HeaderGetter
      * @param string $header Header name
      * @return string|null
      */
-    public function get(string $header): ?string;
+    public function get(string $header);
 }

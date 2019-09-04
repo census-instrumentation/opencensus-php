@@ -278,7 +278,7 @@ class RequestHandler
         }
     }
 
-    private function startTimeFromHeaders(array $headers): ?string
+    private function startTimeFromHeaders(array $headers)
     {
         if (array_key_exists('REQUEST_TIME_FLOAT', $headers)) {
             return $headers['REQUEST_TIME_FLOAT'];
@@ -294,7 +294,7 @@ class RequestHandler
         return $headers['REQUEST_URI'] ?? self::DEFAULT_ROOT_SPAN_NAME;
     }
 
-    private function detectKey(array $keys, array $array): ?string
+    private function detectKey(array $keys, array $array)
     {
         foreach ($keys as $key) {
             if (array_key_exists($key, $array)) {

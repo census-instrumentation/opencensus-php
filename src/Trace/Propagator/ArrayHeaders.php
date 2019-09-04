@@ -17,7 +17,7 @@ class ArrayHeaders implements HeaderSetter, HeaderGetter, \IteratorAggregate, \A
         $this->headers = $headers;
     }
 
-    public function get(string $header): ?string
+    public function get(string $header)
     {
         return $this->headers[$header] ?? null;
     }
