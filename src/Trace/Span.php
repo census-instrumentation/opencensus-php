@@ -34,17 +34,17 @@ class Span
     use DateFormatTrait;
 
     // See https://github.com/census-instrumentation/opencensus-specs/blob/master/trace/HTTP.md#attributes
-    public const ATTRIBUTE_HOST = 'http.host';
-    public const ATTRIBUTE_PORT = 'http.port';
-    public const ATTRIBUTE_METHOD = 'http.method';
-    public const ATTRIBUTE_PATH = 'http.path';
-    public const ATTRIBUTE_ROUTE = 'http.route';
-    public const ATTRIBUTE_USER_AGENT = 'http.user_agent';
-    public const ATTRIBUTE_STATUS_CODE = 'http.status_code';
+    const ATTRIBUTE_HOST = 'http.host';
+    const ATTRIBUTE_PORT = 'http.port';
+    const ATTRIBUTE_METHOD = 'http.method';
+    const ATTRIBUTE_PATH = 'http.path';
+    const ATTRIBUTE_ROUTE = 'http.route';
+    const ATTRIBUTE_USER_AGENT = 'http.user_agent';
+    const ATTRIBUTE_STATUS_CODE = 'http.status_code';
 
-    public const KIND_UNSPECIFIED = 'SPAN_KIND_UNSPECIFIED';
-    public const KIND_SERVER = 'SERVER';
-    public const KIND_CLIENT = 'CLIENT';
+    const KIND_UNSPECIFIED = 'SPAN_KIND_UNSPECIFIED';
+    const KIND_SERVER = 'SERVER';
+    const KIND_CLIENT = 'CLIENT';
 
     /**
      * Unique identifier for a trace. All spans from the same Trace share the

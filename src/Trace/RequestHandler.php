@@ -34,8 +34,8 @@ use OpenCensus\Trace\Propagator\PropagatorInterface;
  */
 class RequestHandler
 {
-    private const DEFAULT_ROOT_SPAN_NAME = 'main';
-    private const ATTRIBUTE_MAP = [
+    const DEFAULT_ROOT_SPAN_NAME = 'main';
+    const ATTRIBUTE_MAP = [
         Span::ATTRIBUTE_HOST => ['HTTP_HOST', 'SERVER_NAME'],
         Span::ATTRIBUTE_PORT => ['SERVER_PORT'],
         Span::ATTRIBUTE_METHOD => ['REQUEST_METHOD'],

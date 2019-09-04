@@ -51,30 +51,30 @@ class DaemonClient implements StatsExporter, TraceExporter
     /** Default send timeout in seconds as float. */
     const DEFAULT_MAX_SEND_TIME = 0.005;
     /** Protocol version this client supports. */
-    private const PROT_VERSION = "\x01";
+    const PROT_VERSION = "\x01";
     /** Start of message delimiter, allowing for recovery from truncated messages */
-    private const START_OF_MSG = "\x00\x00\x00\x00";
+    const START_OF_MSG = "\x00\x00\x00\x00";
 
     // message types (1 - 19)
-    private const MSG_PROC_INIT     = "\x01";
-    private const MSG_PROC_SHUTDOWN = "\x02";
-    private const MSG_REQ_INIT      = "\x03";
-    private const MSG_REQ_SHUTDOWN  = "\x04";
+    const MSG_PROC_INIT     = "\x01";
+    const MSG_PROC_SHUTDOWN = "\x02";
+    const MSG_REQ_INIT      = "\x03";
+    const MSG_REQ_SHUTDOWN  = "\x04";
 
     // trace type (20 - 39)
-    private const MSG_TRACE_EXPORT = "\x14";
+    const MSG_TRACE_EXPORT = "\x14";
 
     // stats types (40 - ...)
-    private const MSG_MEASURE_CREATE        = "\x28";
-    private const MSG_VIEW_REPORTING_PERIOD = "\x29";
-    private const MSG_VIEW_REGISTER         = "\x2a";
-    private const MSG_VIEW_UNREGISTER       = "\x2b";
-    private const MSG_STATS_RECORD          = "\x2c";
+    const MSG_MEASURE_CREATE        = "\x28";
+    const MSG_VIEW_REPORTING_PERIOD = "\x29";
+    const MSG_VIEW_REGISTER         = "\x2a";
+    const MSG_VIEW_UNREGISTER       = "\x2b";
+    const MSG_STATS_RECORD          = "\x2c";
 
     // measurement value types
-    private const MS_TYPE_INT     = "\x01";
-    private const MS_TYPE_FLOAT   = "\x02";
-    private const MS_TYPE_UNKNOWN = "\xff";
+    const MS_TYPE_INT     = "\x01";
+    const MS_TYPE_FLOAT   = "\x02";
+    const MS_TYPE_UNKNOWN = "\xff";
 
     /** @var DaemonClient $instance Our singleton instance of DaemonClient. */
     private static $instance;

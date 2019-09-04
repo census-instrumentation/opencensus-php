@@ -24,9 +24,9 @@ class Link
 {
     use AttributeTrait;
 
-    public const TYPE_UNSPECIFIED = 'TYPE_UNSPECIFIED';
-    public const TYPE_CHILD_LINKED_SPAN = 'CHILD_LINKED_SPAN';
-    public const TYPE_PARENT_LINKED_SPAN = 'PARENT_LINKED_SPAN';
+    const TYPE_UNSPECIFIED = 'TYPE_UNSPECIFIED';
+    const TYPE_CHILD_LINKED_SPAN = 'CHILD_LINKED_SPAN';
+    const TYPE_PARENT_LINKED_SPAN = 'PARENT_LINKED_SPAN';
 
     /**
      * @var string `TRACE_ID` a unique identifier for a trace.

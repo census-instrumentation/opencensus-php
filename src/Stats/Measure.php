@@ -31,11 +31,11 @@ abstract class Measure
     use \OpenCensus\Utils\PrintableTrait;
 
     /** measurement is dimensionless */
-    public const DIMENSIONLESS = '1';
+    const DIMENSIONLESS = '1';
     /** measurement in bytes */
-    public const BYTES         = 'By';
+    const BYTES         = 'By';
     /** measurement in milliseconds */
-    public const MILLISECONDS  = 'ms';
+    const MILLISECONDS  = 'ms';
 
     protected const NAME_MAX_LENGTH = 255;
     protected const EX_NAME_EXISTS  = 'Different Measure Type with same name already exists.';

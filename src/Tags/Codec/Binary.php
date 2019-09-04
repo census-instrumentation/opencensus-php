@@ -31,13 +31,13 @@ class Binary
     use \OpenCensus\Utils\VarintTrait;
 
     /** Binary Encoding Version number */
-    private const TAGS_VERSION_ID = "\x00";
+    const TAGS_VERSION_ID = "\x00";
 
     /** KeyTypes (currently only string is supported) */
-    private const KEYTYPE_STRING = "\x00";
-    private const KEYTYPE_INT64  = "\x01";
-    private const KEYTYPE_TRUE   = "\x02";
-    private const KEYTYPE_FALSE  = "\x03";
+    const KEYTYPE_STRING = "\x00";
+    const KEYTYPE_INT64  = "\x01";
+    const KEYTYPE_TRUE   = "\x02";
+    const KEYTYPE_FALSE  = "\x03";
 
     /**
      * Encode the provided TagContext to our binary wire format.

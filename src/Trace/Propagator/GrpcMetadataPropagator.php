@@ -26,7 +26,7 @@ use OpenCensus\Trace\SpanContext;
  */
 class GrpcMetadataPropagator implements PropagatorInterface
 {
-    private const DEFAULT_METADATA_KEY = 'grpc-trace-bin';
+    const DEFAULT_METADATA_KEY = 'grpc-trace-bin';
 
     /**
      * @var FormatterInterface

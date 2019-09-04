@@ -25,7 +25,7 @@ use OpenCensus\Trace\SpanContext;
  */
 class HttpHeaderPropagator implements PropagatorInterface
 {
-    private const DEFAULT_HEADER = 'X-Cloud-Trace-Context';
+    const DEFAULT_HEADER = 'X-Cloud-Trace-Context';
 
     /**
      * @var FormatterInterface
