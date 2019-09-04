@@ -1,4 +1,5 @@
 unit-config: &unit-config
+  working_directory: ~/project
   environment:
     TEST_PHP_ARGS: -q
     REPORT_EXIT_STATUS: 1
@@ -41,9 +42,9 @@ unit-config: &unit-config
     # Download and cache dependencies
     - restore_cache:
         keys:
-        - v2-dependencies-{{ checksum "composer.json" }}
+        - v3-dependencies-{{ checksum "composer.json" }}
         # fallback to using the latest cache if no exact match is found
-        - v2-dependencies-
+        - v3-dependencies-
 
     - run:
         name: Install composer packages
@@ -52,7 +53,7 @@ unit-config: &unit-config
     - save_cache:
         paths:
           - ./vendor
-        key: v2-dependencies-{{ checksum "composer.json" }}
+        key: v3-dependencies-{{ checksum "composer.json" }}
 
     - run:
         name: Enable E_ALL error reporting for strict testing
