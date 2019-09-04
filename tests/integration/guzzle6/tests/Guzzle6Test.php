@@ -43,6 +43,9 @@ class Guzzle6Test extends TestCase
         $this->client = new Client(['handler' => $stack]);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testGuzzleRequest()
     {
         $server = HttpTestServer::create(
@@ -77,6 +80,9 @@ class Guzzle6Test extends TestCase
         $this->assertEquals($server->getUrl(), $curlSpan->attributes()['uri']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testPersistsTraceContext()
     {
         $server = HttpTestServer::create(
