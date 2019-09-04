@@ -28,7 +28,7 @@ the following configuration in your `composer.json`:
 
 
     ```bash
-    $ composer require opencensus/opencensus:~0.5
+    $ composer require opencensus/opencensus:~0.6
     ```
 
     **IMPORTANT: Please ensure your version is >= 0.2.0**. There is a potential security
