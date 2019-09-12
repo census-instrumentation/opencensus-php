@@ -25,7 +25,7 @@ class LaravelTest extends TestCase
     private static $outputFile;
     private static $client;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         self::$outputFile = sys_get_temp_dir() . '/spans.json';
         self::$client = new Client([
@@ -33,7 +33,7 @@ class LaravelTest extends TestCase
         ]);
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->clearSpans();
@@ -48,7 +48,7 @@ class LaravelTest extends TestCase
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertContains('Laravel', $response->getBody()->getContents());
+        $this->assertStringContainsString('Laravel', $response->getBody()->getContents());
 
         $spans = json_decode(file_get_contents(self::$outputFile), true);
         $this->assertNotEmpty($spans);
