@@ -20,6 +20,9 @@ namespace OpenCensus\Tests\Integration\Trace;
 use GuzzleHttp\Client;
 use HttpTest\HttpTestServer;
 use OpenCensus\Trace\Exporter\NullExporter;
+use OpenCensus\Trace\Propagator\HttpHeaderPropagator;
+use OpenCensus\Trace\RequestHandler;
+use OpenCensus\Trace\Sampler\AlwaysSampleSampler;
 use OpenCensus\Trace\Tracer;
 use OpenCensus\Trace\Integrations\Guzzle\EventSubscriber;
 use Psr\Http\Message\RequestInterface;
@@ -42,9 +45,6 @@ class Guzzle5Test extends TestCase
         }
     }
 
-    /**
-     * @runInSeparateProcess
-     */
     public function testGuzzleRequest()
     {
         $server = HttpTestServer::create(
@@ -56,34 +56,30 @@ class Guzzle5Test extends TestCase
         );
 
 
-        $exporter = new NullExporter();
-        $tracer = Tracer::start($exporter, [
-            'skipReporting' => true
-        ]);
+        $tracer = new RequestHandler(
+            new NullExporter(),
+            new AlwaysSampleSampler(),
+            new HttpHeaderPropagator(),
+            ['skipReporting' => true]
+        );
 
         $this->client->getEmitter()->attach(new EventSubscriber($tracer->tracer()));
 
         $server->start();
-
         $response = $this->client->get($server->getUrl());
+        $server->stop();
+        $tracer->onExit();
         $this->assertEquals(200, $response->getStatusCode());
 
-        $server->stop();
-
-        $tracer->onExit();
-
         $spans = $tracer->tracer()->spans();
-        $this->assertCount(2, $spans);
 
+        $this->assertCount(2, $spans);
         $curlSpan = $spans[1];
-        $this->assertEquals('GuzzleHttp: ' . $server->getUrl(), $curlSpan->name());
-        $this->assertEquals('GET', $curlSpan->attributes()['method']);
-        $this->assertEquals($server->getUrl(), $curlSpan->attributes()['uri']);
+        $this->assertEquals('Guzzle: localhost', $curlSpan->name());
+        $this->assertEquals('GET', $curlSpan->attributes()['http.method']);
+        $this->assertEquals($server->getUrl(), $curlSpan->attributes()['http.uri']);
     }
 
-    /**
-     * @runInSeparateProcess
-     */
     public function testPersistsTraceContext()
     {
         $server = HttpTestServer::create(
@@ -98,32 +94,32 @@ class Guzzle5Test extends TestCase
         );
 
         $traceContextHeader = '1603c1cde5c74f23bcf1682eb822fcf7/1150672535;o=1';
-        $exporter = new NullExporter();
-        $tracer = Tracer::start($exporter, [
-            'skipReporting' => true,
-            'headers' => [
-                'X-Cloud-Trace-Context' => $traceContextHeader
+        $tracer = new RequestHandler(
+            new NullExporter(),
+            new AlwaysSampleSampler(),
+            new HttpHeaderPropagator(),
+            [
+                'skipReporting' => true,
+                'headers' => [
+                    'X-Cloud-Trace-Context' => $traceContextHeader,
+                ],
             ]
-        ]);
+        );
 
         $this->client->getEmitter()->attach(new EventSubscriber($tracer->tracer()));
 
         $server->start();
-
-
         $response = $this->client->get($server->getUrl());
+        $server->stop();
+        $tracer->onExit();
         $this->assertEquals(200, $response->getStatusCode());
 
-        $server->stop();
-
-        $tracer->onExit();
-
         $spans = $tracer->tracer()->spans();
-        $this->assertCount(2, $spans);
 
+        $this->assertCount(2, $spans);
         $curlSpan = $spans[1];
-        $this->assertEquals('GuzzleHttp: ' . $server->getUrl(), $curlSpan->name());
-        $this->assertEquals('GET', $curlSpan->attributes()['method']);
-        $this->assertEquals($server->getUrl(), $curlSpan->attributes()['uri']);
+        $this->assertEquals('Guzzle: localhost', $curlSpan->name());
+        $this->assertEquals('GET', $curlSpan->attributes()['http.method']);
+        $this->assertEquals($server->getUrl(), $curlSpan->attributes()['http.uri']);
     }
 }
