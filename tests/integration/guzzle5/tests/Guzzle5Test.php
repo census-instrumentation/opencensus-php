@@ -37,8 +37,6 @@ class Guzzle5Test extends TestCase
     {
         parent::setUp();
         $this->client = new Client();
-        $subscriber = new EventSubscriber();
-        $this->client->getEmitter()->attach($subscriber);
         if (extension_loaded('opencensus')) {
             opencensus_trace_clear();
         }
@@ -57,10 +55,13 @@ class Guzzle5Test extends TestCase
             }
         );
 
+
         $exporter = new NullExporter();
         $tracer = Tracer::start($exporter, [
             'skipReporting' => true
         ]);
+
+        $this->client->getEmitter()->attach(new EventSubscriber($tracer->tracer()));
 
         $server->start();
 
@@ -75,7 +76,7 @@ class Guzzle5Test extends TestCase
         $this->assertCount(2, $spans);
 
         $curlSpan = $spans[1];
-        $this->assertEquals('GuzzleHttp::request', $curlSpan->name());
+        $this->assertEquals('GuzzleHttp: ' . $server->getUrl(), $curlSpan->name());
         $this->assertEquals('GET', $curlSpan->attributes()['method']);
         $this->assertEquals($server->getUrl(), $curlSpan->attributes()['uri']);
     }
@@ -105,7 +106,10 @@ class Guzzle5Test extends TestCase
             ]
         ]);
 
+        $this->client->getEmitter()->attach(new EventSubscriber($tracer->tracer()));
+
         $server->start();
+
 
         $response = $this->client->get($server->getUrl());
         $this->assertEquals(200, $response->getStatusCode());
@@ -118,7 +122,7 @@ class Guzzle5Test extends TestCase
         $this->assertCount(2, $spans);
 
         $curlSpan = $spans[1];
-        $this->assertEquals('GuzzleHttp::request', $curlSpan->name());
+        $this->assertEquals('GuzzleHttp: ' . $server->getUrl(), $curlSpan->name());
         $this->assertEquals('GET', $curlSpan->attributes()['method']);
         $this->assertEquals($server->getUrl(), $curlSpan->attributes()['uri']);
     }

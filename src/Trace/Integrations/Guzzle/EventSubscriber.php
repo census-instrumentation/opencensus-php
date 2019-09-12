@@ -26,6 +26,7 @@ use OpenCensus\Trace\Propagator\PropagatorInterface;
 use GuzzleHttp\Event\BeforeEvent;
 use GuzzleHttp\Event\EndEvent;
 use GuzzleHttp\Event\SubscriberInterface;
+use OpenCensus\Trace\Tracer\TracerInterface;
 
 /**
  * This class handles integration with GuzzleHttp 5. Attaching this EventSubscriber to
@@ -48,21 +49,35 @@ class EventSubscriber implements SubscriberInterface
      * @var PropagatorInterface
      */
     private $propagator;
-
+    /**
+     * @var TracerInterface
+     */
+    private $tracer;
+    /**
+     * @var bool
+     */
+    private $logBody;
     /**
      * @var Scope
      */
     private $scope;
+    /**
+     * @var Span
+     */
+    private $span;
 
     /**
      * Create a new Guzzle event listener that creates trace spans and propagates the current
      * trace context to the downstream request.
      *
+     * @param TracerInterface $tracer
      * @param PropagatorInterface $propagator Interface responsible for serializing trace context
      */
-    public function __construct(PropagatorInterface $propagator = null)
+    public function __construct(TracerInterface $tracer, PropagatorInterface $propagator = null, bool $logBody = true)
     {
         $this->propagator = $propagator ?: new HttpHeaderPropagator();
+        $this->tracer = $tracer;
+        $this->logBody = $logBody;
     }
 
     /**
@@ -87,22 +102,25 @@ class EventSubscriber implements SubscriberInterface
     public function onBefore(BeforeEvent $event)
     {
         $request = $event->getRequest();
-        $context = Tracer::spanContext();
-        if ($context->enabled()) {
-            $headers = new ArrayHeaders();
-            $this->propagator->inject($context, $headers);
-            $request->setHeaders($headers->toArray());
+        $headers = new ArrayHeaders();
+        $this->propagator->inject($this->tracer->spanContext(), $headers);
+        $request->setHeaders($headers->toArray());
+
+        $attrHeaders = [];
+        foreach ($request->getHeaders() as $name => $values) {
+            $attrHeaders['request.' . $name] = implode(', ', $values);
         }
 
-        $span = Tracer::startSpan([
-            'name' => 'GuzzleHttp::request',
+        $this->span = $this->tracer->startSpan([
+            'name' => sprintf('Guzzle: %s', $request->getHost()),
             'attributes' => [
-                'method' => $request->getMethod(),
-                'uri' => $request->getUrl()
-            ],
-            'kind' => Span::KIND_CLIENT
+                    'http.method' => $request->getMethod(),
+                    'http.uri' => $request->getUrl(),
+                ] + $attrHeaders,
+            'kind' => Span::KIND_CLIENT,
+            'sameProcessAsParentSpan' => !empty($this->spans),
         ]);
-        $this->scope = Tracer::withSpan($span);
+        $this->scope = $this->tracer->withSpan($this->span);
     }
 
     /**
@@ -113,6 +131,43 @@ class EventSubscriber implements SubscriberInterface
      */
     public function onEnd(EndEvent $event)
     {
+        $response = $event->getResponse();
+        $exception = $event->getException();
+
+        if ($exception) {
+            $this->span->addAttribute('error', 'true');
+            $this->span->addAttribute('exception', sprintf('%s: %s', get_class($exception), $exception->getMessage()));
+        }
+
+        if ($response === null) {
+            $this->scope->close();
+            return;
+        }
+
+        $statusCode = $response->getStatusCode();
+        $this->span->addAttribute('http.status_code', (string)$statusCode);
+
+        // If it's an error, annotate it as such
+        if ($statusCode >= 400) {
+            $this->span->addAttribute('error', 'true');
+        }
+
+        if ($this->logBody) {
+            $bodyLength = (int)$response->getHeader('Content-Length');
+            if ($bodyLength > 0 && $bodyLength <= 4096) {
+                $body = (string)$response->getBody();
+            } else {
+                $body = 'Either Content-Length is missing, or it is bigger than 4096';
+            }
+            $this->span->addAttribute('response.body', $body);
+        }
+
+        $attrHeaders = [];
+        foreach ($response->getHeaders() as $name => $values) {
+            $attrHeaders['response.' . $name] = implode(', ', $values);
+        }
+        $this->span->addAttributes($attrHeaders);
+
         $this->scope->close();
     }
 }
