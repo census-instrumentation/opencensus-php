@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+  php:
+    command: ["-c", "sleep 1000000"]
+    build: .
+    volumes:
+      - .:/project
+    environment:
+      DATABASE_URL: mysql://open_user:open_password@mysql:3306/open_db
+      TEST_HOST: localhost
+      TEST_PORT: 9999
+      TEST_URL: http://localhost:9999
+
+  memcached:
+    image: memcached:1
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: 'opencensus'
+      MYSQL_DATABASE: 'open_db'
+      MYSQL_USER: 'open_user'
+      MYSQL_PASSWORD: 'open_password'
+    expose:
+      - '3306'
+
+  postgres:
+    image: postgres:9.6
+    environment:
+      POSTGRES_PASSWORD: pgsql
+      POSTGRES_USER: postgres
