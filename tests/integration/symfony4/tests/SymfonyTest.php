@@ -15,10 +15,15 @@
  * limitations under the License.
  */
 
-namespace OpenCensus\Tests\Integration\Trace\Exporter;
+namespace App\Tests;
 
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class SymfonyTest extends TestCase
 {
@@ -29,7 +34,7 @@ class SymfonyTest extends TestCase
     {
         self::$outputFile = sys_get_temp_dir() . '/spans.json';
         self::$client = new Client([
-            'base_uri' => getenv('TESTURL') ?: 'http://localhost:9000'
+            'base_uri' => getenv('TEST_URL') ?: 'http://localhost:9000'
         ]);
     }
 
@@ -56,11 +61,11 @@ class SymfonyTest extends TestCase
         $spansByName = $this->groupSpansByName($spans);
 
         $this->assertEquals('/?rand=' . $rand, $spans[0]['name']);
-        $this->assertNotEmpty($spansByName['kernel.controller']);
-        $this->assertNotEmpty($spansByName['kernel.controller_arguments']);
-        $this->assertNotEmpty($spansByName['kernel.response']);
-        $this->assertNotEmpty($spansByName['kernel.finish_request']);
-        $this->assertNotEmpty($spansByName['kernel.terminate']);
+        $this->assertNotEmpty($spansByName[ControllerEvent::class]);
+        $this->assertNotEmpty($spansByName[ControllerArgumentsEvent::class]);
+        $this->assertNotEmpty($spansByName[ResponseEvent::class]);
+        $this->assertNotEmpty($spansByName[FinishRequestEvent::class]);
+        $this->assertNotEmpty($spansByName[TerminateEvent::class]);
     }
 
     public function testDoctrine()
