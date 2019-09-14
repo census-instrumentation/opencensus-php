@@ -17,6 +17,7 @@
 
 namespace OpenCensus\Trace\Integrations;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -39,23 +40,37 @@ class Symfony implements IntegrationInterface
     {
         if (!extension_loaded('opencensus')) {
             trigger_error('opencensus extension required to load Symfony integrations.', E_USER_WARNING);
+
             return;
         }
 
         Doctrine::load();
 
-        // public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
-        opencensus_trace_method(HttpKernel::class, 'handle', function ($kernel, $request) {
-            return [
-                'name' => 'kernel/handle'
+        opencensus_trace_method(HttpKernel::class, 'handle', static function ($kernel, Request $request) {
+            $spanData = [
+                'name' => 'kernel/handle',
+                'attributes' => [
+                    'request.uri' => $request->getUri(),
+                ]
             ];
+
+            foreach ($request->headers as $key => $values) {
+                $spanData['attributes']['request.'.$key] = implode(',', $values);
+            }
+
+            return $spanData;
         });
 
-        // public function dispatch($eventName, Event $event = null)
-        opencensus_trace_method(EventDispatcher::class, 'dispatch', function ($dispatcher, $eventName) {
+        opencensus_trace_method(EventDispatcher::class, 'dispatch', static function ($dispatcher, $event) {
+            if (\is_object($event)) {
+                $name = \get_class($event);
+            } else {
+                $name = (string) $event;
+            }
+
             return [
-                'name' => $eventName,
-                'attributes' => ['eventName' => $eventName]
+                'name' => $name,
+                'attributes' => ['eventName' => $name],
             ];
         });
     }
