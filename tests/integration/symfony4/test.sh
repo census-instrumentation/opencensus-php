@@ -19,13 +19,16 @@ pushd $(dirname ${BASH_SOURCE[0]})
 source ../setup_test_repo.sh
 
 composer create-project --prefer-dist symfony/skeleton symfony ^4.0
+
 cp -r src tests phpunit.xml.dist symfony/
 
 pushd symfony
 
+composer require --no-interaction symfony/orm-pack
+composer remove symfony/flex # Necessary so that we can work with branches that have slash in them
 composer config repositories.opencensus git ${REPO}
-composer require --no-interaction opencensus/opencensus:dev-${BRANCH} doctrine
-composer require --no-interaction --dev phpunit/phpunit:^7.0 guzzlehttp/guzzle:~6.0
+composer require --no-interaction opencensus/opencensus:dev-${BRANCH} --no-scripts
+composer require --dev --no-interaction phpunit/phpunit:^7 guzzlehttp/guzzle:^6 --no-scripts
 
 bin/console doctrine:migrations:migrate -n
 vendor/bin/phpunit
