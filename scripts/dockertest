@@ -1,0 +1,3 @@
+#!/bin/bash                               
+docker build -t opencensus-php-tests .
+docker run -it opencensus-php-tests
