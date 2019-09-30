@@ -54,6 +54,9 @@ To run all tests, the following command may be invoked:
 $ composer tests
 ```
 
+Tests can additionally be run using the provided docker wrapper:
+`scripts/dockertest`
+
 ## Coding Style
 
 Please follow the established coding style in the library. OpenCensus for PHP
