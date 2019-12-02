@@ -19,4 +19,8 @@ var_dump($span->name());
 
 ?>
 --EXPECTF--
-%s fatal error: Object of class UncastableObject could not be converted to string in %s/name_uncastable_object.php on line %d
+Fatal error: %s: Object of class UncastableObject could not be converted to string in %s/name_uncastable_object.php:%d
+Stack trace:
+#0 %s/name_uncastable_object.php(%d): opencensus_trace_begin('foo', Array)
+#1 {main}
+  thrown in %s/name_uncastable_object.php on line %d
