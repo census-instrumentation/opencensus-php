@@ -236,6 +236,8 @@ workflows:
       - php72-zts
       - php73
       - php73-zts
+      - php74
+      - php74-zts
       - php71-32bit
       - php71-debug
       - integration
