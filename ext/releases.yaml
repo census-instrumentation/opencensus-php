@@ -89,3 +89,12 @@ releases:
     stability: alpha
     notes: |-
       - Fix refcounts for arguments in traced function callbacks (#184)
+
+  - date: '2019-12-17'
+    time: 09:15:00
+    version: 0.3.0
+    stability: alpha
+    notes: |-
+      - OpenCensus stats implementation (#220)
+      - Fix ZVAL_DESTRUCTOR usage
+
