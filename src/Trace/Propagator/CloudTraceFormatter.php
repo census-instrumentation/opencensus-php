@@ -117,7 +117,7 @@ class CloudTraceFormatter implements FormatterInterface
                 }
             }
             $length = $newlen;
-            $result = $newstring{$divide} . $result;
+            $result = $newstring[$divide] . $result;
         } while ($newlen != 0);
 
         return $result;
