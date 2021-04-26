@@ -24,8 +24,9 @@ class WordpressTest extends TestCase
 {
     private static $outputFile;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
+        parent::setUpBeforeClass():
         self::$outputFile = sys_get_temp_dir() . '/spans.json';
     }
 

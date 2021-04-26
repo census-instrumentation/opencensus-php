@@ -25,8 +25,9 @@ class SymfonyTest extends TestCase
     private static $outputFile;
     private static $client;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
+        parent::setUpBeforeClass();
         self::$outputFile = sys_get_temp_dir() . '/spans.json';
         self::$client = new Client([
             'base_uri' => getenv('TESTURL') ?: 'http://localhost:9000'

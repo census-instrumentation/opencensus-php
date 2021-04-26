@@ -18,7 +18,7 @@
         "php": ">=8.0",
         "ramsey/uuid": "^3.0 || ^4.0",
         "psr/log": "^1.0",
-        "psr/cache": "^1.0",
+        "psr/cache": "^1.0 || ^2.0 || ^3.0",
         "cache/adapter-common": "^1.0"
     },
     "require-dev": {
