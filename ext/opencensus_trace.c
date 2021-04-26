@@ -96,7 +96,7 @@ static zend_string *span_id_from_options(HashTable *options)
             str = zval_get_string(val);
             break;
         case IS_LONG:
-            str = _php_math_longtobase(val, 16);
+            str = _php_math_longtobase(Z_LVAL_P(val), 16);
             break;
     }
 
@@ -320,15 +320,8 @@ static int opencensus_trace_call_user_function_callback(zval *args, int num_args
  */
 static zend_string *generate_span_id()
 {
-    zval zv;
-#if PHP_VERSION_ID < 70100
-    if (!BG(mt_rand_is_seeded)) {
-        php_mt_srand(GENERATE_SEED());
-    }
-#endif
-
-    ZVAL_LONG(&zv, ((uint32_t) php_mt_rand()) >> 1);
-    return _php_math_longtobase(&zv, 16);
+    zend_long random_int = ((uint32_t) php_mt_rand()) >> 1;
+    return _php_math_longtobase(random_int, 16);
 }
 
 /**
