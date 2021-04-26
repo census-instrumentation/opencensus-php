@@ -64,7 +64,7 @@ unit-config: &unit-config
 
     - run:
         name: PHP unit tests
-        command: vendor/bin/phpunit
+        command: XDEBUG_MODE=coverage vendor/bin/phpunit
 
     - run:
         name: PHP unit tests with extension
@@ -121,6 +121,11 @@ jobs:
     <<: *unit-config
     docker:
       - image: circleci/php:8.0-node
+
+  php80-zts:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:8.0-zts-node
 
   php71-32bit:
     <<: *unit-config
@@ -244,6 +249,7 @@ workflows:
       - php74
       - php74-zts
       - php80
+      - php80-zts
       - php71-32bit
       - php71-debug
       - integration
