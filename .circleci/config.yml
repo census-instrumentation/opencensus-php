@@ -163,14 +163,17 @@ jobs:
           name: Pgsql test
           command: tests/integration/pgsql/test.sh
 # Skipped due to a dependency incompatibility between "cache/adapter-common" and "psr/cache".
+# TODO(mrmage): Re-enable this step once "cache/adapter-common" supports "psr/cache" v2.0/v3.0.
 #      - run:
 #          name: Symfony 4 test
 #          command: tests/integration/symfony4/test.sh
 #          environment:
 #            DATABASE_URL: mysql://mysql:mysql@127.0.0.1:3306/mysqldb
-      - run:
-          name: Wordpress test
-          command: tests/integration/wordpress/test.sh
+# Skipped because "wp-cli" is currently not compatible with PHP 8 (see https://github.com/wp-cli/wp-cli/issues/5452).
+# TODO(mrmage): Re-enable this step once "wp-cli" supports PHP 8.
+#      - run:
+#          name: Wordpress test
+#          command: tests/integration/wordpress/test.sh
     environment:
       DB_HOST: 127.0.0.1
       DB_USERNAME: mysql
