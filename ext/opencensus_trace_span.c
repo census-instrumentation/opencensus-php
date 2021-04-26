@@ -345,8 +345,8 @@ static PHP_METHOD(OpenCensusTraceSpan, sameProcessAsParentSpan) {
 
 /* Declare method entries for the OpenCensus\Trace\Span class */
 static zend_function_entry opencensus_trace_span_methods[] = {
-    PHP_ME(OpenCensusTraceSpan, __construct, arginfo_OpenCensusTraceSpan_construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-    PHP_ME(OpenCensusTraceSpan, __destruct, NULL, ZEND_ACC_PUBLIC | ZEND_ACC_DTOR)
+    PHP_ME(OpenCensusTraceSpan, __construct, arginfo_OpenCensusTraceSpan_construct, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, __destruct, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(OpenCensusTraceSpan, name, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(OpenCensusTraceSpan, spanId, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(OpenCensusTraceSpan, parentSpanId, NULL, ZEND_ACC_PUBLIC)
