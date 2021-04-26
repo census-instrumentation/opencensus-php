@@ -1,12 +1,12 @@
 {
     "require": {
-        "php": "^7.2",
+        "php": "^8.0",
         "opencensus/opencensus": "dev-master",
         "ext-opencensus": "*"
     },
     "require-dev": {
         "wp-cli/wp-cli": "~1.1",
-        "phpunit/phpunit": "^7.0",
+        "phpunit/phpunit": "^9.0",
         "guzzlehttp/guzzle": "~6.0"
     },
     "repositories": [
