@@ -27,8 +27,9 @@ class ScopeTest extends TestCase
 {
     private $data;
 
-    public function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->data = [];
     }
 

@@ -29,7 +29,7 @@ class WordpressTest extends TestCase
         self::$outputFile = sys_get_temp_dir() . '/spans.json';
     }
 
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         if (file_exists(self::$outputFile)) {

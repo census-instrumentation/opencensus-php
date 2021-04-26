@@ -25,14 +25,16 @@ use PHPUnit\Framework\TestCase;
  */
 class ContextTest extends TestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         Context::reset();
     }
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         Context::reset();
+        parent::tearDown();
     }
 
     public function testBackgroundGeneratesEmptyContext()

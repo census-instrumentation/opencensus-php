@@ -36,8 +36,9 @@ class MemcachedTest extends TestCase
         self::$memcachedPort = (int) (getenv('MEMCACHED_PORT') ?: 11211);
     }
 
-    public function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         if (!extension_loaded('opencensus')) {
             $this->markTestSkipped('Please enable the opencensus extension.');
         }

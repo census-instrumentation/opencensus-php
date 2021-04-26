@@ -46,8 +46,9 @@ class PgsqlTest extends TestCase
         );
     }
 
-    public function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         if (!extension_loaded('opencensus')) {
             $this->markTestSkipped('Please enable the opencensus extension.');
         }

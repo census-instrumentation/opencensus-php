@@ -43,8 +43,9 @@ class RequestHandlerTest extends TestCase
 
     private $sampler;
 
-    public function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         if (extension_loaded('opencensus')) {
             opencensus_trace_clear();
         }

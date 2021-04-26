@@ -77,46 +77,6 @@ unit-config: &unit-config
 
 version: 2
 jobs:
-  php71:
-    <<: *unit-config
-    docker:
-      - image: circleci/php:7.1-node
-
-  php71-zts:
-    <<: *unit-config
-    docker:
-      - image: circleci/php:7.1-zts-node
-
-  php72:
-    <<: *unit-config
-    docker:
-      - image: circleci/php:7.2-node
-
-  php72-zts:
-    <<: *unit-config
-    docker:
-      - image: circleci/php:7.2-zts-node
-
-  php73:
-    <<: *unit-config
-    docker:
-      - image: circleci/php:7.3-node
-
-  php73-zts:
-    <<: *unit-config
-    docker:
-      - image: circleci/php:7.3-zts-node
-
-  php74:
-    <<: *unit-config
-    docker:
-      - image: circleci/php:7.4-node
-
-  php74-zts:
-    <<: *unit-config
-    docker:
-      - image: circleci/php:7.4-zts-node
-
   php80:
     <<: *unit-config
     docker:
@@ -127,29 +87,9 @@ jobs:
     docker:
       - image: circleci/php:8.0-zts-node
 
-  php71-32bit:
-    <<: *unit-config
-    docker:
-      - image: gcr.io/php-stackdriver/php71-32bit
-    environment:
-      TEST_PHP_ARGS: -q
-      REPORT_EXIT_STATUS: 1
-      RUN_EXTENSION_TESTS: 1
-      SUDO_CMD: ""
-
-  php71-debug:
-    <<: *unit-config
-    docker:
-      - image: gcr.io/php-stackdriver/php71-debug
-    environment:
-      TEST_PHP_ARGS: -q
-      REPORT_EXIT_STATUS: 1
-      RUN_EXTENSION_TESTS: 1
-      SUDO_CMD: ""
-
   integration:
     docker:
-      - image: circleci/php:7.2-node
+      - image: circleci/php:8.0-node
       - image: memcached
       - image: mysql:5.7
         environment:
@@ -240,16 +180,6 @@ workflows:
   version: 2
   units:
     jobs:
-      - php71
-      - php71-zts
-      - php72
-      - php72-zts
-      - php73
-      - php73-zts
-      - php74
-      - php74-zts
       - php80
       - php80-zts
-      - php71-32bit
-      - php71-debug
       - integration
