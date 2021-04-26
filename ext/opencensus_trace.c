@@ -538,12 +538,12 @@ PHP_FUNCTION(opencensus_trace_context)
     object_init_ex(return_value, opencensus_trace_context_ce);
 
     if (span) {
-        zend_update_property_str(opencensus_trace_context_ce, return_value, "spanId", sizeof("spanId") - 1, span->span_id);
+        zend_update_property_str(opencensus_trace_context_ce, Z_OBJ_P(return_value), "spanId", sizeof("spanId") - 1, span->span_id);
     } else if (OPENCENSUS_G(trace_parent_span_id)) {
-        zend_update_property_str(opencensus_trace_context_ce, return_value, "spanId", sizeof("spanId") - 1, OPENCENSUS_G(trace_parent_span_id));
+        zend_update_property_str(opencensus_trace_context_ce, Z_OBJ_P(return_value), "spanId", sizeof("spanId") - 1, OPENCENSUS_G(trace_parent_span_id));
     }
     if (OPENCENSUS_G(trace_id)) {
-        zend_update_property_str(opencensus_trace_context_ce, return_value, "traceId", sizeof("traceId") - 1, OPENCENSUS_G(trace_id));
+        zend_update_property_str(opencensus_trace_context_ce, Z_OBJ_P(return_value), "traceId", sizeof("traceId") - 1, OPENCENSUS_G(trace_id));
     }
 }
 

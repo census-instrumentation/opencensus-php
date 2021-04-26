@@ -639,34 +639,34 @@ int opencensus_trace_span_to_zval(opencensus_trace_span_t *trace_span, zval *spa
 {
     zval attributes, links, time_events;
     object_init_ex(span, opencensus_trace_span_ce);
-    zend_update_property_str(opencensus_trace_span_ce, span, "spanId", sizeof("spanId") - 1, trace_span->span_id);
+    zend_update_property_str(opencensus_trace_span_ce, Z_OBJ_P(span), "spanId", sizeof("spanId") - 1, trace_span->span_id);
     if (trace_span->parent) {
-        zend_update_property_str(opencensus_trace_span_ce, span, "parentSpanId", sizeof("parentSpanId") - 1, trace_span->parent->span_id);
+        zend_update_property_str(opencensus_trace_span_ce, Z_OBJ_P(span), "parentSpanId", sizeof("parentSpanId") - 1, trace_span->parent->span_id);
     } else if (OPENCENSUS_G(trace_parent_span_id)) {
-        zend_update_property_str(opencensus_trace_span_ce, span, "parentSpanId", sizeof("parentSpanId") - 1, OPENCENSUS_G(trace_parent_span_id));
+        zend_update_property_str(opencensus_trace_span_ce, Z_OBJ_P(span), "parentSpanId", sizeof("parentSpanId") - 1, OPENCENSUS_G(trace_parent_span_id));
     }
-    zend_update_property_str(opencensus_trace_span_ce, span, "name", sizeof("name") - 1, trace_span->name);
-    zend_update_property_double(opencensus_trace_span_ce, span, "startTime", sizeof("startTime") - 1, trace_span->start);
-    zend_update_property_double(opencensus_trace_span_ce, span, "endTime", sizeof("endTime") - 1, trace_span->stop);
+    zend_update_property_str(opencensus_trace_span_ce, Z_OBJ_P(span), "name", sizeof("name") - 1, trace_span->name);
+    zend_update_property_double(opencensus_trace_span_ce, Z_OBJ_P(span), "startTime", sizeof("startTime") - 1, trace_span->start);
+    zend_update_property_double(opencensus_trace_span_ce, Z_OBJ_P(span), "endTime", sizeof("endTime") - 1, trace_span->stop);
 
     array_init(&attributes);
     zend_hash_copy(Z_ARRVAL(attributes), trace_span->attributes, zval_add_ref);
-    zend_update_property(opencensus_trace_span_ce, span, "attributes", sizeof("attributes") - 1, &attributes);
+    zend_update_property(opencensus_trace_span_ce, Z_OBJ_P(span), "attributes", sizeof("attributes") - 1, &attributes);
 
-    zend_update_property(opencensus_trace_span_ce, span, "stackTrace", sizeof("stackTrace") - 1, &trace_span->stackTrace);
+    zend_update_property(opencensus_trace_span_ce, Z_OBJ_P(span), "stackTrace", sizeof("stackTrace") - 1, &trace_span->stackTrace);
 
     array_init(&links);
     opencensus_trace_update_links(trace_span, &links);
-    zend_update_property(opencensus_trace_span_ce, span, "links", sizeof("links") - 1, &links);
+    zend_update_property(opencensus_trace_span_ce, Z_OBJ_P(span), "links", sizeof("links") - 1, &links);
 
     array_init(&time_events);
     opencensus_trace_update_time_events(trace_span, &time_events);
-    zend_update_property(opencensus_trace_span_ce, span, "timeEvents", sizeof("timeEvents") - 1, &time_events);
+    zend_update_property(opencensus_trace_span_ce, Z_OBJ_P(span), "timeEvents", sizeof("timeEvents") - 1, &time_events);
 
     if (trace_span->kind) {
-        zend_update_property_str(opencensus_trace_span_ce, span, "kind", sizeof("kind") - 1, trace_span->kind);
+        zend_update_property_str(opencensus_trace_span_ce, Z_OBJ_P(span), "kind", sizeof("kind") - 1, trace_span->kind);
     }
-    zend_update_property_bool(opencensus_trace_span_ce, span, "sameProcessAsParentSpan", sizeof("sameProcessAsParentSpan") - 1, trace_span->same_process_as_parent_span);
+    zend_update_property_bool(opencensus_trace_span_ce, Z_OBJ_P(span), "sameProcessAsParentSpan", sizeof("sameProcessAsParentSpan") - 1, trace_span->same_process_as_parent_span);
 
     return SUCCESS;
 }
