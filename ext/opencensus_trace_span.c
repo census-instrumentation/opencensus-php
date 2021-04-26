@@ -339,7 +339,7 @@ static PHP_METHOD(OpenCensusTraceSpan, sameProcessAsParentSpan) {
             RETURN_FALSE;
         case IS_TRUE:
         default:
-            RETURN_TRUE
+            RETURN_TRUE;
     }
 }
 
