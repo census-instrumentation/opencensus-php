@@ -115,9 +115,9 @@ int opencensus_trace_link_minit(INIT_FUNC_ARGS)
     INIT_CLASS_ENTRY(ce, "OpenCensus\\Trace\\Ext\\Link", opencensus_trace_link_methods);
     opencensus_trace_link_ce = zend_register_internal_class(&ce);
 
-    zend_declare_property_null(opencensus_trace_link_ce, "traceId", sizeof("traceId") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_link_ce, "spanId", sizeof("spanId") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_link_ce, "options", sizeof("options") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(opencensus_trace_link_ce, "traceId", sizeof("traceId") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_link_ce, "spanId", sizeof("spanId") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_link_ce, "options", sizeof("options") - 1, ZEND_ACC_PROTECTED);
 
     return SUCCESS;
 }

@@ -42,8 +42,8 @@ void opencensus_trace_ginit();
 void opencensus_trace_gshutdown();
 void opencensus_trace_rinit();
 void opencensus_trace_rshutdown();
-void opencensus_trace_clear(int reset TSRMLS_DC);
-void opencensus_trace_execute_ex (zend_execute_data *execute_data TSRMLS_DC);
+void opencensus_trace_clear(int reset);
+void opencensus_trace_execute_ex (zend_execute_data *execute_data);
 void opencensus_trace_execute_internal(INTERNAL_FUNCTION_PARAMETERS);
 void span_dtor(zval *zv);
 

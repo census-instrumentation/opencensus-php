@@ -139,10 +139,10 @@ int opencensus_trace_message_event_minit(INIT_FUNC_ARGS)
     INIT_CLASS_ENTRY(ce, "OpenCensus\\Trace\\Ext\\MessageEvent", opencensus_trace_message_event_methods);
     opencensus_trace_message_event_ce = zend_register_internal_class(&ce);
 
-    zend_declare_property_null(opencensus_trace_message_event_ce, "type", sizeof("type") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_message_event_ce, "id", sizeof("id") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_message_event_ce, "time", sizeof("time") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_message_event_ce, "options", sizeof("options") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(opencensus_trace_message_event_ce, "type", sizeof("type") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_message_event_ce, "id", sizeof("id") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_message_event_ce, "time", sizeof("time") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_message_event_ce, "options", sizeof("options") - 1, ZEND_ACC_PROTECTED);
 
     return SUCCESS;
 }

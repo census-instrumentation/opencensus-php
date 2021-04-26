@@ -61,7 +61,7 @@ static PHP_METHOD(OpenCensusTraceContext, __construct) {
     zend_string *k;
     HashTable *context_options;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "h", &context_options) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "h", &context_options) == FAILURE) {
         return;
     }
 
@@ -119,8 +119,8 @@ int opencensus_trace_context_minit(INIT_FUNC_ARGS) {
     INIT_CLASS_ENTRY(ce, "OpenCensus\\Trace\\Ext\\SpanContext", opencensus_trace_context_methods);
     opencensus_trace_context_ce = zend_register_internal_class(&ce);
 
-    zend_declare_property_null(opencensus_trace_context_ce, "spanId", sizeof("spanId") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_context_ce, "traceId", sizeof("traceId") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(opencensus_trace_context_ce, "spanId", sizeof("spanId") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_context_ce, "traceId", sizeof("traceId") - 1, ZEND_ACC_PROTECTED);
 
     return SUCCESS;
 }

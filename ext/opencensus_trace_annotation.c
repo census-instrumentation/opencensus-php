@@ -115,9 +115,9 @@ int opencensus_trace_annotation_minit(INIT_FUNC_ARGS)
     INIT_CLASS_ENTRY(ce, "OpenCensus\\Trace\\Ext\\Annotation", opencensus_trace_annotation_methods);
     opencensus_trace_annotation_ce = zend_register_internal_class(&ce);
 
-    zend_declare_property_null(opencensus_trace_annotation_ce, "description", sizeof("description") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_annotation_ce, "time", sizeof("time") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_annotation_ce, "options", sizeof("options") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(opencensus_trace_annotation_ce, "description", sizeof("description") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_annotation_ce, "time", sizeof("time") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_annotation_ce, "options", sizeof("options") - 1, ZEND_ACC_PROTECTED);
 
     return SUCCESS;
 }

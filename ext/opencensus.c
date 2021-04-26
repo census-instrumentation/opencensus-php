@@ -122,9 +122,6 @@ zend_module_entry opencensus_module_entry = {
 };
 
 #ifdef COMPILE_DL_OPENCENSUS
-#ifdef ZTS
-ZEND_TSRMLS_CACHE_DEFINE()
-#endif
 ZEND_GET_MODULE(opencensus)
 #endif
 
@@ -149,9 +146,6 @@ PHP_MINFO_FUNCTION(opencensus)
  */
 PHP_GINIT_FUNCTION(opencensus)
 {
-#if defined(COMPILE_DL_OPENCENSUS) && defined(ZTS)
-	ZEND_TSRMLS_CACHE_UPDATE()
-#endif
     opencensus_trace_ginit();
 }
 /* }}} */
@@ -168,9 +162,6 @@ PHP_GSHUTDOWN_FUNCTION(opencensus)
  */
 PHP_MINIT_FUNCTION(opencensus)
 {
-#if defined(COMPILE_DL_OPENCENSUS) && defined(ZTS)
-	ZEND_TSRMLS_CACHE_UPDATE()
-#endif
 	REGISTER_INI_ENTRIES();
 
 #ifndef PHP_WIN32
