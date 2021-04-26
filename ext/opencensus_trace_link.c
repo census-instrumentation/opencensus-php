@@ -63,7 +63,7 @@ static PHP_METHOD(OpenCensusTraceLink, traceId) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_link_ce, getThis(), "traceId", sizeof("traceId") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_link_ce, Z_OBJ_P(getThis()), "traceId", sizeof("traceId") - 1, 1, &rv);
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -80,7 +80,7 @@ static PHP_METHOD(OpenCensusTraceLink, spanId) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_link_ce, getThis(), "spanId", sizeof("spanId") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_link_ce, Z_OBJ_P(getThis()), "spanId", sizeof("spanId") - 1, 1, &rv);
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -97,7 +97,7 @@ static PHP_METHOD(OpenCensusTraceLink, options) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_link_ce, getThis(), "options", sizeof("options") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_link_ce, Z_OBJ_P(getThis()), "options", sizeof("options") - 1, 1, &rv);
 
     RETURN_ZVAL(val, 1, 0);
 }
