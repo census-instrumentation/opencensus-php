@@ -70,7 +70,7 @@ unit-config: &unit-config
         name: PHP unit tests with extension
         command: |
           if [ $RUN_EXTENSION_TESTS -eq "1" ]; then
-            php -d extension=opencensus.so vendor/bin/phpunit
+            XDEBUG_MODE=coverage php -d extension=opencensus.so vendor/bin/phpunit
           else
             echo "Skipping units tests with extension"
           fi
