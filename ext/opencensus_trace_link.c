@@ -48,6 +48,9 @@
 
 zend_class_entry* opencensus_trace_link_ce = NULL;
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_void, 0, 0, 0)
+ZEND_END_ARG_INFO();
+
 /**
  * Fetch the link traceId
  *
@@ -101,9 +104,9 @@ static PHP_METHOD(OpenCensusTraceLink, options) {
 
 /* Declare method entries for the OpenCensus\Trace\Ext\Link class */
 static zend_function_entry opencensus_trace_link_methods[] = {
-    PHP_ME(OpenCensusTraceLink, traceId, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceLink, spanId, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceLink, options, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceLink, traceId, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceLink, spanId, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceLink, options, arginfo_void, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

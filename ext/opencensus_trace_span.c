@@ -105,6 +105,9 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_OpenCensusTraceSpan_construct, 0, 0, 1)
     ZEND_ARG_ARRAY_INFO(0, spanOptions, 0)
 ZEND_END_ARG_INFO();
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_void, 0, 0, 0)
+ZEND_END_ARG_INFO();
+
 /**
  * Initializer for OpenCensus\Trace\Span
  *
@@ -346,18 +349,18 @@ static PHP_METHOD(OpenCensusTraceSpan, sameProcessAsParentSpan) {
 /* Declare method entries for the OpenCensus\Trace\Span class */
 static zend_function_entry opencensus_trace_span_methods[] = {
     PHP_ME(OpenCensusTraceSpan, __construct, arginfo_OpenCensusTraceSpan_construct, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, __destruct, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, name, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, spanId, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, parentSpanId, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, attributes, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, startTime, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, endTime, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, stackTrace, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, links, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, timeEvents, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, kind, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, sameProcessAsParentSpan, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, __destruct, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, name, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, spanId, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, parentSpanId, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, attributes, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, startTime, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, endTime, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, stackTrace, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, links, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, timeEvents, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, kind, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, sameProcessAsParentSpan, arginfo_void, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

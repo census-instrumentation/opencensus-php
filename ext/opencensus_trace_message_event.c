@@ -54,6 +54,9 @@
 
 zend_class_entry* opencensus_trace_message_event_ce = NULL;
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_void, 0, 0, 0)
+ZEND_END_ARG_INFO();
+
 /**
  * Fetch the message_event type
  *
@@ -124,10 +127,10 @@ static PHP_METHOD(OpenCensusTraceMessageEvent, options) {
 
 /* Declare method entries for the OpenCensus\Trace\Ext\MessageEvent class */
 static zend_function_entry opencensus_trace_message_event_methods[] = {
-    PHP_ME(OpenCensusTraceMessageEvent, type, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceMessageEvent, id, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceMessageEvent, time, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceMessageEvent, options, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceMessageEvent, type, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceMessageEvent, id, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceMessageEvent, time, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceMessageEvent, options, arginfo_void, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

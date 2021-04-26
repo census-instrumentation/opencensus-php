@@ -51,6 +51,9 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_OpenCensusTraceContext_construct, 0, 0, 1)
 	ZEND_ARG_ARRAY_INFO(0, contextOptions, 0)
 ZEND_END_ARG_INFO();
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_void, 0, 0, 0)
+ZEND_END_ARG_INFO();
+
 /**
  * Initializer for OpenCensus\Trace\SpanContext
  *
@@ -107,8 +110,8 @@ static PHP_METHOD(OpenCensusTraceContext, traceId) {
 /* Declare method entries for the OpenCensus\Trace\SpanContext class */
 static zend_function_entry opencensus_trace_context_methods[] = {
     PHP_ME(OpenCensusTraceContext, __construct, arginfo_OpenCensusTraceContext_construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-    PHP_ME(OpenCensusTraceContext, spanId, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceContext, traceId, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceContext, spanId, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceContext, traceId, arginfo_void, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

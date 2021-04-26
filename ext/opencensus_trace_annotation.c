@@ -48,6 +48,9 @@
 
 zend_class_entry* opencensus_trace_annotation_ce = NULL;
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_void, 0, 0, 0)
+ZEND_END_ARG_INFO();
+
 /**
  * Fetch the annotation description
  *
@@ -101,9 +104,9 @@ static PHP_METHOD(OpenCensusTraceAnnotation, options) {
 
 /* Declare method entries for the OpenCensus\Trace\Ext\Annotation class */
 static zend_function_entry opencensus_trace_annotation_methods[] = {
-    PHP_ME(OpenCensusTraceAnnotation, description, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceAnnotation, time, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceAnnotation, options, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceAnnotation, description, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceAnnotation, time, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceAnnotation, options, arginfo_void, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 
