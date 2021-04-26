@@ -70,6 +70,10 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_opencensus_trace_add_message_event, 0, 0, 2)
     ZEND_ARG_TYPE_INFO(0, id, IS_STRING, 0)
     ZEND_ARG_ARRAY_INFO(0, options, 0)
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_void, 0, 0, 0)
+ZEND_END_ARG_INFO();
+
 /* }}} */
 
 static PHP_MINFO_FUNCTION(opencensus);
@@ -85,16 +89,16 @@ PHP_FUNCTION(opencensus_version);
 /* {{{ opencensus_functions[]
  */
 static zend_function_entry opencensus_functions[] = {
-    PHP_FE(opencensus_version, NULL)
+    PHP_FE(opencensus_version, arginfo_void)
 	PHP_FE(opencensus_core_send_to_daemonclient, arginfo_opencensus_core_send_to_daemon)
     PHP_FE(opencensus_trace_function, arginfo_opencensus_trace_function)
     PHP_FE(opencensus_trace_method, arginfo_opencensus_trace_method)
-    PHP_FE(opencensus_trace_list, NULL)
+    PHP_FE(opencensus_trace_list, arginfo_void)
     PHP_FE(opencensus_trace_begin, arginfo_opencensus_trace_begin)
-    PHP_FE(opencensus_trace_finish, NULL)
-    PHP_FE(opencensus_trace_clear, NULL)
+    PHP_FE(opencensus_trace_finish, arginfo_void)
+    PHP_FE(opencensus_trace_clear, arginfo_void)
     PHP_FE(opencensus_trace_set_context, arginfo_opencensus_trace_set_context)
-    PHP_FE(opencensus_trace_context, NULL)
+    PHP_FE(opencensus_trace_context, arginfo_void)
     PHP_FE(opencensus_trace_add_attribute, arginfo_opencensus_trace_add_attribute)
     PHP_FE(opencensus_trace_add_annotation, arginfo_opencensus_trace_add_annotation)
     PHP_FE(opencensus_trace_add_link, arginfo_opencensus_trace_add_link)
