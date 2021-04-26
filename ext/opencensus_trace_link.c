@@ -158,8 +158,8 @@ void opencensus_trace_link_free(opencensus_trace_link_t *link)
 int opencensus_trace_link_to_zval(opencensus_trace_link_t *link, zval *zv)
 {
     object_init_ex(zv, opencensus_trace_link_ce);
-    zend_update_property_str(opencensus_trace_link_ce, zv, "traceId", sizeof("traceId") - 1, link->trace_id);
-    zend_update_property_str(opencensus_trace_link_ce, zv, "spanId", sizeof("spanId") - 1, link->span_id);
-    zend_update_property(opencensus_trace_link_ce, zv, "options", sizeof("options") - 1, &link->options);
+    zend_update_property_str(opencensus_trace_link_ce, Z_OBJ_P(zv), "traceId", sizeof("traceId") - 1, link->trace_id);
+    zend_update_property_str(opencensus_trace_link_ce, Z_OBJ_P(zv), "spanId", sizeof("spanId") - 1, link->span_id);
+    zend_update_property(opencensus_trace_link_ce, Z_OBJ_P(zv), "options", sizeof("options") - 1, &link->options);
     return SUCCESS;
 }
