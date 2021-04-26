@@ -293,7 +293,7 @@ static void opencensus_free_args(zval *args, int num_args)
  */
 static int opencensus_trace_call_user_function_callback(zval *args, int num_args, zend_execute_data *execute_data, opencensus_trace_span_t *span, zval *callback, zval *callback_result)
 {
-    if (call_user_function_ex(EG(function_table), NULL, callback, callback_result, num_args, args, 0, NULL) != SUCCESS) {
+    if (call_user_function(EG(function_table), NULL, callback, callback_result, num_args, args) != SUCCESS) {
         return FAILURE;
     }
 
