@@ -25,7 +25,7 @@ class LaravelTest extends TestCase
     private static $outputFile;
     private static $client;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         self::$outputFile = sys_get_temp_dir() . '/spans.json';
         self::$client = new Client([
