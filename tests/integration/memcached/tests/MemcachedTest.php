@@ -29,8 +29,9 @@ class MemcachedTest extends TestCase
     private static $memcachedHost;
     private static $memcachedPort;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
+        parent::setUpBeforeClass();
         MemcachedIntegration::load();
         self::$memcachedHost = getenv('MEMCACHED_HOST') ?: '127.0.0.1';
         self::$memcachedPort = (int) (getenv('MEMCACHED_PORT') ?: 11211);

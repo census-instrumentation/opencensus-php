@@ -27,8 +27,9 @@ class PgsqlTest extends TestCase
     private $tracer;
     private static $postgresConnectionString;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
+        parent::setUpBeforeClass();
         Postgres::load();
         $postgresHost = getenv('POSTGRES_HOST') ?: '127.0.0.1';
         $postgresPort = (int) (getenv('POSTGRES_PORT') ?: 5432);
