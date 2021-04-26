@@ -107,6 +107,11 @@ jobs:
     docker:
       - image: circleci/php:7.3-zts-node
 
+  php80:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:8.0-node
+
   php71-32bit:
     <<: *unit-config
     docker:
@@ -226,6 +231,7 @@ workflows:
       - php72-zts
       - php73
       - php73-zts
+      - php80
       - php71-32bit
       - php71-debug
       - integration
