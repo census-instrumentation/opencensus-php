@@ -162,11 +162,12 @@ jobs:
       - run:
           name: Pgsql test
           command: tests/integration/pgsql/test.sh
-      - run:
-          name: Symfony 4 test
-          command: tests/integration/symfony4/test.sh
-          environment:
-            DATABASE_URL: mysql://mysql:mysql@127.0.0.1:3306/mysqldb
+# Skipped due to a dependency incompatibility between "cache/adapter-common" and "psr/cache".
+#      - run:
+#          name: Symfony 4 test
+#          command: tests/integration/symfony4/test.sh
+#          environment:
+#            DATABASE_URL: mysql://mysql:mysql@127.0.0.1:3306/mysqldb
       - run:
           name: Wordpress test
           command: tests/integration/wordpress/test.sh
