@@ -70,11 +70,10 @@ class ContextTest extends TestCase
         $this->assertEquals($initialContext, Context::current());
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error_Warning
-     */
     public function testRestoringCurrentContextRequiresSameObject()
     {
+        $this->expectException(\PHPUnit\Framework\Error\Warning::class);
+
         $context = new Context(['foo' => 'bar']);
         $prevContext = $context->attach();
 
