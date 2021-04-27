@@ -115,7 +115,7 @@ ZEND_END_ARG_INFO();
  */
 static PHP_METHOD(OpenCensusTraceSpan, __construct) {
     zval *zval_span_options, *v;
-    ulong idx;
+    unsigned long idx;
     zend_string *k;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "a", &zval_span_options) == FAILURE) {
