@@ -69,7 +69,7 @@ static PHP_METHOD(OpenCensusTraceMessageEvent, type) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_message_event_ce, Z_OBJ_P(getThis()), "type", sizeof("type") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_message_event_ce, OPENCENSUS_OBJ_P(getThis()), "type", sizeof("type") - 1, 1, &rv);
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -86,7 +86,7 @@ static PHP_METHOD(OpenCensusTraceMessageEvent, id) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_message_event_ce, Z_OBJ_P(getThis()), "id", sizeof("id") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_message_event_ce, OPENCENSUS_OBJ_P(getThis()), "id", sizeof("id") - 1, 1, &rv);
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -103,7 +103,7 @@ static PHP_METHOD(OpenCensusTraceMessageEvent, time) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_message_event_ce, Z_OBJ_P(getThis()), "time", sizeof("time") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_message_event_ce, OPENCENSUS_OBJ_P(getThis()), "time", sizeof("time") - 1, 1, &rv);
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -120,7 +120,7 @@ static PHP_METHOD(OpenCensusTraceMessageEvent, options) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_message_event_ce, Z_OBJ_P(getThis()), "options", sizeof("options") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_message_event_ce, OPENCENSUS_OBJ_P(getThis()), "options", sizeof("options") - 1, 1, &rv);
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -184,9 +184,9 @@ void opencensus_trace_message_event_free(opencensus_trace_message_event_t *messa
 int opencensus_trace_message_event_to_zval(opencensus_trace_message_event_t *message_event, zval *zv)
 {
     object_init_ex(zv, opencensus_trace_message_event_ce);
-    zend_update_property_str(opencensus_trace_message_event_ce, Z_OBJ_P(zv), "type", sizeof("type") - 1, message_event->type);
-    zend_update_property_str(opencensus_trace_message_event_ce, Z_OBJ_P(zv), "id", sizeof("id") - 1, message_event->id);
-    zend_update_property_double(opencensus_trace_message_event_ce, Z_OBJ_P(zv), "time", sizeof("time") - 1, message_event->time_event.time);
-    zend_update_property(opencensus_trace_message_event_ce, Z_OBJ_P(zv), "options", sizeof("options") - 1, &message_event->options);
+    zend_update_property_str(opencensus_trace_message_event_ce, OPENCENSUS_OBJ_P(zv), "type", sizeof("type") - 1, message_event->type);
+    zend_update_property_str(opencensus_trace_message_event_ce, OPENCENSUS_OBJ_P(zv), "id", sizeof("id") - 1, message_event->id);
+    zend_update_property_double(opencensus_trace_message_event_ce, OPENCENSUS_OBJ_P(zv), "time", sizeof("time") - 1, message_event->time_event.time);
+    zend_update_property(opencensus_trace_message_event_ce, OPENCENSUS_OBJ_P(zv), "options", sizeof("options") - 1, &message_event->options);
     return SUCCESS;
 }

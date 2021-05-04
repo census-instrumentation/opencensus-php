@@ -96,7 +96,11 @@ static zend_string *span_id_from_options(HashTable *options)
             str = zval_get_string(val);
             break;
         case IS_LONG:
+#if PHP_VERSION_ID < 80000
+            str = _php_math_longtobase(val, 16);
+#else
             str = _php_math_longtobase(Z_LVAL_P(val), 16);
+#endif
             break;
     }
 
@@ -320,8 +324,14 @@ static int opencensus_trace_call_user_function_callback(zval *args, int num_args
  */
 static zend_string *generate_span_id()
 {
+#if PHP_VERSION_ID < 80000
+    zval zv;
+    ZVAL_LONG(&zv, ((uint32_t) php_mt_rand()) >> 1);
+    return _php_math_longtobase(&zv, 16);
+#else
     zend_long random_int = ((uint32_t) php_mt_rand()) >> 1;
     return _php_math_longtobase(random_int, 16);
+#endif
 }
 
 /**
@@ -531,12 +541,12 @@ PHP_FUNCTION(opencensus_trace_context)
     object_init_ex(return_value, opencensus_trace_context_ce);
 
     if (span) {
-        zend_update_property_str(opencensus_trace_context_ce, Z_OBJ_P(return_value), "spanId", sizeof("spanId") - 1, span->span_id);
+        zend_update_property_str(opencensus_trace_context_ce, OPENCENSUS_OBJ_P(return_value), "spanId", sizeof("spanId") - 1, span->span_id);
     } else if (OPENCENSUS_G(trace_parent_span_id)) {
-        zend_update_property_str(opencensus_trace_context_ce, Z_OBJ_P(return_value), "spanId", sizeof("spanId") - 1, OPENCENSUS_G(trace_parent_span_id));
+        zend_update_property_str(opencensus_trace_context_ce, OPENCENSUS_OBJ_P(return_value), "spanId", sizeof("spanId") - 1, OPENCENSUS_G(trace_parent_span_id));
     }
     if (OPENCENSUS_G(trace_id)) {
-        zend_update_property_str(opencensus_trace_context_ce, Z_OBJ_P(return_value), "traceId", sizeof("traceId") - 1, OPENCENSUS_G(trace_id));
+        zend_update_property_str(opencensus_trace_context_ce, OPENCENSUS_OBJ_P(return_value), "traceId", sizeof("traceId") - 1, OPENCENSUS_G(trace_id));
     }
 }
 
