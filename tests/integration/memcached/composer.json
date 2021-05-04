@@ -1,6 +1,6 @@
 {
     "require": {
-        "php": "^8.0",
+        "php": ">=7.1",
         "opencensus/opencensus": "dev-master",
         "ext-opencensus": "*",
         "ext-memcached": "*"
