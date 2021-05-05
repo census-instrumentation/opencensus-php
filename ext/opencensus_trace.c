@@ -96,7 +96,7 @@ static zend_string *span_id_from_options(HashTable *options)
             str = zval_get_string(val);
             break;
         case IS_LONG:
-#if PHP_VERSION_ID < 80000
+#if PHP_MAJOR_VERSION < 8
             str = _php_math_longtobase(val, 16);
 #else
             str = _php_math_longtobase(Z_LVAL_P(val), 16);
