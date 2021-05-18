@@ -54,7 +54,7 @@ ZEND_EXTERN_MODULE_GLOBALS(opencensus)
 #define OPENCENSUS_G(v) ZEND_MODULE_GLOBALS_ACCESSOR(opencensus, v)
 
 // Compatibility macro to account for a few method signature changes in PHP 8.
-#if PHP_VERSION_ID < 80000
+#if PHP_MAJOR_VERSION < 8
 #define OPENCENSUS_OBJ_P(v) (v)
 #else
 #define OPENCENSUS_OBJ_P(v) Z_OBJ_P(v)
