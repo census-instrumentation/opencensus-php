@@ -129,7 +129,7 @@ jobs:
 
   integration:
     docker:
-      - image: circleci/php:8.0-node
+      - image: circleci/php:7.4-node
       - image: memcached
       - image: mysql:5.7
         environment:
@@ -209,11 +209,9 @@ jobs:
 #          command: tests/integration/symfony4/test.sh
 #          environment:
 #            DATABASE_URL: mysql://mysql:mysql@127.0.0.1:3306/mysqldb
-# Skipped because "wp-cli" is currently not compatible with PHP 8 (see https://github.com/wp-cli/wp-cli/issues/5452).
-# TODO(mrmage): Re-enable this step once "wp-cli" supports PHP 8.
-#      - run:
-#          name: Wordpress test
-#          command: tests/integration/wordpress/test.sh
+      - run:
+          name: Wordpress test
+          command: tests/integration/wordpress/test.sh
     environment:
       DB_HOST: 127.0.0.1
       DB_USERNAME: mysql
