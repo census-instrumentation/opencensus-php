@@ -27,7 +27,6 @@ class ContextTracerTest extends AbstractTracerTest
 {
     protected function setUp(): void
     {
-        parent::setUp();
         Context::reset();
     }
 

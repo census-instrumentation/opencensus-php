@@ -35,7 +35,6 @@ class LoggerExporterTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->logger = $this->prophesize(LoggerInterface::class);
     }
 

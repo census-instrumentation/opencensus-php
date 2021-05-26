@@ -36,7 +36,6 @@ class Guzzle6Test extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
         $stack = new HandlerStack();
         $stack->setHandler(\GuzzleHttp\choose_handler());
         $stack->push(new Middleware());

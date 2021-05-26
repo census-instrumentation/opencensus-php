@@ -26,7 +26,6 @@ class ExtensionTracerTest extends AbstractTracerTest
 {
     protected function setUp(): void
     {
-        parent::setUp();
         if (!extension_loaded('opencensus')) {
             $this->markTestSkipped('Must have the opencensus extension installed to run this test.');
         }

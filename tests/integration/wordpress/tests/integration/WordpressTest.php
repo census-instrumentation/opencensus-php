@@ -26,13 +26,11 @@ class WordpressTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        parent::setUpBeforeClass();
         self::$outputFile = sys_get_temp_dir() . '/spans.json';
     }
 
     protected function setUp(): void
     {
-        parent::setUp();
         if (file_exists(self::$outputFile)) {
             $fp = fopen(self::$outputFile, 'r+');
             ftruncate($fp, 0);

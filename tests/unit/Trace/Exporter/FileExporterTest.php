@@ -31,7 +31,6 @@ class FileExporterTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->filename = tempnam(sys_get_temp_dir(), 'traces');
     }
 

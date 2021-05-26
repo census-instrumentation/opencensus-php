@@ -27,7 +27,6 @@ class ContextTest extends TestCase
 {
     protected function setUp(): void
     {
-        parent::setUp();
         Context::reset();
     }
 

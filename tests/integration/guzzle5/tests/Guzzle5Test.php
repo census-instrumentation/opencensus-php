@@ -35,7 +35,6 @@ class Guzzle5Test extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->client = new Client();
         $subscriber = new EventSubscriber();
         $this->client->getEmitter()->attach($subscriber);

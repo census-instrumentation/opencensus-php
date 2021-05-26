@@ -33,7 +33,6 @@ class TracerTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->reporter = $this->prophesize(ExporterInterface::class);
     }
 

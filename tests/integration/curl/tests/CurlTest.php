@@ -29,13 +29,11 @@ class CurlTest extends TestCase
 {
     public static function setUpBeforeClass(): void
     {
-        parent::setUpBeforeClass();
         Curl::load();
     }
 
     protected function setUp(): void
     {
-        parent::setUp();
         if (!extension_loaded('opencensus')) {
             $this->markTestSkipped('Please enable the opencensus extension.');
         }

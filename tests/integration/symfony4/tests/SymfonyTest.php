@@ -27,7 +27,6 @@ class SymfonyTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        parent::setUpBeforeClass();
         self::$outputFile = sys_get_temp_dir() . '/spans.json';
         self::$client = new Client([
             'base_uri' => getenv('TESTURL') ?: 'http://localhost:9000'
@@ -36,7 +35,6 @@ class SymfonyTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->clearSpans();
     }
 

@@ -35,7 +35,6 @@ class MiddlewareTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->exporter = $this->prophesize(ExporterInterface::class);
         if (extension_loaded('opencensus')) {
             opencensus_trace_clear();
