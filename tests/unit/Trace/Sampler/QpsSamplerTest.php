@@ -63,10 +63,11 @@ class QpsSamplerTest extends TestCase
 
     /**
      * @dataProvider invalidRates
-     * @expectedException \InvalidArgumentException
      */
     public function testInvalidRate($rate)
     {
+        $this->expectException(\InvalidArgumentException::class);
+        
         $cache = $this->prophesize(CacheItemPoolInterface::class);
         $sampler = new QpsSampler($cache->reveal(), [
             'rate' => $rate

@@ -27,7 +27,7 @@ class PgsqlTest extends TestCase
     private $tracer;
     private static $postgresConnectionString;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         Postgres::load();
         $postgresHost = getenv('POSTGRES_HOST') ?: '127.0.0.1';
@@ -46,7 +46,7 @@ class PgsqlTest extends TestCase
         );
     }
 
-    public function setUp()
+    protected function setUp(): void
     {
         if (!extension_loaded('opencensus')) {
             $this->markTestSkipped('Please enable the opencensus extension.');

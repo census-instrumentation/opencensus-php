@@ -25,7 +25,7 @@ use OpenCensus\Trace\Tracer\ContextTracer;
  */
 class ContextTracerTest extends AbstractTracerTest
 {
-    public function setUp()
+    protected function setUp(): void
     {
         Context::reset();
     }

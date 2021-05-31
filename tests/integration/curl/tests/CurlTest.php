@@ -27,12 +27,12 @@ use PHPUnit\Framework\TestCase;
  */
 class CurlTest extends TestCase
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         Curl::load();
     }
 
-    public function setUp()
+    protected function setUp(): void
     {
         if (!extension_loaded('opencensus')) {
             $this->markTestSkipped('Please enable the opencensus extension.');

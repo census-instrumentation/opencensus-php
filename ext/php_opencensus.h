@@ -31,7 +31,7 @@
 #include <sys/time.h>
 #endif
 
-#define PHP_OPENCENSUS_VERSION "0.3.0"
+#define PHP_OPENCENSUS_VERSION "0.7.0"
 #define PHP_OPENCENSUS_EXTNAME "opencensus"
 
 extern zend_module_entry opencensus_module_entry;
@@ -52,6 +52,13 @@ ZEND_END_MODULE_GLOBALS(opencensus)
 
 ZEND_EXTERN_MODULE_GLOBALS(opencensus)
 #define OPENCENSUS_G(v) ZEND_MODULE_GLOBALS_ACCESSOR(opencensus, v)
+
+// Compatibility macro to account for a few method signature changes in PHP 8.
+#if PHP_MAJOR_VERSION < 8
+#define OPENCENSUS_OBJ_P(v) (v)
+#else
+#define OPENCENSUS_OBJ_P(v) Z_OBJ_P(v)
+#endif
 
 double opencensus_now();
 

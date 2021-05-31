@@ -85,7 +85,7 @@ class SpanDataTest extends TestCase
         ]);
 
         $hashId = $spanData->stackTraceHashId();
-        $this->assertInternalType('string', $hashId);
+        $this->assertIsString($hashId);
         $this->assertEquals($hashId, $spanData2->stackTraceHashId());
     }
 }

@@ -101,7 +101,7 @@ class SpanTest extends TestCase
         $span = new Span();
 
         $stackTrace = $span->spanData()->stackTrace();
-        $this->assertInternalType('array', $stackTrace);
+        $this->assertIsArray($stackTrace);
         $this->assertNotEmpty($stackTrace);
         $stackframe = $stackTrace[0];
         $this->assertEquals('testGeneratesBacktrace', $stackframe['function']);

@@ -29,14 +29,14 @@ class MemcachedTest extends TestCase
     private static $memcachedHost;
     private static $memcachedPort;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         MemcachedIntegration::load();
         self::$memcachedHost = getenv('MEMCACHED_HOST') ?: '127.0.0.1';
         self::$memcachedPort = (int) (getenv('MEMCACHED_PORT') ?: 11211);
     }
 
-    public function setUp()
+    protected function setUp(): void
     {
         if (!extension_loaded('opencensus')) {
             $this->markTestSkipped('Please enable the opencensus extension.');

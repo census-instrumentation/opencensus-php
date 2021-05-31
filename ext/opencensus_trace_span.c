@@ -105,6 +105,9 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_OpenCensusTraceSpan_construct, 0, 0, 1)
     ZEND_ARG_ARRAY_INFO(0, spanOptions, 0)
 ZEND_END_ARG_INFO();
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_void, 0, 0, 0)
+ZEND_END_ARG_INFO();
+
 /**
  * Initializer for OpenCensus\Trace\Span
  *
@@ -112,26 +115,26 @@ ZEND_END_ARG_INFO();
  */
 static PHP_METHOD(OpenCensusTraceSpan, __construct) {
     zval *zval_span_options, *v;
-    ulong idx;
+    unsigned long idx;
     zend_string *k;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &zval_span_options) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "a", &zval_span_options) == FAILURE) {
         return;
     }
 
     zend_array *span_options = Z_ARR_P(zval_span_options);
     ZEND_HASH_FOREACH_KEY_VAL(span_options, idx, k, v) {
-        zend_update_property(opencensus_trace_span_ce, getThis(), ZSTR_VAL(k), strlen(ZSTR_VAL(k)), v);
+        zend_update_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), ZSTR_VAL(k), strlen(ZSTR_VAL(k)), v);
     } ZEND_HASH_FOREACH_END();
 }
 
 static PHP_METHOD(OpenCensusTraceSpan, __destruct) {
     zval val, *zv;
-    zv = zend_read_property(opencensus_trace_span_ce, getThis(), "attributes", sizeof("attributes") - 1, 0, &val TSRMLS_CC);
+    zv = zend_read_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), "attributes", sizeof("attributes") - 1, 0, &val);
     zval_dtor(zv);
-    zv = zend_read_property(opencensus_trace_span_ce, getThis(), "links", sizeof("links") - 1, 0, &val TSRMLS_CC);
+    zv = zend_read_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), "links", sizeof("links") - 1, 0, &val);
     zval_dtor(zv);
-    zv = zend_read_property(opencensus_trace_span_ce, getThis(), "timeEvents", sizeof("timeEvents") - 1, 0, &val TSRMLS_CC);
+    zv = zend_read_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), "timeEvents", sizeof("timeEvents") - 1, 0, &val);
     zval_dtor(zv);
 }
 
@@ -147,7 +150,7 @@ static PHP_METHOD(OpenCensusTraceSpan, name) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_span_ce, getThis(), "name", sizeof("name") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), "name", sizeof("name") - 1, 1, &rv);
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -164,7 +167,7 @@ static PHP_METHOD(OpenCensusTraceSpan, spanId) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_span_ce, getThis(), "spanId", sizeof("spanId") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), "spanId", sizeof("spanId") - 1, 1, &rv);
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -181,7 +184,7 @@ static PHP_METHOD(OpenCensusTraceSpan, parentSpanId) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_span_ce, getThis(), "parentSpanId", sizeof("parentSpanId") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), "parentSpanId", sizeof("parentSpanId") - 1, 1, &rv);
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -198,7 +201,7 @@ static PHP_METHOD(OpenCensusTraceSpan, attributes) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_span_ce, getThis(), "attributes", sizeof("attributes") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), "attributes", sizeof("attributes") - 1, 1, &rv);
     if (ZVAL_IS_NULL(val)) {
         array_init(return_value);
         return;
@@ -219,7 +222,7 @@ static PHP_METHOD(OpenCensusTraceSpan, links) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_span_ce, getThis(), "links", sizeof("links") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), "links", sizeof("links") - 1, 1, &rv);
     if (ZVAL_IS_NULL(val)) {
         array_init(return_value);
         return;
@@ -240,7 +243,7 @@ static PHP_METHOD(OpenCensusTraceSpan, timeEvents) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_span_ce, getThis(), "timeEvents", sizeof("timeEvents") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), "timeEvents", sizeof("timeEvents") - 1, 1, &rv);
     if (ZVAL_IS_NULL(val)) {
         array_init(return_value);
         return;
@@ -261,7 +264,7 @@ static PHP_METHOD(OpenCensusTraceSpan, startTime) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_span_ce, getThis(), "startTime", sizeof("startTime") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), "startTime", sizeof("startTime") - 1, 1, &rv);
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -278,7 +281,7 @@ static PHP_METHOD(OpenCensusTraceSpan, endTime) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_span_ce, getThis(), "endTime", sizeof("endTime") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), "endTime", sizeof("endTime") - 1, 1, &rv);
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -295,7 +298,7 @@ static PHP_METHOD(OpenCensusTraceSpan, stackTrace) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_span_ce, getThis(), "stackTrace", sizeof("stackTrace") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), "stackTrace", sizeof("stackTrace") - 1, 1, &rv);
     if (ZVAL_IS_NULL(val)) {
         array_init(return_value);
         return;
@@ -316,7 +319,7 @@ static PHP_METHOD(OpenCensusTraceSpan, kind) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_span_ce, getThis(), "kind", sizeof("kind") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), "kind", sizeof("kind") - 1, 1, &rv);
 
     RETURN_ZVAL(val, 1, 0);
 }
@@ -333,31 +336,31 @@ static PHP_METHOD(OpenCensusTraceSpan, sameProcessAsParentSpan) {
         return;
     }
 
-    val = zend_read_property(opencensus_trace_span_ce, getThis(), "sameProcessAsParentSpan", sizeof("sameProcessAsParentSpan") - 1, 1, &rv);
+    val = zend_read_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(getThis()), "sameProcessAsParentSpan", sizeof("sameProcessAsParentSpan") - 1, 1, &rv);
     switch (Z_TYPE_P(val)) {
         case IS_FALSE:
             RETURN_FALSE;
         case IS_TRUE:
         default:
-            RETURN_TRUE
+            RETURN_TRUE;
     }
 }
 
 /* Declare method entries for the OpenCensus\Trace\Span class */
 static zend_function_entry opencensus_trace_span_methods[] = {
-    PHP_ME(OpenCensusTraceSpan, __construct, arginfo_OpenCensusTraceSpan_construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-    PHP_ME(OpenCensusTraceSpan, __destruct, NULL, ZEND_ACC_PUBLIC | ZEND_ACC_DTOR)
-    PHP_ME(OpenCensusTraceSpan, name, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, spanId, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, parentSpanId, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, attributes, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, startTime, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, endTime, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, stackTrace, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, links, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, timeEvents, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, kind, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(OpenCensusTraceSpan, sameProcessAsParentSpan, NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, __construct, arginfo_OpenCensusTraceSpan_construct, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, __destruct, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, name, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, spanId, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, parentSpanId, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, attributes, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, startTime, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, endTime, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, stackTrace, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, links, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, timeEvents, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, kind, arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(OpenCensusTraceSpan, sameProcessAsParentSpan, arginfo_void, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 
@@ -369,18 +372,18 @@ int opencensus_trace_span_minit(INIT_FUNC_ARGS) {
     opencensus_trace_span_ce = zend_register_internal_class(&ce);
 
     zend_declare_property_string(
-      opencensus_trace_span_ce, "name", sizeof("name") - 1, "unknown", ZEND_ACC_PROTECTED TSRMLS_CC
+      opencensus_trace_span_ce, "name", sizeof("name") - 1, "unknown", ZEND_ACC_PROTECTED
     );
-    zend_declare_property_null(opencensus_trace_span_ce, "spanId", sizeof("spanId") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_span_ce, "parentSpanId", sizeof("parentSpanId") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_span_ce, "startTime", sizeof("startTime") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_span_ce, "endTime", sizeof("endTime") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_span_ce, "attributes", sizeof("attributes") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_span_ce, "stackTrace", sizeof("stackTrace") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_span_ce, "links", sizeof("links") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_span_ce, "timeEvents", sizeof("timeEvents") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_span_ce, "kind", sizeof("kind") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
-    zend_declare_property_null(opencensus_trace_span_ce, "sameProcessAsParentSpan", sizeof("sameProcessAsParentSpan") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(opencensus_trace_span_ce, "spanId", sizeof("spanId") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_span_ce, "parentSpanId", sizeof("parentSpanId") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_span_ce, "startTime", sizeof("startTime") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_span_ce, "endTime", sizeof("endTime") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_span_ce, "attributes", sizeof("attributes") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_span_ce, "stackTrace", sizeof("stackTrace") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_span_ce, "links", sizeof("links") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_span_ce, "timeEvents", sizeof("timeEvents") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_span_ce, "kind", sizeof("kind") - 1, ZEND_ACC_PROTECTED);
+    zend_declare_property_null(opencensus_trace_span_ce, "sameProcessAsParentSpan", sizeof("sameProcessAsParentSpan") - 1, ZEND_ACC_PROTECTED);
 
     return SUCCESS;
 }
@@ -632,38 +635,38 @@ static int opencensus_trace_update_links(opencensus_trace_span_t *span, zval *re
 }
 
 /* Fill the provided span with the provided data from the internal span representation */
-int opencensus_trace_span_to_zval(opencensus_trace_span_t *trace_span, zval *span TSRMLS_DC)
+int opencensus_trace_span_to_zval(opencensus_trace_span_t *trace_span, zval *span)
 {
     zval attributes, links, time_events;
     object_init_ex(span, opencensus_trace_span_ce);
-    zend_update_property_str(opencensus_trace_span_ce, span, "spanId", sizeof("spanId") - 1, trace_span->span_id);
+    zend_update_property_str(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(span), "spanId", sizeof("spanId") - 1, trace_span->span_id);
     if (trace_span->parent) {
-        zend_update_property_str(opencensus_trace_span_ce, span, "parentSpanId", sizeof("parentSpanId") - 1, trace_span->parent->span_id);
+        zend_update_property_str(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(span), "parentSpanId", sizeof("parentSpanId") - 1, trace_span->parent->span_id);
     } else if (OPENCENSUS_G(trace_parent_span_id)) {
-        zend_update_property_str(opencensus_trace_span_ce, span, "parentSpanId", sizeof("parentSpanId") - 1, OPENCENSUS_G(trace_parent_span_id));
+        zend_update_property_str(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(span), "parentSpanId", sizeof("parentSpanId") - 1, OPENCENSUS_G(trace_parent_span_id));
     }
-    zend_update_property_str(opencensus_trace_span_ce, span, "name", sizeof("name") - 1, trace_span->name);
-    zend_update_property_double(opencensus_trace_span_ce, span, "startTime", sizeof("startTime") - 1, trace_span->start);
-    zend_update_property_double(opencensus_trace_span_ce, span, "endTime", sizeof("endTime") - 1, trace_span->stop);
+    zend_update_property_str(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(span), "name", sizeof("name") - 1, trace_span->name);
+    zend_update_property_double(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(span), "startTime", sizeof("startTime") - 1, trace_span->start);
+    zend_update_property_double(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(span), "endTime", sizeof("endTime") - 1, trace_span->stop);
 
     array_init(&attributes);
     zend_hash_copy(Z_ARRVAL(attributes), trace_span->attributes, zval_add_ref);
-    zend_update_property(opencensus_trace_span_ce, span, "attributes", sizeof("attributes") - 1, &attributes);
+    zend_update_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(span), "attributes", sizeof("attributes") - 1, &attributes);
 
-    zend_update_property(opencensus_trace_span_ce, span, "stackTrace", sizeof("stackTrace") - 1, &trace_span->stackTrace);
+    zend_update_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(span), "stackTrace", sizeof("stackTrace") - 1, &trace_span->stackTrace);
 
     array_init(&links);
     opencensus_trace_update_links(trace_span, &links);
-    zend_update_property(opencensus_trace_span_ce, span, "links", sizeof("links") - 1, &links);
+    zend_update_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(span), "links", sizeof("links") - 1, &links);
 
     array_init(&time_events);
     opencensus_trace_update_time_events(trace_span, &time_events);
-    zend_update_property(opencensus_trace_span_ce, span, "timeEvents", sizeof("timeEvents") - 1, &time_events);
+    zend_update_property(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(span), "timeEvents", sizeof("timeEvents") - 1, &time_events);
 
     if (trace_span->kind) {
-        zend_update_property_str(opencensus_trace_span_ce, span, "kind", sizeof("kind") - 1, trace_span->kind);
+        zend_update_property_str(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(span), "kind", sizeof("kind") - 1, trace_span->kind);
     }
-    zend_update_property_bool(opencensus_trace_span_ce, span, "sameProcessAsParentSpan", sizeof("sameProcessAsParentSpan") - 1, trace_span->same_process_as_parent_span);
+    zend_update_property_bool(opencensus_trace_span_ce, OPENCENSUS_OBJ_P(span), "sameProcessAsParentSpan", sizeof("sameProcessAsParentSpan") - 1, trace_span->same_process_as_parent_span);
 
     return SUCCESS;
 }

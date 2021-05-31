@@ -25,10 +25,10 @@ pushd laravel
 
 composer config repositories.opencensus git ${REPO}
 composer require opencensus/opencensus:dev-${BRANCH}
-composer require --dev phpunit/phpunit:^7.0 guzzlehttp/guzzle:~6.0
+composer require --dev phpunit/phpunit:^9.0 guzzlehttp/guzzle:~6.0
 
 php artisan migrate
-vendor/bin/phpunit --config=phpunit.xml.dist
+vendor/bin/phpunit
 
 popd
 popd

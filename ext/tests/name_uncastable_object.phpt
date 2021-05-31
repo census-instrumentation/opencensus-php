@@ -1,5 +1,9 @@
 --TEST--
 OpenCensus Trace: Providing integer as name
+--SKIPIF--
+<?php
+if (version_compare(phpversion(), '7.4', '>=')) die("skip this test is for PHP versions < 7.4; see name_uncastable_object_php74.phpt for the PHP 7.4+ equivalent");
+?>
 --FILE--
 <?php
 

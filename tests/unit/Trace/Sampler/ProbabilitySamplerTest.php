@@ -27,10 +27,11 @@ class ProbabilitySamplerTest extends TestCase
 {
     /**
      * @dataProvider invalidRates
-     * @expectedException \InvalidArgumentException
      */
     public function testInvalidRate($rate)
     {
+        $this->expectException(\InvalidArgumentException::class);
+        
         $sampler = new ProbabilitySampler($rate);
     }
 

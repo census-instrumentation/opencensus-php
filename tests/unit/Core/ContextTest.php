@@ -25,14 +25,15 @@ use PHPUnit\Framework\TestCase;
  */
 class ContextTest extends TestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         Context::reset();
     }
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         Context::reset();
+        parent::tearDown();
     }
 
     public function testBackgroundGeneratesEmptyContext()
@@ -68,11 +69,10 @@ class ContextTest extends TestCase
         $this->assertEquals($initialContext, Context::current());
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error_Warning
-     */
     public function testRestoringCurrentContextRequiresSameObject()
     {
+        $this->expectException(\PHPUnit\Framework\Error\Warning::class);
+
         $context = new Context(['foo' => 'bar']);
         $prevContext = $context->attach();
 
