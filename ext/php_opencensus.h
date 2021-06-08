@@ -31,7 +31,7 @@
 #include <sys/time.h>
 #endif
 
-#define PHP_OPENCENSUS_VERSION "0.7.0"
+#define PHP_OPENCENSUS_VERSION "0.3.0"
 #define PHP_OPENCENSUS_EXTNAME "opencensus"
 
 extern zend_module_entry opencensus_module_entry;
