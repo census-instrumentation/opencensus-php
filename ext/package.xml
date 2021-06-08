@@ -12,11 +12,11 @@ This extension allows you to easily gather latency and other metadata by watchin
   <email>chingor@google.com</email>
   <active>yes</active>
  </lead>
- <date>2018-05-08</date>
- <time>16:17:00</time>
+ <date>2021-06-08</date>
+ <time>15:57:00</time>
  <version>
-  <release>0.2.2</release>
-  <api>0.2.2</api>
+  <release>0.3.0</release>
+  <api>0.3.0</api>
  </version>
  <stability>
   <release>alpha</release>
@@ -24,18 +24,24 @@ This extension allows you to easily gather latency and other metadata by watchin
  </stability>
  <license>Apache 2.0</license>
  <notes>
-- Fix refcounts for arguments in traced function callbacks (#184)
+- OpenCensus stats implementation (#220)
+- Fix ZVAL_DESTRUCTOR usage
+- Add PHP8 compatibility (#270)
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <file baseinstalldir="/" name="config.m4" role="src" />
    <file baseinstalldir="/" name="config.w32" role="src" />
+   <file baseinstalldir="/" name="opencensus.c" role="src" />
+   <file baseinstalldir="/" name="opencensus_core_daemonclient.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_annotation.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_context.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_link.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_message_event.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_span.c" role="src" />
+   <file baseinstalldir="/" name="varint.c" role="src" />
+   <file baseinstalldir="/" name="opencensus_core_daemonclient.h" role="src" />
    <file baseinstalldir="/" name="opencensus_trace.h" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_annotation.h" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_context.h" role="src" />
@@ -44,6 +50,7 @@ This extension allows you to easily gather latency and other metadata by watchin
    <file baseinstalldir="/" name="opencensus_trace_span.h" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_time_event.h" role="src" />
    <file baseinstalldir="/" name="php_opencensus.h" role="src" />
+   <file baseinstalldir="/" name="varint.h" role="src" />
 
    <file name="README.md" role="doc" />
    <file name="LICENSE" role="doc" />
@@ -51,7 +58,6 @@ This extension allows you to easily gather latency and other metadata by watchin
    <dir name="tests">
     <file name="common.inc" role="test" />
     <file name="annotations.phpt" role="test" />
-    <file name="backtrace_test.phpt" role="test" />
     <file name="basic_class_function.phpt" role="test" />
     <file name="basic_context.phpt" role="test" />
     <file name="basic_function.phpt" role="test" />
@@ -74,7 +80,6 @@ This extension allows you to easily gather latency and other metadata by watchin
     <file name="function_callback_wrong_return.phpt" role="test" />
     <file name="function_custom.phpt" role="test" />
     <file name="inherit_context.phpt" role="test" />
-    <file name="int_start_time.phpt" role="test" />
     <file name="labels.phpt" role="test" />
     <file name="links.phpt" role="test" />
     <file name="manual_spans.phpt" role="test" />
@@ -90,17 +95,35 @@ This extension allows you to easily gather latency and other metadata by watchin
     <file name="method_callback_string.phpt" role="test" />
     <file name="method_custom.phpt" role="test" />
     <file name="module_callback_static_string.phpt" role="test" />
+    <file name="name_castable_object.phpt" role="test" />
+    <file name="name_double.phpt" role="test" />
+    <file name="name_integer.phpt" role="test" />
+    <file name="name_null.phpt" role="test" />
+    <file name="name_uncastable_object.phpt" role="test" />
+    <file name="name_uncastable_object_php74.phpt" role="test" />
     <file name="nested_spans.phpt" role="test" />
     <file name="non-string-labels-function-callback.phpt" role="test" />
     <file name="non-string-labels-function.phpt" role="test" />
     <file name="non-string-labels-method-callback.phpt" role="test" />
     <file name="non-string-labels-method.phpt" role="test" />
     <file name="non-string-labels.phpt" role="test" />
-    <file name="null_start_time.phpt" role="test" />
     <file name="span_class.phpt" role="test" />
+    <file name="span_id_double.phpt" role="test" />
+    <file name="span_id_integer.phpt" role="test" />
+    <file name="span_id_null.phpt" role="test" />
+    <file name="span_id_string.phpt" role="test" />
     <file name="span_kind.phpt" role="test" />
+    <file name="span_kind_integer.phpt" role="test" />
+    <file name="span_kind_null.phpt" role="test" />
     <file name="span_same_process_as_parent_span.phpt" role="test" />
-    <file name="span_specify_id.phpt" role="test" />
+    <file name="span_same_process_as_parent_span_falsy.phpt" role="test" />
+    <file name="span_stacktrace_custom.phpt" role="test" />
+    <file name="span_stacktrace_default.phpt" role="test" />
+    <file name="span_stacktrace_invalid.phpt" role="test" />
+    <file name="span_start_time_double.phpt" role="test" />
+    <file name="span_start_time_int.phpt" role="test" />
+    <file name="span_start_time_null.phpt" role="test" />
+    <file name="span_start_time_string.phpt" role="test" />
     <file name="static_method_callback_scope.phpt" role="test" />
     <file name="static_method_test.phpt" role="test" />
     <file name="trace_context.phpt" role="test" />
@@ -306,6 +329,23 @@ Fix handling startTime when passed to opencensus_trace_begin (#135)
    <license>Apache 2.0</license>
    <notes>
 - Fix refcounts for arguments in traced function callbacks (#184)
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>0.3.0</release>
+    <api>0.3.0</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2021-06-08</date>
+   <license>Apache 2.0</license>
+   <notes>
+- OpenCensus stats implementation (#220)
+- Fix ZVAL_DESTRUCTOR usage
+- Add PHP8 compatibility (#270)
    </notes>
   </release>
  </changelog>
