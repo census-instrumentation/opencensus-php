@@ -90,9 +90,9 @@ releases:
     notes: |-
       - Fix refcounts for arguments in traced function callbacks (#184)
 
-  - date: '2021-06-08'
-    time: 15:57:00
-    version: 0.3.0
+  - date: '2021-06-09'
+    time: 07:25:00
+    version: 0.7.0
     stability: alpha
     notes: |-
       - OpenCensus stats implementation (#220)

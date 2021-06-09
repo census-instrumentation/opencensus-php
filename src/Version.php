@@ -22,5 +22,5 @@ namespace OpenCensus;
  */
 class Version
 {
-    const VERSION = '0.5.2';
+    const VERSION = '0.7.0';
 }

@@ -12,11 +12,11 @@ This extension allows you to easily gather latency and other metadata by watchin
   <email>chingor@google.com</email>
   <active>yes</active>
  </lead>
- <date>2021-06-08</date>
- <time>15:57:00</time>
+ <date>2021-06-09</date>
+ <time>07:25:00</time>
  <version>
-  <release>0.3.0</release>
-  <api>0.3.0</api>
+  <release>0.7.0</release>
+  <api>0.7.0</api>
  </version>
  <stability>
   <release>alpha</release>
@@ -34,29 +34,29 @@ This extension allows you to easily gather latency and other metadata by watchin
    <file baseinstalldir="/" name="config.w32" role="src" />
    <file baseinstalldir="/" name="opencensus.c" role="src" />
    <file baseinstalldir="/" name="opencensus_core_daemonclient.c" role="src" />
-   <file baseinstalldir="/" name="opencensus_trace.c" role="src" />
-   <file baseinstalldir="/" name="opencensus_trace_annotation.c" role="src" />
-   <file baseinstalldir="/" name="opencensus_trace_context.c" role="src" />
-   <file baseinstalldir="/" name="opencensus_trace_link.c" role="src" />
-   <file baseinstalldir="/" name="opencensus_trace_message_event.c" role="src" />
-   <file baseinstalldir="/" name="opencensus_trace_span.c" role="src" />
-   <file baseinstalldir="/" name="varint.c" role="src" />
    <file baseinstalldir="/" name="opencensus_core_daemonclient.h" role="src" />
+   <file baseinstalldir="/" name="opencensus_trace.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace.h" role="src" />
+   <file baseinstalldir="/" name="opencensus_trace_annotation.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_annotation.h" role="src" />
+   <file baseinstalldir="/" name="opencensus_trace_context.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_context.h" role="src" />
+   <file baseinstalldir="/" name="opencensus_trace_link.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_link.h" role="src" />
+   <file baseinstalldir="/" name="opencensus_trace_message_event.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_message_event.h" role="src" />
+   <file baseinstalldir="/" name="opencensus_trace_span.c" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_span.h" role="src" />
    <file baseinstalldir="/" name="opencensus_trace_time_event.h" role="src" />
    <file baseinstalldir="/" name="php_opencensus.h" role="src" />
+   <file baseinstalldir="/" name="varint.c" role="src" />
    <file baseinstalldir="/" name="varint.h" role="src" />
 
    <file name="README.md" role="doc" />
    <file name="LICENSE" role="doc" />
 
    <dir name="tests">
-    <file name="common.inc" role="test" />
+    <file name="common.php" role="test" />
     <file name="annotations.phpt" role="test" />
     <file name="basic_class_function.phpt" role="test" />
     <file name="basic_context.phpt" role="test" />
@@ -333,14 +333,14 @@ Fix handling startTime when passed to opencensus_trace_begin (#135)
   </release>
   <release>
    <version>
-    <release>0.3.0</release>
-    <api>0.3.0</api>
+    <release>0.7.0</release>
+    <api>0.7.0</api>
    </version>
    <stability>
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2021-06-08</date>
+   <date>2021-06-09</date>
    <license>Apache 2.0</license>
    <notes>
 - OpenCensus stats implementation (#220)
