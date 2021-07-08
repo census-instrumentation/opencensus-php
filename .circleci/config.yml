@@ -154,6 +154,7 @@ jobs:
               gcc \
               libc-dev \
               libpqxx-dev \
+              zlib1g-dev \
               make \
               autoconf \
               git \
@@ -166,6 +167,11 @@ jobs:
             ./configure --enable-opencensus
             sudo make install
             sudo docker-php-ext-enable opencensus
+      - run:
+          name: Install grpc extension
+          command: |
+            sudo pecl install grpc
+            sudo docker-php-ext-enable grpc
       - run:
           name: Install memcached extension
           command: |
@@ -188,6 +194,9 @@ jobs:
       - run:
           name: Curl test
           command: tests/integration/curl/test.sh
+      - run:
+          name: Grpc test
+          command: tests/integration/grpc/test.sh
       - run:
           name: Guzzle 5 test
           command: tests/integration/guzzle5/test.sh
