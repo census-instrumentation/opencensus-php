@@ -40,7 +40,7 @@ class Status
      * @param int $code The status code
      * @param string $message A developer-facing error message
      */
-    public function __construct($code, $message)
+    public function __construct(int $code, string $message)
     {
         $this->code = $code;
         $this->message = $message;
@@ -51,7 +51,7 @@ class Status
      *
      * @return int
      */
-    public function code()
+    public function code(): int
     {
         return $this->code;
     }
@@ -61,7 +61,7 @@ class Status
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return $this->message;
     }

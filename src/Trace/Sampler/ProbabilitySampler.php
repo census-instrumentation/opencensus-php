@@ -39,9 +39,9 @@ class ProbabilitySampler implements SamplerInterface
     /**
      * Creates the ProbabilitySampler
      *
-     * @param float $percentage The percentage of requests to sample. Must be between 0 and 1.
+     * @param float $rate The percentage of requests to sample. Must be between 0 and 1.
      */
-    public function __construct($rate)
+    public function __construct(float $rate)
     {
         if ($rate > 1 || $rate < 0) {
             throw new \InvalidArgumentException('Percentage must be between 0 and 1');
@@ -55,7 +55,7 @@ class ProbabilitySampler implements SamplerInterface
      *
      * @return bool
      */
-    public function shouldSample()
+    public function shouldSample(): bool
     {
         return lcg_value() <= $this->rate;
     }
@@ -65,7 +65,7 @@ class ProbabilitySampler implements SamplerInterface
      *
      * @return float
      */
-    public function rate()
+    public function rate(): float
     {
         return $this->rate;
     }

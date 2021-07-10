@@ -50,7 +50,7 @@ class NullTracer implements TracerInterface
      *      <a href="../Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
      * @return Span
      */
-    public function startSpan(array $spanOptions)
+    public function startSpan(array $spanOptions): Span
     {
         return new Span($spanOptions);
     }
@@ -62,7 +62,7 @@ class NullTracer implements TracerInterface
      * @param Span $span
      * @return Scope
      */
-    public function withSpan(Span $span)
+    public function withSpan(Span $span): Scope
     {
         return new Scope(function () {
         });
@@ -73,7 +73,7 @@ class NullTracer implements TracerInterface
      *
      * @return SpanData[]
      */
-    public function spans()
+    public function spans(): array
     {
         return [];
     }
@@ -87,7 +87,7 @@ class NullTracer implements TracerInterface
      *
      *      @type Span $span The span to add the attribute to.
      */
-    public function addAttribute($attribute, $value, $options = [])
+    public function addAttribute(string $attribute, string $value, array $options = []): void
     {
     }
 
@@ -101,7 +101,7 @@ class NullTracer implements TracerInterface
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addAnnotation($description, $options = [])
+    public function addAnnotation(string $description, array $options = []): void
     {
     }
 
@@ -118,7 +118,7 @@ class NullTracer implements TracerInterface
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addLink($traceId, $spanId, $options = [])
+    public function addLink(string $traceId, string $spanId, array $options = []): void
     {
     }
 
@@ -137,7 +137,7 @@ class NullTracer implements TracerInterface
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addMessageEvent($type, $id, $options = [])
+    public function addMessageEvent(string $type, string $id, array $options = []): void
     {
     }
 
@@ -146,7 +146,7 @@ class NullTracer implements TracerInterface
      *
      * @return SpanContext
      */
-    public function spanContext()
+    public function spanContext(): SpanContext
     {
         return new SpanContext(null, null, false);
     }
@@ -156,7 +156,7 @@ class NullTracer implements TracerInterface
      *
      * @return bool
      */
-    public function enabled()
+    public function enabled(): bool
     {
         return false;
     }

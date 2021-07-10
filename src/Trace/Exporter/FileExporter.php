@@ -45,7 +45,7 @@ class FileExporter implements ExporterInterface
      *
      * @param string $filename The path to the output file.
      */
-    public function __construct($filename)
+    public function __construct(string $filename)
     {
         $this->filename = $filename;
     }
@@ -56,7 +56,7 @@ class FileExporter implements ExporterInterface
      * @param SpanData[] $spans
      * @return bool
      */
-    public function export(array $spans)
+    public function export(array $spans): bool
     {
         $spans = $this->convertSpans($spans);
         return file_put_contents($this->filename, json_encode($spans) . PHP_EOL, FILE_APPEND) !== false;
@@ -68,7 +68,7 @@ class FileExporter implements ExporterInterface
      * @param SpanData[] $spans
      * @return array Representation of the collected trace spans ready for serialization
      */
-    private function convertSpans(array $spans)
+    private function convertSpans(array $spans): array
     {
         return array_map(function (SpanData $span) {
             return [

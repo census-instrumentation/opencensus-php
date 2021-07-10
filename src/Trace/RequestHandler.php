@@ -132,7 +132,7 @@ class RequestHandler
      * reports using the provided ExporterInterface. Adds additional attributes to
      * the root span detected from the response.
      */
-    public function onExit()
+    public function onExit(): void
     {
         $this->addCommonRequestAttributes($this->headers);
 
@@ -146,7 +146,7 @@ class RequestHandler
      *
      * @return TracerInterface
      */
-    public function tracer()
+    public function tracer(): TracerInterface
     {
         return $this->tracer;
     }
@@ -175,7 +175,7 @@ class RequestHandler
      *        <a href="Span.html#method___construct">OpenCensus\Trace\Span::__construct()</a>
      * @return Span
      */
-    public function startSpan(array $spanOptions = [])
+    public function startSpan(array $spanOptions = []): Span
     {
         return $this->tracer->startSpan($spanOptions);
     }
@@ -187,7 +187,7 @@ class RequestHandler
      * @param Span $span
      * @return Scope
      */
-    public function withSpan(Span $span)
+    public function withSpan(Span $span): Scope
     {
         return $this->tracer->withSpan($span);
     }
@@ -201,7 +201,7 @@ class RequestHandler
      *
      *      @type Span $span The span to add the attribute to.
      */
-    public function addAttribute($attribute, $value, $options = [])
+    public function addAttribute(string $attribute, string $value, array $options = []): void
     {
         $this->tracer->addAttribute($attribute, $value, $options);
     }
@@ -216,7 +216,7 @@ class RequestHandler
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addAnnotation($description, $options = [])
+    public function addAnnotation(string $description, array $options = []): void
     {
         $this->tracer->addAnnotation($description, $options);
     }
@@ -234,7 +234,7 @@ class RequestHandler
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addLink($traceId, $spanId, $options = [])
+    public function addLink(string $traceId, string $spanId, array $options = []): void
     {
         $this->tracer->addLink($traceId, $spanId, $options);
     }
@@ -254,12 +254,12 @@ class RequestHandler
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function addMessageEvent($type, $id, $options)
+    public function addMessageEvent(string $type, string $id, array $options): void
     {
         $this->tracer->addMessageEvent($type, $id, $options);
     }
 
-    public function addCommonRequestAttributes(array $headers)
+    public function addCommonRequestAttributes(array $headers): void
     {
         if ($responseCode = http_response_code()) {
             $this->rootSpan->setStatus($responseCode, "HTTP status code: $responseCode");
@@ -287,7 +287,7 @@ class RequestHandler
         return null;
     }
 
-    private function nameFromHeaders(array $headers)
+    private function nameFromHeaders(array $headers): string
     {
         if (array_key_exists('REQUEST_URI', $headers)) {
             return $headers['REQUEST_URI'];

@@ -34,7 +34,7 @@ class Postgres implements IntegrationInterface
     /**
      * Static method to add instrumentation to the postgres requests
      */
-    public static function load()
+    public static function load(): void
     {
         if (!extension_loaded('opencensus')) {
             trigger_error('opencensus extension required to load pg integrations.', E_USER_WARNING);

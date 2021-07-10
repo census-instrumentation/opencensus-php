@@ -49,7 +49,7 @@ class Scope
      * @param callable $callback
      * @param array $args
      */
-    public function __construct(callable $callback, $args = [])
+    public function __construct(callable $callback, array $args = [])
     {
         $this->callback = $callback;
         $this->args = $args;
@@ -58,7 +58,7 @@ class Scope
     /**
      * Close and clean up the scope. Runs the initial callback provided.
      */
-    public function close()
+    public function close(): void
     {
         call_user_func_array($this->callback, $this->args);
     }

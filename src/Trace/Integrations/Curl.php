@@ -34,7 +34,7 @@ class Curl implements IntegrationInterface
     /**
      * Static method to add instrumentation to curl requests
      */
-    public static function load()
+    public static function load(): void
     {
         if (!extension_loaded('opencensus')) {
             trigger_error('opencensus extension required to load curl integrations.', E_USER_WARNING);
@@ -53,7 +53,7 @@ class Curl implements IntegrationInterface
      * @param resource $resource The curl handler
      * @return array
      */
-    public static function handleCurlResource($resource)
+    public static function handleCurlResource($resource): array
     {
         return [
             'attributes' => [

@@ -34,7 +34,7 @@ class Mysql implements IntegrationInterface
     /**
      * Static method to add instrumentation to mysql requests
      */
-    public static function load()
+    public static function load(): void
     {
         if (!extension_loaded('opencensus')) {
             trigger_error('opencensus extension required to load mysqli integrations.', E_USER_WARNING);

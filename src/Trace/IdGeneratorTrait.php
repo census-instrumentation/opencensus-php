@@ -29,7 +29,7 @@ trait IdGeneratorTrait
      *
      * @return string
      */
-    private function generateTraceId()
+    private function generateTraceId(): string
     {
         return str_replace('-', '', Uuid::uuid4());
     }

@@ -83,7 +83,7 @@ class EventSubscriber implements SubscriberInterface
      *
      * @param BeforeEvent $event Event object emitted before a request is sent
      */
-    public function onBefore(BeforeEvent $event)
+    public function onBefore(BeforeEvent $event): void
     {
         $request = $event->getRequest();
         $context = Tracer::spanContext();
@@ -107,7 +107,7 @@ class EventSubscriber implements SubscriberInterface
      *
      * @param EndEvent $event A terminal event that is emitted when a request transaction has ended
      */
-    public function onEnd(EndEvent $event)
+    public function onEnd(EndEvent $event): void
     {
         $this->scope->close();
     }

@@ -32,7 +32,7 @@ interface PropagatorInterface
      * @param mixed $container
      * @return SpanContext
      */
-    public function extract($container);
+    public function extract($container): SpanContext;
 
     /**
      * Inject the SpanContext back into the response
@@ -41,19 +41,19 @@ interface PropagatorInterface
      * @param mixed $container
      * @return array
      */
-    public function inject(SpanContext $context, $container);
+    public function inject(SpanContext $context, $container): array;
 
     /**
      * Fetch the formatter for propagating the SpanContext
      *
      * @return FormatterInterface
      */
-    public function formatter();
+    public function formatter(): FormatterInterface;
 
     /**
      * Return the key used to propagate the SpanContext
      *
      * @return string
      */
-    public function key();
+    public function key(): string;
 }

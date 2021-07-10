@@ -106,7 +106,7 @@ class TagContext
      * @param TagKey $key key of the Tag.
      * @param TagValue $value value of the Tag.
      */
-    final public function upsert(TagKey $key, TagValue $value)
+    final public function upsert(TagKey $key, TagValue $value): void
     {
         $this->m[$key->getName()] = new Tag($key, $value);
     }

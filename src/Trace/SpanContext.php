@@ -17,8 +17,6 @@
 
 namespace OpenCensus\Trace;
 
-use OpenCensus\Core\Context;
-
 /**
  * SpanContext encapsulates your current context within your request's trace. It includes
  * 3 fields: the `traceId`, the current `spanId`, and an `enabled` flag which indicates whether
@@ -53,6 +51,11 @@ class SpanContext
     private $enabled;
 
     /**
+     * @var bool Whether or not the context was detected from an incoming header.
+     */
+    private $fromHeader;
+
+    /**
      * Creates a new SpanContext instance
      *
      * @param string $traceId The current traceId. If not set, one will be
@@ -63,8 +66,12 @@ class SpanContext
      * @param bool $fromHeader Whether or not the context was detected from an
      *        incoming header. **Defaults to** `false`.
      */
-    public function __construct($traceId = null, $spanId = null, $enabled = null, $fromHeader = false)
-    {
+    public function __construct(
+        string $traceId = null,
+        string $spanId = null,
+        bool $enabled = null,
+        bool $fromHeader = false
+    ) {
         $this->traceId = $traceId ?: $this->generateTraceId();
         $this->spanId = $spanId;
         $this->enabled = $enabled;
@@ -76,7 +83,7 @@ class SpanContext
      *
      * @return string
      */
-    public function traceId()
+    public function traceId(): string
     {
         return $this->traceId;
     }
@@ -84,9 +91,9 @@ class SpanContext
     /**
      * Fetch the current spanId.
      *
-     * @return string
+     * @return string|null
      */
-    public function spanId()
+    public function spanId(): ?string
     {
         return $this->spanId;
     }
@@ -96,7 +103,7 @@ class SpanContext
      *
      * @param string|null $spanId The spanId to set.
      */
-    public function setSpanId($spanId)
+    public function setSpanId(?string $spanId): void
     {
         $this->spanId = $spanId;
     }
@@ -104,9 +111,9 @@ class SpanContext
     /**
      * Whether or not the request is being traced.
      *
-     * @return bool
+     * @return bool|null
      */
-    public function enabled()
+    public function enabled(): ?bool
     {
         return $this->enabled;
     }
@@ -116,7 +123,7 @@ class SpanContext
      *
      * @param bool|null $enabled
      */
-    public function setEnabled($enabled)
+    public function setEnabled(?bool $enabled): void
     {
         $this->enabled = $enabled;
     }
@@ -126,7 +133,7 @@ class SpanContext
      *
      * @return bool
      */
-    public function fromHeader()
+    public function fromHeader(): bool
     {
         return $this->fromHeader;
     }

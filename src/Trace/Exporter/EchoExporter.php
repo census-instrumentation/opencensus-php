@@ -40,7 +40,7 @@ class EchoExporter implements ExporterInterface
      * @param SpanData[] $spans
      * @return bool
      */
-    public function export(array $spans)
+    public function export(array $spans): bool
     {
         print_r($spans);
         return true;

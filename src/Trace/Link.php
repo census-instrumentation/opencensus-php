@@ -57,7 +57,7 @@ class Link
      *      @type array $attributes Attributes for this annotation.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function __construct($traceId, $spanId, $options = [])
+    public function __construct(string $traceId, string $spanId, array $options = [])
     {
         $options += [
             'type' => self::TYPE_UNSPECIFIED,
@@ -74,7 +74,7 @@ class Link
      *
      * @return string
      */
-    public function traceId()
+    public function traceId(): string
     {
         return $this->traceId;
     }
@@ -84,7 +84,7 @@ class Link
      *
      * @return string
      */
-    public function spanId()
+    public function spanId(): string
     {
         return $this->spanId;
     }
@@ -94,7 +94,7 @@ class Link
      *
      * @return string
      */
-    public function type()
+    public function type(): string
     {
         return $this->type;
     }

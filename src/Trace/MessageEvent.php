@@ -69,7 +69,7 @@ class MessageEvent extends TimeEvent
      *            uncompressed.
      *      @type \DateTimeInterface|int|float $time The time of this event.
      */
-    public function __construct($type, $id, $options = [])
+    public function __construct(string $type, string $id, array $options = [])
     {
         $options += [
             'uncompressedSize' => null,
@@ -87,7 +87,7 @@ class MessageEvent extends TimeEvent
      *
      * @return string
      */
-    public function type()
+    public function type(): string
     {
         return $this->type;
     }
@@ -97,7 +97,7 @@ class MessageEvent extends TimeEvent
      *
      * @return string
      */
-    public function id()
+    public function id(): string
     {
         return $this->id;
     }
@@ -107,7 +107,7 @@ class MessageEvent extends TimeEvent
      *
      * @return int
      */
-    public function uncompressedSize()
+    public function uncompressedSize(): int
     {
         return $this->uncompressedSize;
     }
@@ -117,7 +117,7 @@ class MessageEvent extends TimeEvent
      *
      * @return int
      */
-    public function compressedSize()
+    public function compressedSize(): int
     {
         return $this->compressedSize;
     }

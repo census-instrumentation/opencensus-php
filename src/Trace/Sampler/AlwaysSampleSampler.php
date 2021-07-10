@@ -35,7 +35,7 @@ class AlwaysSampleSampler implements SamplerInterface
      *
      * @return bool
      */
-    public function shouldSample()
+    public function shouldSample(): bool
     {
         return true;
     }

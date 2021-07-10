@@ -104,7 +104,7 @@ class Stats
      *
      * @param ExporterInterface $exporter
      */
-    public static function setExporter(ExporterInterface $exporter)
+    public static function setExporter(ExporterInterface $exporter): void
     {
         self::getInstance()->exporter = $exporter;
     }
