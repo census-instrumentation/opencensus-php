@@ -1,0 +1,36 @@
+name: Build and Test
+on: [push]
+jobs:
+  windows:
+    defaults:
+      run:
+        shell: cmd
+    strategy:
+      matrix:
+          version: ["7.4"]
+          arch: [x64]
+          ts: [ts]
+    runs-on: windows-latest
+    steps:
+      - name: Checkout opencensus
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        id: setup-php
+        uses: cmb69/setup-php-sdk@v0.1
+        with:
+          version: ${{matrix.version}}
+          arch: ${{matrix.arch}}
+          ts: ${{matrix.ts}}
+      - name: Enable Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{matrix.arch}}
+          toolset: ${{steps.setup-php.outputs.toolset}}
+      - name: phpize
+        run: cd ext && phpize
+      - name: configure
+        run: cd ext && configure --enable-opencensus --with-prefix=${{steps.setup-php.outputs.prefix}}
+      - name: make
+        run: cd ext && nmake
+      - name: test
+        run: cd ext && nmake test TESTS=tests
