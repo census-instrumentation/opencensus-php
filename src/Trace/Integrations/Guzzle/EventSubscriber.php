@@ -88,7 +88,7 @@ class EventSubscriber implements SubscriberInterface
         $request = $event->getRequest();
         $context = Tracer::spanContext();
         if ($context->enabled()) {
-            $request->setHeader($this->propagator->key(), $this->propagator->formatter()->serialize($context));
+            $request->setHeaders($this->propagator->inject($context, []));
         }
         $span = Tracer::startSpan([
             'name' => 'GuzzleHttp::request',

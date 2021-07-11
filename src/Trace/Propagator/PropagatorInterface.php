@@ -42,18 +42,4 @@ interface PropagatorInterface
      * @return array
      */
     public function inject(SpanContext $context, $container);
-
-    /**
-     * Fetch the formatter for propagating the SpanContext
-     *
-     * @return FormatterInterface
-     */
-    public function formatter();
-
-    /**
-     * Return the key used to propagate the SpanContext
-     *
-     * @return string
-     */
-    public function key();
 }

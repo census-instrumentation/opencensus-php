@@ -33,7 +33,7 @@ class HttpHeaderPropagatorTest extends TestCase
     public function testExtract($traceId, $spanId, $enabled, $header)
     {
         $propagator = new HttpHeaderPropagator();
-        $context = $propagator->extract(['HTTP_X_CLOUD_TRACE_CONTEXT' => $header]);
+        $context = $propagator->extract(['X-Cloud-Trace-Context' => $header]);
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
         $this->assertEquals($enabled, $context->enabled());
@@ -45,8 +45,8 @@ class HttpHeaderPropagatorTest extends TestCase
      */
     public function testExtractCustomKey($traceId, $spanId, $enabled, $header)
     {
-        $propagator = new HttpHeaderPropagator(new CloudTraceFormatter(), 'HTTP_TRACE_CONTEXT');
-        $context = $propagator->extract(['HTTP_TRACE_CONTEXT' => $header]);
+        $propagator = new HttpHeaderPropagator(new CloudTraceFormatter(), 'Trace-Context');
+        $context = $propagator->extract(['Trace-Context' => $header]);
         $this->assertEquals($traceId, $context->traceId());
         $this->assertEquals($spanId, $context->spanId());
         $this->assertEquals($enabled, $context->enabled());
@@ -61,8 +61,8 @@ class HttpHeaderPropagatorTest extends TestCase
         $propagator = new HttpHeaderPropagator();
         $context = new SpanContext($traceId, $spanId, $enabled);
         $output = $propagator->inject($context, []);
-        $this->assertArrayHasKey('X-CLOUD-TRACE-CONTEXT', $output);
-        $this->assertEquals($header, $output['X-CLOUD-TRACE-CONTEXT']);
+        $this->assertArrayHasKey('X-Cloud-Trace-Context', $output);
+        $this->assertEquals($header, $output['X-Cloud-Trace-Context']);
     }
 
     /**
@@ -70,11 +70,11 @@ class HttpHeaderPropagatorTest extends TestCase
      */
     public function testInjectCustomKey($traceId, $spanId, $enabled, $header)
     {
-        $propagator = new HttpHeaderPropagator(new CloudTraceFormatter(), 'HTTP_TRACE_CONTEXT');
+        $propagator = new HttpHeaderPropagator(new CloudTraceFormatter(), 'Trace-Context');
         $context = new SpanContext($traceId, $spanId, $enabled);
         $output = $propagator->inject($context, []);
-        $this->assertArrayHasKey('TRACE-CONTEXT', $output);
-        $this->assertEquals($header, $output['TRACE-CONTEXT']);
+        $this->assertArrayHasKey('Trace-Context', $output);
+        $this->assertEquals($header, $output['Trace-Context']);
     }
 
     /**

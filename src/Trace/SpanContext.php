@@ -52,6 +52,12 @@ class SpanContext
      */
     private $enabled;
 
+
+    /**
+     * @var bool Whether or not this context was detected from a request header.
+     */
+    private $fromHeader;
+
     /**
      * Creates a new SpanContext instance
      *
@@ -104,7 +110,7 @@ class SpanContext
     /**
      * Whether or not the request is being traced.
      *
-     * @return bool
+     * @return bool|null
      */
     public function enabled()
     {

@@ -94,7 +94,7 @@ class Guzzle5Test extends TestCase
         $tracer = Tracer::start($exporter->reveal(), [
             'skipReporting' => true,
             'headers' => [
-                'HTTP_X_CLOUD_TRACE_CONTEXT' => $traceContextHeader
+                'X-Cloud-Trace-Context' => $traceContextHeader
             ]
         ]);
 
