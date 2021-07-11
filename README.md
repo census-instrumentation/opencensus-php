@@ -161,10 +161,10 @@ This is not an official Google product.
 [composer]: https://getcomposer.org/
 [pecl]: https://pecl.php.net/
 [never-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/NeverSampleSampler.html
-[always-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[always-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/AlwaysSampleSampler.html
 [multi-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/MultiSampler.html
-[qps-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/NeverSampleSampler.html
-[probability-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/NeverSampleSampler.html
+[qps-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/QpsSampler.html
+[probability-sampler]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Sampler/ProbabilitySampler.html
 [echo-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/EchoExporter.html
 [one-line-echo-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/OneLineEchoExporter.html
 [file-exporter]: https://opencensus.io/api/php/api/master/OpenCensus/Trace/Exporter/FileExporter.html
