@@ -51,8 +51,11 @@ class Symfony implements IntegrationInterface
             ];
         });
 
-        // public function dispatch($eventName, Event $event = null)
-        opencensus_trace_method(EventDispatcher::class, 'dispatch', function ($dispatcher, $eventName) {
+        // public function dispatch($event/*, string $eventName = null*/);
+        opencensus_trace_method(EventDispatcher::class, 'dispatch', function ($dispatcher, $event, $eventName = null) {
+            if (!isset($eventName)) {
+                $eventName = \is_object($event) ? \get_class($event) : $event;
+            }
             return [
                 'name' => $eventName,
                 'attributes' => ['eventName' => $eventName]
