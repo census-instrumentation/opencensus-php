@@ -52,6 +52,8 @@ class SpanContext
      */
     private $enabled;
 
+	private ?bool $fromHeader;
+
     /**
      * Creates a new SpanContext instance
      *

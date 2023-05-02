@@ -59,7 +59,7 @@ class BinaryFormatter implements FormatterInterface
      */
     public function serialize(SpanContext $context)
     {
-        $spanHex = str_pad($context->spanId(), 16, "0", STR_PAD_LEFT);
+        $spanHex = str_pad($context->spanId() ?? "", 16, "0", STR_PAD_LEFT);
         $traceOptions = $context->enabled() ? self::OPTION_ENABLED : 0;
         return pack("CCH*CH*CC", 0, 0, $context->traceId(), 1, $spanHex, 2, $traceOptions);
     }
