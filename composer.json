@@ -26,6 +26,7 @@
         "squizlabs/php_codesniffer": "^3.0",
         "twig/twig": "~2.0 || ~1.35",
         "symfony/yaml": "~3.3",
+        "ruflin/elastica": "6.0.2",
         "guzzlehttp/guzzle": "~5.3",
         "guzzlehttp/psr7": "~1.4"
     },
