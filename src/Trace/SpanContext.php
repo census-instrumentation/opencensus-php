@@ -53,6 +53,11 @@ class SpanContext
     private $enabled;
 
     /**
+     * @var bool Whether or not the context was detected from an incoming header.
+     */
+    private $fromHeader;
+
+    /**
      * Creates a new SpanContext instance
      *
      * @param string $traceId The current traceId. If not set, one will be

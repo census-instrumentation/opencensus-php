@@ -4,7 +4,7 @@ OpenCensus Trace: Basic Context Test
 <?php
 
 $res = opencensus_trace_set_context('traceid', 1234);
-echo "Set context: ${res}\n";
+echo "Set context: {$res}\n";
 
 $context = opencensus_trace_context();
 $class = get_class($context);

@@ -127,6 +127,16 @@ jobs:
     docker:
       - image: circleci/php:8.0-zts-node
 
+  php82:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:8.2-node
+
+  php82-zts:
+    <<: *unit-config
+    docker:
+      - image: circleci/php:8.2-zts-node
+
   # Integration tests running on PHP 7.4. When updating these, please also update `integration-8.0` further down.
   integration-7.4:
     docker:
@@ -312,6 +322,101 @@ jobs:
       DB_USERNAME: mysql
       DB_PASSWORD: mysql
       DB_DATABASE: mysqldb
+
+# Integration tests running on PHP 8.2. When updating these, please also update `integration-7.4` further down.
+  integration-8.2:
+    docker:
+      - image: circleci/php:8.2-node
+      - image: memcached
+      - image: mysql:5.7
+        environment:
+          MYSQL_USER: mysql
+          MYSQL_PASSWORD: mysql
+          MYSQL_DATABASE: mysqldb
+          MYSQL_RANDOM_ROOT_PASSWORD: yes
+      - image: postgres:9.6
+        environment:
+          POSTGRES_PASSWORD: pgsql
+          POSTGRES_USER: postgres
+    steps:
+      - checkout
+      - run:
+          name: Install build tools
+          command: |
+            sudo apt-get update -y
+            sudo apt-get install -y -q --no-install-recommends \
+              build-essential \
+              g++ \
+              gcc \
+              libc-dev \
+              libpqxx-dev \
+              make \
+              autoconf \
+              git \
+              unzip
+      - run:
+          name: Install opencensus extension
+          command: |
+            cd ext
+            phpize
+            ./configure --enable-opencensus
+            sudo make install
+            sudo docker-php-ext-enable opencensus
+      - run:
+          name: Install memcached extension
+          command: |
+            sudo apt-get install -y -q --no-install-recommends \
+              libmemcached11 libmemcached-dev zlib1g-dev zlib1g
+            sudo pecl install memcached <<<''
+            sudo docker-php-ext-enable memcached
+      - run:
+          name: Install pdo_mysql extension
+          command: sudo docker-php-ext-install pdo_mysql
+      - run:
+          name: Install mysqli extension
+          command: sudo docker-php-ext-install mysqli
+      - run:
+          name: Install pgsql extension
+          command: sudo docker-php-ext-install pgsql
+      - run:
+          name: Install pcntl extension
+          command: sudo docker-php-ext-install pcntl
+      - run:
+          name: Curl test
+          command: tests/integration/curl/test.sh
+      - run:
+          name: Guzzle 5 test
+          command: tests/integration/guzzle5/test.sh
+      - run:
+          name: Guzzle 6 test
+          command: tests/integration/guzzle6/test.sh
+      - run:
+          name: Laravel test
+          command: tests/integration/laravel/test.sh
+      - run:
+          name: Memcached test
+          command: tests/integration/memcached/test.sh
+      - run:
+          name: Pgsql test
+          command: tests/integration/pgsql/test.sh
+# Skipped due to a dependency incompatibility between "cache/adapter-common" and "psr/cache".
+# TODO(mrmage): Re-enable this step once "cache/adapter-common" supports "psr/cache" v2.0/v3.0.
+#      - run:
+#          name: Symfony 4 test
+#          command: tests/integration/symfony4/test.sh
+#          environment:
+#            DATABASE_URL: mysql://mysql:mysql@127.0.0.1:3306/mysqldb
+# Skipped because "wp-cli" is currently not compatible with PHP 8 (see https://github.com/wp-cli/wp-cli/issues/5452).
+# TODO(mrmage): Re-enable this step once "wp-cli" supports PHP 8.
+#      - run:
+#          name: Wordpress test
+#          command: tests/integration/wordpress/test.sh
+    environment:
+      DB_HOST: 127.0.0.1
+      DB_USERNAME: mysql
+      DB_PASSWORD: mysql
+      DB_DATABASE: mysqldb
+
 
 workflows:
   version: 2

@@ -4,7 +4,7 @@ OpenCensus Trace: Root inherits from context
 <?php
 
 $res = opencensus_trace_set_context('traceid', 1234);
-echo "Set context: ${res}\n";
+echo "Set context: {$res}\n";
 
 opencensus_trace_begin('root', []);
 opencensus_trace_begin('inner', []);
